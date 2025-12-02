@@ -4,12 +4,11 @@ import 'package:wcas_frontend/core/components/dropdown/dropdown.dart';
 import 'package:wcas_frontend/core/components/dynamic_form/models/field.dart';
 import 'package:wcas_frontend/core/components/label.dart';
 
-class DynamicFormDropdown extends StatelessWidget {
+class DynamicReferenceDataDropdown extends StatelessWidget {
   final DynamicField fieldData;
   final bool showLabel;
   final Function(CustomDropdownItem) selectedOption;
-
-  const DynamicFormDropdown({
+  const DynamicReferenceDataDropdown({
     super.key,
     required this.fieldData,
     this.showLabel = true,
@@ -23,25 +22,21 @@ class DynamicFormDropdown extends StatelessWidget {
       label: fieldData.label,
       isRequired: fieldData.required,
       child: CustomDropdown<Option>(
-        validationMessage: fieldData.message,
         isEnabled: !fieldData.isDisable,
         isSearchable: true,
         items: fieldData.optionList ?? [],
         onSelected: (value) => selectedOption(value.first),
         itemBuilder: (context, item, isDisabled, isSelected) {
-          return ListTile(
-            title: Text(item.value ?? ""),
-          );
+          return dropdownItemBuildWidget(item.metaData?.name,
+              isListTile: true, isSelected: isSelected);
         },
         dropdownBuilder: (context, data) {
           return Text(
-            data?.value ?? "",
+            data?.metaData?.name ?? "",
             style: const TextStyle(fontSize: 13),
           );
         },
       ),
     );
   }
-
-  // // Assuming Option has fields: key, value
 }

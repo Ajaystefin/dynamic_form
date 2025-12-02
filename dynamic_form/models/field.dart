@@ -30,7 +30,7 @@ class DynamicField {
   final bool required;
   final int? maxLength;
   final int rowData;
-  final List<Option>? optionList;
+  List<Option>? optionList;
   final String? message;
   final String? validationPattern;
   final String? directiveType;
@@ -180,8 +180,9 @@ class DynamicField {
 class Option extends CustomDropdownItem {
   final String? key;
   final String? pairValue;
+  dynamic? metaData;
 
-  Option({required this.key, required this.pairValue})
+  Option({required this.key, required this.pairValue, this.metaData})
       : super(label: key, value: pairValue);
 
   factory Option.fromJson(Map<String, dynamic> json) {

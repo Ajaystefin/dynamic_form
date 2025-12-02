@@ -14,6 +14,7 @@ import 'package:wcas_frontend/core/components/dynamic_form/fields/single_check_b
 import 'package:wcas_frontend/core/components/dynamic_form/fields/text_area.dart';
 import 'package:wcas_frontend/core/constants/_server_constants.dart';
 import 'package:wcas_frontend/core/globals.dart';
+import 'package:wcas_frontend/core/utils/logger.dart';
 
 import 'field_dependencies.dart';
 import 'fields/textfield.dart';
@@ -23,12 +24,14 @@ class DynamicFormField extends StatefulWidget {
   final DynamicField field;
   final Map<String, dynamic> document;
   final FieldDependencies? dependencies;
+  final Map<String, TextEditingController> dependentControllers;
 
   const DynamicFormField({
     super.key,
     required this.field,
     required this.document,
     this.dependencies,
+    required this.dependentControllers,
   });
 
   @override
@@ -37,10 +40,11 @@ class DynamicFormField extends StatefulWidget {
 
 class _DynamicFormFieldState extends State<DynamicFormField> {
   // Controllers for dependent textfields and currency fields
-  final Map<String, TextEditingController> _dependentControllers = {};
 
   FieldDependencies get _dependencies =>
       widget.dependencies ?? FieldDependencies.empty;
+  Map<String, TextEditingController> get _dependentControllers =>
+      widget.dependentControllers;
 
   @override
   void initState() {
@@ -48,6 +52,8 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
 
     // Create controller if this is a dependent textfield
     if (_isTextField() && _dependencies.isDependent(widget.field.key)) {
+      logger.f('hola amigo');
+      logger.f(widget.field.key);
       _dependentControllers[widget.field.key] = TextEditingController();
 
       // Calculate initial value after build completes
@@ -92,7 +98,8 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
     widget.document[widget.field.key] = value;
 
     // Find all dependencies triggered by this field
-    final dependencies = _dependencies.getDependenciesForSource(widget.field.key);
+    final dependencies =
+        _dependencies.getDependenciesForSource(widget.field.key);
 
     // Update each dependent field
     for (var dependency in dependencies) {
@@ -106,10 +113,11 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
     widget.document[widget.field.key] = value;
 
     // Find all dependencies triggered by this field
-    final dependencies = _dependencies.getDependenciesForSource(widget.field.key);
+    List<FieldDependency> dependencies =
+        _dependencies.getDependenciesForSource(widget.field.key);
 
     // Update each dependent field
-    for (var dependency in dependencies) {
+    for (FieldDependency dependency in dependencies) {
       _updateDependentField(dependency.dependentFieldKey);
     }
   }
@@ -137,6 +145,7 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
             fieldData: widget.field,
             controller: _dependentControllers[widget.field.key],
             onSubmit: _onFieldChange,
+            onChanged: _onFieldChange,
           );
         case FieldType.percentage:
           return DynamicFormTextField(
@@ -144,12 +153,14 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
             fieldData: widget.field,
             controller: _dependentControllers[widget.field.key],
             onSubmit: _onFieldChange,
+            onChanged: _onFieldChange,
           );
         case FieldType.datePicker:
           return DynamicFormDatePicker(
             fieldData: widget.field,
             onSubmit: (selectedDate) {
-              widget.document[widget.field.key] = selectedDate;
+              widget.document[widget.field.key] =
+                  selectedDate!.toIso8601String();
             },
           );
         case FieldType.singleCheckBox:
@@ -166,7 +177,7 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
           return DynamicFormDropdown(
               fieldData: widget.field,
               selectedOption: (value) =>
-                  widget.document[widget.field.key] = value);
+                  widget.document[widget.field.key] = value.key);
         case FieldType.currency:
           return DynamicFormCurrecnyDropdownTextfield(
             fieldData: DynamicField(
@@ -274,7 +285,7 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
                   )
                 : widget.field,
             selectedOption: (value) {
-              widget.document[widget.field.key] = value;
+              widget.document[widget.field.key] = value.value;
             },
           );
         case FieldType.countryDropdown: //TODO  this fieldType need to check

@@ -9,6 +9,7 @@ import '../models/field.dart';
 class DynamicFormTextField extends StatefulWidget {
   final DynamicField fieldData;
   final Function(String?) onSubmit;
+  final Function(String?)? onChanged;
   final List<TextInputFormatter>? inputFormatters;
   final bool showLabel;
   final TextEditingController? controller;
@@ -17,6 +18,7 @@ class DynamicFormTextField extends StatefulWidget {
     super.key,
     required this.fieldData,
     required this.onSubmit,
+    this.onChanged,
     this.inputFormatters,
     this.showLabel = true,
     this.controller,
@@ -59,6 +61,7 @@ class _DynamicFormTextFieldState extends State<DynamicFormTextField> {
         errorText: widget.fieldData.message,
         readOnly: widget.fieldData.isDisable,
         onSaved: widget.onSubmit,
+        onChanged: widget.onChanged,
       ),
     );
   }

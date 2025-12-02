@@ -24,6 +24,7 @@ class DynamicForm extends StatefulWidget {
 }
 
 class DynamicFormState extends State<DynamicForm> {
+  final Map<String, TextEditingController> dependentControllers = {};
   @override
   Widget build(BuildContext context) {
     return BoxLayout(
@@ -57,6 +58,7 @@ class DynamicFormState extends State<DynamicForm> {
                                 .fields![fieldIndex],
                             document: widget.document,
                             dependencies: widget.dependencies,
+                            dependentControllers: dependentControllers,
                           ),
                         )),
                       ),
