@@ -14,7 +14,6 @@ import 'package:wcas_frontend/core/components/dynamic_form/fields/single_check_b
 import 'package:wcas_frontend/core/components/dynamic_form/fields/text_area.dart';
 import 'package:wcas_frontend/core/constants/_server_constants.dart';
 import 'package:wcas_frontend/core/globals.dart';
-import 'package:wcas_frontend/core/utils/logger.dart';
 
 import 'field_dependencies.dart';
 import 'fields/textfield.dart';
@@ -50,26 +49,54 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
   void initState() {
     super.initState();
 
-    // Create controller if this is a dependent textfield
-    if (_isTextField() && _dependencies.isDependent(widget.field.key)) {
-      logger.f('hola amigo');
-      logger.f(widget.field.key);
-      _dependentControllers[widget.field.key] = TextEditingController();
+    // Create controller for ALL text fields (not just dependent ones)
+    // This ensures programmatic updates via updateFieldValue work correctly
+    if (_isTextField()) {
+      // Only create if not already exists (avoid duplicates)
+      if (!_dependentControllers.containsKey(widget.field.key)) {
+        _dependentControllers[widget.field.key] = TextEditingController();
+      }
 
-      // Calculate initial value after build completes
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _updateDependentField(widget.field.key);
-      });
+      // If this is a dependent field, calculate initial value
+      if (_dependencies.isDependent(widget.field.key)) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _updateDependentField(widget.field.key);
+        });
+      } else {
+        // For non-dependent fields, set initial value from document if exists
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final initialValue = widget.document[widget.field.key];
+          if (initialValue != null) {
+            _dependentControllers[widget.field.key]?.text =
+                initialValue.toString();
+          }
+        });
+      }
     }
 
-    // Create controller if this is a dependent currency field
-    if (_isCurrencyField() && _dependencies.isDependent(widget.field.key)) {
-      _dependentControllers[widget.field.key] = TextEditingController();
+    // Create controller for ALL currency fields (not just dependent ones)
+    if (_isCurrencyField()) {
+      // Only create if not already exists (avoid duplicates)
+      if (!_dependentControllers.containsKey(widget.field.key)) {
+        _dependentControllers[widget.field.key] = TextEditingController();
+      }
 
-      // Calculate initial value after build completes
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _updateDependentField(widget.field.key);
-      });
+      // If this is a dependent field, calculate initial value
+      if (_dependencies.isDependent(widget.field.key)) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _updateDependentField(widget.field.key);
+        });
+      } else {
+        // For non-dependent currency fields, set initial value from document if exists
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final initialValue = widget.document[widget.field.key];
+          if (initialValue is Map<String, dynamic> &&
+              initialValue.containsKey('value')) {
+            _dependentControllers[widget.field.key]?.text =
+                initialValue['value']?.toString() ?? '';
+          }
+        });
+      }
     }
   }
 
