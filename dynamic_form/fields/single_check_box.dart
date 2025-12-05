@@ -4,6 +4,7 @@ import 'package:wcas_frontend/core/components/dynamic_form/models/field.dart';
 
 class DynamicFormSingleCheckBox extends StatefulWidget {
   final DynamicField fieldData;
+  final Map<String, dynamic>? document;
   final Function(bool) onChanged;
   final Function(bool?) onSaved;
   final bool? value;
@@ -11,6 +12,7 @@ class DynamicFormSingleCheckBox extends StatefulWidget {
   const DynamicFormSingleCheckBox(
       {super.key,
       required this.fieldData,
+      this.document,
       required this.onChanged,
       required this.onSaved,
       this.validation,
@@ -22,7 +24,20 @@ class DynamicFormSingleCheckBox extends StatefulWidget {
 }
 
 class _DynamicFormSingleCheckBoxState extends State<DynamicFormSingleCheckBox> {
-  bool checkValue = false;
+  late bool checkValue;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize from document if available
+    if (widget.document != null) {
+      final initialValue = widget.document![widget.fieldData.key];
+      checkValue = initialValue is bool ? initialValue : false;
+    } else {
+      checkValue = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomCheckbox(

@@ -180,7 +180,7 @@ class DynamicField {
 class Option extends CustomDropdownItem {
   final String? key;
   final String? pairValue;
-  dynamic? metaData;
+  dynamic metaData;
 
   Option({required this.key, required this.pairValue, this.metaData})
       : super(label: key, value: pairValue);

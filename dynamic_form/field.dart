@@ -143,6 +143,7 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
         case FieldType.textField:
           return DynamicFormTextField(
             fieldData: widget.field,
+            document: widget.document,
             controller: _dependentControllers[widget.field.key],
             onSubmit: _onFieldChange,
             onChanged: _onFieldChange,
@@ -151,6 +152,7 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
           return DynamicFormTextField(
             inputFormatters: [NumericFloatingPointFormatter()],
             fieldData: widget.field,
+            document: widget.document,
             controller: _dependentControllers[widget.field.key],
             onSubmit: _onFieldChange,
             onChanged: _onFieldChange,
@@ -158,14 +160,30 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
         case FieldType.datePicker:
           return DynamicFormDatePicker(
             fieldData: widget.field,
+            document: widget.document,
             onSubmit: (selectedDate) {
-              widget.document[widget.field.key] =
-                  selectedDate!.toIso8601String();
+              if (selectedDate != null) {
+                // Save in the same format as API provides
+                widget.document[widget.field.key] = {
+                  'date': {
+                    'year': selectedDate.year,
+                    'month': selectedDate.month,
+                    'day': selectedDate.day,
+                  },
+                  'jsdate': selectedDate.toIso8601String(),
+                  'formatted':
+                      '${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year}',
+                  'epoc': selectedDate.millisecondsSinceEpoch ~/ 1000,
+                };
+              } else {
+                widget.document[widget.field.key] = null;
+              }
             },
           );
         case FieldType.singleCheckBox:
           return DynamicFormSingleCheckBox(
             fieldData: widget.field,
+            document: widget.document,
             onSaved: (value) {
               widget.document[widget.field.key] = value;
             },
@@ -176,6 +194,7 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
         case FieldType.dropdown:
           return DynamicFormDropdown(
               fieldData: widget.field,
+              document: widget.document,
               selectedOption: (value) =>
                   widget.document[widget.field.key] = value.key);
         case FieldType.currency:
@@ -198,6 +217,7 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
               defaultValue: widget.field.defaultValue,
               columnInfoList: widget.field.columnInfoList,
             ),
+            document: widget.document,
             showLabel: true,
             controller: _dependentControllers[widget.field.key],
             onSubmit: _onCurrencyFieldChange,
@@ -221,6 +241,7 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
         case FieldType.customerSearch:
           return DynamicFormTextField(
             fieldData: widget.field,
+            document: widget.document,
             controller: _dependentControllers[widget.field.key],
             onSubmit: _onFieldChange,
           );
@@ -228,6 +249,7 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
         case FieldType.amount:
           return DynamicFormTextField(
             fieldData: widget.field,
+            document: widget.document,
             controller: _dependentControllers[widget.field.key],
             onSubmit: _onFieldChange,
           );
@@ -250,6 +272,7 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
         case FieldType.textArea: //TODO  this fieldType need to check
           return DynamicFormTextAreaField(
             fieldData: widget.field,
+            document: widget.document,
             onSubmit: (value) {
               widget.document[widget.field.key] = value;
             },
@@ -284,6 +307,7 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
                     columnInfoList: widget.field.columnInfoList,
                   )
                 : widget.field,
+            document: widget.document,
             selectedOption: (value) {
               widget.document[widget.field.key] = value.value;
             },
@@ -291,6 +315,7 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
         case FieldType.countryDropdown: //TODO  this fieldType need to check
           return DynamicFormCountryDropdown(
             fieldData: widget.field,
+            document: widget.document,
             selectedOption: (value) {
               widget.document[widget.field.key] = value;
             },

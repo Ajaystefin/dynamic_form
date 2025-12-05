@@ -6,9 +6,11 @@ import 'package:wcas_frontend/core/components/button_dropdown.dart';
 import 'package:wcas_frontend/core/components/dropdown/model.dart';
 import 'package:wcas_frontend/core/components/textfield.dart';
 import 'package:wcas_frontend/core/constants/constants.dart';
+import 'package:wcas_frontend/core/utils/scale.dart';
 
-class DynamicFormCurrecnyDropdownTextfield extends StatelessWidget {
+class DynamicFormCurrecnyDropdownTextfield extends StatefulWidget {
   final DynamicField fieldData;
+  final Map<String, dynamic>? document;
   final Function(Map<String, dynamic>) onSubmit;
   final bool showLabel;
   final List<TextInputFormatter>? inputFormatters;
@@ -17,6 +19,7 @@ class DynamicFormCurrecnyDropdownTextfield extends StatelessWidget {
   const DynamicFormCurrecnyDropdownTextfield({
     super.key,
     required this.fieldData,
+    this.document,
     required this.onSubmit,
     this.showLabel = false,
     this.inputFormatters,
@@ -24,20 +27,58 @@ class DynamicFormCurrecnyDropdownTextfield extends StatelessWidget {
   });
 
   @override
+  State<DynamicFormCurrecnyDropdownTextfield> createState() => _DynamicFormCurrecnyDropdownTextfieldState();
+}
+
+class _DynamicFormCurrecnyDropdownTextfieldState extends State<DynamicFormCurrecnyDropdownTextfield> {
+  late TextEditingController _controller;
+  String? _initialCurrency;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = widget.controller ?? TextEditingController();
+    _initializeFromDocument();
+  }
+
+  void _initializeFromDocument() {
+    if (widget.document == null) return;
+
+    final storedValue = widget.document![widget.fieldData.key];
+    if (storedValue is Map<String, dynamic> && storedValue.isNotEmpty) {
+      // Currency field stores as {currency: amount}
+      final entry = storedValue.entries.first;
+      _initialCurrency = entry.key;
+      if (_controller.text.isEmpty) {
+        _controller.text = entry.value?.toString() ?? '';
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller == null) {
+      _controller.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Widget child = CurrencyDropdown(
-      options: fieldData.optionList ?? [],
-      initialOption: fieldData.optionList?.first.value,
-      controller: controller,
+      textFieldWidth: 215.w,
+      options: widget.fieldData.optionList ?? [],
+      initialOption: _initialCurrency ?? widget.fieldData.optionList?.first.value,
+      controller: _controller,
       onChanged: (value) {
-        onSubmit(value);
+        widget.onSubmit(value);
       },
     );
-    return showLabel
+    return widget.showLabel
         ? LabelWidget(
-            showLabel: showLabel,
-            label: fieldData.label,
-            isRequired: fieldData.required,
+            showLabel: widget.showLabel,
+            label: widget.fieldData.label,
+            isRequired: widget.fieldData.required,
             child: child)
         : child;
   }
