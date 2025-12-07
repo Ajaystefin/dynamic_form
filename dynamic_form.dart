@@ -8,14 +8,12 @@ import 'package:wcas_frontend/core/constants/constants.dart';
 class DynamicForm extends StatefulWidget {
   final List<Section> sections;
   final Map<String, dynamic> document;
-  final GlobalKey formKey;
   final FieldDependencies? dependencies;
 
   const DynamicForm({
     super.key,
     required this.sections,
     required this.document,
-    required this.formKey,
     this.dependencies,
   });
 
@@ -25,169 +23,227 @@ class DynamicForm extends StatefulWidget {
 
 class DynamicFormState extends State<DynamicForm> {
   final Map<String, TextEditingController> dependentControllers = {};
+  final GlobalKey<FormState> _internalFormKey = GlobalKey<FormState>();
 
-  /// Updates the value of a specific field identified by its key.
+  /// Validates all form fields
   ///
-  /// This method works for ALL field types in the dynamic form:
-  /// - Text fields (textField, percentage, amount, customerSearch)
-  /// - Dropdowns (dropdown, refDataDropdown, countryDropdown, conditionalDropdown)
-  /// - Currency fields (currency)
-  /// - Date fields (datePicker)
-  /// - Checkboxes (singleCheckBox)
-  /// - Multi-select fields (multiSelect)
-  /// - Text areas (textArea)
-  /// - Radio buttons (radioButton)
-  /// - Grids and tables (grid, table)
-  /// - Other field types (tenorControl, conditionalTextbox)
+  /// Returns true if all fields pass validation, false otherwise.
+  ///
+  /// Example:
+  /// ```dart
+  /// if (dynamicFormKey.currentState?.validate() ?? false) {
+  ///   // All fields are valid
+  /// }
+  /// ```
+  bool validate() {
+    return _internalFormKey.currentState?.validate() ?? false;
+  }
+
+  /// Saves all form fields
+  ///
+  /// Calls the onSaved callback for each field.
+  ///
+  /// Example:
+  /// ```dart
+  /// dynamicFormKey.currentState?.save();
+  /// ```
+  void save() {
+    _internalFormKey.currentState?.save();
+  }
+
+  /// Updates a single field value by its key
+  ///
+  /// This method updates the document map and triggers any dependent field calculations.
+  /// If the field has a controller (text fields, currency fields), it also updates the controller.
   ///
   /// Parameters:
-  /// - [fieldKey]: The unique key of the field to update
-  /// - [value]: The new value to set. Type depends on field type:
-  ///   - String for text fields, dropdowns, text areas
-  ///   - Map<String, dynamic> for currency fields (e.g., {'currency': 'USD', 'value': '1000'})
-  ///   - Map<String, dynamic> for date fields (with date, jsdate, formatted, epoc)
-  ///   - bool for checkboxes
-  ///   - List for multi-select fields
+  ///   - fieldKey: The unique key of the field to update
+  ///   - value: The new value for the field
+  ///   - triggerDependencies: Whether to recalculate dependent fields (default: true)
   ///
-  /// Returns true if the field was found and updated, false otherwise.
-  bool updateFieldValue(String fieldKey, dynamic value) {
-    // Update the document map - this works for ALL field types
+  /// Example:
+  /// ```dart
+  /// dynamicFormKey.currentState?.updateFieldValue('premiumAmount', {
+  ///   'fromCurrency': 'USD',
+  ///   'fromVal': 100,
+  ///   'aedEquivalent': 367.3
+  /// });
+  /// ```
+  void updateFieldValue(
+    String fieldKey,
+    dynamic value, {
+    bool triggerDependencies = true,
+  }) {
+    // Update document map
     widget.document[fieldKey] = value;
 
-    // Update controller if it exists (for text-based and currency fields)
+    // Update controller if field has one
     if (dependentControllers.containsKey(fieldKey)) {
-      final controller = dependentControllers[fieldKey];
-      if (controller != null) {
-        // Handle different value types
-        if (value is Map<String, dynamic>) {
-          // For currency fields, extract the value part
-          if (value.containsKey('value')) {
-            controller.text = value['value']?.toString() ?? '';
-          }
-        } else if (value != null) {
-          controller.text = value.toString();
-        } else {
-          controller.text = '';
+      final controller = dependentControllers[fieldKey]!;
+
+      // Handle different value types
+      if (value is String) {
+        controller.text = value;
+      } else if (value is num) {
+        controller.text = value.toString();
+      } else if (value is Map<String, dynamic>) {
+        // For currency fields, extract the numeric value
+        if (value.containsKey('fromVal')) {
+          controller.text = value['fromVal']?.toString() ?? '';
         }
       }
     }
 
-    // Trigger dependent field updates if dependencies exist
-    if (widget.dependencies != null) {
+    // Trigger dependent field recalculations
+    if (triggerDependencies && widget.dependencies != null) {
       final dependencies =
           widget.dependencies!.getDependenciesForSource(fieldKey);
       for (var dependency in dependencies) {
-        final newValue = dependency.calculator(widget.document);
-        updateFieldValue(dependency.dependentFieldKey, newValue);
+        _updateDependentField(dependency.dependentFieldKey);
       }
     }
 
-    // Refresh UI - this ensures dropdowns, checkboxes, and other
-    // non-controller fields update immediately
+    // Rebuild to reflect changes
     setState(() {});
-    return true;
   }
 
-  /// Retrieves the current value of a field by its key.
-  ///
-  /// Parameters:
-  /// - [fieldKey]: The unique key of the field
-  ///
-  /// Returns the field value from the document map, or null if not found.
-  dynamic getFieldValue(String fieldKey) {
-    return widget.document[fieldKey];
-  }
-
-  /// Resets a specific field to null/empty.
-  ///
-  /// Parameters:
-  /// - [fieldKey]: The unique key of the field to reset
-  ///
-  /// Returns true if the field was found and reset, false otherwise.
-  bool resetField(String fieldKey) {
-    widget.document[fieldKey] = null;
-
-    // Clear controller if it exists
-    if (dependentControllers.containsKey(fieldKey)) {
-      dependentControllers[fieldKey]?.clear();
-    }
-
-    // Refresh UI
-    setState(() {});
-    return true;
-  }
-
-  /// Updates multiple fields at once in a batch operation.
+  /// Updates multiple field values at once
   ///
   /// This is more efficient than calling updateFieldValue multiple times
-  /// as it only triggers a single UI refresh.
-  ///
-  /// Works for all field types: text, dropdown, currency, date, checkbox, etc.
+  /// as it only triggers a single rebuild and dependency calculation pass.
   ///
   /// Parameters:
-  /// - [updates]: Map of field keys to their new values
+  ///   - updates: Map of field keys to their new values
+  ///   - triggerDependencies: Whether to recalculate dependent fields (default: true)
   ///
   /// Example:
   /// ```dart
-  /// updateMultipleFields({
-  ///   'facilityTitle': 'New Title',
-  ///   'sector': '356',
-  ///   'proposedLimit': {'currency': 'USD', 'value': '1000'},
-  ///   'isCommitted': true,
-  ///   'limitAvailabilityDate': {...},
+  /// dynamicFormKey.currentState?.updateFields({
+  ///   'policyNumber': '12345',
+  ///   'premiumAmount': {'fromCurrency': 'AED', 'fromVal': 50, 'aedEquivalent': 50},
+  ///   'mortgagedInFavourOfCBD': true,
   /// });
   /// ```
-  void updateMultipleFields(Map<String, dynamic> updates) {
+  void updateFields(
+    Map<String, dynamic> updates, {
+    bool triggerDependencies = true,
+  }) {
+    // Track all affected source fields for dependency calculation
+    final Set<String> affectedFields = {};
+
+    // Update all fields
     for (var entry in updates.entries) {
       final fieldKey = entry.key;
       final value = entry.value;
 
-      // Update document map - works for ALL field types
+      // Update document map
       widget.document[fieldKey] = value;
+      affectedFields.add(fieldKey);
 
-      // Update controller if it exists (for text-based and currency fields)
+      // Update controller if field has one
       if (dependentControllers.containsKey(fieldKey)) {
-        final controller = dependentControllers[fieldKey];
-        if (controller != null) {
-          if (value is Map<String, dynamic>) {
-            // For currency fields, extract the value part
-            if (value.containsKey('value')) {
-              controller.text = value['value']?.toString() ?? '';
-            }
-          } else if (value != null) {
-            controller.text = value.toString();
-          } else {
-            controller.text = '';
-          }
+        final controller = dependentControllers[fieldKey]!;
+
+        if (value is String) {
+          controller.text = value;
+        } else if (value is num) {
+          controller.text = value.toString();
+        } else if (value is Map<String, dynamic> &&
+            value.containsKey('fromVal')) {
+          controller.text = value['fromVal']?.toString() ?? '';
         }
       }
     }
 
-    // Trigger dependent field updates for all updated fields
-    if (widget.dependencies != null) {
-      for (var fieldKey in updates.keys) {
+    // Trigger dependent field recalculations for all affected fields
+    if (triggerDependencies && widget.dependencies != null) {
+      final Set<String> dependentsToUpdate = {};
+
+      for (var fieldKey in affectedFields) {
         final dependencies =
             widget.dependencies!.getDependenciesForSource(fieldKey);
         for (var dependency in dependencies) {
-          final newValue = dependency.calculator(widget.document);
-          widget.document[dependency.dependentFieldKey] = newValue;
-
-          if (dependentControllers.containsKey(dependency.dependentFieldKey)) {
-            dependentControllers[dependency.dependentFieldKey]?.text = newValue;
-          }
+          dependentsToUpdate.add(dependency.dependentFieldKey);
         }
+      }
+
+      for (var dependentKey in dependentsToUpdate) {
+        _updateDependentField(dependentKey);
       }
     }
 
-    // Single UI refresh for all updates - ensures all field types update
+    // Single rebuild for all changes
     setState(() {});
+  }
+
+  /// Retrieves the current value of a field by its key
+  ///
+  /// Returns the value from the document map, or null if the field doesn't exist.
+  ///
+  /// Example:
+  /// ```dart
+  /// final premiumAmount = dynamicFormKey.currentState?.getFieldValue('premiumAmount');
+  /// if (premiumAmount is Map<String, dynamic>) {
+  ///   final aedValue = premiumAmount['aedEquivalent'];
+  /// }
+  /// ```
+  dynamic getFieldValue(String fieldKey) {
+    return widget.document[fieldKey];
+  }
+
+  /// Retrieves all current field values
+  ///
+  /// Returns a copy of the document map to prevent external modifications.
+  ///
+  /// Example:
+  /// ```dart
+  /// final allValues = dynamicFormKey.currentState?.getAllFieldValues();
+  /// print('Form data: $allValues');
+  /// ```
+  Map<String, dynamic> getAllFieldValues() {
+    return Map<String, dynamic>.from(widget.document);
+  }
+
+  /// Manually triggers dependency recalculation for a specific field
+  ///
+  /// Useful when you need to recalculate a dependent field without changing its source fields.
+  ///
+  /// Example:
+  /// ```dart
+  /// dynamicFormKey.currentState?.recalculateDependencies('mortgagedAmount');
+  /// ```
+  void recalculateDependencies(String dependentFieldKey) {
+    _updateDependentField(dependentFieldKey);
+    setState(() {});
+  }
+
+  /// Helper method to update a dependent field
+  ///
+  /// Calculates the new value using the dependency's calculator function
+  /// and updates both the controller (if exists) and the document map.
+  void _updateDependentField(String dependentKey) {
+    if (widget.dependencies == null) return;
+
+    final dependency = widget.dependencies!.getDependency(dependentKey);
+    if (dependency == null) return;
+
+    // Calculate new value using the calculator function
+    final newValue = dependency.calculator(widget.document);
+
+    // Update UI via controller if exists
+    if (dependentControllers.containsKey(dependentKey)) {
+      dependentControllers[dependentKey]!.text = newValue;
+    }
+
+    // Update document map
+    widget.document[dependentKey] = newValue;
   }
 
   @override
   Widget build(BuildContext context) {
     return BoxLayout(
       child: Form(
-        key: widget.formKey,
+        key: _internalFormKey,
         child: ListView.builder(
           shrinkWrap: true,
           itemCount: widget.sections.length,
