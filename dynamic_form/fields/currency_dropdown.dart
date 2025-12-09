@@ -81,6 +81,32 @@ class _DynamicFormCurrencyDropdownTextfieldState
   }
 
   @override
+  void didUpdateWidget(DynamicFormCurrencyDropdownTextfield oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Update controller if document value changed externally (e.g., via updateFieldValue)
+    if (widget.document != null) {
+      final storedValue = widget.document![widget.fieldData.key];
+      if (storedValue is Map<String, dynamic> && storedValue.isNotEmpty) {
+        final newValue = storedValue['fromVal']?.toString() ?? '';
+
+        // Only update if the value actually changed to avoid cursor jumping
+        if (_controller.text != newValue) {
+          _controller.text = newValue;
+        }
+
+        // Update currency if changed
+        final newCurrency = storedValue['fromCurrency']?.toString();
+        if (newCurrency != null && newCurrency != _initialCurrency) {
+          setState(() {
+            _initialCurrency = newCurrency;
+          });
+        }
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     Widget child = CurrencyDropdown(
       options: widget.fieldData.optionList ?? [],
@@ -97,6 +123,7 @@ class _DynamicFormCurrencyDropdownTextfieldState
             showLabel: widget.showLabel,
             label: widget.fieldData.label,
             isRequired: widget.fieldData.required,
+            exponent: widget.fieldData.isCMOUpdate ? "#" : null,
             child: child)
         : child;
   }
@@ -129,10 +156,6 @@ class CurrencyDropdown extends StatefulWidget {
 }
 
 class _CurrencyDropdownState extends State<CurrencyDropdown> {
-  Widget makeExpandableWidget(bool isExpanded, Widget child) {
-    return isExpanded ? Expanded(child: child) : child;
-  }
-
   Option? selectedOption;
   final TextEditingController aedController =
       TextEditingController(); //   AED controller
@@ -155,102 +178,94 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Semantics(
-            label: widget.dropdownLabel,
-            child: makeExpandableWidget(
-              widget.textFieldWidth == null,
-              CustomTextField(
-                prefixIcon: CustomDropdownButton(
-                  borderRadius: 4.0,
-                  label: widget.dropdownLabel ?? "",
-                  disabledColor: AppColors.scaffoldBackground,
-                  textColor: AppColors.defaultTextColor,
-                  options: widget.options
-                      .map((option) => CustomDropdownItem(
-                            value: option.pairValue ?? "",
-                            label: option.pairValue ?? "",
-                          ))
-                      .toList(),
-                  height: 34.0,
-                  isSearchable: false,
-                  initialOption: CustomDropdownItem(
-                    value: widget.initialOption?.pairValue ?? "",
-                    label: widget.initialOption?.pairValue ?? "",
-                  ),
-                  callBack: (selectedValue) async {
-                    print('Dropdown callBack selectedValue: "$selectedValue"');
+          CustomTextField(
+            prefixIcon: CustomDropdownButton(
+              borderRadius: 4.0,
+              label: widget.dropdownLabel ?? "",
+              disabledColor: AppColors.scaffoldBackground,
+              textColor: AppColors.defaultTextColor,
+              options: widget.options
+                  .map((option) => CustomDropdownItem(
+                        value: option.pairValue ?? "",
+                        label: option.pairValue ?? "",
+                      ))
+                  .toList(),
+              height: 34.0,
+              isSearchable: false,
+              initialOption: CustomDropdownItem(
+                value: widget.initialOption?.pairValue ?? "",
+                label: widget.initialOption?.pairValue ?? "",
+              ),
+              callBack: (selectedValue) async {
+                print('Dropdown callBack selectedValue: "$selectedValue"');
 
-                    // If overlay errors occur, wrap in addPostFrameCallback; otherwise setState is fine.
-                    setState(() {
-                      selectedOption = widget.options.firstWhere(
-                        (opt) => (opt.pairValue ?? '') == (selectedValue),
-                        orElse: () => Option(
-                            key: "USD", pairValue: "USD"), // your fallback
-                      );
-                    });
+                // If overlay errors occur, wrap in addPostFrameCallback; otherwise setState is fine.
+                setState(() {
+                  selectedOption = widget.options.firstWhere(
+                    (opt) => (opt.pairValue ?? '') == (selectedValue),
+                    orElse: () =>
+                        Option(key: "AED", pairValue: "AED"), // your fallback
+                  );
+                });
 
-                    // Fetch exchange rate if not AED
-                    if (selectedOption?.pairValue !=
-                        ServerConstants.aedCurrency) {
-                      await getCurrencyRates(
-                          Reference(name: selectedOption?.pairValue));
-                    }
+                // Fetch exchange rate if not AED
+                if (selectedOption?.pairValue != ServerConstants.aedCurrency) {
+                  await getCurrencyRates(
+                      Reference(name: selectedOption?.pairValue));
+                }
 
-                    // Emit updated value with new currency
-                    if (widget.onChanged != null && widget.controller != null) {
-                      final numValue =
-                          double.tryParse(widget.controller!.text) ?? 0;
-                      final aedValue = selectedOption?.pairValue ==
-                              ServerConstants.aedCurrency
+                // Emit updated value with new currency
+                if (widget.onChanged != null && widget.controller != null) {
+                  final numValue =
+                      double.tryParse(widget.controller!.text) ?? 0;
+                  final aedValue =
+                      selectedOption?.pairValue == ServerConstants.aedCurrency
                           ? numValue
                           : numValue * exchangeRate;
 
-                      widget.onChanged!({
-                        'fromCurrency': selectedOption?.pairValue,
-                        'fromVal': numValue,
-                        'aedEquivalent': aedValue,
-                      });
-                    }
-                  },
-                ),
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(12),
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-                semanticLabel: widget.textFieldLabel,
-                validator: widget.validator,
-                controller: widget.controller,
-                hintText: widget.textFieldLabel,
-                width: widget.textFieldWidth,
-                onChanged: (value) async {
-                  if (widget.onChanged != null && selectedOption != null) {
-                    final numValue = double.tryParse(value) ?? 0;
-
-                    // Calculate AED equivalent
-                    // If currency is AED, aedEquivalent = fromVal
-                    // Otherwise, use current exchange rate
-                    final aedValue =
-                        selectedOption!.pairValue == ServerConstants.aedCurrency
-                            ? numValue
-                            : numValue * exchangeRate;
-
-                    // Always emit all three fields for field dependencies
-                    widget.onChanged!({
-                      'fromCurrency': selectedOption!.pairValue,
-                      'fromVal': numValue,
-                      'aedEquivalent': aedValue,
-                    });
-
-                    // Fetch exchange rate if not AED
-                    if (selectedOption!.pairValue !=
-                        ServerConstants.aedCurrency) {
-                      await getCurrencyRates(
-                          Reference(name: selectedOption?.pairValue));
-                    }
-                  }
-                },
-              ),
+                  widget.onChanged!({
+                    'fromCurrency': selectedOption?.pairValue,
+                    'fromVal': numValue,
+                    'aedEquivalent': aedValue,
+                  });
+                }
+              },
             ),
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(12),
+              FilteringTextInputFormatter.digitsOnly,
+            ],
+            semanticLabel: widget.textFieldLabel,
+            validator: widget.validator,
+            controller: widget.controller,
+            hintText: widget.textFieldLabel,
+            width: widget.textFieldWidth,
+            onChanged: (value) async {
+              if (widget.onChanged != null && selectedOption != null) {
+                final numValue = double.tryParse(value) ?? 0;
+
+                // Calculate AED equivalent
+                // If currency is AED, aedEquivalent = fromVal
+                // Otherwise, use current exchange rate
+                final aedValue =
+                    selectedOption!.pairValue == ServerConstants.aedCurrency
+                        ? numValue
+                        : numValue * exchangeRate;
+
+                // Always emit all three fields for field dependencies
+                widget.onChanged!({
+                  'fromCurrency': selectedOption!.pairValue,
+                  'fromVal': numValue,
+                  'aedEquivalent': aedValue,
+                });
+
+                // Fetch exchange rate if not AED
+                if (selectedOption!.pairValue != ServerConstants.aedCurrency) {
+                  await getCurrencyRates(
+                      Reference(name: selectedOption?.pairValue));
+                }
+              }
+            },
           ),
           if (selectedOption != null &&
               selectedOption?.pairValue != ServerConstants.aedCurrency)

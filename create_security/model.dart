@@ -1,8 +1,9 @@
+// ignore_for_file: avoid_print
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wcas_frontend/core/components/dynamic_form/dynamic_form.dart';
-import 'package:wcas_frontend/core/components/dynamic_form/field_dependencies.dart';
 import 'package:wcas_frontend/core/components/dynamic_form/models/field.dart';
 import 'package:wcas_frontend/core/components/dynamic_form/models/section.dart';
 import 'package:wcas_frontend/core/constants/_reference_data_keys.dart';
@@ -17,7 +18,6 @@ import 'package:wcas_frontend/core/utils/utils.dart';
 import 'package:wcas_frontend/features/layout/model.dart';
 import 'package:wcas_frontend/models/admin/reference.dart';
 import 'package:wcas_frontend/models/request/country.dart';
-import 'package:wcas_frontend/models/request/customer.dart';
 import 'package:wcas_frontend/models/request/facility_security/exchange_rate.dart';
 import 'package:wcas_frontend/models/request/facility_security/security.dart';
 import 'package:wcas_frontend/models/request/request.dart';
@@ -101,6 +101,9 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
   PageMode pageMode = PageMode.na;
 
   bool get canEdit => (pageMode == PageMode.edit);
+
+  String? countryOfIncorporation;
+  Country? preselectedCountry;
 
   /// Initializes the ViewModel by setting up repositories and loading reference data.
   Future<void> init(Security? selectedSecurity) async {
@@ -321,8 +324,11 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
   /// Populates the security object with metadata and dynamic form data.
   Future<void> onSaveButtonPress(bool saveAndContinue) async {
     try {
-      dynamicFormKey.currentState?.updateFieldValue('premiumAmount',
-          {'fromCurrency': 'USD', 'fromVal': 100, 'aedEquivalent': 367.3});
+      dynamicFormKey.currentState?.updateFieldValue('premiumAmount', {
+        'fromCurrency': 'USD',
+        'fromVal': 100,
+        'aedEquivalent': 367.3
+      }); // hermano, this is an example to manually update value in form. can be used for CL value update
 
       bool isDynamicFormValid = dynamicFormKey.currentState!.validate();
       bool isOtherFormValid = formKey.currentState!.validate();
@@ -456,15 +462,61 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
 
   /// Searches for customer information using the provided RIM number.
   /// Emits a loaded state after retrieval.
+
   Future<void> searchByRim(String rim) async {
     try {
-      security.securityProvidedRim = (rim);
-      Customer? customerDetails =
+      security.securityProvidedRim = rim;
+      final customerDetails =
           await CustomerRepository().searchUserDetails(rim, '', '', '');
+
+      // No id to compare
+      if (security.securityType?.id == ServerConstants.corporateGuaranteeId &&
+          customerDetails?.partyIdType == ServerConstants.personal) {
+        AlertManager().showFailureToast("riskRating.invalidCorporateRim".tr());
+        return;
+      }
+      // No id to compare
+
+      if (security.securityType?.id == ServerConstants.personalGuaranteeId &&
+          customerDetails?.partyIdType != ServerConstants.personal) {
+        AlertManager().showFailureToast("riskRating.invalidPersonalRim".tr());
+        return;
+      }
+
       if (customerDetails?.id == null) {
         didPrefillCountryFromRim = false;
         AlertManager().showFailureToast("riskRating.invalidRim".tr());
       } else {
+        security.securityProvidedName = customerDetails?.preferredName;
+
+        countryOfIncorporation = customerDetails?.residentCountry;
+        print(countryOfIncorporation);
+        Country matchedCountry = countries.firstWhere((country) =>
+            (country.code ?? '').replaceAll(RegExp(r'\s+'), '').toLowerCase() ==
+            (countryOfIncorporation ?? '')
+                .replaceAll(RegExp(r'\s+'), '')
+                .toLowerCase());
+
+        preselectedCountry = countries.firstWhere(
+          (country) =>
+              (country.code ?? '').trim().toLowerCase() ==
+              (countryOfIncorporation ?? '').trim().toLowerCase(),
+        );
+
+        if (matchedCountry.description != null) {
+          security.securityProvidedCountry = matchedCountry;
+
+          preselectedCountry = matchedCountry;
+
+          didPrefillCountryFromRim = true;
+
+          emit(state.copyWith(securityTypeStatus: LoadingStatus.loaded));
+        } else {
+          didPrefillCountryFromRim = false;
+        }
+
+        // Trigger UI update
+        emit(state.copyWith(securityTypeStatus: LoadingStatus.loaded));
         security.securityProvidedName =
             customerDetails?.preferredName ?? customerDetails?.customerName;
         // for (Section section in sections) {
@@ -489,7 +541,7 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
         //   }
         // }
 
-        didPrefillCountryFromRim = security.countryIncorporation != null;
+        // didPrefillCountryFromRim = security.countryIncorporation != null;
       }
     } catch (e) {
       AlertManager().showFailureToast(e.toString());
@@ -503,37 +555,36 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
     emit(state.copyWith(securityTypeStatus: LoadingStatus.loaded));
   }
 
-  FieldDependencies getDynamicFormDependencies() {
-    return FieldDependencies([
-      if (true)
-        FieldDependency(
-          dependentFieldKey: 'mortgagedAmount',
-          sourceFieldKeys: ['premiumAmount'],
-          calculator: (document) {
-            final adjustedValue =
-                document['premiumAmount']["aedEquivalent"]?.toString() ?? '';
-            return adjustedValue.trim();
-          },
-        ),
-      FieldDependency(
-        dependentFieldKey: 'internalModelRating',
-        sourceFieldKeys: ['guarantorEntityId'],
-        calculator: (document) {
-          String updatedRatings = document['guarantorEntityId'] ?? '';
-          List<String> crrs = updatedRatings.split('@');
-          return crrs[0];
-        },
-      ),
-      FieldDependency(
-        dependentFieldKey: 'internalModelRatingProposed',
-        sourceFieldKeys: ['guarantorEntityId'],
-        calculator: (document) {
-          final String updatedRatings = document['guarantorEntityId'] ?? '';
+  Future<void> onDynamicFormFieldChange(String fieldKey, dynamic value) async {
+    if (fieldKey == 'policyNumber') {
+      final adjustedValue = value?.toString() ?? '';
+      dynamicFormKey.currentState?.updateFieldValue(
+        'policyNumber2',
+        adjustedValue.trim(),
+      );
+    } else if (fieldKey == 'premiumAmount') {
+      final adjustedValue = value['aedEquivalent']?.toString() ?? '';
+      dynamicFormKey.currentState?.updateFieldValue(
+        'mortgagedAmount',
+        adjustedValue.trim(),
+      );
+      dynamicFormKey.currentState
+          ?.setFieldVisibility('nameOfTheInsuranceCompany', false);
+    } else if (fieldKey == 'typeOfInsurance') {
+      Map<String, List<Reference>> referenceData = await ReferenceDataService()
+          .getReferenceData([ReferenceDataKeys.accountType]);
+      //convert this list to list of options
+      List<Option> options = referenceData[ReferenceDataKeys.accountType]
+              ?.map((e) =>
+                  Option(key: e.id.toString(), pairValue: e.name, metaData: e))
+              .toList() ??
+          [];
 
-          List<String> crrs = updatedRatings.split('@');
-          return crrs[1];
-        },
-      ),
-    ]);
+      // update options in a dropdown
+      dynamicFormKey.currentState?.updateDropdownOptions(
+        'nameOfTheInsuranceCompany',
+        options,
+      );
+    }
   }
 }
