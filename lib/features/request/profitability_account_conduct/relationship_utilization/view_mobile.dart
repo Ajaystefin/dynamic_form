@@ -1,0 +1,118 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wcas_frontend/core/components/box_layout.dart';
+import 'package:wcas_frontend/core/components/button.dart';
+import 'package:wcas_frontend/core/components/gap.dart';
+import 'package:wcas_frontend/core/components/section_header.dart';
+import 'package:wcas_frontend/core/components/tab_menu.dart';
+import 'package:wcas_frontend/core/components/top_section/top_section_details.dart';
+import 'package:wcas_frontend/core/constants/constants.dart';
+import 'package:wcas_frontend/core/globals.dart';
+import 'package:wcas_frontend/core/utils/utils.dart';
+import 'package:wcas_frontend/features/layout/view.dart';
+import 'package:flutter/material.dart';
+import 'package:wcas_frontend/features/request/profitability_account_conduct/relationship_utilization/widgets/rim_list_accordian.dart';
+import 'model.dart';
+import 'state.dart';
+
+class ViewMobile extends StatelessWidget {
+  const ViewMobile({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    RelationshipUtilizationViewModel viewModel =
+        context.read<RelationshipUtilizationViewModel>();
+    return BlocBuilder<RelationshipUtilizationViewModel,
+        RelationshipUtilizationState>(builder: (context, state) {
+      return Layout(
+        child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: BoxLayout(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomSectionHeader(
+                    title:
+                        "profitabilityAccountConduct.relationshipProfitabilitySummary.sectionTitle"
+                            .tr()),
+                const Gap(),
+                BoxLayout(
+                  child: TopSectionDetails(request: Globals.request!),
+                ),
+                BoxLayout(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const TabMenu(
+                          activeKey:
+                              RevenueCrossSellTabs.relationshipUtilization,
+                          routes: TabConstants.revenueCrossSellRoutes,
+                          labels: TabConstants.revenueCrossSellTitles),
+                      BoxLayout(child: _body(context, state, viewModel)),
+                    ],
+                  ),
+                )
+              ],
+            ))),
+      );
+    });
+  }
+
+  Widget _body(BuildContext context, RelationshipUtilizationState state,
+      RelationshipUtilizationViewModel viewModel) {
+    switch (state.loaderStatus) {
+      case LoadingStatus.loading:
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      case LoadingStatus.empty:
+        return Center(
+          child: Text('common.emptyState'.tr()),
+        );
+      case LoadingStatus.error:
+        return Center(
+          child: Text('common.errorState'.tr()),
+        );
+      default:
+        return _buildView(state, viewModel, context);
+    }
+  }
+
+  Widget _buildView(RelationshipUtilizationState state,
+      RelationshipUtilizationViewModel viewModel, BuildContext context) {
+    return Form(
+      key: viewModel.formKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Gap(),
+          RimListAccordion(viewModel: viewModel),
+          const Gap(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              CustomButton(
+                  label: "common.save".tr(),
+                  semanticLabel: "common.save".tr(),
+                  onPressed: () async {
+                    await viewModel.saveRelationUtilData(
+                        isValidate: viewModel.formKey.currentState!.validate());
+                  }),
+              const Gap(direction: Axis.horizontal),
+              CustomButton(
+                  label: "common.saveAndContinue".tr(),
+                  semanticLabel:
+                      "common.saveAndContinue".tr(), // "Save & Continue",
+                  onPressed: () async {
+                    await viewModel.saveRelationUtilData(
+                        ifNavigate: true,
+                        isValidate: viewModel.formKey.currentState!.validate());
+                  }),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}

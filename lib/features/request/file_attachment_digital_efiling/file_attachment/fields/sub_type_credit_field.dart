@@ -1,0 +1,41 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:wcas_frontend/core/components/label.dart';
+import 'package:wcas_frontend/core/components/textfield.dart';
+import 'package:wcas_frontend/core/constants/constants.dart';
+import 'package:wcas_frontend/features/request/file_attachment_digital_efiling/file_attachment/model.dart';
+
+class SubTypeCreditField extends StatelessWidget {
+  final FileAttachmentViewModel viewModel;
+
+  const SubTypeCreditField({
+    super.key,
+    required this.viewModel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LabelWidget(
+        label: "eDigitalFilingFileAttachments.fileAttachments.subType".tr(),
+        showLabel: true,
+        isRequired: false,
+        child: CustomTextField(
+          initialValue: viewModel.request.requestType?.name ?? "",
+          readOnly: true,
+          maxLength: 50,
+          counterText: "",
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]'))
+          ],
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return "validation.subTypeRequired".tr();
+            }
+            return null;
+          },
+          filled: true,
+          fillColor: AppColors.tableCellColorGroupedRow,
+        ));
+  }
+}

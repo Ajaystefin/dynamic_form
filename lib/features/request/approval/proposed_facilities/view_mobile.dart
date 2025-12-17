@@ -1,0 +1,151 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wcas_frontend/core/components/accordion.dart';
+import 'package:wcas_frontend/core/components/box_layout.dart';
+import 'package:wcas_frontend/core/components/button.dart';
+import 'package:wcas_frontend/core/components/gap.dart';
+import 'package:wcas_frontend/core/components/section_header.dart';
+import 'package:wcas_frontend/core/components/selectable_text.dart';
+import 'package:wcas_frontend/core/components/tab_menu.dart';
+import 'package:wcas_frontend/core/components/top_section/top_section_details.dart';
+import 'package:wcas_frontend/core/constants/constants.dart';
+import 'package:wcas_frontend/core/globals.dart';
+import 'package:wcas_frontend/core/utils/utils.dart';
+import 'package:wcas_frontend/features/layout/view.dart';
+import 'package:flutter/material.dart';
+import 'package:wcas_frontend/features/request/approval/proposed_facilities/widgets/pipeline_table.dart';
+import 'package:wcas_frontend/features/request/approval/proposed_facilities/widgets/positions_table.dart';
+
+import 'model.dart';
+import 'state.dart';
+
+class ViewMobile extends StatelessWidget {
+  const ViewMobile({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    ProposedFacilitiesViewModel viewModel =
+        context.read<ProposedFacilitiesViewModel>();
+    return BlocBuilder<ProposedFacilitiesViewModel, ProposedFacilitiesState>(
+        builder: (context, state) {
+      return Layout(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: BoxLayout(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomSectionHeader(
+                  title: "approval.proposedFacilities.sectionTitle".tr()),
+              const Gap(),
+              BoxLayout(
+                child: TopSectionDetails(request: Globals.request!),
+              ),
+              BoxLayout(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const TabMenu(
+                        activeKey: RecommendationTabs.proposedFacilities,
+                        routes: TabConstants.recommendationRoutes,
+                        labels: TabConstants.recommendationTitles),
+                    BoxLayout(
+                      child: _body(context, state, viewModel),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )),
+        ),
+      );
+    });
+  }
+
+  Widget _body(BuildContext context, ProposedFacilitiesState state,
+      ProposedFacilitiesViewModel viewModel) {
+    switch (state.loaderStatus) {
+      case LoadingStatus.loading:
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      case LoadingStatus.empty:
+        return Center(
+          child: Text('common.emptyState'.tr()),
+        );
+      case LoadingStatus.error:
+        return Center(
+          child: Text('common.errorState'.tr()),
+        );
+      default:
+        return _buildView(viewModel);
+    }
+  }
+
+  Widget _buildView(ProposedFacilitiesViewModel viewModel) {
+    return Column(children: [
+      const Gap(),
+      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        CustomSelectableText(
+          text: "approval.proposedFacilities.proposedPosition".tr(),
+          semanticsLabel: "approval.proposedFacilities.proposedPosition".tr(),
+          textAlign: TextAlign.left,
+          style: AppStyle.tableHeaderStyle,
+        ),
+        CustomSelectableText(
+          text: 'approval.proposedFacilities.aed'.tr(),
+          semanticsLabel: 'approval.proposedFacilities.aed'.tr(),
+          textAlign: TextAlign.right,
+          style: AppStyle.tableSuffixHeaderStyle,
+        )
+      ]),
+      const Gap(),
+      PositionsTable(
+        viewModel: viewModel,
+        positions: viewModel.groupPositionList?.proposedPosition,
+      ),
+      const Gap(size: GapSize.large),
+      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        CustomSelectableText(
+          text: "approval.proposedFacilities.presentPosition".tr(),
+          semanticsLabel: "approval.proposedFacilities.presentPosition".tr(),
+          textAlign: TextAlign.left,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+        ),
+        CustomSelectableText(
+          text: 'approval.proposedFacilities.aed'.tr(),
+          semanticsLabel: 'approval.proposedFacilities.aed'.tr(),
+          textAlign: TextAlign.right,
+          style: AppStyle.tableSuffixHeaderStyle,
+        )
+      ]),
+      const Gap(),
+      PositionsTable(
+        viewModel: viewModel,
+        positions: viewModel.groupPositionList?.presentPosition,
+      ),
+      const Gap(),
+      CustomAccordion(
+        title: 'approval.proposedFacilities.requestInPipeline'.tr(),
+        children: [
+          PipelineTable(
+            viewModel: viewModel,
+            pipelineRequests: viewModel.pipelineRequests,
+          ),
+        ],
+      ),
+      const Gap(),
+      Align(
+        alignment: Alignment.centerRight,
+        child: CustomButton(
+          label: "common.continue".tr(),
+          semanticLabel: "common.continue".tr(),
+          onPressed: () {
+            viewModel.onSavePress(isContinue: true);
+          },
+        ),
+      ),
+      const Gap(),
+    ]);
+  }
+}
