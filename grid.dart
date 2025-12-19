@@ -46,13 +46,20 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
   /// Track number of rows (persists across rebuilds)
   int _rowCount = 1;
 
-  /// Rebuild counter to force table recreation
-  int _rebuildCount = 0;
-
   @override
   void initState() {
     super.initState();
     _rowCount = 1; // Start with one row
+    rows = _buildRows(); // Build initial rows
+  }
+
+  @override
+  void didUpdateWidget(DynamicFormGrid oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Rebuild rows only if row count changed
+    if (rows.length != _rowCount) {
+      rows = _buildRows();
+    }
   }
 
   /// Builds rows for the current row count
@@ -76,10 +83,8 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
 
   @override
   Widget build(BuildContext context) {
-    // Rebuild rows on every build to reflect document changes
-    debugPrint('Grid build() called - rebuilding rows for $_rowCount rows');
-    _rebuildCount++; // Increment to force table recreation
-    rows = _buildRows();
+    // Don't rebuild rows here - only rebuild when row count changes (in didUpdateWidget)
+    // This preserves text field focus
 
     return SingleChildScrollView(
       child: Column(
@@ -155,7 +160,7 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
   }) {
     return CustomRawTable(
       rowHeight: 90,
-      key: ValueKey('table_$_rebuildCount'), // Force recreation on every build
+      key: ValueKey(rows.length), // Only changes when row count changes
       columns: columns,
       autoFitWidth: true,
       rows: rows,
@@ -167,6 +172,7 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
     if (_rowCount > 1) {
       setState(() {
         _rowCount--;
+        rows = _buildRows(); // Rebuild rows with new count
       });
     }
   }
@@ -175,6 +181,7 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
   void addGridRow() {
     setState(() {
       _rowCount++;
+      rows = _buildRows(); // Rebuild rows with new count
     });
   }
 
@@ -369,10 +376,10 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
               'Checkbox $controllerKey: currentValue=$currentValue, boolValue=$boolValue');
 
           returnWidget = DynamicFormSingleCheckBox(
-            // Don't use key - let Flutter recreate widget naturally
-            // key: ValueKey('${dynamicField.key}_${rowIndex}_$boolValue'),
             fieldData: dynamicField,
-            value: boolValue,
+            document: widget.document, // Pass document
+            documentKey: controllerKey, // Pass key to read from
+            value: boolValue, // Initial value
             onChanged: (value) {
               widget.document[controllerKey] = value == true;
 
