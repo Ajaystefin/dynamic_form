@@ -61,31 +61,24 @@ class _DynamicFormCurrencyDropdownTextfieldState
   void _initializeFromDocument() {
     if (widget.document == null) return;
 
-    final formatter = NumberFormat('#,###');
-
     final storedValue = widget.document![widget.fieldData.key];
     if (storedValue is Map<String, dynamic> && storedValue.isNotEmpty) {
+      String? rawVal;
       // Support new API format: {fromCurrency, fromVal, aedEquivalent}
       if (storedValue.containsKey('fromCurrency')) {
         _initialCurrency = storedValue['fromCurrency']?.toString();
-        if (_controller.text.isEmpty) {
-          String raw = storedValue['fromVal']?.toString() ?? '';
-          if (raw.isNotEmpty) {
-            final val = double.tryParse(raw) ?? 0;
-            _controller.text = formatter.format(val.toInt());
-          }
-        }
+        rawVal = storedValue['fromVal']?.toString();
       } else {
         // Fallback for old format: {currency: amount}
         final entry = storedValue.entries.first;
         _initialCurrency = entry.key;
-        if (_controller.text.isEmpty) {
-          String raw = entry.value?.toString() ?? '';
-          if (raw.isNotEmpty) {
-            final val = double.tryParse(raw) ?? 0;
-            _controller.text = formatter.format(val.toInt());
-          }
-        }
+        rawVal = entry.value?.toString();
+      }
+
+      if (_controller.text.isEmpty && rawVal != null && rawVal.isNotEmpty) {
+        final val = double.tryParse(rawVal) ?? 0;
+        final formatter = NumberFormat('#,###');
+        _controller.text = formatter.format(val.toInt());
       }
     }
   }
@@ -159,6 +152,13 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
   final TextEditingController aedController =
       TextEditingController(); //   AED controller
   num exchangeRate = 0;
+  final _formatter = NumberFormat('#,###');
+
+  double _parseValue(String? value) {
+    if (value == null || value.isEmpty) return 0;
+    return double.tryParse(value.replaceAll(',', '')) ?? 0;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -215,8 +215,7 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
 
                 // Emit updated value with new currency
                 if (widget.onChanged != null && widget.controller != null) {
-                  final text = widget.controller!.text.replaceAll(',', '');
-                  final numValue = double.tryParse(text) ?? 0;
+                  final numValue = _parseValue(widget.controller!.text);
                   final aedValue =
                       selectedOption?.pairValue == ServerConstants.aedCurrency
                           ? numValue
@@ -240,12 +239,10 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
             hintText: widget.textFieldLabel,
             width: widget.textFieldWidth,
             onChanged: (value) async {
-              String cleaned = value.replaceAll(',', '');
-              final numValue = double.tryParse(cleaned) ?? 0;
+              final numValue = _parseValue(value);
 
               if (value.isNotEmpty) {
-                final formatter = NumberFormat('#,###');
-                String formatted = formatter.format(numValue.toInt());
+                final formatted = _formatter.format(numValue.toInt());
                 if (value != formatted && widget.controller != null) {
                   widget.controller!.value = TextEditingValue(
                     text: formatted,
@@ -315,13 +312,11 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
       exchangeRate = currencyRates.rates[selectedCurrency?.name] ?? 0;
 
       // Get user-entered amount
-      final text = widget.controller?.text.replaceAll(',', '') ?? "0";
-      final amount = double.tryParse(text) ?? 0;
+      final amount = _parseValue(widget.controller?.text);
       final convertedValue = amount * exchangeRate;
 
       // Format AED value
-      final formatter = NumberFormat('#,###');
-      final formattedAED = formatter.format(convertedValue.toInt());
+      final formattedAED = _formatter.format(convertedValue.toInt());
 
       //   Update AED controller
       setState(() {
