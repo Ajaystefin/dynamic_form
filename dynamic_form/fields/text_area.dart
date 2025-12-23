@@ -72,6 +72,7 @@ class _DynamicFormTextAreaFieldState extends State<DynamicFormTextAreaField> {
         maxLength: widget.fieldData.maxLength,
         // errorText: widget.fieldData.message,
         readOnly: widget.fieldData.isDisable,
+        filled: widget.fieldData.isDisable,
         validator: widget.fieldData.isRequired
             ? (value) {
                 if (value == null || value.isEmpty) {

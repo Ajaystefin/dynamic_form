@@ -5,6 +5,7 @@ import 'package:wcas_frontend/core/components/label.dart';
 import 'package:wcas_frontend/core/components/textfield.dart';
 import 'package:wcas_frontend/core/constants/constants.dart';
 import 'package:wcas_frontend/core/utils/logger.dart';
+import 'package:wcas_frontend/models/request/risk_rating/internal_rating.dart';
 import 'package:wcas_frontend/models/request/risk_rating/updated_rating.dart';
 import 'package:wcas_frontend/repositories/risk_rating_repository.dart';
 
@@ -81,6 +82,9 @@ class _DynamicFormSearchEntityState extends State<DynamicFormSearchEntity> {
             child: InkWell(
               onTap: () async {
                 final int? entityId = int.tryParse(enteredValue ?? '');
+                if (entityId == null) {
+                  return;
+                }
                 final List<UpdatedRating?> updatedRatings =
                     await RiskRatingRepository.instance
                         .getUpdatedRatingDetails(entityId: entityId);
@@ -88,7 +92,7 @@ class _DynamicFormSearchEntityState extends State<DynamicFormSearchEntity> {
                 for (UpdatedRating? updatedRating in updatedRatings) {
                   if (updatedRating?.entityId == entityId) {
                     result =
-                        '${updatedRating?.existingFinalGrade ?? ""}@${updatedRating?.proposedFinalGrade ?? ""}';
+                        '${getCrr(updatedRating?.existingFinalGrade) ?? ""}@${getCrr(updatedRating?.proposedFinalGrade) ?? ""}';
                   }
                 }
                 widget.onSubmit(result);

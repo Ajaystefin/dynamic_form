@@ -13,6 +13,7 @@ import 'package:wcas_frontend/core/components/dynamic_form/fields/reference_data
 import 'package:wcas_frontend/core/components/dynamic_form/fields/search_entity.dart';
 import 'package:wcas_frontend/core/components/dynamic_form/fields/single_check_box.dart';
 import 'package:wcas_frontend/core/components/dynamic_form/fields/text_area.dart';
+import 'package:wcas_frontend/core/components/dynamic_form/utils/date_utils.dart';
 import 'package:wcas_frontend/core/globals.dart';
 
 import 'fields/textfield.dart';
@@ -92,9 +93,8 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
           return DynamicFormTextField(
             inputFormatters: [
               FilteringTextInputFormatter.allow(
-                RegExp(r'^\d{0,2}(\.\d{0,2})?$'),
+                RegExp(r'^(?:100(?:\.0{0,2})?|\d{1,2}(?:\.\d{0,2})?)$'),
               ),
-              // Optional: limit total length (`99.99` is 5 chars). Use 6 to be safe, e.g. "0.99"
               LengthLimitingTextInputFormatter(6),
             ],
             fieldData: widget.field,
@@ -110,28 +110,25 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
             fieldData: widget.field,
             document: widget.document,
             onSubmit: (selectedDate) {
-              if (selectedDate != null) {
-                // Save in the same format as API provides
-                final dateValue = {
-                  'date': {
-                    'year': selectedDate.year,
-                    'month': selectedDate.month,
-                    'day': selectedDate.day,
-                  },
-                  'jsdate': selectedDate.toIso8601String(),
-                  'formatted':
-                      '${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year}',
-                  'epoc': selectedDate.millisecondsSinceEpoch ~/ 1000,
-                };
-                widget.document[widget.field.key] = dateValue;
-                widget.onFieldChange?.call(widget.field.key, dateValue);
-              } else {
-                widget.document[widget.field.key] = null;
-                widget.onFieldChange?.call(widget.field.key, null);
-              }
+              final dateValue = convertDateTimeToFormValue(selectedDate);
+              widget.document[widget.field.key] = dateValue;
+              widget.onFieldChange?.call(widget.field.key, dateValue);
             },
           );
         case FieldType.singleCheckBox:
+          // Initialize with defaultValue if document doesn't have a value yet
+          if (!widget.document.containsKey(widget.field.key) &&
+              widget.field.defaultValue != null) {
+            // Parse defaultValue (comes as string "true" or "false" from API)
+            final defaultVal = widget.field.defaultValue;
+            if (defaultVal is bool) {
+              widget.document[widget.field.key] = defaultVal;
+            } else if (defaultVal is String) {
+              widget.document[widget.field.key] =
+                  defaultVal.toLowerCase() == 'true';
+            }
+          }
+
           return DynamicFormSingleCheckBox(
             fieldData: widget.field,
             document: widget.document,

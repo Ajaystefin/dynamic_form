@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wcas_frontend/core/components/dynamic_form/dynamic_form.dart';
 import 'package:wcas_frontend/core/components/dynamic_form/models/field.dart';
 import 'package:wcas_frontend/core/components/dynamic_form/models/section.dart';
+import 'package:wcas_frontend/core/components/dynamic_form/utils/date_utils.dart';
 import 'package:wcas_frontend/core/constants/_reference_data_keys.dart';
 import 'package:wcas_frontend/core/constants/_server_constants.dart';
 import 'package:wcas_frontend/core/constants/constants.dart';
@@ -61,7 +62,7 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
   List<Reference>? yesAndNo = [];
   List<Reference> securityReferenceData = [];
   List<Reference> securityBorrowerRole = [];
-  bool securityProviderCbdCustomer = false;
+  bool securityProviderCbdCustomer = true;
 
   List<Reference> securityDeferredWaivedItems = [];
 
@@ -146,18 +147,18 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
     await getReferenceDatas();
   }
 
-  Future<void> getSecurity(Security? security) async {
+  Future<void> getSecurity(Security? selectedSecurity) async {
     try {
-      security =
-          await repository.getSecurityDetails(selectedSecurity: security);
-      security?.securityType = null;
+      security = await repository.getSecurityDetails(
+              selectedSecurity: selectedSecurity) ??
+          Security();
+      // security.securityType = null; //TODO causing error in dyanmic form fetching
 
-      securityProviderNameController.text =
-          security?.securityProvidedName ?? "";
+      securityProviderNameController.text = security.securityProvidedName ?? "";
 
       // Copy the flattened dynamicFormDocument to the ViewModel's document map
-      if (security?.dynamicFormDocument != null) {
-        dynamicFormDocument = security!.dynamicFormDocument!;
+      if (security.dynamicFormDocument != null) {
+        dynamicFormDocument = security.dynamicFormDocument!;
       }
     } catch (e) {
       AlertManager().showFailureToast(e.toString());
@@ -438,13 +439,21 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
   /// Updates the selected CBD customer value and toggles the internal flag.
   void changeSecurityProviderCbdCustomerValue(Reference? value) {
     security.selectedIsSecurityProviderCbdCustomerValue = value;
-    (value?.id == yesAndNo?.first.id)
-        ? securityProviderCbdCustomer = false
-        : securityProviderCbdCustomer = true;
-    if (securityProviderCbdCustomer) {
+    securityProviderCbdCustomer = value?.id == ServerConstants.optionYESid;
+    if (!securityProviderCbdCustomer) {
+      dynamicFormKey.currentState
+          ?.setFieldEnabled('leagalStrOfGuarantor', true);
+      dynamicFormKey.currentState?.setFieldEnabled('gurantorsIDDocument', true);
+      dynamicFormKey.currentState?.setFieldEnabled('gurantorsIdNumber', true);
       securityProviderRimNumberController.clear();
     } else {
+      dynamicFormKey.currentState
+          ?.setFieldEnabled('leagalStrOfGuarantor', false);
+      dynamicFormKey.currentState
+          ?.setFieldEnabled('gurantorsIDDocument', false);
+      dynamicFormKey.currentState?.setFieldEnabled('gurantorsIdNumber', false);
       securityProviderNameController.clear();
+
       security.securityProvidedName = null;
     }
     emit(state.copyWith(securityTypeStatus: LoadingStatus.loaded));
@@ -547,34 +556,6 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
     }
   }
 
-  void _prefillDynamicFormFromCustomer() {
-    final form = dynamicFormKey.currentState;
-    if (form == null || customerDetails == null) return;
-    print('customer Details:- ${customerDetails?.addressLine1}');
-    final expiryDt = customerDetails?.customerTlExpiryDate;
-    form.updateFieldValue(
-      'securityProvidedName',
-      customerDetails?.preferredName ?? customerDetails?.customerName,
-    );
-    form.updateFieldValue(
-      //TODO: Zeyan, please update this later, DateTime object cannot be stored like this
-      'gteeExpiryDate',
-      expiryDt != null ? DateTime.parse(expiryDt).toIso8601String() : null,
-    );
-    print("expiryDt $expiryDt");
-    form.updateFieldValue(
-      'uaeAddress',
-      '${customerDetails?.customerAddress1 ?? ''} '
-              '${customerDetails?.customerAddress2 ?? ''}'
-          .trim(),
-    );
-
-    form.updateFieldValue(
-      'gurantorsIdNumber',
-      customerDetails?.customerGroupId?.toString(),
-    );
-  }
-
   /// Searches for customer information using the provided RIM number.
   /// Emits a loaded state after retrieval.
 
@@ -637,15 +618,37 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
       AlertManager().showFailureToast(e.toString());
     }
     emit(state.copyWith(securityTypeStatus: LoadingStatus.loaded));
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final form = dynamicFormKey.currentState;
-        print('Form STATE => $form');
-        form?.updateFieldValue('gurantorsIdNumber', 'asd');
-      });
 
-      _prefillDynamicFormFromCustomer();
-    });
+    DynamicFormState? form = dynamicFormKey.currentState;
+    if (form == null || customerDetails == null) return;
+    print('customer Details:- ${customerDetails?.addressLine1}');
+    final expiryDt = customerDetails?.customerTlExpiryDate;
+    form.updateFieldValue(
+      'securityProvidedName',
+      customerDetails?.preferredName ?? customerDetails?.customerName,
+    );
+    form.updateFieldValue(
+      'gteeExpiryDate',
+      expiryDt != null
+          ? convertDateTimeToFormValue(DateTime.parse(expiryDt))
+          : null,
+    );
+    print("expiryDt $expiryDt");
+    form.updateFieldValue(
+      'uaeAddress',
+      '${customerDetails?.customerAddress1 ?? ''} '
+              '${customerDetails?.customerAddress2 ?? ''}'
+          .trim(),
+    );
+    Reference? document = customerDetails?.issuedIdent?.firstWhere(
+        (doc) => ServerConstants.guarantorDocumentTypes.contains(doc.name),
+        orElse: () => Reference());
+    if (document?.name != null) {
+      form.updateFieldValue(
+        'gurantorsIdNumber',
+        document?.description ?? '',
+      );
+    }
   }
 
   DateTime? _parseDate(dynamic value) {
@@ -691,42 +694,6 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
     if (days > 0) parts.add('$days Day${days > 1 ? 's' : ''}');
 
     return parts.join(' ');
-  }
-
-  int? _extractRowIndex(String key) {
-    if (!key.contains('@')) return null;
-    return int.tryParse(key.split('@').last);
-  }
-
-  void recalculateGridTotal(String changedKey) {
-    final form = dynamicFormKey.currentState;
-    if (form == null) return;
-    final rowIndex = _extractRowIndex(changedKey);
-    if (rowIndex == null) return;
-
-    final unitsKey = 'noOfUnits@$rowIndex';
-    final priceKey = 'mvPerUnit@$rowIndex';
-    final totalKey = 'totalMv@$rowIndex';
-
-    final unitsRaw = form.getFieldValue(unitsKey);
-    final priceRaw = form.getFieldValue(priceKey);
-    print('units key $unitsKey => $unitsRaw');
-    print('price key $priceKey => $priceRaw');
-
-    double? units =
-        double.tryParse(unitsRaw.toString().replaceAll(',', '')) ?? 0.0;
-    double? price = priceRaw is Map
-        ? double.tryParse(priceRaw['aedEquivalent'].toString()) ?? 0
-        : double.tryParse(priceRaw.toString()) ?? 0;
-
-    final total = units * price;
-
-    print('recalc:$totalKey = $total ');
-
-    form.updateFieldValue(totalKey, total.toStringAsFixed(2));
-    print('State totalMv@0:${form.getFieldValue('totalMv@0')}');
-
-    emit(state.copyWith());
   }
 
   /// Searches for customer details by RIM number in grid with debouncing
@@ -829,13 +796,13 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
         break;
 
       case "guarantorEntityId":
-        List<String> lst = value.toString().split("@");
-        if (lst.length > 2) {
-          dynamicFormKey.currentState
-              ?.updateFieldValue("internalModelRating", lst[0]);
-          dynamicFormKey.currentState
-              ?.updateFieldValue("internalModelRatingProposed", lst[1]);
-        }
+        List<String?> lst = value.toString().split("@");
+
+        dynamicFormKey.currentState
+            ?.updateFieldValue("internalModelRating", lst[0] ?? "");
+        dynamicFormKey.currentState
+            ?.updateFieldValue("internalModelRatingProposed", lst[1] ?? "");
+
         break;
 
       case "loanToValue":
@@ -869,16 +836,6 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
         dynamicFormKey.currentState
             ?.setFieldMandatory('mortgagedAmount', !isParipassu);
         break;
-
-      // case 'premiumAmount':
-      //   final adjustedValue = value['aedEquivalent']?.toString() ?? '';
-      //   dynamicFormKey.currentState?.updateFieldValue(
-      //     'mortgagedAmount',
-      //     adjustedValue.trim(),
-      //   );
-      //   dynamicFormKey.currentState
-      //       ?.setFieldVisibility('nameOfTheInsuranceCompany', false);
-      //   break;
 
       case 'typeOfInsurance':
         if (value.key == "creditInsurance") {
@@ -1059,9 +1016,38 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
 
       case 'noOfUnits':
       case 'mvPerUnit':
-        // Handle grid field calculations for noOfUnits and mvPerUnit
-        recalculateGridTotal(fieldKey);
-        break;
+        {
+          final form = dynamicFormKey.currentState;
+
+          final int? rowIndex = (value is Map) ? value['index'] as int? : null;
+
+          final String unitsKey = 'noOfUnits@$rowIndex';
+          final String priceKey = 'mvPerUnit@$rowIndex';
+          final String totalKey = 'totalMv@$rowIndex';
+
+          final dynamic unitsRaw = form?.getFieldValue(unitsKey);
+          final dynamic priceRaw = form?.getFieldValue(priceKey);
+
+          double parseNum(dynamic value) {
+            if (value == null) return 0.0;
+            if (value is num) return value.toDouble();
+            if (value is String) {
+              final cleaned = value.replaceAll(',', '').trim();
+              return double.tryParse(cleaned) ?? 0.0;
+            }
+            return 0.0; // default fallback to avoid NaN
+          }
+
+          final double units = parseNum(unitsRaw);
+          final double price = parseNum(priceRaw);
+          final double total = units * price;
+
+          form?.updateFieldValue(totalKey, total.toStringAsFixed(2));
+
+          debugPrint('[$totalKey] units=$units, price=$price, total=$total');
+          emit(state.copyWith());
+          break;
+        }
 
       default:
         // No specific handling for this field

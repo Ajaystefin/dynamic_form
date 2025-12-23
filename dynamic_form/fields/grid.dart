@@ -8,6 +8,7 @@ import 'package:wcas_frontend/core/components/dynamic_form/fields/dropdown_textf
 import 'package:wcas_frontend/core/components/dynamic_form/fields/single_check_box.dart';
 import 'package:wcas_frontend/core/components/dynamic_form/models/field.dart';
 import 'package:wcas_frontend/core/components/dynamic_form/models/grid_field.dart';
+import 'package:wcas_frontend/core/components/dynamic_form/utils/date_utils.dart';
 import 'package:wcas_frontend/core/components/gap.dart';
 import 'package:wcas_frontend/core/components/textfield.dart';
 import 'package:wcas_frontend/core/constants/constants.dart';
@@ -45,20 +46,51 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
   /// Track number of rows (persists across rebuilds)
   int _rowCount = 1;
 
+  /// Track when field properties change to force table rebuild
+  /// This increments only when didUpdateWidget is called, not on every setState
+  int _fieldPropertiesVersion = 0;
+
+  /// Last computed hash of field properties to detect changes
+  int _lastFieldPropertiesHash = 0;
+
   @override
   void initState() {
     super.initState();
     _rowCount = 1; // Start with one row
     rows = _buildRows(); // Build initial rows
+    _lastFieldPropertiesHash = _computeFieldPropertiesHash(); // Initialize hash
   }
 
   @override
   void didUpdateWidget(DynamicFormGrid oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Rebuild rows only if row count changed
-    if (rows.length != _rowCount) {
+
+    // Compute hash of current field properties
+    final currentHash = _computeFieldPropertiesHash();
+
+    // Check if hash changed (meaning field properties changed)
+    if (_lastFieldPropertiesHash != currentHash) {
+      _lastFieldPropertiesHash = currentHash;
+      _fieldPropertiesVersion++;
       rows = _buildRows();
     }
+  }
+
+  /// Compute a hash of all field properties to detect changes
+  int _computeFieldPropertiesHash() {
+    final columns = widget.fieldData.columnInfoList ?? [];
+    int hash = 0;
+
+    for (int i = 0; i < columns.length; i++) {
+      final field = columns[i].dynamicField;
+      // Combine field properties into hash
+      hash = hash ^ field.isDisable.hashCode;
+      hash = hash ^ field.isMandatory.hashCode;
+      hash = hash ^ field.showField.hashCode;
+      hash = hash ^ i; // Include index to differentiate columns
+    }
+
+    return hash;
   }
 
   /// Builds rows for the current row count
@@ -159,7 +191,8 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
   }) {
     return CustomRawTable(
       rowHeight: 90,
-      key: ValueKey(rows.length), // Only changes when row count changes
+      key: ValueKey(
+          'grid_${_rowCount}_$_fieldPropertiesVersion'), // Stable key that changes only when needed
       columns: columns,
       autoFitWidth: false,
       rows: rows,
@@ -302,6 +335,7 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
           maxLength: dynamicField.maxLength,
           errorText: dynamicField.message,
           readOnly: dynamicField.isDisable,
+          filled: dynamicField.isDisable,
           counterText: "",
           onSaved: (value) {
             widget.document[controllerKey] = value;
@@ -412,34 +446,13 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
                 }
               : null,
           onSubmit2: (DateTime? selectedDate) {
-            if (selectedDate != null) {
-              // Save in the same format as API provides
-              final dateValue = {
-                'date': {
-                  'year': selectedDate.year,
-                  'month': selectedDate.month,
-                  'day': selectedDate.day,
-                },
-                'jsdate': selectedDate.toIso8601String(),
-                'formatted':
-                    '${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year}',
-                'epoc': selectedDate.millisecondsSinceEpoch ~/ 1000,
-              };
-              widget.document[controllerKey] = dateValue;
+            final dateValue = convertDateTimeToFormValue(selectedDate);
+            widget.document[controllerKey] = dateValue;
 
-              // Trigger onFieldChange callback for parent ViewModel
-              if (widget.onFieldChange != null) {
-                widget.onFieldChange!(
-                    dynamicField.key, {'index': rowIndex, 'value': dateValue});
-              }
-            } else {
-              widget.document[controllerKey] = null;
-
-              // Trigger onFieldChange callback for parent ViewModel
-              if (widget.onFieldChange != null) {
-                widget.onFieldChange!(
-                    dynamicField.key, {'index': rowIndex, 'value': null});
-              }
+            // Trigger onFieldChange callback for parent ViewModel
+            if (widget.onFieldChange != null) {
+              widget.onFieldChange!(
+                  dynamicField.key, {'index': rowIndex, 'value': dateValue});
             }
           },
         );
