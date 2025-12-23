@@ -218,6 +218,7 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
           return DynamicFormTextAreaField(
             fieldData: widget.field,
             document: widget.document,
+            controller: widget.controller,
             onSubmit: (value) {
               widget.document[widget.field.key] = value;
               widget.onFieldChange?.call(widget.field.key, value);

@@ -14,6 +14,7 @@ class DynamicFormTextAreaField extends StatefulWidget {
   final bool showLabel;
   final int maxLines;
   final int minLines;
+  final TextEditingController? controller;
 
   const DynamicFormTextAreaField({
     super.key,
@@ -24,6 +25,7 @@ class DynamicFormTextAreaField extends StatefulWidget {
     this.showLabel = true,
     this.maxLines = 5,
     this.minLines = 2,
+    this.controller,
   });
 
   @override
@@ -33,12 +35,20 @@ class DynamicFormTextAreaField extends StatefulWidget {
 
 class _DynamicFormTextAreaFieldState extends State<DynamicFormTextAreaField> {
   late TextEditingController _controller;
+  bool _isInternalController = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
-    _initializeFromDocument();
+    // Use external controller if provided, otherwise create internal one
+    if (widget.controller != null) {
+      _controller = widget.controller!;
+      _isInternalController = false;
+    } else {
+      _controller = TextEditingController();
+      _isInternalController = true;
+      _initializeFromDocument();
+    }
   }
 
   void _initializeFromDocument() {
@@ -51,8 +61,27 @@ class _DynamicFormTextAreaFieldState extends State<DynamicFormTextAreaField> {
   }
 
   @override
+  void didUpdateWidget(DynamicFormTextAreaField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // If using external controller and document value changed, sync it
+    if (!_isInternalController && widget.document != null) {
+      final docValue = widget.document![widget.fieldData.key];
+      final newText = docValue?.toString() ?? '';
+
+      // Only update if different to avoid cursor jumping
+      if (_controller.text != newText) {
+        _controller.text = newText;
+      }
+    }
+  }
+
+  @override
   void dispose() {
-    _controller.dispose();
+    // Only dispose if we created the controller
+    if (_isInternalController) {
+      _controller.dispose();
+    }
     super.dispose();
   }
 
