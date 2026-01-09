@@ -228,7 +228,7 @@ class Facility {
       "facilityTypeName": facilityTypeName,
       "facilityTypeName": facilityTypeName,
       "projectName": projectName?.name,
-      'policyDeviation': policyDeviation?.map((e) => e.name).join(', ')
+      'policyDeviation': policyDeviation?.map((e) => e.id).join(',')
     };
   }
 
@@ -269,7 +269,7 @@ class Facility {
         policyDeviation: (json['policyDeviation'] as String?)
             ?.split(',')
             .where((e) => e.trim().isNotEmpty)
-            .map((e) => Reference(name: e.trim()))
+            .map((e) => Reference(id: int.tryParse(e.trim())))
             .toList(),
         isMainLimit: json['isMainLimit'],
         existingLimits: json['Existing_Limits'],

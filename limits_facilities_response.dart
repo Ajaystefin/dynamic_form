@@ -252,7 +252,7 @@ class FacilityDetails {
           ? (json['policyDeviation'] as String)
               .split(',')
               .where((e) => e.trim().isNotEmpty)
-              .map((e) => Reference(name: e.trim()))
+              .map((e) => Reference(id: int.tryParse(e.trim())))
               .toList()
           : [],
       isCrossBoarderCorporateExposure:
@@ -330,7 +330,7 @@ class FacilityDetails {
       'sustainabilityClassification': sustainabilityClassification,
       'proposedByCc': proposedByCc,
       'remarks': remarks,
-      'policyDeviation': policyDeviation?.map((e) => e.name).toList(),
+      'policyDeviation': policyDeviation?.map((e) => e.id).toList(),
       'isCrossBoarderCorporateExposure': isCrossBoarderCorporateExposure,
       'limitAvailabilityPeriod': limitAvailabilityPeriod,
       'pastDues': pastDues,

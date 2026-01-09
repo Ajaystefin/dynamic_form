@@ -118,7 +118,7 @@ class FacilityDetail {
             ? (json['policyDeviation'] as String)
                 .split(',')
                 .where((e) => e.trim().isNotEmpty)
-                .map((e) => Reference(name: e.trim()))
+                .map((e) => Reference(id: int.tryParse(e.trim())))
                 .toList()
             : [],
         commitmentAccountNumber: json['commitmentAccountNumber'] ?? '',
@@ -166,7 +166,7 @@ class FacilityDetail {
         'limitDescription': limitDescription,
         'limitAvailabilityDate': limitAvailabilityDate?.toIso8601String(), //
         'currency': currency,
-        'policyDeviation': policyDeviation?.map((e) => e.name).toList(),
+        'policyDeviation': policyDeviation?.map((e) => e.id).toList(),
         'presentLimit': presentLimit,
         'proposedLimit': proposedLimit,
         'presentOutstanding': presentOutstanding,
