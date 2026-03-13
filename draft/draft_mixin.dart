@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:wcas_frontend/core/globals.dart';
+import 'package:wcas_frontend/core/services/draft/browser_unload_service.dart';
 import 'package:wcas_frontend/core/services/draft/draft_handler_base.dart';
 import 'package:wcas_frontend/repositories/draft_repository.dart';
 
@@ -23,17 +27,45 @@ mixin DraftMixin<T> {
   /// The screen-specific handler that owns [buildDraftData] and [applyDraft].
   DraftHandler<T> get draftHandler;
 
+  /// Stores the MD5 hash of the screen's JSON state when it was first loaded.
+  String? _initialDraftHash;
+
+  /// Helper to generate a hash from the current JSON state.
+  String _generateHash(Map<String, dynamic> data) {
+    return md5.convert(utf8.encode(jsonEncode(data))).toString();
+  }
+
+  /// Takes a snapshot of the current state.
+  /// This is called automatically at the end of [loadDraftIfAvailable].
+  void captureInitialDraftState() {
+    try {
+      final data = draftHandler.buildDraftData(this as T);
+      _initialDraftHash = _generateHash(data);
+    } catch (_) {}
+  }
+
   /// Saves the current form state as a draft to the backend.
   ///
   /// Called fire-and-forget (not awaited) by [Globals.onAutoSave].
   /// Errors are silently swallowed.
   Future<void> saveDraft() async {
     try {
+      final currentData = draftHandler.buildDraftData(this as T);
+      final currentHash = _generateHash(currentData);
+
+      // If the state hasn't changed since init, do nothing!
+      if (currentHash == _initialDraftHash) {
+        return;
+      }
+
       await DraftRepository.instance.saveDraft(
         module: draftModuleKey,
         screen: draftFormKey,
-        draftJson: draftHandler.buildDraftData(this as T),
+        draftJson: currentData,
       );
+
+      // Optionally update the hash so subsequent identical saves are blocked
+      _initialDraftHash = currentHash;
     } catch (_) {}
   }
 
@@ -47,40 +79,83 @@ mixin DraftMixin<T> {
         module: draftModuleKey,
         screen: draftFormKey,
       );
+      // Reset the baseline hash after explicitly saving,
+      // so we don't immediately auto-save the same data as a draft when navigating away.
+      captureInitialDraftState();
     } catch (_) {}
   }
 
-  /// Finds this screen's draft in [Globals.drafts] and applies it via [draftHandler].
+  /// Finds this screen's draft by calling the backend API and applies it via [draftHandler].
   ///
   /// Call this from `init()` after the screen's data has been loaded from the API,
   /// so the draft can correctly override the live values.
   /// Does nothing if no draft exists for this screen.
-  void loadDraftIfAvailable() {
+  Future<void> loadDraftIfAvailable() async {
     try {
-      final Map<String, dynamic> match = Globals.drafts.firstWhere(
-        (Map<String, dynamic> d) =>
-            d['moduleKey'] == draftModuleKey && d['formKey'] == draftFormKey,
+      final Map<String, dynamic>? match =
+          await DraftRepository.instance.getDraft(
+        module: draftModuleKey,
+        screen: draftFormKey,
       );
-      final Map<String, dynamic>? payload =
-          match['payload'] as Map<String, dynamic>?;
-      if (payload != null) {
-        draftHandler.applyDraft(this as T, payload);
+
+      if (match != null) {
+        final Map<String, dynamic>? payload =
+            match['payload'] as Map<String, dynamic>?;
+        if (payload != null) {
+          draftHandler.applyDraft(this as T, payload);
+        }
       }
     } catch (_) {}
+
+    // Capture the baseline state after attempting to load the draft.
+    // This ensures any live data fetched beforehand, plus any draft overrides,
+    // are part of the baseline hash.
+    captureInitialDraftState();
   }
 
-  /// Registers [saveDraft] as the global [Globals.onAutoSave] callback.
+  /// Registers [saveDraft] as the global [Globals.onAutoSave] callback and
+  /// [saveDraftSync] as [Globals.onAutoSaveSync], then starts the
+  /// [BrowserUnloadService] so browser tab/window close and page refresh events
+  /// also trigger an autosave.
   ///
-  /// Call this from `init()` so that navigation and logout
-  /// trigger a save for this screen.
+  /// Call this from `init()` so that navigation, logout, and browser unload
+  /// all trigger a save for this screen.
   void registerDraftCallback() {
     Globals.onAutoSave = saveDraft;
+    Globals.onAutoSaveSync = saveDraftSync;
+    BrowserUnloadService.instance.register();
   }
 
-  /// Clears the [Globals.onAutoSave] callback.
+  /// Clears the [Globals.onAutoSave] and [Globals.onAutoSaveSync] callbacks
+  /// and stops the [BrowserUnloadService] listener.
   ///
   /// Call this from `dispose()` / `close()` to prevent stale callbacks.
   void unregisterDraftCallback() {
     Globals.onAutoSave = null;
+    Globals.onAutoSaveSync = null;
+    BrowserUnloadService.instance.unregister();
+  }
+
+  /// Saves the draft via `navigator.sendBeacon` — used exclusively by
+  /// [BrowserUnloadService] when the browser page is being torn down.
+  ///
+  /// Falls back to the regular async [saveDraft] if sendBeacon is unavailable
+  /// or rejected (e.g. on non-web platforms or when the payload is too large).
+  void saveDraftSync() {
+    try {
+      final Map<String, dynamic> currentData =
+          draftHandler.buildDraftData(this as T);
+      final String currentHash = _generateHash(currentData);
+
+      // Skip if the state hasn't changed since the last baseline.
+      if (currentHash == _initialDraftHash) return;
+
+      // saveDraftBeacon is fire-and-forget by design (no await).
+      DraftRepository.instance.saveDraftBeacon(
+        module: draftModuleKey,
+        screen: draftFormKey,
+        draftJson: currentData,
+      );
+    } catch (_) {}
   }
 }
