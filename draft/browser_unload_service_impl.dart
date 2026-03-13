@@ -8,7 +8,12 @@ class BrowserUnloadServiceImpl {
   /// No-op on non-web platforms.
   void unregister() {}
 
-  /// Always returns `false` on non-web platforms — sendBeacon is not available.
-  static bool trySendBeacon(String url, String body) => false;
+  /// Always returns `false` on non-web platforms.
+  static bool tryFetchWithKeepalive({
+    required String url,
+    required String body,
+    required Map<String, String> headers,
+  }) =>
+      false;
 }
 

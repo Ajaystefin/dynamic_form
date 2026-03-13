@@ -1,5 +1,6 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
+import 'dart:js' as js;
 
 import 'package:wcas_frontend/core/globals.dart';
 
@@ -7,12 +8,13 @@ import 'package:wcas_frontend/core/globals.dart';
 ///
 /// Listens to two complementary browser events:
 /// - `beforeunload` — fires on tab close, window close, and page refresh.
-/// - `visibilitychange` (hidden) — a more reliable fallback on mobile browsers
-///   and Chromium, where `beforeunload` may be suppressed.
+/// - `visibilitychange` (hidden) — fires when the user switches tabs,
+///   minimises the browser, or switches to another app.
 ///
 /// When either event fires, [Globals.onAutoSaveSync] is called (if registered).
-/// The actual HTTP call uses `navigator.sendBeacon` via [trySendBeacon] so the
-/// request survives page termination.
+/// The actual HTTP call uses `fetch` with `keepalive: true` via
+/// [tryFetchWithKeepalive], which supports custom headers and survives page
+/// termination on Chromium (Chrome & Edge).
 class BrowserUnloadServiceImpl {
   bool _registered = false;
 
@@ -21,7 +23,6 @@ class BrowserUnloadServiceImpl {
   late final html.EventListener _visibilityChangeListener;
 
   BrowserUnloadServiceImpl() {
-    // Capture `this` once so the closures stay stable across register/unregister.
     _beforeUnloadListener = (_) => _onUnload();
     _visibilityChangeListener = (_) {
       if (html.document.visibilityState == 'hidden') {
@@ -37,7 +38,8 @@ class BrowserUnloadServiceImpl {
     _registered = true;
 
     html.window.addEventListener('beforeunload', _beforeUnloadListener);
-    html.document.addEventListener('visibilitychange', _visibilityChangeListener);
+    html.document
+        .addEventListener('visibilitychange', _visibilityChangeListener);
   }
 
   /// Stop listening for browser unload events.
@@ -46,18 +48,41 @@ class BrowserUnloadServiceImpl {
     _registered = false;
 
     html.window.removeEventListener('beforeunload', _beforeUnloadListener);
-    html.document.removeEventListener(
-        'visibilitychange', _visibilityChangeListener);
+    html.document
+        .removeEventListener('visibilitychange', _visibilityChangeListener);
   }
 
-  /// Calls the browser's `navigator.sendBeacon(url, body)`.
+  /// Calls the native browser `fetch` API with `keepalive: true`.
   ///
-  /// Returns `true` if the UA successfully queued the request, `false`
-  /// if it was rejected (e.g. body too large). This is the only place in
-  /// the codebase that imports `dart:html`, keeping all other files
-  /// platform-agnostic.
-  static bool trySendBeacon(String url, String body) {
-    return html.window.navigator.sendBeacon(url, body);
+  /// Unlike `sendBeacon`, this supports custom headers (e.g. `Authorization`,
+  /// `sessionID`), making it compatible with APIs that require auth headers.
+  ///
+  /// `keepalive: true` instructs the browser to keep the request alive even
+  /// after the page is torn down, guaranteeing delivery on tab/window close
+  /// and page refresh on Chromium-based browsers (Chrome & Edge).
+  ///
+  /// Returns `true` if the fetch call was successfully dispatched, `false`
+  /// on any error (e.g. unsupported browser). This is the only file in the
+  /// codebase that imports `dart:html` / `dart:js`.
+  static bool tryFetchWithKeepalive({
+    required String url,
+    required String body,
+    required Map<String, String> headers,
+  }) {
+    try {
+      js.context.callMethod('fetch', [
+        url,
+        js.JsObject.jsify({
+          'method': 'POST',
+          'keepalive': true,
+          'headers': headers,
+          'body': body,
+        }),
+      ]);
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   /// Fires [Globals.onAutoSaveSync] when a browser unload event is detected.

@@ -27,10 +27,18 @@ class BrowserUnloadService {
   /// Stop listening for browser unload events.
   void unregister() => _impl.unregister();
 
-  /// Calls `navigator.sendBeacon(url, body)` on web; returns `false` on other
-  /// platforms. Delegates to [BrowserUnloadServiceImpl.trySendBeacon] which is
-  /// the only file that imports `dart:html`.
-  static bool trySendBeacon(String url, String body) =>
-      BrowserUnloadServiceImpl.trySendBeacon(url, body);
+  /// Calls `fetch` with `keepalive: true` on web, returns `false` on other
+  /// platforms. Delegates to [BrowserUnloadServiceImpl.tryFetchWithKeepalive]
+  /// which is the only file that imports `dart:html` / `dart:js`.
+  static bool tryFetchWithKeepalive({
+    required String url,
+    required String body,
+    required Map<String, String> headers,
+  }) =>
+      BrowserUnloadServiceImpl.tryFetchWithKeepalive(
+        url: url,
+        body: body,
+        headers: headers,
+      );
 }
 
