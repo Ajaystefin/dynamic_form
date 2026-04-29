@@ -112,25 +112,11 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     // Verifica se estamos no cliente antes de acessar window
     if (typeof window !== "undefined") {
-      // Primeiro, tenta recuperar a preferência salva
-      const savedMode = localStorage.getItem("theme-mode") as ColorMode;
-
-      if (savedMode && (savedMode === "light" || savedMode === "dark")) {
-        setColorMode(savedMode);
-      } else {
-        // Se não há preferência salva, usa a do sistema
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        setColorMode(prefersDark ? "dark" : "light");
-      }
+      // Usa a preferência do sistema
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setColorMode(prefersDark ? "dark" : "light");
     }
   }, []);
-
-  // Salva a preferência do usuário no localStorage
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("theme-mode", colorMode);
-    }
-  }, [colorMode]);
 
   const value = useMemo(() => ({ colorMode, setColorMode, customTheme }), [colorMode]);
 
