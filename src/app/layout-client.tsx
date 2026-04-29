@@ -1,23 +1,18 @@
 "use client";
 
-import { ThemeProvider, useAppTheme } from "@/context/ThemeContext";
-import { EuiProvider } from "@elastic/eui";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 interface Props {
   readonly children: React.ReactNode;
 }
 
-function EuiThemeWrapper({ children }: Props) {
-  const { colorMode } = useAppTheme();
-  return <EuiProvider colorMode={colorMode}>{children}</EuiProvider>;
-}
 
 export default function RootLayoutClient({ children }: Props) {
   return (
     <html lang="en">
       <body >
         <ThemeProvider>
-          <EuiThemeWrapper>{children}</EuiThemeWrapper>
+          {children}
         </ThemeProvider>
       </body>
     </html>

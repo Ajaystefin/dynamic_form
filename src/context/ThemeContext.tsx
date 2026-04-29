@@ -108,8 +108,10 @@ const customTheme: EuiThemeModifications = {
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [colorMode, setColorMode] = useState<ColorMode>("dark");
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     // Verifica se estamos no cliente antes de acessar window
     if (typeof window !== "undefined") {
       // Usa a preferência do sistema
@@ -119,6 +121,14 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const value = useMemo(() => ({ colorMode, setColorMode, customTheme }), [colorMode]);
+
+  if (!isMounted) {
+    return (
+      <ThemeContext.Provider value={value}>
+        <div style={{ visibility: "hidden" }}>{children}</div>
+      </ThemeContext.Provider>
+    );
+  }
 
   return (
     <ThemeContext.Provider value={value}>
