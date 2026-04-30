@@ -1,0 +1,35 @@
+import "package:flutter/material.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
+import "package:responsive_builder/responsive_builder.dart";
+
+import "package:wcas_frontend/features/request/approval/request_for_limit_release/model.dart";
+import "package:wcas_frontend/features/request/approval/request_for_limit_release/view_desktop.dart";
+import "package:wcas_frontend/features/request/approval/request_for_limit_release/view_mobile.dart";
+
+class RequestForLimitReleaseView extends StatelessWidget {
+  const RequestForLimitReleaseView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider<RequestForLimitReleaseViewModel>(
+      create: (context) => RequestForLimitReleaseViewModel()..init(context),
+      child: ResponsiveBuilder(
+        builder: (context, sizingInformation) {
+          switch (sizingInformation.deviceScreenType) {
+            case DeviceScreenType.desktop:
+              return const ViewDesktop();
+
+            case DeviceScreenType.tablet:
+              return const ViewDesktop();
+
+            case DeviceScreenType.mobile:
+              return const ViewMobile();
+
+            default:
+              return const ViewDesktop();
+          }
+        },
+      ),
+    );
+  }
+}

@@ -1,0 +1,234 @@
+import "package:easy_localization/easy_localization.dart";
+import "package:flutter/material.dart";
+import "package:wcas_frontend/core/components/custom_table/table.dart";
+import "package:wcas_frontend/core/components/dropdown/dropdown.dart";
+import "package:wcas_frontend/core/components/gap.dart";
+import "package:wcas_frontend/core/components/section_header.dart";
+import "package:wcas_frontend/core/components/textfield.dart";
+import "package:wcas_frontend/core/constants/_server_constants.dart";
+import "package:wcas_frontend/core/constants/constants.dart";
+import "package:wcas_frontend/core/utils/validators.dart";
+import "package:wcas_frontend/features/request/remarks/financial_ratio_analysis/model.dart";
+import "package:wcas_frontend/features/request/remarks/financial_ratio_analysis/widgets/add_table_rows.dart";
+import "package:wcas_frontend/features/request/remarks/financial_ratio_analysis/widgets/financial_dropdown_widget.dart";
+import "package:wcas_frontend/features/request/remarks/financial_ratio_analysis/widgets/financial_formattable_text.dart";
+import "package:wcas_frontend/models/admin/reference.dart";
+import "package:wcas_frontend/models/request/remarks/financial_ratio_analysis/balance_sheet_analysis.dart";
+
+class BalanceSheetAnalysis extends StatelessWidget {
+  const BalanceSheetAnalysis({required this.viewModel, super.key});
+  final FinancialRatioAnalysisViewModel viewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Gap(size: GapSize.medium),
+        CustomSectionHeader(
+          title: "remarks.financialRatiosAnalysis.balanceSheetAnalysis".tr(),
+        ),
+        const Gap(size: GapSize.medium),
+        CustomRawTable(
+          key: UniqueKey(),
+          columns: getColumns(),
+          rows: getRows(),
+        ),
+        const Gap(size: GapSize.small),
+        AddTableRows(
+          viewModel: viewModel,
+          type: StatementType.balance,
+          text: "remarks.financialRatiosAnalysis.addbalanceSheetAnalysis".tr(),
+        ),
+        const Gap(size: GapSize.small),
+        FinancialDropdownWidget(
+          width: AppStyle.groupBorrowersTextField,
+          label: "remarks.financialRatiosAnalysis.balanceSheetHealth".tr(),
+          child: CustomDropdown<Reference>(
+            semanticLabel:
+                "remarks.financialRatiosAnalysis.balanceSheetHealth".tr(),
+            items: viewModel.balanceHealth,
+            itemBuilder: (context, item, isDisabled, isSelected) {
+              return dropdownItemBuildWidget(
+                item.name,
+                isListTile: true,
+                isSelected: isSelected,
+              );
+            },
+            onSelected: (selectedValue) {
+              viewModel.selectedBalanceSheetHealth = (selectedValue.first);
+            },
+            dropdownBuilder: (context, item) => Text(item?.name ?? ""),
+            selectedItems: viewModel.selectedBalanceSheetHealth != null
+                ? [viewModel.selectedBalanceSheetHealth]
+                : [Reference(name: "Select")],
+          ),
+        ),
+        const Gap(size: GapSize.medium),
+        FinancialFormattableText(
+          key: UniqueKey(),
+          label: "remarks.financialRatiosAnalysis.rmRemarks".tr(),
+          viewModel: viewModel,
+          isRequired: false,
+        ),
+      ],
+    );
+  }
+
+  List<TableColumn> getColumns() {
+    final showAction = viewModel.hasActionColumnBalanceSheet;
+    return [
+      TableColumn(
+        label: Text(
+          "remarks.financialRatiosAnalysis.balanceSheetCapitalStructure".tr(),
+        ),
+      ),
+      TableColumn(label: Text(viewModel.getHeaderDate(0))),
+      TableColumn(label: Text(viewModel.getHeaderDate(1))),
+      TableColumn(label: Text(viewModel.getHeaderDate(2))),
+      TableColumn(label: Text(viewModel.getHeaderDate(3))),
+      TableColumn(label: Text(viewModel.getHeaderDate(4))),
+      if (showAction) const TableColumn(label: SizedBox()),
+    ];
+  }
+
+  List<List<Widget>> getRows() {
+    final balanceRefs = viewModel.financialRatioType
+            ?.where(
+              (row) => row.reference1 == ServerConstants.balanceSheetAnalysis,
+            )
+            .toList() ??
+        [];
+
+    final mergedRows = balanceRefs.map((ref) {
+      final apiRow = viewModel.balanceSheetRows.firstWhere(
+        (row) => row.id == (ref.reference2 ?? ""),
+        orElse: () {
+          return BalanceSheetAnalysisRow(
+            id: ref.reference2 ?? "",
+            balanceSheet: ref.name ?? "",
+            audited1: "",
+            audited2: "",
+            audited3: "",
+            inhouse: "",
+            isNew: false,
+          );
+        },
+      );
+      apiRow.balanceSheet = ref.name ?? "";
+      return apiRow;
+    }).toList();
+
+    final newRows =
+        viewModel.balanceSheetRows.where((row) => row.isNew).toList();
+
+    final allRows = [...mergedRows, ...newRows];
+
+    return List.generate(allRows.length, (index) {
+      final row = allRows[index];
+      final label = row.balanceSheet;
+
+      final cells = <Widget>[];
+
+      // Balance Sheet Item Name
+      cells.add(
+        row.isNew
+            ? Center(
+                child: CustomTextField(
+                  initialValue: label,
+                  validator: CustomValidator.twoDecimalNumeric,
+                  inputFormatters: [AlphanumericOrTwoDecimalInputFormatter()],
+                  maxLength: 100,
+                  onChanged: (v) => row.balanceSheet = v,
+                ),
+              )
+            : Text(label),
+      );
+
+      // Audited columns
+      final List<String> auditedValues = [
+        row.audited1,
+        row.audited2,
+        row.audited3,
+      ];
+      for (int i = 0; i < auditedValues.length; i++) {
+        final String value = auditedValues[i];
+        cells.add(
+          Center(
+            child: row.isNew
+                ? CustomTextField(
+                    initialValue: value,
+                    validator: CustomValidator.twoDecimalNumeric,
+                    inputFormatters: [DecimalInputFormatterTwoDigit()],
+                    onChanged: (txt) {
+                      if (i == 0) row.audited1 = txt;
+                      if (i == 1) row.audited2 = txt;
+                      if (i == 2) row.audited3 = txt;
+                    },
+                  )
+                : Text(
+                    viewModel.rowValue(
+                      value,
+                      isNew: row.isNew,
+                      rowIndex: index,
+                    ),
+                  ),
+          ),
+        );
+      }
+
+      // In-house
+      cells.add(
+        Center(
+          child: row.isNew
+              ? CustomTextField(
+                  initialValue: row.inhouse,
+                  validator: CustomValidator.twoDecimalNumeric,
+                  inputFormatters: [DecimalInputFormatterTwoDigit()],
+                  onChanged: (v) => row.inhouse = v,
+                )
+              : Text(
+                  viewModel.rowValue(
+                    row.inhouse,
+                    isNew: row.isNew,
+                    rowIndex: index,
+                  ),
+                ),
+        ),
+      );
+
+      cells.add(
+        Center(
+          child: row.isNew
+              ? CustomTextField(
+                  initialValue: row.estimated,
+                  validator: CustomValidator.twoDecimalNumeric,
+                  inputFormatters: [DecimalInputFormatterTwoDigit()],
+                  onChanged: (v) => row.estimated = v,
+                )
+              : Text(
+                  viewModel.rowValue(
+                    row.estimated,
+                    isNew: row.isNew,
+                    rowIndex: index,
+                  ),
+                ),
+        ),
+      );
+
+      if (viewModel.hasActionColumnBalanceSheet) {
+        cells.add(
+          row.isNew
+              ? IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () =>
+                      viewModel.deleteUserAddedBalanceRow(row), // ← CHANGED
+                )
+              : const SizedBox.shrink(),
+        );
+      }
+
+      return cells;
+    });
+  }
+}
