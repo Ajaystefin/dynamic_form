@@ -4,6 +4,7 @@ import "package:wcas_frontend/core/constants/constants.dart";
 import "package:wcas_frontend/core/utils/utils.dart";
 import "package:wcas_frontend/features/request/file_attachment_digital_efiling/digital_efiling/model.dart";
 import "package:wcas_frontend/models/request/file_attachment/doc_sub_type_data.dart";
+import "package:wcas_frontend/models/request/file_attachment/doc_year.dart";
 import "package:wcas_frontend/models/request/file_attachment/legacy_files.dart";
 
 class LegacyFilesWidget extends StatelessWidget {
@@ -53,46 +54,10 @@ class LegacyFilesWidget extends StatelessWidget {
                                             .caDocCategory?.length,
                                         itemBuilder:
                                             (BuildContext context, int index5) {
-                                          return CustomAccordion(
-                                            title:
-                                                "${legacyFile
-                                                    .caLegacy?[index4]
-                                                    .caDocCategory?[index5]
-                                                    .categoryName}",
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  left: 25,
-                                                ),
-                                                child: ListView.builder(
-                                                  shrinkWrap: true,
-                                                  itemCount: legacyFile
-                                                      .caLegacy?[index4]
-                                                      .caDocCategory?[index5]
-                                                      .docSubType
-                                                      ?.length,
-                                                  itemBuilder: (
-                                                    BuildContext context,
-                                                    int index6,
-                                                  ) {
-                                                    final doc = legacyFile
-                                                        .caLegacy?[index4]
-                                                        .caDocCategory?[index5]
-                                                        .docSubType?[index6]
-                                                        .data;
-                                                    return Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                        left: 25,
-                                                      ),
-                                                      child: _buildDocumentRow(
-                                                        doc,
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            ],
+                                          return innerAccordion(
+                                            legacyFile,
+                                            index4,
+                                            index5,
                                           );
                                         },
                                       );
@@ -111,12 +76,6 @@ class LegacyFilesWidget extends StatelessWidget {
                           itemCount: legacyFile.docSubType?.length,
                           itemBuilder: (BuildContext context, int index3) {
                             final doc = legacyFile.docSubType?[index3]?.data;
-                            // final key =
-                            // "${doc?.applicationID}_${doc?.docName}";
-                            // final isChecked =
-                            // viewModel.isDocumentSelected(key);
-                            // final docSubType = docYear.docSubType![index];
-                            // return _buildDocumentRow(docSubType!);
 
                             return Padding(
                               padding: const EdgeInsets.only(left: 25),
@@ -132,6 +91,44 @@ class LegacyFilesWidget extends StatelessWidget {
           }
         },
       ),
+    );
+  }
+
+  CustomAccordion innerAccordion(
+    DocYearDetail legacyFile,
+    int index4,
+    int index5,
+  ) {
+    return CustomAccordion(
+      title:
+          "${legacyFile.caLegacy?[index4].caDocCategory?[index5].categoryName}",
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(
+            left: 25,
+          ),
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: legacyFile
+                .caLegacy?[index4].caDocCategory?[index5].docSubType?.length,
+            itemBuilder: (
+              BuildContext context,
+              int index6,
+            ) {
+              final doc = legacyFile.caLegacy?[index4].caDocCategory?[index5]
+                  .docSubType?[index6].data;
+              return Padding(
+                padding: const EdgeInsets.only(
+                  left: 25,
+                ),
+                child: _buildDocumentRow(
+                  doc,
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 

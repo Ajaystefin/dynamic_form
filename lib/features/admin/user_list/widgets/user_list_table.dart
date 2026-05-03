@@ -39,16 +39,13 @@ class UserListTable extends StatelessWidget {
   }
 
   List<List<Widget>> getRows() {
-    final List<List<Widget>> widgets = [];
-
-    widgets.addAll([getSearchFields()]);
-
-    widgets.addAll(
-      List.generate(
-          viewModel.filteredUsers == null ? 0 : viewModel.filteredUsers!.length,
-          (index) {
-        final roles = viewModel.getRoleNamesForUser(index).join(", ");
-        return [
+    final List<List<Widget>> widgets = [
+      getSearchFields(),
+      ...List.generate(
+        viewModel.filteredUsers == null ? 0 : viewModel.filteredUsers!.length,
+        (index) {
+          final roles = viewModel.getRoleNamesForUser(index).join(", ");
+          return [
           TextButton(
             onPressed: () {
               // navigation to details page
@@ -76,7 +73,7 @@ class UserListTable extends StatelessWidget {
           ),
         ];
       }),
-    );
+    ];
     return widgets;
   }
 

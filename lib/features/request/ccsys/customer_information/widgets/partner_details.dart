@@ -410,9 +410,9 @@ class PartnerDetails extends StatelessWidget {
         label: addAsteriskIf(
           viewModel.rows.any(
             (r) =>
-                (r.partnerShareholderResidence == ServerConstants.residenceNR &&
+                r.partnerShareholderResidence == ServerConstants.residenceNR &&
                     r.legalStatusOfPartnerShareholder ==
-                        ServerConstants.legalStatusNP),
+                        ServerConstants.legalStatusNP,
           ),
           "ccsys.customerInformation.partnerDetails.passportNumberCountryCode"
               .tr(),
@@ -422,7 +422,7 @@ class PartnerDetails extends StatelessWidget {
         label: addAsteriskIf(
           viewModel.rows.any(
             (r) =>
-                ((r.passportNumberPartnerShareholder ?? "").trim().isNotEmpty),
+                (r.passportNumberPartnerShareholder ?? "").trim().isNotEmpty,
           ),
           "ccsys.customerInformation.partnerDetails.passportExpiryDate".tr(),
         ),
@@ -446,9 +446,9 @@ class PartnerDetails extends StatelessWidget {
       TableColumn(
         label: addAsteriskIf(
           viewModel.rows.any(
-            (r) => ((r.tradeLicenseNumberPartnerShareholder ?? "")
+            (r) => (r.tradeLicenseNumberPartnerShareholder ?? "")
                 .trim()
-                .isNotEmpty),
+                .isNotEmpty,
           ),
           "ccsys.customerInformation.partnerDetails.placeOfIssueOfTlNumber"
               .tr(),

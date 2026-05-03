@@ -108,9 +108,10 @@ void main() {
   });
 
   test("onFilter() filters existing limitDetail and emits loaded", () {
-    vm.limitDetail = sampleDetails;
-    vm.filteredlimitDetail = sampleDetails;
-    vm.onFilter(value: "11");
+    vm
+      ..limitDetail = sampleDetails
+      ..filteredlimitDetail = sampleDetails
+      ..onFilter(value: "11");
 
     expect(vm.filterRim, "11");
     expect(vm.filteredlimitDetail.length, 1);

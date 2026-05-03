@@ -165,8 +165,7 @@ void main() {
     when(() => mockAlertManager.showSuccessToast(any())).thenReturn(null);
     when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
 
-    viewModel = TestFacilitiesWithCbdViewModel();
-    viewModel.repository = mockGroupRepo;
+    viewModel = TestFacilitiesWithCbdViewModel()..repository = mockGroupRepo;
 
     when(() => mockGroupRepo.getGroupInformation())
         .thenAnswer((_) async => <FacilitiesWithCbd>[]);

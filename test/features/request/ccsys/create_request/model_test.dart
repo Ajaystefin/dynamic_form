@@ -177,8 +177,8 @@ void main() {
     ReferenceDataService.overrideInstance(mockReferenceDataService);
     mockRepository = MockCustomerRepository();
     mockContext = MockContext();
-    viewModel = MockCcsysCreateRequestViewModel();
-    viewModel.repository = mockRepository;
+    viewModel = MockCcsysCreateRequestViewModel()
+      ..repository = mockRepository;
     // viewModel.authRepository = mockAuthRepository;
   });
 
@@ -209,11 +209,12 @@ void main() {
 
   test("onSelectionCancelButtonPress method set variable values to default",
       () {
-    viewModel.customer = Customer(id: "12", customerName: "Sample");
-    viewModel.customerName = "Test";
-    viewModel.customerRimNo = "R123";
-    viewModel.isResetPressed = true;
-    viewModel.onSelectionCancelButtonPress();
+    viewModel
+      ..customer = Customer(id: "12", customerName: "Sample")
+      ..customerName = "Test"
+      ..customerRimNo = "R123"
+      ..isResetPressed = true
+      ..onSelectionCancelButtonPress();
     expect(viewModel.customer, isNull);
     expect(viewModel.customerName, isNull);
     expect(viewModel.customerRimNo, isNull);
@@ -226,17 +227,18 @@ void main() {
 
   test("onSelectionPressed method set variable values to selected customer",
       () {
-    viewModel.selectedCustomer = ValueNotifier(
-      Customer(
-        id: "12",
-        customerName: "Sample",
-        customerRimNo: 123,
-        segment: "Segment1",
-      ),
-    );
-    viewModel.selectedCustomer.value?.branch = "Branch1";
-    viewModel.isResetPressed = true;
-    viewModel.onSelectionPressed(mockContext);
+    viewModel
+      ..selectedCustomer = ValueNotifier(
+        Customer(
+          id: "12",
+          customerName: "Sample",
+          customerRimNo: 123,
+          segment: "Segment1",
+        ),
+      )
+      ..selectedCustomer.value?.branch = "Branch1"
+      ..isResetPressed = true
+      ..onSelectionPressed(mockContext);
     expect(viewModel.customer, isNotNull);
     expect(viewModel.customerName, "Sample");
     expect(viewModel.branchName, "Branch1");
@@ -249,33 +251,34 @@ void main() {
   test(
       "filterCustomers method set variable values on"
       " the bases of search result", () {
-    viewModel.allCustomers = [
-      Customer(
-        id: "12",
-        customerName: "Sample",
-        customerRimNo: 123,
-        segment: "Segment1",
-        preferredName: "Sample",
-      ),
-      Customer(
-        id: "34",
-        customerName: "Test",
-        customerRimNo: 456,
-        segment: "Segment2",
-        preferredName: "Test",
-      ),
-    ];
-
-    viewModel.customerName = "Test";
-    viewModel.filterCustomers();
+    viewModel
+      ..allCustomers = [
+        Customer(
+          id: "12",
+          customerName: "Sample",
+          customerRimNo: 123,
+          segment: "Segment1",
+          preferredName: "Sample",
+        ),
+        Customer(
+          id: "34",
+          customerName: "Test",
+          customerRimNo: 456,
+          segment: "Segment2",
+          preferredName: "Test",
+        ),
+      ]
+      ..customerName = "Test"
+      ..filterCustomers();
     expect(viewModel.dailogCustomers, isNotNull);
     expect(viewModel.dailogCustomers.length, 1);
     expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
   });
 
   test("filterCustomers method validation", () {
-    viewModel.allCustomers = [];
-    viewModel.filterCustomers();
+    viewModel
+      ..allCustomers = []
+      ..filterCustomers();
     verify(
       () => mockAlertManager.showFailureToast(
         "common.noUserFound".tr(),
@@ -312,10 +315,11 @@ void main() {
   group("CcsysCreateRequestViewModel.onResetButtonPress", () {
     setUp(() {
       // Seed non-default values so we can verify they get reset
-      viewModel.customerRimNo = "1023563";
-      viewModel.customerName = "ACME LLC";
-      viewModel.isSearched = true;
-      viewModel.customer = Customer()..id = "1023563";
+      viewModel
+        ..customerRimNo = "1023563"
+        ..customerName = "ACME LLC"
+        ..isSearched = true
+        ..customer = (Customer()..id = "1023563");
 
       // Set field controls to true initially
       viewModel.fieldCntrl.value = {
@@ -352,11 +356,10 @@ void main() {
 
     test("stopAllLoaders sets individual loader flags to loaded", () {
       // Manually make loaders "loading" first
-      viewModel.customerRimNoLoadingStatus = LoadingStatus.loading;
-      viewModel.customerNameLoadingStatus = LoadingStatus.loading;
-
-      // Act
-      viewModel.onResetButtonPress();
+      viewModel
+        ..customerRimNoLoadingStatus = LoadingStatus.loading
+        ..customerNameLoadingStatus = LoadingStatus.loading
+        ..onResetButtonPress();
 
       // Assert loader flags returned to loaded
       expect(viewModel.customerRimNoLoadingStatus, LoadingStatus.loaded);
@@ -378,12 +381,12 @@ void main() {
       "handleFieldControl "
       "sets correct field "
       "control states when data is not empty", () {
-    viewModel.fieldCntrl.value = {
-      ControlFields.customerName: true,
-      ControlFields.customerRim: true,
-    };
-
-    viewModel.handleFieldControl(ControlFields.customerName, "John");
+    viewModel
+      ..fieldCntrl.value = {
+        ControlFields.customerName: true,
+        ControlFields.customerRim: true,
+      }
+      ..handleFieldControl(ControlFields.customerName, "John");
 
     expect(viewModel.fieldCntrl.value, {
       ControlFields.customerName: false,
@@ -394,14 +397,14 @@ void main() {
   test(
       "handleFieldControl sets all fields to false "
       "and resets customer info when data is empty", () {
-    viewModel.fieldCntrl.value = {
-      ControlFields.customerName: true,
-      ControlFields.customerRim: true,
-    };
-    viewModel.customerName = "John";
-    viewModel.customerRimNo = "123456";
-
-    viewModel.handleFieldControl(ControlFields.customerName, "");
+    viewModel
+      ..fieldCntrl.value = {
+        ControlFields.customerName: true,
+        ControlFields.customerRim: true,
+      }
+      ..customerName = "John"
+      ..customerRimNo = "123456"
+      ..handleFieldControl(ControlFields.customerName, "");
 
     expect(viewModel.fieldCntrl.value, {
       ControlFields.customerName: false,
@@ -425,10 +428,10 @@ void main() {
   // ---------------- RIM Search Guard ----------------
   test("onCustomerRimNoSearchPressed does not trigger search when RIM is empty",
       () async {
-    viewModel.customerRimNo = "";
-    viewModel.isSearched = false;
-
-    viewModel.onCustomerRimNoSearchPressed();
+    viewModel
+      ..customerRimNo = ""
+      ..isSearched = false
+      ..onCustomerRimNoSearchPressed();
 
     expect(viewModel.customerRimNoLoadingStatus, LoadingStatus.loaded);
     expect(viewModel.searchCalled, false);
@@ -440,8 +443,9 @@ void main() {
     final mockAlertManager = MockAlertManager();
     AlertManager.overrideInstance(mockAlertManager);
 
-    viewModel.customerName = "Jo"; // Too short
-    viewModel.isSearched = false;
+    viewModel
+      ..customerName = "Jo" // Too short
+      ..isSearched = false;
 
     when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
 
@@ -458,26 +462,30 @@ void main() {
   test(
       "isFieldsFilled returns true when both "
       "customerName and customerRimNo are not null", () {
-    viewModel.customerName = "John Doe";
-    viewModel.customerRimNo = "123456";
+    viewModel
+      ..customerName = "John Doe"
+      ..customerRimNo = "123456";
     expect(viewModel.isFieldsFilled(), isTrue);
   });
 
   test("isFieldsFilled returns false when customerName is null", () {
-    viewModel.customerName = null;
-    viewModel.customerRimNo = "123456";
+    viewModel
+      ..customerName = null
+      ..customerRimNo = "123456";
     expect(viewModel.isFieldsFilled(), isFalse);
   });
 
   test("isFieldsFilled returns false when customerRimNo is null", () {
-    viewModel.customerName = "John Doe";
-    viewModel.customerRimNo = null;
+    viewModel
+      ..customerName = "John Doe"
+      ..customerRimNo = null;
     expect(viewModel.isFieldsFilled(), isFalse);
   });
 
   test("isFieldsFilled returns false when both fields are null", () {
-    viewModel.customerName = null;
-    viewModel.customerRimNo = null;
+    viewModel
+      ..customerName = null
+      ..customerRimNo = null;
     expect(viewModel.isFieldsFilled(), isFalse);
   });
 
@@ -497,16 +505,10 @@ void main() {
   // ---------------- RIM path local status (without mocking CcsysRepository)
   // ----------------
   test("onCustomerRimNoSearchPressed leaves status loading immediately", () {
-    viewModel.customerRimNo = "123456";
-    viewModel.isSearched = false;
-
-    final mockAlertManager = MockAlertManager();
-    AlertManager.overrideInstance(mockAlertManager);
-
-    // This calls onCustomerSearchPressed with isRim=true (uses
-    // CcsysRepository).
-    // We only assert immediate local status change.
-    viewModel.onCustomerRimNoSearchPressed();
+    viewModel
+      ..customerRimNo = "123456"
+      ..isSearched = false
+      ..onCustomerRimNoSearchPressed();
 
     // The VM sets `customerRimNoLoadingStatus = LoadingStatus.loading;` before
     // async.
@@ -624,8 +626,8 @@ void main() {
       });
 
       test("final loaderStatus is always loaded", () async {
-        viewModel.customerRimNo = "123";
-        await viewModel.onSubmitButtonPress(mockContext);
+        await (viewModel..customerRimNo = "123")
+            .onSubmitButtonPress(mockContext);
         expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
       });
     });

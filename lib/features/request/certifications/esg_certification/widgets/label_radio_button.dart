@@ -35,7 +35,7 @@ class LabeledRadioButton extends StatelessWidget {
               ),
               children: [
                 TextSpan(
-                  text: (isRequired) ? " *" : "",
+                  text: isRequired ? " *" : "",
                   style: const TextStyle(color: Colors.red),
                 ),
               ],

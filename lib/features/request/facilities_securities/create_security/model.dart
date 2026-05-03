@@ -157,7 +157,7 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
   String? cmoRemark;
 
   bool get canEdit =>
-      (pageMode == PageMode.edit); //&& Utils.canEditApplication();
+      pageMode == PageMode.edit; //&& Utils.canEditApplication();
 
   String? countryOfIncorporation = "";
   String? guarantatorNationality = "";
@@ -396,11 +396,12 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
 
       if (dynamicFormDocument.containsKey("typeOfInsurance")) {
         if (dynamicFormDocument["typeOfInsurance"] == "creditInsurance") {
-          formState.setFieldVisibility("Pari-passu", false);
-          formState.setFieldVisibility(
-            "approvedCounterpartyInTermsOfCreditInsurance",
-            true,
-          );
+          formState
+            ..setFieldVisibility("Pari-passu", false)
+            ..setFieldVisibility(
+              "approvedCounterpartyInTermsOfCreditInsurance",
+              true,
+            );
         }
         if (dynamicFormDocument["typeOfInsurance"] == "lifeInsurance") {
           formState.setFieldVisibility("KeymanInsuranceHolderName", true);
@@ -419,11 +420,13 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
       final valuatorCategory = dynamicFormDocument["ValuatorCategory"];
       if (valuatorCategory != null) {
         if (valuatorCategory == "Other Non-Panel") {
-          formState.setFieldVisibility("ValuatorName", true);
-          formState.setFieldVisibility("evaluatorName", false);
+          formState
+            ..setFieldVisibility("ValuatorName", true)
+            ..setFieldVisibility("evaluatorName", false);
         } else {
-          formState.setFieldVisibility("evaluatorName", true);
-          formState.setFieldVisibility("ValuatorName", false);
+          formState
+            ..setFieldVisibility("evaluatorName", true)
+            ..setFieldVisibility("ValuatorName", false);
         }
         // formState.setFieldVisibility('enterNonpanelValuatorName', false);
         final valuatorName = dynamicFormDocument["ValuatorName"];
@@ -470,12 +473,13 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
         formState.updateDropdownOptions("propertySubtype", options);
       }
       //
-      formState.setFieldEnabled("customerRimGrid", false);
-      formState.setFieldMandatory(
-        "DiscountFactor%",
-        security.securityType?.reference1 ==
-            ServerConstants.tangibleSecurityReference,
-      );
+      formState
+        ..setFieldEnabled("customerRimGrid", false)
+        ..setFieldMandatory(
+          "DiscountFactor%",
+          security.securityType?.reference1 ==
+              ServerConstants.tangibleSecurityReference,
+        );
 
 // Logics for update key - securityvalueadjustedtoLTV in initial time
 
@@ -602,10 +606,10 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
       Utils.checkBusinessSegment(BusinessSegment.financialInstitution);
 
   bool get isGuaranteeType =>
-      (security.securityType?.id == ServerConstants.bankGuaranteeId ||
+      security.securityType?.id == ServerConstants.bankGuaranteeId ||
           security.securityType?.id == ServerConstants.corporateGuaranteeId ||
           security.securityType?.id == ServerConstants.personalGuaranteeId ||
-          security.securityType?.id == ServerConstants.financialGuranteeID);
+          security.securityType?.id == ServerConstants.financialGuranteeID;
 
   /// Fetches reference data for security types, statuses, and other options.
   /// Filters out "N/A" options and emits a loaded or error state.
@@ -926,20 +930,20 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
     securityProviderCbdCustomer = value?.id == ServerConstants.optionYESid;
     if (!securityProviderCbdCustomer) {
       dynamicFormKey.currentState
-          ?.setFieldEnabled("leagalStrOfGuarantor", true);
-      dynamicFormKey.currentState?.setFieldEnabled("gurantorsIDDocument", true);
-      dynamicFormKey.currentState?.setFieldEnabled("gurantorsIdNumber", true);
-      dynamicFormKey.currentState?.setFieldEnabled("uaeAddress", true);
-      securityProviderRimNumberController.clear();
-      securityProviderRimNumberController.text = "";
+        ?..setFieldEnabled("leagalStrOfGuarantor", true)
+        ..setFieldEnabled("gurantorsIDDocument", true)
+        ..setFieldEnabled("gurantorsIdNumber", true)
+        ..setFieldEnabled("uaeAddress", true);
+      securityProviderRimNumberController
+        ..clear()
+        ..text = "";
       security.securityProvidedRim = null;
     } else {
       dynamicFormKey.currentState
-          ?.setFieldEnabled("leagalStrOfGuarantor", false);
-      dynamicFormKey.currentState
-          ?.setFieldEnabled("gurantorsIDDocument", false);
-      dynamicFormKey.currentState?.setFieldEnabled("gurantorsIdNumber", false);
-      dynamicFormKey.currentState?.setFieldEnabled("uaeAddress", false);
+        ?..setFieldEnabled("leagalStrOfGuarantor", false)
+        ..setFieldEnabled("gurantorsIDDocument", false)
+        ..setFieldEnabled("gurantorsIdNumber", false)
+        ..setFieldEnabled("uaeAddress", false);
     }
     security.securityProvidedCountry = null;
     preselectedCountry = null;
@@ -1170,46 +1174,47 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
     if (form == null || customerDetails == null) return;
     print("customer Details:- ${customerDetails?.addressLine1}");
     final expiryDt = customerDetails?.customerTlExpiryDate;
-    form.updateFieldValue(
-      "securityProvidedName",
-      "${customerDetails?.firstName} "
-          "${customerDetails?.middleName} ${customerDetails?.lastName}",
-    );
-    form.updateFieldValue(
-      "gteeExpiryDate",
-      expiryDt != null
-          ? convertDateTimeToFormValue(DateTime.parse(expiryDt))
-          : null,
-    );
-    print("expiryDt $expiryDt");
-    form.updateFieldValue(
-      "uaeAddress",
-      '${customerDetails?.customerAddress1 ?? ''}\n'
-          '${customerDetails?.customerAddress2 ?? ''}\n'
-          '${customerDetails?.customerAddress3 ?? ''}\n'
-          '${customerDetails?.city ?? ''}\n'
-          '${customerDetails?.country ?? ''}',
-    );
-    form.updateFieldValue(
-      "nationalityOfGuarantor",
-      customerDetails?.tLIssueCountry ?? "",
-    );
+    form
+      ..updateFieldValue(
+        "securityProvidedName",
+        "${customerDetails?.firstName} "
+            "${customerDetails?.middleName} ${customerDetails?.lastName}",
+      )
+      ..updateFieldValue(
+        "gteeExpiryDate",
+        expiryDt != null
+            ? convertDateTimeToFormValue(DateTime.parse(expiryDt))
+            : null,
+      )
+      ..updateFieldValue(
+        "uaeAddress",
+        '${customerDetails?.customerAddress1 ?? ''}\n'
+            '${customerDetails?.customerAddress2 ?? ''}\n'
+            '${customerDetails?.customerAddress3 ?? ''}\n'
+            '${customerDetails?.city ?? ''}\n'
+            '${customerDetails?.country ?? ''}',
+      )
+      ..updateFieldValue(
+        "nationalityOfGuarantor",
+        customerDetails?.tLIssueCountry ?? "",
+      );
     final Reference? document = customerDetails?.issuedIdent?.firstWhere(
       (doc) => ServerConstants.guarantorDocumentTypes.contains(doc.name),
       orElse: Reference.new,
     );
     if (document?.name != null) {
-      form.updateFieldValue(
-        "gurantorsIdNumber",
-        document?.description ?? "",
-      );
-      form.setDropdownDefaultSelection(
-        "gurantorsIDDocument",
-        Option(
-          key: document?.name,
-          pairValue: document?.name,
-        ),
-      );
+      form
+        ..updateFieldValue(
+          "gurantorsIdNumber",
+          document?.description ?? "",
+        )
+        ..setDropdownDefaultSelection(
+          "gurantorsIDDocument",
+          Option(
+            key: document?.name,
+            pairValue: document?.name,
+          ),
+        );
     }
   }
 
@@ -1282,8 +1287,7 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
 
       if (customer != null) {
         // Populate the name field in the same row
-        final nameKey =
-            "approvedCounterpartyInTermsOfCreditInsurance"
+        final nameKey = "approvedCounterpartyInTermsOfCreditInsurance"
             ".nameInApprovedCounterparty@$rowIndex";
         final customerName =
             customer.preferredName ?? customer.customerName ?? "";
@@ -1385,7 +1389,7 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
         }
 
       case ("loanToValue" || "ltv"):
-        final double parsedValue = double.tryParse((value ?? "0")) ?? 0;
+        final double parsedValue = double.tryParse(value ?? "0") ?? 0;
         loanToValue = (parsedValue == 0 ? 1 : parsedValue / 100);
         final double securityvalueadjustedtoLTV = (loanToValue ?? 1) *
             (currentMarketValue ?? security.proposedSecurityAmount ?? 1);

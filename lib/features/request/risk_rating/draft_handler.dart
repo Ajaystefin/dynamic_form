@@ -68,7 +68,7 @@ class RiskRatingDraftHandler extends DraftHandler<RiskRatingViewModel> {
         if (draft is! Map<String, dynamic>) continue;
 
         final int? rim = _asInt(draft["rimNo"]);
-        final String? customerName = (draft["customerName"]);
+        final String? customerName = draft["customerName"];
         if (rim == null) continue;
 
         // ALWAYS CREATE ROW
@@ -161,32 +161,33 @@ class RiskRatingDraftHandler extends DraftHandler<RiskRatingViewModel> {
 
   void _applyInternalDraft(InternalRating ir, Map<String, dynamic> draft) {
     // ---------- Identity ----------
-    ir.customerRimNo = _asInt(draft["rimNo"]);
-    ir.customerName = draft["customerName"];
-    ir.entityId = _asInt(draft["entityId"]);
+    ir
+      ..customerRimNo = _asInt(draft["rimNo"])
+      ..customerName = draft["customerName"]
+      ..entityId = _asInt(draft["entityId"])
 
-    // ---------- Borrower ----------
-    ir.borrowerGuarantor = draft["borrowerGuarantor"];
+      // ---------- Borrower ----------
+      ..borrowerGuarantor = draft["borrowerGuarantor"]
 
-    // ---------- Existing ----------
-    ir.crr = _asInt(draft["crr"]);
-    ir.existingBasisOfCrr = draft["existingBasisOfCrr"];
-    ir.prevRatingSrc = _asInt(draft["prevRatingSource"]);
-    ir.previousCRR = _asInt(draft["prevCrr"]);
+      // ---------- Existing ----------
+      ..crr = _asInt(draft["crr"])
+      ..existingBasisOfCrr = draft["existingBasisOfCrr"]
+      ..prevRatingSrc = _asInt(draft["prevRatingSource"])
+      ..previousCRR = _asInt(draft["prevCrr"])
 
-    // ---------- Proposed ----------
-    ir.proposedModel = draft["proposedModel"];
-    ir.proposedCRR = _asInt(draft["proposedCrr"]);
-    ir.proposedBasisOfCrr = draft["proposedBasisOfCrr"];
-    ir.proposedRatingSrc = draft["proposedRatingSource"];
+      // ---------- Proposed ----------
+      ..proposedModel = draft["proposedModel"]
+      ..proposedCRR = _asInt(draft["proposedCrr"])
+      ..proposedBasisOfCrr = draft["proposedBasisOfCrr"]
+      ..proposedRatingSrc = draft["proposedRatingSource"]
 
-    // ---------- Override / Cascade ----------
-    ir.detailsOverride = draft["detailsOverride"];
-    ir.overrideComment = draft["overrideComment"];
-    ir.cascadeNote = draft["cascadeNote"];
+      // ---------- Override / Cascade ----------
+      ..detailsOverride = draft["detailsOverride"]
+      ..overrideComment = draft["overrideComment"]
+      ..cascadeNote = draft["cascadeNote"]
 
-    // ---------- Credit ----------
-    ir.proposedByCredit = draft["proposedByCredit"]?.toString();
+      // ---------- Credit ----------
+      ..proposedByCredit = draft["proposedByCredit"]?.toString();
 
     // ---------- Rating Type ----------
     final String? type = draft["internalRatingType"];
@@ -198,9 +199,9 @@ class RiskRatingDraftHandler extends DraftHandler<RiskRatingViewModel> {
     }
 
     // ---------- FI flow ----------
-    ir.secondBestRating = draft["secondBestRating"];
-
-    ir.isDeleted = draft["isDeleted"];
+    ir
+      ..secondBestRating = draft["secondBestRating"]
+      ..isDeleted = draft["isDeleted"];
   }
 
   Map<String, dynamic> _externalRatingToDraft(ExternalRating er) {

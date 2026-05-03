@@ -11,7 +11,8 @@ class CustomerInformationState {
   LoadingStatus loaderStatus = LoadingStatus.loaded;
   LoadingStatus? partnerShareholderStatus = LoadingStatus.loaded;
   LoadingStatus? customerSelectedStatus = LoadingStatus.loaded;
-  final bool borrowerSubsidiary, legalEntityIdentifier;
+  final bool borrowerSubsidiary;
+  final bool legalEntityIdentifier;
 
   CustomerInformationState copyWith({
     LoadingStatus? loaderStatus,

@@ -87,7 +87,7 @@ class _SectionTwoState extends State<SectionTwo> {
                 widget.viewModel.updateCategoryBriefDescById(id!, newBriefDesc);
               },
               categories: widget.viewModel.esgSffCategoriess,
-              categoriesLocalDb: (widget.viewModel.esgSffCategories)!,
+              categoriesLocalDb: widget.viewModel.esgSffCategories!,
               controllers: _controllers,
             ),
           ),

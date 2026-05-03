@@ -534,8 +534,9 @@ void main() {
     });
 
     test("does nothing when form validation fails", () async {
-      viewModel.validateAndSaveFormResult = false;
-      viewModel.isEditable = false;
+      viewModel
+        ..validateAndSaveFormResult = false
+        ..isEditable = false;
 
       await viewModel.onSavePress(
         false,

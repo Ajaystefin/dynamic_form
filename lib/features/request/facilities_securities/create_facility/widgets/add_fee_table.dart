@@ -258,9 +258,9 @@ class _FeeDefaultRateTableState extends State<FeeDefaultRateTable> {
           validator: (value) {
             if (!showAsterisk) return null;
             final amountEmpty =
-                (_amountCtrls[rowIndex]?.text.trim().isEmpty ?? true);
+                _amountCtrls[rowIndex]?.text.trim().isEmpty ?? true;
             final percentEmpty =
-                (_percentCtrls[rowIndex]?.text.trim().isEmpty ?? true);
+                _percentCtrls[rowIndex]?.text.trim().isEmpty ?? true;
             return (amountEmpty && percentEmpty)
                 ? CustomValidator.requiredField(value)
                 : null;
@@ -285,9 +285,9 @@ class _FeeDefaultRateTableState extends State<FeeDefaultRateTable> {
           validator: (value) {
             if (!showAsterisk) return null;
             final amountEmpty =
-                (_amountCtrls[rowIndex]?.text.trim().isEmpty ?? true);
+                _amountCtrls[rowIndex]?.text.trim().isEmpty ?? true;
             final percentEmpty =
-                (_percentCtrls[rowIndex]?.text.trim().isEmpty ?? true);
+                _percentCtrls[rowIndex]?.text.trim().isEmpty ?? true;
             return (amountEmpty && percentEmpty)
                 ? CustomValidator.requiredField(value)
                 : null;
@@ -316,7 +316,7 @@ class _FeeDefaultRateTableState extends State<FeeDefaultRateTable> {
         // Comments
         CustomTextField(
           key: ValueKey("fee_freq_row_$rowIndex "),
-          validator: (showAsterisk) ? CustomValidator.requiredField : null,
+          validator: showAsterisk ? CustomValidator.requiredField : null,
           maxLength: 100,
           controller: _commentCtrls[rowIndex],
         ),

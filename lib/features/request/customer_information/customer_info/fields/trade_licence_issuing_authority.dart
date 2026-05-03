@@ -41,7 +41,7 @@ class TradeLicenceIssuingAuthorityField extends StatelessWidget {
         onSelected: (selectedValue) {
           viewModel.customerInformation?.tlIssuingAuthority =
               selectedValue[0].name;
-          viewModel.selectedTlIssuingAuthority = (selectedValue.first);
+          viewModel.selectedTlIssuingAuthority = selectedValue.first;
         },
         dropdownBuilder: (context, item) =>
             dropdownBuilderWidget(text: item?.name, showToolTip: true),

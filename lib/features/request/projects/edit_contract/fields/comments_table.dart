@@ -41,7 +41,7 @@ class CommentsTable extends StatelessWidget {
               ),
             ),
           ],
-          rows: List.generate((comments).length, (index) {
+          rows: List.generate(comments.length, (index) {
             final Comment comment = comments[index];
             return [
               CustomTooltip(

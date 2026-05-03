@@ -51,13 +51,13 @@ class OthersLimitDialogViewModel extends SafeCubit<OthersLimitDialogState> {
 
   final List<TextInputFormatter> limitCodeFormatters = <TextInputFormatter>[
         FilteringTextInputFormatter.allow(RegExp("[A-Z]")),
-      ],
-      descriptionFormatters = [],
-      reference1Formatters = [],
-      reference2Formatters = [],
-      reference3Formatters = [],
-      reference4Formatters = [],
-      reference5Formatters = [];
+      ];
+  final List<TextInputFormatter> descriptionFormatters = [];
+  final List<TextInputFormatter> reference1Formatters = [];
+  final List<TextInputFormatter> reference2Formatters = [];
+  final List<TextInputFormatter> reference3Formatters = [];
+  final List<TextInputFormatter> reference4Formatters = [];
+  final List<TextInputFormatter> reference5Formatters = [];
 
   List<String> natureOfFund = [
     Naturefund.funded.name.capitalizeFirstLetter(),
@@ -252,16 +252,16 @@ class OthersLimitDialogViewModel extends SafeCubit<OthersLimitDialogState> {
   }
 
   Future<void> onSaveButtonClick(BuildContext context) async {
-    if ((facilityTypes.any(
+    if (facilityTypes.any(
       (facilityType) => facilityType.reference3 == reference.reference3,
-    ))) {
+    )) {
       AlertManager().showFailureToast(
         "Limit code already exists. Please enter a unique code",
       );
       return;
     }
     try {
-      if (!(formKey.currentState!.validate())) {
+      if (!formKey.currentState!.validate()) {
         emit(state.copyWith(saveButtonStatus: LoadingStatus.loaded));
       } else {
         // Persist current field values into the VM.reference

@@ -760,8 +760,8 @@ class ScreenAccessConditions {
 
     // Step c: Validate if the task is actively awaiting user action.
     final bool isTaskActive =
-        (currentTaskStatus == ServerConstants.lifeCycleStatusWaiting ||
-            currentTaskStatus == ServerConstants.lifeCycleStatusAssigned);
+        currentTaskStatus == ServerConstants.lifeCycleStatusWaiting ||
+            currentTaskStatus == ServerConstants.lifeCycleStatusAssigned;
 
     // If the task is active AND assigned to the current user → editable.
     // Otherwise → read-only.

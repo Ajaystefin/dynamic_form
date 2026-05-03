@@ -209,20 +209,20 @@ class RoracInformation extends StatelessWidget {
 
             // Controller availability flags (typed)
             final bool hasRealizedCtrl =
-                (viewModel.realizedRarocControllers != null &&
-                    index < viewModel.realizedRarocControllers!.length);
+                viewModel.realizedRarocControllers != null &&
+                    index < viewModel.realizedRarocControllers!.length;
 
             final bool hasProposedCtrl =
-                (viewModel.proposedRarocControllers != null &&
-                    index < viewModel.proposedRarocControllers!.length);
+                viewModel.proposedRarocControllers != null &&
+                    index < viewModel.proposedRarocControllers!.length;
 
             final bool hasFinalCtrl =
-                (viewModel.finalRarocControllers != null &&
-                    index < viewModel.finalRarocControllers!.length);
+                viewModel.finalRarocControllers != null &&
+                    index < viewModel.finalRarocControllers!.length;
 
             final bool hasCommentsCtrl =
-                (viewModel.commentsControllers != null &&
-                    index < viewModel.commentsControllers!.length);
+                viewModel.commentsControllers != null &&
+                    index < viewModel.commentsControllers!.length;
 
             // Build a full 7-cell row (never vary the count)
             return [

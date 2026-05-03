@@ -50,8 +50,9 @@ void main() {
     });
 
     test("buildDraftData uses controller path when not strategy", () {
-      vm.hasCreditLensData = false;
-      vm.hasSavedAnalysisData = false;
+      vm
+        ..hasCreditLensData = false
+        ..hasSavedAnalysisData = false;
 
       // DO NOT touch vm.controller (HTML editor)
       // Default controller remark is empty
@@ -92,8 +93,9 @@ void main() {
     // -------------------------------------------------------------------------
 
     test("buildDraftData persists credit lens and saved analysis flags", () {
-      vm.hasCreditLensData = true;
-      vm.hasSavedAnalysisData = true;
+      vm
+        ..hasCreditLensData = true
+        ..hasSavedAnalysisData = true;
 
       final draft = handler.buildDraftData(vm);
 
@@ -109,9 +111,6 @@ void main() {
     test("buildDraftData uses incomeRowsFor for inactive entities", () {
       final first = vm.state.guarantors.first;
 
-      // activate first guarantor
-      vm.emit(vm.state.copyWith(currentEntityId: first.entityId));
-
       // add second guarantor
       final second = Guarantor(
         entityId: 99,
@@ -119,17 +118,19 @@ void main() {
         analysisHtml: "",
         spreadsmartUrl: "",
       );
-      vm.emit(
-        vm.state.copyWith(
-          guarantors: [...vm.state.guarantors, second],
-        ),
-      );
 
-      // seed inactive rows
-      vm.incomeRows = [];
-      vm.incomeStatementRows.add(
-        IncomeStatementAnalysisRow(id: "active", isNew: false),
-      );
+      // activate first guarantor
+      vm
+        ..emit(vm.state.copyWith(currentEntityId: first.entityId))
+        ..emit(
+          vm.state.copyWith(
+            guarantors: [...vm.state.guarantors, second],
+          ),
+        )
+        ..incomeRows = []
+        ..incomeStatementRows.add(
+          IncomeStatementAnalysisRow(id: "active", isNew: false),
+        );
 
       final draft = handler.buildDraftData(vm);
       final entities = draft["entities"] as List<Map<String, dynamic>>;
@@ -356,9 +357,9 @@ void main() {
         () {
       final guarantor = vm.state.guarantors.first;
       final health = Reference(id: 3, name: "OK");
-      vm.guarantorsHealth = [health];
-
-      vm.emit(vm.state.copyWith(currentEntityId: guarantor.entityId));
+      vm
+        ..guarantorsHealth = [health]
+        ..emit(vm.state.copyWith(currentEntityId: guarantor.entityId));
 
       handler.applyDraft(vm, {
         "entities": [
@@ -395,12 +396,13 @@ void main() {
         () {
       final guarantor = vm.state.guarantors.first;
 
-      vm.guarantorsHealth = [
-        Reference(id: 1, name: "Good"),
-      ];
+      vm
+        ..guarantorsHealth = [
+          Reference(id: 1, name: "Good"),
+        ]
 
-      // Explicitly set a starting value
-      vm.selectedBalanceSheetHealth = Reference(id: 100, name: "Initial");
+        // Explicitly set a starting value
+        ..selectedBalanceSheetHealth = Reference(id: 100, name: "Initial");
 
       handler.applyDraft(vm, {
         "entities": [

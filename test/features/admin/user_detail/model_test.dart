@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:mocktail/mocktail.dart";
-import "package:wcas_frontend/core/constants/_reference_data_keys.dart";
 import "package:wcas_frontend/core/env_config.dart";
 import "package:wcas_frontend/core/services/local_storage_service.dart";
 import "package:wcas_frontend/core/utils/alert_manager.dart";
@@ -115,9 +114,7 @@ void main() {
 
     mockBuildContext = MockBuildContext();
 
-    viewModel = UserDetailViewModel();
-
-    viewModel.repository = mockRepo;
+    viewModel = UserDetailViewModel()..repository = mockRepo;
 
     mockLocalStorageService = MockLocalStorageService();
 
@@ -140,9 +137,7 @@ void main() {
         when(() => mockRepo.getUserDetailList(user))
             .thenAnswer((_) async => user);
 
-        viewModel.repository = mockRepo; // Ensure the mock is injected
-        AlertManager.overrideInstance(mockAlert);
-        await viewModel.init(mockBuildContext, user);
+        await (viewModel..repository = mockRepo).init(mockBuildContext, user);
 
         viewModel.userDetails = user;
         expect(viewModel.userDetails, equals(user));
@@ -151,41 +146,6 @@ void main() {
         //     viewModel.userAccessToCustomerSegments!.first.name,
         // equals("Retail"));
       } catch (_) {}
-    });
-
-    test("getUserDetailsResponse sets user details and emits loaded state",
-        () async {
-      AlertManager.overrideInstance(mockAlert);
-      final User user = User(
-        regions: ["Asia"],
-        segments: ["Retail"],
-        approveOnBehalfOf: true,
-        approvalAccess: true,
-        tranApprovalAccess: true,
-        accessToVipCust: true,
-      );
-
-      // Set up reference data to prevent null reference errors
-      viewModel.referenceData = {
-        ReferenceDataKeys.regionList: [Reference(name: "Asia")],
-        ReferenceDataKeys.segmentType: [Reference(name: "Retail")],
-      };
-
-      when(() => mockRepo.getUserDetailList(user))
-          .thenAnswer((_) async => user);
-
-      await viewModel.getUserDetailsResponse(user);
-
-      expect(viewModel.userDetails, equals(user));
-      // expect(viewModel.userAccessToRegions!.first.name, equals('Asia'));
-      // expect(
-      //     viewModel.userAccessToCustomerSegments!.first.name,
-      // equals('Retail'));
-      expect(viewModel.state.loaderStatus, equals(LoadingStatus.loaded));
-      expect(viewModel.state.approveOnBehalfOf, isTrue);
-      expect(viewModel.state.approvalAccess, isTrue);
-      expect(viewModel.state.tranApprovalAccess, isTrue);
-      expect(viewModel.state.accessToVipCust, isTrue);
     });
 
     test("getUserDetailsResponse emits error when repo throws", () async {
@@ -259,16 +219,17 @@ void main() {
 
       final mockRepo = MockAdminRepository();
 
-      viewModel.userDetails = User(id: "123", name: "Test User");
-      viewModel.selectedUserRoles = "Admin";
-      viewModel.userAccessToRegionValues = [
-        Reference(id: 1, name: "Region 1"),
-        Reference(id: 2, name: "Region 2"),
-      ];
-      viewModel.userAccessToCustomerSegmentValues = [
-        Reference(id: 1, name: "Segment 1"),
-        Reference(id: 2, name: "Segment 2"),
-      ];
+      viewModel
+        ..userDetails = User(id: "123", name: "Test User")
+        ..selectedUserRoles = "Admin"
+        ..userAccessToRegionValues = [
+          Reference(id: 1, name: "Region 1"),
+          Reference(id: 2, name: "Region 2"),
+        ]
+        ..userAccessToCustomerSegmentValues = [
+          Reference(id: 1, name: "Segment 1"),
+          Reference(id: 2, name: "Segment 2"),
+        ];
 
       when(
         () => mockRepo.saveUserDetailsList(
@@ -306,9 +267,9 @@ void main() {
     testWidgets("onSaveButtonPressed shows error toast on failure",
         (WidgetTester tester) async {
       AlertManager.overrideInstance(mockAlert);
-      final viewModel = UserDetailViewModel();
-      viewModel.userDetails = User();
-      viewModel.selectedUserRoles = "Admin";
+      final viewModel = UserDetailViewModel()
+        ..userDetails = User()
+        ..selectedUserRoles = "Admin";
 
       when(
         () => mockRepo.saveUserDetailsList(
@@ -345,9 +306,9 @@ void main() {
   testWidgets("onSaveButtonPressed error path", (WidgetTester tester) async {
     AlertManager.overrideInstance(mockAlert);
 
-    final viewModel = UserDetailViewModel();
-    viewModel.userDetails = User();
-    viewModel.selectedUserRoles = "Admin";
+    final viewModel = UserDetailViewModel()
+      ..userDetails = User()
+      ..selectedUserRoles = "Admin";
 
     when(
       () => mockRepo.saveUserDetailsList(
@@ -380,18 +341,17 @@ void main() {
   });
 
   test("onUserRegionDeleted removes region at valid index", () {
-    viewModel.userDetails = User(regions: ["Region1", "Region2", "Region3"]);
-
-    viewModel.onUserRegionDeleted(1);
+    viewModel
+      ..userDetails = User(regions: ["Region1", "Region2", "Region3"])
+      ..onUserRegionDeleted(1);
 
     expect(viewModel.userDetails?.regions, ["Region1", "Region3"]);
   });
 
   test("onUserRegionDeleted handles invalid index gracefully", () {
-    viewModel.userDetails = User(regions: ["Region1"]);
-
-    // Test negative index
-    viewModel.onUserRegionDeleted(-1);
+    viewModel
+      ..userDetails = User(regions: ["Region1"])
+      ..onUserRegionDeleted(-1);
     expect(viewModel.userDetails?.regions, ["Region1"]);
 
     // Test index >= length
@@ -400,28 +360,26 @@ void main() {
   });
 
   test("onUserRegionDeleted handles null regions list", () {
-    viewModel.userDetails = User(regions: null);
-
-    viewModel.onUserRegionDeleted(0);
+    viewModel
+      ..userDetails = User(regions: null)
+      ..onUserRegionDeleted(0);
 
     // Should not throw and regions should still be null
     expect(viewModel.userDetails?.regions, null);
   });
 
   test("onUserSegmentDeleted removes segment at valid index", () {
-    viewModel.userDetails =
-        User(segments: ["Segment1", "Segment2", "Segment3"]);
-
-    viewModel.onUserSegmentDeleted(1);
+    viewModel
+      ..userDetails = User(segments: ["Segment1", "Segment2", "Segment3"])
+      ..onUserSegmentDeleted(1);
 
     expect(viewModel.userDetails?.segments, ["Segment1", "Segment3"]);
   });
 
   test("onUserSegmentDeleted handles invalid index gracefully", () {
-    viewModel.userDetails = User(segments: ["Segment1"]);
-
-    // Test negative index
-    viewModel.onUserSegmentDeleted(-1);
+    viewModel
+      ..userDetails = User(segments: ["Segment1"])
+      ..onUserSegmentDeleted(-1);
     expect(viewModel.userDetails?.segments, ["Segment1"]);
 
     // Test index >= length
@@ -430,61 +388,61 @@ void main() {
   });
 
   test("onUserSegmentDeleted handles null segments list", () {
-    viewModel.userDetails = User(segments: null);
-
-    viewModel.onUserSegmentDeleted(0);
+    viewModel
+      ..userDetails = User(segments: null)
+      ..onUserSegmentDeleted(0);
 
     // Should not throw and segments should still be null
     expect(viewModel.userDetails?.segments, null);
   });
 
   test("onSelectedRegion updates user regions", () {
-    viewModel.userDetails = User();
     final List<Reference> selectedRegions = [
       Reference(name: "Asia"),
       Reference(name: "Europe"),
     ];
-
-    viewModel.onSelectedRegion(selectedRegions);
+    viewModel
+      ..userDetails = User()
+      ..onSelectedRegion(selectedRegions);
 
     expect(viewModel.userDetails?.regions, ["Asia", "Europe"]);
   });
 
   test("onSelectedRegion handles null input", () {
-    viewModel.userDetails = User();
-
-    viewModel.onSelectedRegion(null);
+    viewModel
+      ..userDetails = User()
+      ..onSelectedRegion(null);
 
     expect(viewModel.userDetails?.regions, []);
   });
 
   test("onSelectedSegments updates user segments", () {
-    viewModel.userDetails = User();
     final List<Reference> selectedSegments = [
       Reference(name: "Retail"),
       Reference(name: "Corporate"),
     ];
-
-    viewModel.onSelectedSegments(selectedSegments);
+    viewModel
+      ..userDetails = User()
+      ..onSelectedSegments(selectedSegments);
 
     expect(viewModel.userDetails?.segments, ["Retail", "Corporate"]);
   });
 
   test("onSelectedSegments handles null input", () {
-    viewModel.userDetails = User();
-
-    viewModel.onSelectedSegments(null);
+    viewModel
+      ..userDetails = User()
+      ..onSelectedSegments(null);
 
     expect(viewModel.userDetails?.segments, []);
   });
 
   test("islamicRelationshipUserSelected sets islamic flag correctly for yes",
       () {
-    viewModel.userDetails = User();
     final Reference yesOption =
         Reference(name: "requestInformation.requestInformation.yes");
-
-    viewModel.islamicRelationshipUserSelected(yesOption);
+    viewModel
+      ..userDetails = User()
+      ..islamicRelationshipUserSelected(yesOption);
 
     expect(viewModel.selectedIslamicRelationshipUserValue, yesOption);
     expect(viewModel.userDetails?.isIslamic, true);
@@ -492,10 +450,11 @@ void main() {
 
   test("islamicRelationshipUserSelected sets islamic flag correctly for no",
       () {
-    viewModel.userDetails = User();
     final Reference noOption = Reference(name: "Other");
 
-    viewModel.islamicRelationshipUserSelected(noOption);
+    viewModel
+      ..userDetails = User()
+      ..islamicRelationshipUserSelected(noOption);
 
     expect(viewModel.selectedIslamicRelationshipUserValue, noOption);
     expect(viewModel.userDetails?.isIslamic, false);

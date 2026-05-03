@@ -24,7 +24,7 @@ class SecurityStatus extends StatelessWidget {
             .toList(),
         onSelected: (selectedValue) {
           if (selectedValue.isNotEmpty) {
-            viewModel.security.securityStatus = (selectedValue.first);
+            viewModel.security.securityStatus = selectedValue.first;
           }
         },
         itemBuilder: (context, item, isDisabled, isSelected) {

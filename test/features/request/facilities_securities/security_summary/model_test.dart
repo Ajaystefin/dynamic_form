@@ -44,8 +44,7 @@ void main() {
   setUp(() {
     mockRepository = MockFacilitySecurityRepository();
     mockAlertManager = MockAlertManager();
-    viewModel = SecuritiesSummaryViewModel();
-    viewModel.repository = mockRepository;
+    viewModel = SecuritiesSummaryViewModel()..repository = mockRepository;
     AlertManager.overrideInstance(mockAlertManager);
 
     registerFallbackValue(<int?>[]);
@@ -234,25 +233,25 @@ void main() {
     });
 
     test("onFilter with securityNumber should filter correctly", () async {
-      viewModel.securities = [
-        Security(
-          securityId: 1,
-          securityNumber: "SEC001",
-          securityCode: "TYPE1",
-        ),
-        Security(
-          securityId: 2,
-          securityNumber: "SEC002",
-          securityCode: "TYPE2",
-        ),
-        Security(
-          securityId: 3,
-          securityNumber: "SEC003",
-          securityCode: "TYPE1",
-        ),
-      ];
-
-      viewModel.onFilter(Filter.securityNumber, value: "sec001");
+      viewModel
+        ..securities = [
+          Security(
+            securityId: 1,
+            securityNumber: "SEC001",
+            securityCode: "TYPE1",
+          ),
+          Security(
+            securityId: 2,
+            securityNumber: "SEC002",
+            securityCode: "TYPE2",
+          ),
+          Security(
+            securityId: 3,
+            securityNumber: "SEC003",
+            securityCode: "TYPE1",
+          ),
+        ]
+        ..onFilter(Filter.securityNumber, value: "sec001");
 
       await Future.delayed(const Duration(milliseconds: 10));
 
@@ -263,25 +262,25 @@ void main() {
     });
 
     test("onFilter with securityType should filter correctly", () async {
-      viewModel.securities = [
-        Security(
-          securityId: 1,
-          securityNumber: "SEC001",
-          securityCode: "TYPE1",
-        ),
-        Security(
-          securityId: 2,
-          securityNumber: "SEC002",
-          securityCode: "TYPE2",
-        ),
-        Security(
-          securityId: 3,
-          securityNumber: "SEC003",
-          securityCode: "TYPE1",
-        ),
-      ];
-
-      viewModel.onFilter(Filter.securityType, value: "type1");
+      viewModel
+        ..securities = [
+          Security(
+            securityId: 1,
+            securityNumber: "SEC001",
+            securityCode: "TYPE1",
+          ),
+          Security(
+            securityId: 2,
+            securityNumber: "SEC002",
+            securityCode: "TYPE2",
+          ),
+          Security(
+            securityId: 3,
+            securityNumber: "SEC003",
+            securityCode: "TYPE1",
+          ),
+        ]
+        ..onFilter(Filter.securityType, value: "type1");
 
       await Future.delayed(const Duration(milliseconds: 10));
 
@@ -295,45 +294,45 @@ void main() {
     });
 
     test("onFilter should handle empty filter value", () async {
-      viewModel.securities = [
-        Security(
-          securityId: 1,
-          securityNumber: "SEC001",
-          securityCode: "TYPE1",
-        ),
-        Security(
-          securityId: 2,
-          securityNumber: "SEC002",
-          securityCode: "TYPE2",
-        ),
-      ];
-
-      viewModel.onFilter(Filter.securityNumber, value: "");
+      viewModel
+        ..securities = [
+          Security(
+            securityId: 1,
+            securityNumber: "SEC001",
+            securityCode: "TYPE1",
+          ),
+          Security(
+            securityId: 2,
+            securityNumber: "SEC002",
+            securityCode: "TYPE2",
+          ),
+        ]
+        ..onFilter(Filter.securityNumber, value: "");
 
       expect(viewModel.filteredData.length, 2);
       expect(viewModel.securityNumber, "");
     });
 
     test("onFilter should handle partial matches", () async {
-      viewModel.securities = [
-        Security(
-          securityId: 1,
-          securityNumber: "SEC001",
-          securityCode: "MORTGAGE",
-        ),
-        Security(
-          securityId: 2,
-          securityNumber: "SEC002",
-          securityCode: "PROPERTY",
-        ),
-        Security(
-          securityId: 3,
-          securityNumber: "SEC003",
-          securityCode: "MORTGAGE_TYPE2",
-        ),
-      ];
-
-      viewModel.onFilter(Filter.securityType, value: "mort");
+      viewModel
+        ..securities = [
+          Security(
+            securityId: 1,
+            securityNumber: "SEC001",
+            securityCode: "MORTGAGE",
+          ),
+          Security(
+            securityId: 2,
+            securityNumber: "SEC002",
+            securityCode: "PROPERTY",
+          ),
+          Security(
+            securityId: 3,
+            securityNumber: "SEC003",
+            securityCode: "MORTGAGE_TYPE2",
+          ),
+        ]
+        ..onFilter(Filter.securityType, value: "mort");
 
       expect(viewModel.filteredData.length, 2);
       expect(

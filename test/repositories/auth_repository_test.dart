@@ -370,16 +370,14 @@ void main() {
         final mockResponseBody = {
           "responseData": {
             "tokenResponse": {
-              "jwtToken":
-                  "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ3Y2FzdHNwMDEiLC"
+              "jwtToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ3Y2FzdHNwMDEiLC"
                   "JpYXQiOjE3NjgyMTgzMDMsImV4cCI6MTc2ODIxOTIwM30."
-                      "UmNXytZjaMfVia_Y1wuHUJPjG1g4NNYpWvZLGgsIfZE",
+                  "UmNXytZjaMfVia_Y1wuHUJPjG1g4NNYpWvZLGgsIfZE",
               "expiresIn": 900000,
-              "refreshToken":
-                  "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ3Y2FzdHNwMDEiLCJ"
+              "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ3Y2FzdHNwMDEiLCJ"
                   "1dWlkIjoiZWU4MDZjNjAtZTNmZS00ZTcwLThkOTgtODBkNWM"
                   "0YjM5ZTAxIn0."
-                      "J-xxXp-Dh9pv4aDI0tAS2EleKJPiRtuQzCv5mWKh4kc",
+                  "J-xxXp-Dh9pv4aDI0tAS2EleKJPiRtuQzCv5mWKh4kc",
               "tokenType": "Bearer",
             },
             "userResponse": {

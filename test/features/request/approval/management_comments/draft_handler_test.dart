@@ -28,10 +28,11 @@ void main() {
             key: vm.formKey,
             child: TextFormField(
               onSaved: (_) {
-                vm.creditCommitteeRecommendations = "CCR";
-                vm.ccoComments = "CCO";
-                vm.ceoComments = "CEO";
-                vm.bcicComments = "BCIC";
+                vm
+                  ..creditCommitteeRecommendations = "CCR"
+                  ..ccoComments = "CCO"
+                  ..ceoComments = "CEO"
+                  ..bcicComments = "BCIC";
               },
             ),
           ),
@@ -54,11 +55,12 @@ void main() {
   });
 
   test("buildDraftData works when form is not mounted", () {
-    vm.creditCommitteeRecommendations = "CCR";
-    vm.ccoComments = "CCO";
-    vm.ceoComments = "CEO";
-    vm.bcicComments = "BCIC";
-    vm.canSubmit = false;
+    vm
+      ..creditCommitteeRecommendations = "CCR"
+      ..ccoComments = "CCO"
+      ..ceoComments = "CEO"
+      ..bcicComments = "BCIC"
+      ..canSubmit = false;
 
     final draft = handler.buildDraftData(vm);
 
@@ -91,11 +93,12 @@ void main() {
 
   test("applyDraft updates only provided fields and leaves others unchanged",
       () {
-    vm.creditCommitteeRecommendations = "old CCR";
-    vm.ccoComments = "old CCO";
-    vm.ceoComments = "old CEO";
-    vm.bcicComments = "old BCIC";
-    vm.canSubmit = false;
+    vm
+      ..creditCommitteeRecommendations = "old CCR"
+      ..ccoComments = "old CCO"
+      ..ceoComments = "old CEO"
+      ..bcicComments = "old BCIC"
+      ..canSubmit = false;
 
     handler.applyDraft(vm, {
       "ccoComments": "new CCO",
@@ -110,11 +113,12 @@ void main() {
   });
 
   test("applyDraft ignores null values safely", () {
-    vm.creditCommitteeRecommendations = "CCR";
-    vm.ccoComments = "CCO";
-    vm.ceoComments = "CEO";
-    vm.bcicComments = "BCIC";
-    vm.canSubmit = true;
+    vm
+      ..creditCommitteeRecommendations = "CCR"
+      ..ccoComments = "CCO"
+      ..ceoComments = "CEO"
+      ..bcicComments = "BCIC"
+      ..canSubmit = true;
 
     handler.applyDraft(vm, {
       "creditCommitteeRecommendations": null,
@@ -132,8 +136,9 @@ void main() {
   });
 
   test("applyDraft ignores unrelated keys", () {
-    vm.creditCommitteeRecommendations = "CCR";
-    vm.canSubmit = false;
+    vm
+      ..creditCommitteeRecommendations = "CCR"
+      ..canSubmit = false;
 
     handler.applyDraft(vm, {
       "foo": "bar",
@@ -145,11 +150,12 @@ void main() {
   });
 
   test("applyDraft does nothing when draft map is empty", () {
-    vm.creditCommitteeRecommendations = "CCR";
-    vm.ccoComments = "CCO";
-    vm.ceoComments = "CEO";
-    vm.bcicComments = "BCIC";
-    vm.canSubmit = true;
+    vm
+      ..creditCommitteeRecommendations = "CCR"
+      ..ccoComments = "CCO"
+      ..ceoComments = "CEO"
+      ..bcicComments = "BCIC"
+      ..canSubmit = true;
 
     handler.applyDraft(vm, {});
 

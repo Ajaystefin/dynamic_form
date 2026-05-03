@@ -108,7 +108,7 @@ class RelationshipProfitabilitySummaryViewModel
   // ---------------------------------------------------------------------------
 
   PageMode pageMode = PageMode.na;
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
 
   /// In
   Future<void> init(BuildContext context) async {
@@ -157,7 +157,7 @@ class RelationshipProfitabilitySummaryViewModel
       logger.i(
         "Init completed: "
         "entries=$relationshipProfitabilitySummaryData"
-            "?.relationshipProfitability?.length ?? 0}",
+        "?.relationshipProfitability?.length ?? 0}",
       );
     } catch (e) {
       AlertManager().showFailureToast(e.toString());
@@ -372,16 +372,16 @@ class RelationshipProfitabilitySummaryViewModel
       return; // caller will _pulseTable()
     }
 
-    Decimal projNii = Decimal.zero,
-        projNfi = Decimal.zero,
-        projExpNI = Decimal.zero,
-        projAvgCasa = Decimal.zero,
-        projRwa = Decimal.zero;
-    Decimal realNii = Decimal.zero,
-        realNfi = Decimal.zero,
-        realExpNI = Decimal.zero,
-        realAvgCasa = Decimal.zero,
-        realRwa = Decimal.zero;
+    Decimal projNii = Decimal.zero;
+    Decimal projNfi = Decimal.zero;
+    Decimal projExpNI = Decimal.zero;
+    Decimal projAvgCasa = Decimal.zero;
+    Decimal projRwa = Decimal.zero;
+    Decimal realNii = Decimal.zero;
+    Decimal realNfi = Decimal.zero;
+    Decimal realExpNI = Decimal.zero;
+    Decimal realAvgCasa = Decimal.zero;
+    Decimal realRwa = Decimal.zero;
 
     for (final RelationshipProfitability rimData in entries) {
       projNii += _decimalCheck(rimData.projectedNext12Months?.nii);

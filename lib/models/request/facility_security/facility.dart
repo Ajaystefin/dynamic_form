@@ -132,7 +132,7 @@ class Facility {
           : null,
       rimNo: parseInt(json["rimNo"]),
       limitLabel: json["limitLabel"] ?? json["projectName"] as String?,
-      limitNumber: (json["limitNumber"] ?? json["limitNo"]),
+      limitNumber: json["limitNumber"] ?? json["limitNo"],
       limitGroup: parseInt(json["limitGroup"]),
       limitCode: parseInt(json["limitCode"]),
       appRefNo: json["appRefNo"] as String?,
@@ -437,7 +437,7 @@ class Facility {
       "limitAvailabilityPeriod": limitAvailabilityPeriod,
       "proposedLimit": proposedLimit,
       "proposedLimitAED": proposedLimitAED,
-      "proposedByCc": (proposedByCc),
+      "proposedByCc": proposedByCc,
       "proposedByCcCurrency":
           proposedByCcCurrency ?? ServerConstants.aedCurrency,
       "limitExpiryDate":
@@ -609,9 +609,12 @@ class FeeDefaultRate {
         .toList();
   }
   String? defaultRate;
-  int? percentage, amount, feeID;
+  int? percentage;
+  int? amount;
+  int? feeID;
   List<String>? frequencies = [];
-  String? comments, frequency;
+  String? comments;
+  String? frequency;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};

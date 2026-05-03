@@ -87,8 +87,7 @@ class FeeStructureViewModel extends SafeCubit<FeeStructureState>
       for (final FeeStructure row in feeRows) row.feeType: row,
     };
     return defaultFeeTypes.map<FeeStructure>((String type) {
-      final FeeStructure row = existingByType[type]!;
-      row.isNew = false;
+      final FeeStructure row = existingByType[type]!..isNew = false;
       return row;
     }).toList();
   }
@@ -103,17 +102,15 @@ class FeeStructureViewModel extends SafeCubit<FeeStructureState>
   /// Sets default values for appRefNo and rimNo in each row.
   void _defaultRows(List<FeeStructure> rowsTodefault) {
     for (final FeeStructure row in rowsTodefault) {
-      row.appRefNo = Globals
-          .request?.applicationRefNo; //Globals.request?.applicationRefNo;
-      row.rimNo =
-          selectedCustomer?.customerRimNo; //selectedCustomer?.customerRimNo;
+      row
+        ..appRefNo = Globals.request?.applicationRefNo
+        ..rimNo = selectedCustomer?.customerRimNo;
     }
   }
 
   bool isFI = false;
 
-  bool get isEdit =>
-      (pageMode == PageMode.edit); //&& Utils.canEditApplication();
+  bool get isEdit => pageMode == PageMode.edit; //&& Utils.canEditApplication();
 
   @override
   String get draftModuleKey => DraftModuleKeys
@@ -148,7 +145,7 @@ class FeeStructureViewModel extends SafeCubit<FeeStructureState>
     try {
       if (Utils.isGroupApplication()) {
         customerList =
-            (await CustomerRepository.instance.getChildRimsForGroup() ?? []);
+            await CustomerRepository.instance.getChildRimsForGroup() ?? [];
         if ((customerList ?? []).isNotEmpty) {
           selectedCustomer = customerList?.first;
         } else {
@@ -233,15 +230,17 @@ class FeeStructureViewModel extends SafeCubit<FeeStructureState>
     final String raw = input.trim();
 
     if (raw.isEmpty) {
-      row.amountRaw = null;
-      row.amount = null; // small numbers also wiped
+      row
+        ..amountRaw = null
+        ..amount = null; // small numbers also wiped
       _showNaForId[row.id] = false;
       return;
     }
 
     if (raw.toUpperCase() == "N/A") {
-      row.amountRaw = "N/A";
-      row.amount = 0.0;
+      row
+        ..amountRaw = "N/A"
+        ..amount = 0.0;
       _showNaForId[row.id] = true;
       return;
     }
@@ -254,7 +253,7 @@ class FeeStructureViewModel extends SafeCubit<FeeStructureState>
     final bool safeLength = raw.replaceAll(".", "").length <= 16;
     row.amount = safeLength ? double.tryParse(raw) : null;
 
-    _showNaForId[row.id] = (raw == "0" || raw == "0.00");
+    _showNaForId[row.id] = raw == "0" || raw == "0.00";
   }
 
   /// Handles customer change and reloads fee structure data.
@@ -319,18 +318,20 @@ class FeeStructureViewModel extends SafeCubit<FeeStructureState>
         final String text = amountControllers[i].text.trim();
 
         if (text.isEmpty) {
-          row.amountRaw = null;
-          row.amount = null;
+          row
+            ..amountRaw = null
+            ..amount = null;
           _showNaForId[row.id] = false;
         } else if (text.toUpperCase() == "N/A") {
-          row.amountRaw = "N/A";
-          row.amount = 0.0;
+          row
+            ..amountRaw = "N/A"
+            ..amount = 0.0;
           _showNaForId[row.id] = true;
         } else {
           row.amountRaw = text; // Exact
           final bool safeLength = text.replaceAll(".", "").length <= 16;
           row.amount = safeLength ? double.tryParse(text) : null;
-          _showNaForId[row.id] = (text == "0" || text == "0.00");
+          _showNaForId[row.id] = text == "0" || text == "0.00";
         }
 
         row.comments = commentsControllers[i].text.trim();

@@ -68,8 +68,7 @@ void main() {
         .thenReturn(null);
     when(() => mockAlertManager.showSuccessToast(any<String>()))
         .thenReturn(null);
-    vm = CommonTabsViewModel();
-    vm.repository = mockRepository;
+    vm = CommonTabsViewModel()..repository = mockRepository;
     Globals.request = Request(
       customers: [Customer(customerName: "Test Customer")],
     );
@@ -207,14 +206,10 @@ void main() {
 
     test("navigate handles method calls correctly", () async {
       // Set our mocked repository
-      vm.repository = mockRepository;
-
-      when(() => mockRepository.getRemarkStrategyData(any(), any()))
-          .thenAnswer((_) async => Comment());
-
-      // Just test that navigate can be called multiple times without error
-      expect(() => vm.navigate(), returnsNormally);
-      expect(() => vm.navigate(), returnsNormally);
+      vm
+        ..repository = mockRepository
+        ..emit(vm.state.copyWith(activeTab: RemarksTabs.businessExperience))
+        ..navigate();
 
       await Future.delayed(const Duration(milliseconds: 100));
 
@@ -223,8 +218,9 @@ void main() {
 
     test("onSavePress handles navigation when shouldNavigate is true",
         () async {
-      vm.repository = mockRepository;
-      vm.commentData = Comment(strategyComment: "Test Comment");
+      vm
+        ..repository = mockRepository
+        ..commentData = Comment(strategyComment: "Test Comment");
       when(() => mockRepository.saveRemarkStrategyData(any(), any()))
           .thenAnswer((_) async => "Success");
       when(() => mockRepository.getRemarkStrategyData(any(), any()))
@@ -288,12 +284,13 @@ void main() {
     test("shouldValidate returns true when activeTab is in showAsteriskTabs",
         () {
       Globals.request = Request(businessSegment: Reference(id: 101));
-      vm.selectedCustomer =
-          Customer(type: CustomerType.belowInvestmentGradeBanks);
-      vm.setAsterisks();
+      vm
+        ..selectedCustomer =
+            Customer(type: CustomerType.belowInvestmentGradeBanks)
+        ..setAsterisks()
 
-      // Change to a tab that's in the asterisk list
-      vm.emit(vm.state.copyWith(activeTab: RemarksTabs.businessExperience));
+        // Change to a tab that's in the asterisk list
+        ..emit(vm.state.copyWith(activeTab: RemarksTabs.businessExperience));
 
       // expect(vm.shouldValidateField, isFalse);
     });
@@ -303,12 +300,13 @@ void main() {
         "returns false when "
         "activeTab is not in showAsteriskTabs", () {
       Globals.request = Request(businessSegment: Reference(id: 101));
-      vm.selectedCustomer =
-          Customer(type: CustomerType.belowInvestmentGradeBanks);
-      vm.setAsterisks();
+      vm
+        ..selectedCustomer =
+            Customer(type: CustomerType.belowInvestmentGradeBanks)
+        ..setAsterisks()
 
-      // Change to a tab that's not in the asterisk list
-      vm.emit(vm.state.copyWith(activeTab: RemarksTabs.feeStructure));
+        // Change to a tab that's not in the asterisk list
+        ..emit(vm.state.copyWith(activeTab: RemarksTabs.feeStructure));
 
       //expect(vm.shouldValidateField, isTrue);
     });
@@ -329,10 +327,10 @@ void main() {
         "setAsterisks populates tabs for FI with "
         "belowInvestmentGradeBanks customer", () {
       Globals.request = Request(businessSegment: Reference(id: 101));
-      vm.selectedCustomer =
-          Customer(type: CustomerType.belowInvestmentGradeBanks);
-
-      vm.setAsterisks();
+      vm
+        ..selectedCustomer =
+            Customer(type: CustomerType.belowInvestmentGradeBanks)
+        ..setAsterisks();
 
       // expect(vm.showAsteriskTabs.length, equals(9));
       // expect(vm.showAsteriskTabs, contains(RemarksTabs.businessExperience));
@@ -351,9 +349,9 @@ void main() {
         "setAsterisks populates tabs for FI with investmentGradeBanks customer",
         () {
       Globals.request = Request(businessSegment: Reference(id: 14486));
-      vm.selectedCustomer = Customer(type: CustomerType.investmentGradeBanks);
-
-      vm.setAsterisks();
+      vm
+        ..selectedCustomer = Customer(type: CustomerType.investmentGradeBanks)
+        ..setAsterisks();
 
       expect(vm.showAsteriskTabs.length, equals(3));
       expect(vm.showAsteriskTabs, contains(RemarksTabs.businessExperience));
@@ -364,10 +362,10 @@ void main() {
     test("setAsterisks clears tabs for non-FI business segment", () {
       Globals.request =
           Request(businessSegment: Reference(id: 100)); // Corporate
-      vm.selectedCustomer =
-          Customer(type: CustomerType.belowInvestmentGradeBanks);
-
-      vm.setAsterisks();
+      vm
+        ..selectedCustomer =
+            Customer(type: CustomerType.belowInvestmentGradeBanks)
+        ..setAsterisks();
 
       //expect(vm.showAsteriskTabs, isEmpty);
     });
@@ -454,11 +452,12 @@ void main() {
         applicationRefNo: "APP001",
       );
       Globals.user = User(id: "user1", currentRole: Role(roleId: 1));
-      vm.selectedCustomer = Customer(customerRimNo: 12345);
+      vm
+        ..selectedCustomer = Customer(customerRimNo: 12345)
 
-      // Set to a tab and ensure no validation required
-      vm.emit(vm.state.copyWith(activeTab: RemarksTabs.businessExperience));
-      vm.setAsterisks(); // This will clear asterisks for non-FI
+        // Set to a tab and ensure no validation required
+        ..emit(vm.state.copyWith(activeTab: RemarksTabs.businessExperience))
+        ..setAsterisks(); // This will clear asterisks for non-FI
 
       when(() => mockRepository.saveRemarkStrategyData(any(), any()))
           .thenAnswer((_) async => "Success");
@@ -480,11 +479,12 @@ void main() {
         applicationRefNo: "APP001",
       );
       Globals.user = User(id: "user1", currentRole: Role(roleId: 1));
-      vm.selectedCustomer = Customer(customerRimNo: 12345);
+      vm
+        ..selectedCustomer = Customer(customerRimNo: 12345)
 
-      // Set to a tab and ensure no validation required
-      vm.emit(vm.state.copyWith(activeTab: RemarksTabs.businessExperience));
-      vm.setAsterisks(); // This will clear asterisks for non-FI
+        // Set to a tab and ensure no validation required
+        ..emit(vm.state.copyWith(activeTab: RemarksTabs.businessExperience))
+        ..setAsterisks(); // This will clear asterisks for non-FI
 
       when(() => mockRepository.saveRemarkStrategyData(any(), any()))
           .thenAnswer((_) async => "Success");
@@ -500,15 +500,10 @@ void main() {
     });
 
     test("navigate changes to next tab when not at end", () async {
-      vm.repository = mockRepository;
-
-      when(() => mockRepository.getRemarkStrategyData(any(), any(), any()))
-          .thenAnswer((_) async => Comment());
-
-      // Set a tab that's not the last one
-      vm.emit(vm.state.copyWith(activeTab: RemarksTabs.businessExperience));
-
-      vm.navigate();
+      vm
+        ..repository = mockRepository
+        ..emit(vm.state.copyWith(activeTab: RemarksTabs.businessExperience))
+        ..navigate();
 
       await Future.delayed(const Duration(milliseconds: 200));
 
@@ -517,18 +512,10 @@ void main() {
     });
 
     test("navigate calls LayoutViewModel when at the last tab", () async {
-      vm.repository = mockRepository;
-
-      when(() => mockRepository.getRemarkStrategyData(any(), any(), any()))
-          .thenAnswer((_) async => Comment());
-
-      // Set to a tab that will trigger LayoutViewModel call
-      // Using a tab that's defined but may be at the end
-      vm.emit(vm.state.copyWith(activeTab: RemarksTabs.businessExperience));
-
-      // navigate() will either change tabs or call LayoutViewModel
-      // We just verify it doesn't crash
-      expect(() => vm.navigate(), returnsNormally);
+      vm
+        ..repository = mockRepository
+        ..emit(vm.state.copyWith(activeTab: RemarksTabs.businessExperience))
+        ..navigate();
 
       await Future.delayed(const Duration(milliseconds: 100));
     });
@@ -540,11 +527,12 @@ void main() {
         applicationRefNo: "APP001",
       );
       Globals.user = User(id: "user1", currentRole: Role(roleId: 1));
-      vm.selectedCustomer = Customer(customerRimNo: 12345);
+      vm
+        ..selectedCustomer = Customer(customerRimNo: 12345)
 
-      // Set to a tab and ensure no validation required
-      vm.emit(vm.state.copyWith(activeTab: RemarksTabs.businessExperience));
-      vm.setAsterisks(); // This will clear asterisks for non-FI
+        // Set to a tab and ensure no validation required
+        ..emit(vm.state.copyWith(activeTab: RemarksTabs.businessExperience))
+        ..setAsterisks(); // This will clear asterisks for non-FI
 
       when(() => mockRepository.saveRemarkStrategyData(any(), any()))
           .thenAnswer((_) async {

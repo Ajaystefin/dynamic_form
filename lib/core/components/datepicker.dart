@@ -186,12 +186,8 @@ class CustomDatePickerState extends State<CustomDatePicker> {
                     icon: const Icon(Icons.close),
                     onPressed: () {
                       widget.controller?.clear();
-                      if (widget.onSubmit != null) {
-                        widget.onSubmit!(null);
-                      }
-                      if (widget.onSubmit2 != null) {
-                        widget.onSubmit2!(null);
-                      }
+                      widget.onSubmit?.call(null);
+                      widget.onSubmit2?.call(null);
                       selectedDateText = null;
                       setController();
                     },
@@ -240,12 +236,8 @@ class CustomDatePickerState extends State<CustomDatePicker> {
                                 DateFormat(widget.dateFormat ?? "dd/MM/yyyy")
                                     .format(picked.start);
                             widget.controller?.text = formatted.toString();
-                            if (widget.onSubmit != null) {
-                              widget.onSubmit!(formatted);
-                            }
-                            if (widget.onSubmit2 != null) {
-                              widget.onSubmit2!(picked.start);
-                            }
+                            widget.onSubmit?.call(formatted);
+                            widget.onSubmit2?.call(picked.start);
 
                             selectedDateText = (widget.isMaualEdit == true)
                                 ? DateTimeUtils.toDateOnly(

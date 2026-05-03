@@ -85,9 +85,7 @@ class DynamicFormMultiSelectDropdown extends StatelessWidget {
                   ),
                   onDeleted: () {
                     // Remove the item at the specified index and update
-                    final List<String> updatedList = List<String>.from(data);
-                    updatedList.removeAt(index);
-                    selectedOptions(updatedList);
+                    selectedOptions(List<String>.from(data)..removeAt(index));
                   },
                 ),
               );

@@ -35,7 +35,7 @@ class CustomAccordion extends StatefulWidget {
   final String? subtitle;
   final bool showLeadingIcon;
   final Widget? primaryIcon;
-  final ExpansibleController? expansionController;
+  final ExpansionTileController? expansionController;
   final Widget? trailing;
   final Color? expandedTextColor;
   final Color? iconColor;

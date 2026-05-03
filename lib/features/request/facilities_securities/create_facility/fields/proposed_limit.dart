@@ -46,15 +46,16 @@ class ProposedLimit extends StatelessWidget {
           selectedItems: [selectedCurrency],
           onSelected: (selectedValue) {
             if (selectedValue.isNotEmpty) {
-              viewModel.getFacility.proposedLimitValue = (selectedValue.first);
-              viewModel.onCurrencyChanged(
-                selectedValue.first,
-                CurrencyField.proposedLimit,
-              );
-              viewModel.getCurrencyRates(
-                selectedValue.first,
-                CurrencyField.proposedLimit,
-              );
+              viewModel.getFacility.proposedLimitValue = selectedValue.first;
+              viewModel
+                ..onCurrencyChanged(
+                  selectedValue.first,
+                  CurrencyField.proposedLimit,
+                )
+                ..getCurrencyRates(
+                  selectedValue.first,
+                  CurrencyField.proposedLimit,
+                );
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {
@@ -133,7 +134,7 @@ class ProposedLimit extends StatelessWidget {
 
             // ------------------ VALIDATION ------------------
             if (isSubLimit && !isStandbyGroup) {
-              final int cap = (viewModel.getFacility.totalProposedLimit ?? 0);
+              final int cap = viewModel.getFacility.totalProposedLimit ?? 0;
               if (amount > cap &&
                   viewModel.shouldShowProposedLimitToastOnce(amount)) {
                 AlertManager().showFailureToast(proposedLimitExceedMessage());
@@ -141,14 +142,14 @@ class ProposedLimit extends StatelessWidget {
             } else if (isSubLimit &&
                 (viewModel.isStanbySublimitValidation ?? false) &&
                 isStandbyGroup) {
-              final int cap = (viewModel.getFacility.totalProposedLimit ?? 0);
+              final int cap = viewModel.getFacility.totalProposedLimit ?? 0;
               if (amount > cap &&
                   viewModel.shouldShowProposedLimitToastOnce(amount)) {
                 AlertManager().showFailureToast(proposedLimitExceedMessage());
               }
             } else {
               if (viewModel.getFacility.totalProposedLimit == null) return;
-              final int cap = (viewModel.getFacility.totalProposedLimit ?? 0);
+              final int cap = viewModel.getFacility.totalProposedLimit ?? 0;
               if (amount > cap &&
                   viewModel.shouldShowProposedLimitToastOnce(amount)) {
                 final bool isNewStandbyFacility = isStandbyGroup &&

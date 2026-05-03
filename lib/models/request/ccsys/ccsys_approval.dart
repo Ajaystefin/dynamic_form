@@ -17,7 +17,7 @@ class CCSYSApproval {
       appRefNo: json["appRefNo"] as String,
       mode: (json["mode"] as num).toInt(),
       assignedTo: json["assignedTo"] as String,
-      assignedRole: (json["assignedRole"] as String),
+      assignedRole: json["assignedRole"] as String,
       userAction: (json["userAction"] as num).toInt(),
       commentId: (json["commentId"] as num).toInt(),
       avoidWarning: json["avoidWarning"] as bool,

@@ -677,11 +677,10 @@ class FacilitySummaryNew {
     if (grid.isEmpty) {
       grid = <dynamic>[firstRow];
     } else {
-      final Map<String, dynamic> existingFirst = (grid.first is Map)
+      grid[0] = ((grid.first is Map)
           ? Map<String, dynamic>.from(grid.first as Map)
-          : <String, dynamic>{};
-      existingFirst.addAll(firstRow);
-      grid[0] = existingFirst;
+          : <String, dynamic>{})
+        ..addAll(firstRow);
     }
     inner["profitGrid"] = grid;
 

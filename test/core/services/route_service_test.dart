@@ -520,9 +520,10 @@ void main() {
       when(() => settings2.name).thenReturn("/route2");
 
       // Simulate concurrent operations
-      observer.didPush(route1, null);
-      observer.didPop(route2, route1);
-      observer.didRemove(route1, route2);
+      observer
+        ..didPush(route1, null)
+        ..didPop(route2, route1)
+        ..didRemove(route1, route2);
 
       expect(Globals.currentRoute, equals("/route1"));
       expect(Globals.previousRoute, equals("/route2"));
@@ -903,9 +904,10 @@ void main() {
         expect(route.builder, isNotNull);
 
         // These property accesses should increase coverage
-        route.toString();
-        route.hashCode;
-        route.runtimeType;
+        route
+          ..toString()
+          ..hashCode
+          ..runtimeType;
 
         if (route.builder != null) {
           expect(route.builder, isA<Function>());
@@ -920,9 +922,10 @@ void main() {
       expect(config.routes, isNotEmpty);
 
       // Access configuration properties
-      config.toString();
-      config.hashCode;
-      config.runtimeType;
+      config
+        ..toString()
+        ..hashCode
+        ..runtimeType;
 
       final redirectFn = config.redirect;
       expect(redirectFn, isA<Function>());
@@ -935,33 +938,34 @@ void main() {
   group("Maximum Coverage - Execute Everything", () {
     test("should call all possible methods and properties", () {
       // Router properties
-      router.toString();
-      router.hashCode;
-      router.runtimeType;
+      router
+        ..toString()
+        ..hashCode
+        ..runtimeType;
 
       // Router delegate
-      final delegate = router.routerDelegate;
-      delegate.toString();
-      delegate.hashCode;
-      delegate.runtimeType;
+      router.routerDelegate
+        ..toString()
+        ..hashCode
+        ..runtimeType;
 
       // Route information parser
-      final parser = router.routeInformationParser;
-      parser.toString();
-      parser.hashCode;
-      parser.runtimeType;
+      router.routeInformationParser
+        ..toString()
+        ..hashCode
+        ..runtimeType;
 
       // Route information provider
-      final provider = router.routeInformationProvider;
-      provider.toString();
-      provider.hashCode;
-      provider.runtimeType;
+      router.routeInformationProvider
+        ..toString()
+        ..hashCode
+        ..runtimeType;
 
       // Configuration
-      final config = router.configuration;
-      config.toString();
-      config.hashCode;
-      config.runtimeType;
+      router.configuration
+        ..toString()
+        ..hashCode
+        ..runtimeType;
 
       expect(router, isA<GoRouter>());
     });

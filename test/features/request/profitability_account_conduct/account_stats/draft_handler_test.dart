@@ -14,11 +14,9 @@ void main() {
 
   setUp(() {
     handler = AccountStatsDraftHandler();
-    vm = AccountStatsViewModel();
-
-    // formKey is FINAL — do not reassign
-    vm.comment = "Initial comment";
-    vm.customerWiseAccountStat = {};
+    vm = AccountStatsViewModel()
+      ..comment = "Initial comment"
+      ..customerWiseAccountStat = {};
   });
 
   // ---------------------------------------------------------------------------
@@ -148,8 +146,9 @@ void main() {
         customer: [row],
       };
 
-      handler.applyDraft(vm, {});
-      handler.applyDraft(vm, {"accountStatsByCustomer": null});
+      handler
+        ..applyDraft(vm, {})
+        ..applyDraft(vm, {"accountStatsByCustomer": null});
 
       expect(row.accountCommitmentNumber, isNull);
     });

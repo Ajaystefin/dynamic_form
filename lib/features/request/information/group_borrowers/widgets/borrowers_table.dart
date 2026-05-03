@@ -96,7 +96,7 @@ class BorrowersTable extends StatelessWidget {
                     child: CustomTooltip(
                       message: customer.concatCustomerFullName,
                       child: Text(
-                        (customer.concatCustomerFullName),
+                        customer.concatCustomerFullName,
                       ),
                     ),
                   ),

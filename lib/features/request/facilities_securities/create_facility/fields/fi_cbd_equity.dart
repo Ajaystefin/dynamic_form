@@ -42,14 +42,15 @@ class FiCbdEquity extends StatelessWidget {
             if (selectedValue.isNotEmpty) {
               viewModel.getFacility.cbdEquityTier325PercentCurrency =
                   selectedValue.first;
-              viewModel.onCurrencyChanged(
-                selectedValue.first,
-                CurrencyField.cbdEquityTier325Percent,
-              );
-              viewModel.getCurrencyRates(
-                selectedValue.first,
-                CurrencyField.cbdEquityTier325Percent,
-              );
+              viewModel
+                ..onCurrencyChanged(
+                  selectedValue.first,
+                  CurrencyField.cbdEquityTier325Percent,
+                )
+                ..getCurrencyRates(
+                  selectedValue.first,
+                  CurrencyField.cbdEquityTier325Percent,
+                );
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {

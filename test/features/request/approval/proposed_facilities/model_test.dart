@@ -160,9 +160,9 @@ void main() {
   });
 
   setUp(() {
-    viewModel = ProposedFacilitiesViewModel();
-    viewModel.approvalRepository = BaseApprovalRepository();
-    viewModel.repository = FakeRequestRepository();
+    viewModel = ProposedFacilitiesViewModel()
+      ..approvalRepository = BaseApprovalRepository()
+      ..repository = FakeRequestRepository();
   });
 
   /// -------------------------------------------------------
@@ -192,18 +192,18 @@ void main() {
   /// -------------------------------------------------------
 
   test("getGroupPositionDetails works independently", () async {
-    viewModel.approvalRepository = BaseApprovalRepository();
-
-    await viewModel.getGroupPositionDetails();
+    await (viewModel
+      ..approvalRepository = BaseApprovalRepository())
+        .getGroupPositionDetails();
 
     expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
     expect(viewModel.groupPositionList, isA<GroupPosition>());
   });
 
   test("getPipelineRequestDetails works independently", () async {
-    viewModel.approvalRepository = BaseApprovalRepository();
-
-    await viewModel.getPipelineRequestDetails();
+    await (viewModel
+      ..approvalRepository = BaseApprovalRepository())
+        .getPipelineRequestDetails();
 
     expect(viewModel.pipelineRequests, isEmpty);
   });
@@ -261,14 +261,14 @@ void main() {
     late ProposedFacilitiesViewModel viewModel;
 
     setUp(() {
-      viewModel = ProposedFacilitiesViewModel();
-      viewModel.approvalRepository = CleanExposureApprovalRepository();
+      viewModel = ProposedFacilitiesViewModel()
+        ..approvalRepository = CleanExposureApprovalRepository()
 
-      // ensure maps are initialized
-      viewModel.cleanExposureControllers = {};
-      viewModel.cleanExposureValues = {};
-      viewModel.groupedExposure = {};
-      viewModel.exposureList = [];
+        // ensure maps are initialized
+        ..cleanExposureControllers = {}
+        ..cleanExposureValues = {}
+        ..groupedExposure = {}
+        ..exposureList = [];
     });
 
     test("populates exposure data and shared rim correctly", () async {
@@ -358,9 +358,9 @@ void main() {
     });
 
     test("loads pipeline requests successfully", () async {
-      viewModel.approvalRepository = BaseApprovalRepository();
-
-      await viewModel.getPipelineRequestDetails();
+      await (viewModel
+        ..approvalRepository = BaseApprovalRepository())
+          .getPipelineRequestDetails();
 
       expect(viewModel.pipelineRequests, isNotNull);
       expect(viewModel.pipelineRequests, isEmpty);
@@ -380,10 +380,10 @@ void main() {
     late ProposedFacilitiesViewModel viewModel;
 
     setUp(() {
-      viewModel = ProposedFacilitiesViewModel();
-      viewModel.approvalRepository = BaseApprovalRepository();
-      viewModel.groupedExposure = {};
-      viewModel.exposureList = [];
+      viewModel = ProposedFacilitiesViewModel()
+        ..approvalRepository = BaseApprovalRepository()
+        ..groupedExposure = {}
+        ..exposureList = [];
     });
 
     test("does nothing and emits loaded when no exposures exist", () async {
@@ -407,11 +407,11 @@ void main() {
     });
 
     test("handles repository error gracefully", () async {
-      viewModel.approvalRepository = InsertErrorApprovalRepo();
-
-      viewModel.groupedExposure = {
-        1: Exposure(rimNo: 1),
-      };
+      viewModel
+        ..approvalRepository = InsertErrorApprovalRepo()
+        ..groupedExposure = {
+          1: Exposure(rimNo: 1),
+        };
 
       await viewModel.onSavePress();
       await Future.delayed(Duration.zero);

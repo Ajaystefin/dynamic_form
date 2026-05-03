@@ -95,8 +95,8 @@ void main() {
 
     LocalStorageService().setStorage(mockLocalStorageService);
 
-    viewModel = InPipelineDialogViewModel();
-    viewModel.repository = mockRepository;
+    viewModel = InPipelineDialogViewModel()
+      ..repository = mockRepository;
 
     mockReferenceService = MockReferenceDataService();
     mockRepository = MockRequestRepository();

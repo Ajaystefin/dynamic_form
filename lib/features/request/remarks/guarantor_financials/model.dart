@@ -183,8 +183,7 @@ class GuarantorFinancialViewModel extends SafeCubit<GuarantorFinancialState>
   String get draftModuleKey => DraftModuleKeys.remarks;
 
   @override
-  String get draftFormKey =>
-      "${Routes.guarantorFinancials}_"
+  String get draftFormKey => "${Routes.guarantorFinancials}_"
       "${selectedCustomer?.customerRimNo}_${state.activeTab.name}";
 
   @override
@@ -252,7 +251,7 @@ class GuarantorFinancialViewModel extends SafeCubit<GuarantorFinancialState>
     try {
       if (Utils.isGroupApplication()) {
         customerList =
-            (await CustomerRepository.instance.getChildRimsForGroup() ?? []);
+            await CustomerRepository.instance.getChildRimsForGroup() ?? [];
         if ((customerList ?? []).isNotEmpty) {
           selectedCustomer = customerList?.first;
         } else {
@@ -793,7 +792,7 @@ class GuarantorFinancialViewModel extends SafeCubit<GuarantorFinancialState>
     IncomeStatementAnalysisRow row,
   ) async {
     try {
-      final bool isUnsaved = (row.id).startsWith("u-");
+      final bool isUnsaved = row.id.startsWith("u-");
 
       if (!isUnsaved) {
         repository ??= RemarksRepository.instance;
@@ -809,8 +808,7 @@ class GuarantorFinancialViewModel extends SafeCubit<GuarantorFinancialState>
           List<IncomeStatementAnalysisRow>.from(
         _incomeRowsByEntity[entityId] ?? const [],
       );
-      list.removeWhere((r) => r.id == row.id);
-      _incomeRowsByEntity[entityId] = list;
+      _incomeRowsByEntity[entityId] = list..removeWhere((r) => r.id == row.id);
 
       if (state.currentEntityId == entityId) {
         incomeStatementRows

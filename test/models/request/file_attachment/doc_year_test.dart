@@ -10,11 +10,9 @@ void main() {
     // Helper to create Reference instances; adjust to your actual type
     // behavior.
     Reference ref(int id, String name) {
-      final r = Reference();
-      // If Reference is immutable or has different constructors, adapt
-      // accordingly
-      r.id = id;
-      r.name = name;
+      final r = Reference()
+        ..id = id
+        ..name = name;
       return r;
     }
 

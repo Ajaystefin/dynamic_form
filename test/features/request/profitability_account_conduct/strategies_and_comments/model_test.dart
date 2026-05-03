@@ -448,12 +448,13 @@ void main() {
     });
 
     test("updates multiple refs consistently", () {
-      vm.commentCategories = [
-        {"id": 1161, "name": "Deposit Strategy"},
-        {"id": 1164, "name": "Treasury Comments"},
-      ];
-      vm.updateComment(1161, "Increase deposits");
-      vm.updateComment(1164, "Optimize treasury");
+      vm
+        ..commentCategories = [
+          {"id": 1161, "name": "Deposit Strategy"},
+          {"id": 1164, "name": "Treasury Comments"},
+        ]
+        ..updateComment(1161, "Increase deposits")
+        ..updateComment(1164, "Optimize treasury");
       expect(vm.commentTextByCategoryId[1161], "Increase deposits");
       expect(vm.commentTextByCategoryId[1164], "Optimize treasury");
     });
@@ -463,41 +464,43 @@ void main() {
   group("saveComments (branches & payload)", () {
     setUp(() {
       // Include all known category IDs + an unknown (default branch)
-      vm.commentCategories = [
-        {"id": 1160, "name": "Relationship Strategy"},
-        {"id": 1161, "name": "Deposit Strategy"},
-        {"id": 1162, "name": "Transaction Banking Comments"},
-        {"id": 1163, "name": "Trade Finance Comments"},
-        {"id": 1164, "name": "Treasury Comments"},
-        {"id": 1165, "name": "Relationship History"},
-        {"id": 9999, "name": "Unknown Type"},
-      ];
-      vm.commentTextByCategoryId = {
-        1160: "RS text",
-        1161: "DS text",
-        1162: "TB text",
-        // 1163 intentionally empty -> ''
-        1164: "Treasury text",
-        1165: "History text",
-        // 9999 empty
-      };
-      vm.existingCommentRecordIdsByCategoryId = {
-        1160: 0,
-        1161: 452610,
-        1162: 42,
-        1163: 0,
-        1164: 8888,
-        1165: 0,
-        9999: 0,
-      };
+      vm
+        ..commentCategories = [
+          {"id": 1160, "name": "Relationship Strategy"},
+          {"id": 1161, "name": "Deposit Strategy"},
+          {"id": 1162, "name": "Transaction Banking Comments"},
+          {"id": 1163, "name": "Trade Finance Comments"},
+          {"id": 1164, "name": "Treasury Comments"},
+          {"id": 1165, "name": "Relationship History"},
+          {"id": 9999, "name": "Unknown Type"},
+        ]
+        ..commentTextByCategoryId = {
+          1160: "RS text",
+          1161: "DS text",
+          1162: "TB text",
+          // 1163 intentionally empty -> ''
+          1164: "Treasury text",
+          1165: "History text",
+          // 9999 empty
+        }
+        ..existingCommentRecordIdsByCategoryId = {
+          1160: 0,
+          1161: 452610,
+          1162: 42,
+          1163: 0,
+          1164: 8888,
+          1165: 0,
+          9999: 0,
+        };
     });
 
     test("defensive: wrong id type -> caught, failure toast & error", () async {
-      vm.commentCategories = [
-        {"id": "1160", "name": "RS"}, // wrong type
-      ];
-      vm.commentTextByCategoryId = {};
-      vm.existingCommentRecordIdsByCategoryId = {};
+      vm
+        ..commentCategories = [
+          {"id": "1160", "name": "RS"}, // wrong type
+        ]
+        ..commentTextByCategoryId = {}
+        ..existingCommentRecordIdsByCategoryId = {};
 
       await vm.saveComments();
 
@@ -1114,13 +1117,12 @@ void main() {
   });
 
   test("saveComments exits safely when no controllers exist", () async {
-    vm.commentCategories = [
-      {"id": 1, "name": "Category A"},
-    ];
-    vm.existingCommentRecordIdsByCategoryId = {1: 0};
-
-    // repository is required but will not be called
-    vm.profitabilityRepository = MockProfitabilityRepository();
+    vm
+      ..commentCategories = [
+        {"id": 1, "name": "Category A"},
+      ]
+      ..existingCommentRecordIdsByCategoryId = {1: 0}
+      ..profitabilityRepository = MockProfitabilityRepository();
 
     await vm.saveComments();
 
@@ -1129,12 +1131,12 @@ void main() {
   });
 
   test("saveComments with isContinue=true and no payload executes", () async {
-    vm.commentCategories = [
-      {"id": 10, "name": "Cat"},
-    ];
-    vm.existingCommentRecordIdsByCategoryId = {10: 0};
-
-    vm.profitabilityRepository = MockProfitabilityRepository();
+    vm
+      ..commentCategories = [
+        {"id": 10, "name": "Cat"},
+      ]
+      ..existingCommentRecordIdsByCategoryId = {10: 0}
+      ..profitabilityRepository = MockProfitabilityRepository();
 
     await vm.saveComments(isContinue: true);
 

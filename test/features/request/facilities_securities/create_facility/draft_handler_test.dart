@@ -18,15 +18,10 @@ void main() {
 
     test("buildDraftData serializes state to JSON", () {
       // Arrange
-      final facility = viewModel.getFacility;
-      facility.facilityDescription =
-          Reference(id: 1, name: "Facility 1", isActive: true);
-      facility.proposedLimit = 1000;
-      facility.facilityTitle = "Test Title";
-      facility.limitExpireDate = DateTime(2025, 12, 31);
 
-      viewModel.feeDefualtRate = [FeeRate(feeType: "Fee 1")];
-      viewModel.isLimitCaps = true;
+      viewModel
+        ..feeDefualtRate = [FeeRate(feeType: "Fee 1")]
+        ..isLimitCaps = true;
       viewModel.proposedLimitController.text = "1000";
       viewModel.dynamicFormDocument = {"testKey": "testValue"};
 
@@ -85,9 +80,9 @@ void main() {
 
     test("applyDraft handles missing draft fields gracefully", () {
       // Arrange
-      final facility = viewModel.getFacility;
-      facility.facilityDescription = Reference(id: 1, name: "Original");
-      facility.proposedLimit = 500;
+      final facility = viewModel.getFacility
+        ..facilityDescription = Reference(id: 1, name: "Original")
+        ..proposedLimit = 500;
       viewModel.dynamicFormDocument = {"original": true};
 
       final Map<String, dynamic> emptyDraftJson = {};

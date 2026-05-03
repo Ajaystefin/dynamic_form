@@ -203,9 +203,7 @@ class CustomTextEditorWidget extends StatelessWidget {
           controller: controller,
           callbacks: Callbacks(
             onChangeContent: (String? val) {
-              if (onChanged != null) {
-                onChanged!(val ?? "");
-              }
+              onChanged?.call(val ?? "");
             },
           ),
           htmlToolbarOptions: HtmlToolbarOptions(

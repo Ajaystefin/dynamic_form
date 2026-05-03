@@ -21,7 +21,7 @@ class CashCollateral extends StatelessWidget {
     // Assumes yesAndNo is a 2-item list: [Yes, No].
     final options = viewModel.yesAndNo ?? const [];
 
-    final selectedValue = (isCashCollateral)
+    final selectedValue = isCashCollateral
         ? (options.isNotEmpty ? options.first : null) // Yes
         : (options.length > 1 ? options[1] : null); // No
 

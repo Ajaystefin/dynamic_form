@@ -284,11 +284,7 @@ class APIEndpoints {
   static String getGroupPositionDetails = "approvals/getGroupPositionDetails";
   //static String getProposedFacilities = "${mockAPI}getProposedFacilities";
   static String getQueryResponse = "/getQueryResponse";
-  // static String getCompanyLimitDetails =
-  //     "${mockAPI}approvals/getCompanyLimitDetails";
   static String getCompanyLimitDetails = "approvals/getCompanyLimitDetails";
-  // static String getGuarantorExposure =
-  //     "${mockAPI}approvals/getGuarantorExposure";
   static String getGuarantorExposure = "approvals/getGuarantorExposure";
   static String submitApplicationApproval = "approvals/submitApplication";
   static String validateApproval = "approvals/validateApproval";
@@ -299,6 +295,9 @@ class APIEndpoints {
   static String getSecurityDeferral = "requestInfo/getSecurityDeferralDetails";
   static String saveSecurityDeferralDetails =
       "requestInfo/saveSecurityDeferralDetails";
+  static String saveCleanExposureInfo = "approvals/saveCleanExposureInfo";
+  static String getCleanExposureInfo = "approvals/getCleanExposureInfo";
+  static String validateRSAToken = "approvals/validateRSAToken";
 
   // Output Forms
   static String getOutputForms = "outputForm/getPreviewList";
@@ -349,122 +348,121 @@ class APIEndpoints {
       "remarks/saveGuarantorFinancialDetails";
   static String getGuarantorFinancialDetails =
       "remarks/getGuarantorFinancialDetails";
-  static String saveCleanExposureInfo = "approvals/saveCleanExposureInfo";
-  static String getCleanExposureInfo = "approvals/getCleanExposureInfo";
-  static String validateRSAToken = "approvals/validateRSAToken";
 }
 
 void testEndpoints() {
-  APIEndpoints.mockAPI;
-  APIEndpoints.login;
-  APIEndpoints.refreshToken;
-  APIEndpoints.getRoleRightMap;
-  APIEndpoints.updateUserRole;
-  APIEndpoints.logout;
-  APIEndpoints.saveRoleRightMap;
-  APIEndpoints.referenceData;
-  APIEndpoints.getCustomerProfile;
-  APIEndpoints.getUserByRole;
-  APIEndpoints.getUsersList;
-  APIEndpoints.getApplicableReconApplication;
-  APIEndpoints.getPipelineRequestDetails;
-  APIEndpoints.saveUIAuditUrl;
-  APIEndpoints.getCustomerRequestInfo;
-  APIEndpoints.configurableReferenceData;
-  APIEndpoints.saveConfigurableReferenceData;
-  APIEndpoints.getReviewComments;
-  APIEndpoints.assignToUser;
-  APIEndpoints.updateTerminatedStatus;
-  APIEndpoints.getAdminUserDetails;
-  APIEndpoints.saveAdminUserDetails;
-  APIEndpoints.getApplicationStrategyDetails;
-  APIEndpoints.saveApplicationStrategyDetails;
-  APIEndpoints.getCertificateDetails;
-  APIEndpoints.saveCertificateDetails;
-  APIEndpoints.getApplicationDetails;
-  APIEndpoints.getCustomerInformationByRim;
-  APIEndpoints.getCountries;
-  APIEndpoints.saveCustomerInformation;
-  APIEndpoints.getFileAttachments;
-  APIEndpoints.saveFileAttachments;
-  APIEndpoints.getSummary;
-  APIEndpoints.getDocumentationSummary;
-  APIEndpoints.getRequestDetailsWorkList;
-  APIEndpoints.getEsgCertificateDetails;
-  APIEndpoints.saveEsgCertificationDetails;
-  APIEndpoints.getCovenants;
-  APIEndpoints.getConditions;
-  APIEndpoints.saveConditions;
-  APIEndpoints.getUsersByRoles;
-  APIEndpoints.getCcsysCustomerInfo;
-  APIEndpoints.getFacilities;
-  APIEndpoints.getComments;
-  APIEndpoints.saveComments;
-  APIEndpoints.saveCovenants;
-  APIEndpoints.getSICCodeReview;
-  APIEndpoints.saveSICcodeReview;
-  APIEndpoints.getAccountConductData;
-  APIEndpoints.saveAccountConductData;
+  [
+    APIEndpoints.mockAPI,
+    APIEndpoints.login,
+    APIEndpoints.refreshToken,
+    APIEndpoints.getRoleRightMap,
+    APIEndpoints.updateUserRole,
+    APIEndpoints.logout,
+    APIEndpoints.saveRoleRightMap,
+    APIEndpoints.referenceData,
+    APIEndpoints.getCustomerProfile,
+    APIEndpoints.getUserByRole,
+    APIEndpoints.getUsersList,
+    APIEndpoints.getApplicableReconApplication,
+    APIEndpoints.getPipelineRequestDetails,
+    APIEndpoints.saveUIAuditUrl,
+    APIEndpoints.getCustomerRequestInfo,
+    APIEndpoints.configurableReferenceData,
+    APIEndpoints.saveConfigurableReferenceData,
+    APIEndpoints.getReviewComments,
+    APIEndpoints.assignToUser,
+    APIEndpoints.updateTerminatedStatus,
+    APIEndpoints.getAdminUserDetails,
+    APIEndpoints.saveAdminUserDetails,
+    APIEndpoints.getApplicationStrategyDetails,
+    APIEndpoints.saveApplicationStrategyDetails,
+    APIEndpoints.getCertificateDetails,
+    APIEndpoints.saveCertificateDetails,
+    APIEndpoints.getApplicationDetails,
+    APIEndpoints.getCustomerInformationByRim,
+    APIEndpoints.getCountries,
+    APIEndpoints.saveCustomerInformation,
+    APIEndpoints.getFileAttachments,
+    APIEndpoints.saveFileAttachments,
+    APIEndpoints.getSummary,
+    APIEndpoints.getDocumentationSummary,
+    APIEndpoints.getRequestDetailsWorkList,
+    APIEndpoints.getEsgCertificateDetails,
+    APIEndpoints.saveEsgCertificationDetails,
+    APIEndpoints.getCovenants,
+    APIEndpoints.getConditions,
+    APIEndpoints.saveConditions,
+    APIEndpoints.getUsersByRoles,
+    APIEndpoints.getCcsysCustomerInfo,
+    APIEndpoints.getFacilities,
+    APIEndpoints.getComments,
+    APIEndpoints.saveComments,
+    APIEndpoints.saveCovenants,
+    APIEndpoints.getSICCodeReview,
+    APIEndpoints.saveSICcodeReview,
+    APIEndpoints.getAccountConductData,
+    APIEndpoints.saveAccountConductData,
 
-  APIEndpoints.getRelationshipUtilization;
-  APIEndpoints.saveRelationshipUtilization;
+    APIEndpoints.getRelationshipUtilization,
+    APIEndpoints.saveRelationshipUtilization,
 
-  APIEndpoints.getRelationshipProfitabilityDetailed;
-  APIEndpoints.getRelProfitDetComments;
-  APIEndpoints.getrelationshipProfitabilitySummary;
-  APIEndpoints.postRelationshipProfitabilitySummary;
-  APIEndpoints.getStrategyComments;
-  APIEndpoints.saveStrategyComments;
-  APIEndpoints.getShareofWallet;
-  APIEndpoints.getIncomeSummary;
-  APIEndpoints.saveIncomeSummary;
+    APIEndpoints.getRelationshipProfitabilityDetailed,
+    APIEndpoints.getRelProfitDetComments,
+    APIEndpoints.getrelationshipProfitabilitySummary,
+    APIEndpoints.postRelationshipProfitabilitySummary,
+    APIEndpoints.getStrategyComments,
+    APIEndpoints.saveStrategyComments,
+    APIEndpoints.getShareofWallet,
+    APIEndpoints.getIncomeSummary,
+    APIEndpoints.saveIncomeSummary,
 
-  APIEndpoints.getRatingDetails;
-  APIEndpoints.getUpdatedRating;
-  APIEndpoints.saveRatingDetailsUpdated;
-  APIEndpoints.getSecuritySummaryList;
-  APIEndpoints.getFacilitySummaryListPerRim;
-  APIEndpoints.saveFacilitySecurityLinkDetails;
-  APIEndpoints.saveSecurityDetails;
-  APIEndpoints.deleteSecurityDetails;
-  APIEndpoints.getGroupInformation;
-  APIEndpoints.getFacilityWithOtherBank;
-  APIEndpoints.getShareofWalletDetails;
-  APIEndpoints.saveFacilityWithOtherBank;
-  APIEndpoints.getBussinessVolume;
-  APIEndpoints.saveBussinessVolume;
-  APIEndpoints.getAccountStats;
-  APIEndpoints.getLinkedFacilities;
+    APIEndpoints.getRatingDetails,
+    APIEndpoints.getUpdatedRating,
+    APIEndpoints.saveRatingDetailsUpdated,
+    APIEndpoints.getSecuritySummaryList,
+    APIEndpoints.getFacilitySummaryListPerRim,
+    APIEndpoints.saveFacilitySecurityLinkDetails,
+    APIEndpoints.saveSecurityDetails,
+    APIEndpoints.deleteSecurityDetails,
+    APIEndpoints.getGroupInformation,
+    APIEndpoints.getFacilityWithOtherBank,
+    APIEndpoints.getShareofWalletDetails,
+    APIEndpoints.saveFacilityWithOtherBank,
+    APIEndpoints.getBussinessVolume,
+    APIEndpoints.saveBussinessVolume,
+    APIEndpoints.getAccountStats,
+    APIEndpoints.getLinkedFacilities,
 
-  APIEndpoints.getSecurityDynamicForm;
-  APIEndpoints.getCurrencyCode;
-  APIEndpoints.getFacilitiesDynamicForm;
+    APIEndpoints.getSecurityDynamicForm,
+    APIEndpoints.getCurrencyCode,
+    APIEndpoints.getFacilitiesDynamicForm,
 
-  APIEndpoints.saveProjectDetails;
-  APIEndpoints.getProjectDetails;
-  APIEndpoints.getContractDetails;
-  APIEndpoints.getLinkContract;
-  APIEndpoints.getPerPartyLimit;
-  APIEndpoints.saveContractDetails;
-  APIEndpoints.getGroupPositionDetails;
-  //APIEndpoints.getProposedFacilities;
-  APIEndpoints.getQueryResponse;
-  APIEndpoints.getCompanyLimitDetails;
-  APIEndpoints.getGroupCustomers;
-  APIEndpoints.getCustomerByRim;
-  APIEndpoints.getSecurityDeferral;
-  APIEndpoints.getApplicationBorrowers;
-  APIEndpoints.saveApplicationInformation;
-  APIEndpoints.saveCcsysApplicationInformation;
-  APIEndpoints.getCcsysLastApprovedApplicationDetails;
+    APIEndpoints.saveProjectDetails,
+    APIEndpoints.getProjectDetails,
+    APIEndpoints.getContractDetails,
+    APIEndpoints.getLinkContract,
+    APIEndpoints.getPerPartyLimit,
+    APIEndpoints.saveContractDetails,
+    APIEndpoints.getGroupPositionDetails,
+    //APIEndpoints.getProposedFacilities,
+    APIEndpoints.getQueryResponse,
+    APIEndpoints.getCompanyLimitDetails,
+    APIEndpoints.getGroupCustomers,
+    APIEndpoints.getCustomerByRim,
+    APIEndpoints.getSecurityDeferral,
+    APIEndpoints.getApplicationBorrowers,
+    APIEndpoints.saveApplicationInformation,
+    APIEndpoints.saveCcsysApplicationInformation,
+    APIEndpoints.getCcsysLastApprovedApplicationDetails,
 
-  APIEndpoints.saveCcsysCustomerInfo;
+    APIEndpoints.saveCcsysCustomerInfo,
 
-  APIEndpoints.getOutputForms;
-  APIEndpoints.deleteFacilityItem;
-  APIEndpoints.saveFacilitySubLimit;
-  APIEndpoints.getSearchProjectDetails;
-  APIEndpoints.getFeeStructureData;
-  APIEndpoints.saveFeeStructureData;
-  APIEndpoints.getClosedRequestDetailsWorkList;
+    APIEndpoints.getOutputForms,
+    APIEndpoints.deleteFacilityItem,
+    APIEndpoints.saveFacilitySubLimit,
+    APIEndpoints.getSearchProjectDetails,
+    APIEndpoints.getFeeStructureData,
+    APIEndpoints.saveFeeStructureData,
+    APIEndpoints.getClosedRequestDetailsWorkList,
+  ];
 }

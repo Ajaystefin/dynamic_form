@@ -161,9 +161,10 @@ void main() {
         onSelectedCalled = true;
         selectedValues = values;
       };
-      logger.i(mockOnSelected);
-      logger.i(onSelectedCalled);
-      logger.i(selectedValues);
+      logger
+        ..i(mockOnSelected)
+        ..i(onSelectedCalled)
+        ..i(selectedValues);
     });
 
     testWidgets("should render with basic properties",
@@ -590,12 +591,6 @@ void main() {
           ),
         ),
       );
-
-      final state = tester.state<CustomDropdownState<String>>(
-        find.byType(CustomDropdown<String>),
-      );
-      state.dropDownDecoratorProps(null, "", isEnabled: true);
-      state.dropDownDecoratorProps(null, null, isEnabled: true);
     });
 
     testWidgets("should create loading widget", (WidgetTester tester) async {

@@ -47,7 +47,7 @@ class AccountStatsViewModel extends SafeCubit<AccountStatsState>
       AccountStatsDraftHandler();
 
   PageMode pageMode = PageMode.na;
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
 
   /// Initializes the AccountStatsViewModel.
   ///

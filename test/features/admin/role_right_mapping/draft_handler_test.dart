@@ -19,8 +19,9 @@ void main() {
   // ---------------------------------------------------------------------------
   group("resolveDraftKey", () {
     test("role + request type", () {
-      vm.selectedRole = Reference(id: 1);
-      vm.selectedRequestType = Reference(id: 2);
+      vm
+        ..selectedRole = Reference(id: 1)
+        ..selectedRequestType = Reference(id: 2);
 
       expect(
         handler.resolveDraftKey(vm),
@@ -29,8 +30,9 @@ void main() {
     });
 
     test("role only", () {
-      vm.selectedRole = Reference(id: 5);
-      vm.selectedRequestType = null;
+      vm
+        ..selectedRole = Reference(id: 5)
+        ..selectedRequestType = null;
 
       expect(
         handler.resolveDraftKey(vm),
@@ -39,8 +41,9 @@ void main() {
     });
 
     test("no role", () {
-      vm.selectedRole = null;
-      vm.selectedRequestType = Reference(id: 9);
+      vm
+        ..selectedRole = null
+        ..selectedRequestType = Reference(id: 9);
 
       expect(
         handler.resolveDraftKey(vm),
@@ -54,8 +57,9 @@ void main() {
   // ---------------------------------------------------------------------------
   group("buildDraftData", () {
     test("skip when role is null", () {
-      vm.selectedRole = null;
-      vm.selectedRequestType = Reference(id: 1);
+      vm
+        ..selectedRole = null
+        ..selectedRequestType = Reference(id: 1);
 
       expect(
         handler.buildDraftData(vm),
@@ -64,8 +68,9 @@ void main() {
     });
 
     test("skip when request type is null", () {
-      vm.selectedRole = Reference(id: 1);
-      vm.selectedRequestType = null;
+      vm
+        ..selectedRole = Reference(id: 1)
+        ..selectedRequestType = null;
 
       expect(
         handler.buildDraftData(vm),
@@ -74,9 +79,10 @@ void main() {
     });
 
     test("skip when updatedAccessRight is null", () {
-      vm.selectedRole = Reference(id: 1);
-      vm.selectedRequestType = Reference(id: 2);
-      vm.updatedAccessRight = null;
+      vm
+        ..selectedRole = Reference(id: 1)
+        ..selectedRequestType = Reference(id: 2)
+        ..updatedAccessRight = null;
 
       expect(
         handler.buildDraftData(vm),
@@ -85,10 +91,10 @@ void main() {
     });
 
     test("builds valid draft JSON", () {
-      vm.selectedRole = Reference(id: 1);
-      vm.selectedRequestType = Reference(id: 2);
-
-      vm.updatedAccessRight = AccessRight.fromJson({
+      vm
+        ..selectedRole = Reference(id: 1)
+        ..selectedRequestType = Reference(id: 2)
+        ..updatedAccessRight = AccessRight.fromJson({
         "role": "ROLE_ADMIN",
         "requestType": "REQUEST_A",
         "subType": "SUB",
@@ -113,8 +119,9 @@ void main() {
   // ---------------------------------------------------------------------------
   group("applyDraft", () {
     setUp(() {
-      vm.selectedRole = Reference(id: 1);
-      vm.selectedRequestType = Reference(id: 2);
+      vm
+        ..selectedRole = Reference(id: 1)
+        ..selectedRequestType = Reference(id: 2);
     });
 
     test("ignores when roleId mismatches", () {

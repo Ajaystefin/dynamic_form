@@ -45,7 +45,7 @@ class SicCodeReviewViewModel extends SafeCubit<SicCodeReviewState>
   Comment comment = Comment();
 
   bool get canEdit =>
-      (pageMode == PageMode.edit); // && Utils.canEditApplication();
+      pageMode == PageMode.edit; // && Utils.canEditApplication();
 
   Customer? selectedCustomer;
   List<Customer>? customerList = [];
@@ -114,7 +114,7 @@ class SicCodeReviewViewModel extends SafeCubit<SicCodeReviewState>
   Future<void> getChildRimsForGroup() async {
     try {
       if (Utils.isGroupApplication()) {
-        customerList = (await repositoryCustomer.getChildRimsForGroup() ?? []);
+        customerList = await repositoryCustomer.getChildRimsForGroup() ?? [];
         if ((customerList ?? []).isNotEmpty) {
           selectedCustomer = customerList?.first;
         }

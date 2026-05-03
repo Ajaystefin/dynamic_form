@@ -1125,7 +1125,7 @@ void main() {
             .widget<CustomMultiSelectDropdown<String>>(
               find.byType(CustomMultiSelectDropdown<String>),
             )
-            .onSelected!(["Item 1"]);
+            .onSelected?.call(["Item 1"]);
       }
 
       expect(onSelectedCalled, isTrue);
@@ -1164,7 +1164,7 @@ void main() {
       expect(firstChip.onDeleted, isNotNull);
 
       // Trigger the onDeleted callback
-      firstChip.onDeleted!();
+      firstChip.onDeleted?.call();
       await tester.pump();
 
       // Verify the callback was called with updated selection
@@ -1298,7 +1298,7 @@ void main() {
       expect(widget.onSelected, isNotNull);
 
       // Manually call the callback to test coverage
-      widget.onSelected!(["Item 1"]);
+      widget.onSelected?.call(["Item 1"]);
       expect(callbackInvoked, isTrue);
       expect(onSelectedResult, equals(["Item 1"]));
     });

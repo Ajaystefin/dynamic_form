@@ -934,8 +934,8 @@ class Utils {
     // Step c: Validate if the task status means it is actively awaiting user
     // action.
     final bool isTaskActive =
-        (currentTaskStatus == ServerConstants.lifeCycleStatusWaiting ||
-            currentTaskStatus == ServerConstants.lifeCycleStatusAssigned);
+        currentTaskStatus == ServerConstants.lifeCycleStatusWaiting ||
+            currentTaskStatus == ServerConstants.lifeCycleStatusAssigned;
 
     // If the task is active AND assigned to the current user, they are allowed
     // to edit (return false).
@@ -1131,12 +1131,10 @@ class Utils {
       final merged = rims.join(",");
 
       // Use first document and set merged rims
-      final base = items.first;
-      base.companyRim = merged; // requires a mutable field
-
-      // Normalize keys (optional, ensures trimmed)
-      base.documentType = base.documentType;
-      base.fileName = (base.fileName ?? "").trim();
+      final base = items.first
+        ..companyRim = merged // requires a mutable field
+        ..documentType = items.first.documentType
+        ..fileName = (items.first.fileName ?? "").trim();
 
       result.add(base);
     }

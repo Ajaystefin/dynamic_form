@@ -55,7 +55,7 @@ class ConditionsSummaryViewModel extends SafeCubit<ConditionsSummaryState>
   //paging
   final int rowsPerPage = 10;
 
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
   PageMode pageMode = PageMode.na;
 
   bool get isFIFlow =>
@@ -162,7 +162,7 @@ class ConditionsSummaryViewModel extends SafeCubit<ConditionsSummaryState>
       comments = await commonRepo.getComments(type, entityIdentifier);
       logger.d(comments);
       if (comments.isNotEmpty) {
-        final String safe = (comments.last.comment ?? "");
+        final String safe = comments.last.comment ?? "";
         controller.text = safe;
         unifiedEditorController.setText(safe);
       }
@@ -254,10 +254,11 @@ class ConditionsSummaryViewModel extends SafeCubit<ConditionsSummaryState>
     try {
       emit(state.copyWith(loaderStatus: LoadingStatus.loading));
       logger.i(conditionData);
-      conditionData.isDeleted = true;
-      conditionData.isCovenant = false;
-      conditionData.isNew = false;
-      conditionData.mode = TypeMode.edit.name.capitalizeFirstLetter();
+      conditionData
+        ..isDeleted = true
+        ..isCovenant = false
+        ..isNew = false
+        ..mode = TypeMode.edit.name.capitalizeFirstLetter();
       final String result =
           await requestRepo.saveConditionDetails(conditionData);
       AlertManager().showSuccessToast(result);

@@ -107,8 +107,8 @@ void main() {
 
   setUp(() {
     mockRepo = MockRequestRepository();
-    viewModel = ApplicationBorrowersViewModel();
-    viewModel.repository = mockRepo;
+    viewModel = ApplicationBorrowersViewModel()
+      ..repository = mockRepo;
     mockLocalStorageService = MockLocalStorageService();
 
     // Set up LocalStorageService mock
@@ -169,12 +169,12 @@ void main() {
     });
 
     test("onCustomerRimNameSelected updates selection", () {
-      viewModel.customers = [
-        Customer(customerRimNo: 123),
-        Customer(customerRimNo: 456),
-      ];
-
-      viewModel.onCustomerRimNameSelected("123", true);
+      viewModel
+        ..customers = [
+          Customer(customerRimNo: 123),
+          Customer(customerRimNo: 456),
+        ]
+        ..onCustomerRimNameSelected("123", true);
 
       expect(
         viewModel.customers
@@ -186,12 +186,12 @@ void main() {
     });
 
     test("onBelowGradeSelected updates below grade selection", () {
-      viewModel.customers = [
-        Customer(customerRimNo: 123),
-        Customer(customerRimNo: 456),
-      ];
-
-      viewModel.onBelowGradeSelected("456", true);
+      viewModel
+        ..customers = [
+          Customer(customerRimNo: 123),
+          Customer(customerRimNo: 456),
+        ]
+        ..onBelowGradeSelected("456", true);
 
       expect(
         viewModel.customers
@@ -336,8 +336,9 @@ void main() {
           ],
         );
 
-        viewModel.primaryRim = 100;
-        viewModel.isFI = false;
+        viewModel
+          ..primaryRim = 100
+          ..isFI = false;
 
         final result = viewModel.validateBorrowersSelection();
 
@@ -350,8 +351,8 @@ void main() {
     late ApplicationBorrowersViewModel viewModel;
 
     setUp(() {
-      viewModel = ApplicationBorrowersViewModel();
-      viewModel.selectedCustomers = [];
+      viewModel = ApplicationBorrowersViewModel()
+        ..selectedCustomers = [];
     });
 
     test(
@@ -364,9 +365,9 @@ void main() {
           isSelectedBelowGrade: true,
         );
 
-        viewModel.customers = [customer];
-
-        viewModel.onCountrySelected("200", true);
+        viewModel
+          ..customers = [customer]
+          ..onCountrySelected("200", true);
 
         expect(customer.isSelectedCountryFI, true);
         expect(customer.isSelected, false);
@@ -387,10 +388,10 @@ void main() {
           isSelectedCountryFI: true,
         );
 
-        viewModel.customers = [customer];
-        viewModel.selectedCustomers = [customer];
-
-        viewModel.onCountrySelected("300", false);
+        viewModel
+          ..customers = [customer]
+          ..selectedCustomers = [customer]
+          ..onCountrySelected("300", false);
 
         expect(customer.isSelectedCountryFI, false);
         expect(viewModel.selectedCustomers, isEmpty);
@@ -406,10 +407,10 @@ void main() {
           isCountryFI: true,
         );
 
-        viewModel.customers = [customer];
-        viewModel.selectedCustomers = [customer];
-
-        viewModel.onCountrySelected("400", true);
+        viewModel
+          ..customers = [customer]
+          ..selectedCustomers = [customer]
+          ..onCountrySelected("400", true);
 
         expect(viewModel.selectedCustomers.length, 1);
         expect(viewModel.selectedCustomers.first.customerRimNo, 400);

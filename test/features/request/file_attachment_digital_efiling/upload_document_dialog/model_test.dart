@@ -113,7 +113,7 @@ class TestUploadDocumentDialogViewModel extends UploadDocumentDialogViewModel {
 
   @override
   Future<void> pickMultipleFiles() async {
-    if (!(formKey.currentState!.validate())) {
+    if (!formKey.currentState!.validate()) {
       return;
     }
 
@@ -281,13 +281,13 @@ void main() {
     mockRefService = MockReferenceDataService();
     mockAlertManager = MockAlertManager();
 
-    viewModel = UploadDocumentDialogViewModel();
-    viewModel.repository = mockRequestRepo;
-    viewModel.fileAttachmentRepository = mockFileAttachmentRepo;
+    viewModel = UploadDocumentDialogViewModel()
+      ..repository = mockRequestRepo
+      ..fileAttachmentRepository = mockFileAttachmentRepo;
 
-    testVm = TestUploadDocumentDialogViewModel();
-    testVm.repository = mockRequestRepo;
-    testVm.fileAttachmentRepository = mockFileAttachmentRepo;
+    testVm = TestUploadDocumentDialogViewModel()
+      ..repository = mockRequestRepo
+      ..fileAttachmentRepository = mockFileAttachmentRepo;
 
     AlertManager.overrideInstance(mockAlertManager);
     ReferenceDataService.overrideInstance(mockRefService);
@@ -550,8 +550,9 @@ void main() {
     test(
         "getCompanyRims returns early when no "
         "applicationId and no eligible group data", () async {
-      viewModel.selectedGroupRim = null;
-      viewModel.applicationId = null;
+      viewModel
+        ..selectedGroupRim = null
+        ..applicationId = null;
 
       await viewModel.getCompanyRims();
 
@@ -560,8 +561,9 @@ void main() {
 
     test("getCompanyRims fetches rims when applicationId is present (real VM)",
         () async {
-      viewModel.selectedGroupRim = 100;
-      viewModel.applicationId = "APP-001";
+      viewModel
+        ..selectedGroupRim = 100
+        ..applicationId = "APP-001";
 
       await viewModel.getCompanyRims();
 
@@ -571,8 +573,9 @@ void main() {
     });
 
     test("getCompanyRims handles repository error (real VM)", () async {
-      viewModel.selectedGroupRim = 100;
-      viewModel.applicationId = "APP-001";
+      viewModel
+        ..selectedGroupRim = 100
+        ..applicationId = "APP-001";
 
       when(() => mockFileAttachmentRepo.getCompanyRims(any()))
           .thenThrow(Exception("Failed to fetch RIMs"));
@@ -678,13 +681,13 @@ void main() {
     });
 
     test("toggleSelectAllCompanyRims(true) selects all", () {
-      viewModel.rimList = [
-        Customer(customerRimNo: 1),
-        Customer(customerRimNo: 2),
-        Customer(customerRimNo: 3),
-      ];
-
-      viewModel.toggleSelectAllCompanyRims(true);
+      viewModel
+        ..rimList = [
+          Customer(customerRimNo: 1),
+          Customer(customerRimNo: 2),
+          Customer(customerRimNo: 3),
+        ]
+        ..toggleSelectAllCompanyRims(true);
 
       expect(viewModel.isSelectAllCompanyRims, true);
       expect(viewModel.selectedCompanyRims.length, 3);
@@ -692,15 +695,15 @@ void main() {
     });
 
     test("toggleSelectAllCompanyRims(false) clears selection", () {
-      viewModel.rimList = [
-        Customer(customerRimNo: 1),
-        Customer(customerRimNo: 2),
-      ];
-      viewModel.selectedCompanyRims = [
-        Customer(customerRimNo: 1),
-      ];
-
-      viewModel.toggleSelectAllCompanyRims(false);
+      viewModel
+        ..rimList = [
+          Customer(customerRimNo: 1),
+          Customer(customerRimNo: 2),
+        ]
+        ..selectedCompanyRims = [
+          Customer(customerRimNo: 1),
+        ]
+        ..toggleSelectAllCompanyRims(false);
 
       expect(viewModel.isSelectAllCompanyRims, false);
       expect(viewModel.selectedCompanyRims, isEmpty);
@@ -804,17 +807,17 @@ void main() {
     });
 
     test('updateGroupRim does not update when groupRim is "0"', () {
-      viewModel.selectedGroupRim = 999;
-
-      viewModel.updateGroupRim("0");
+      viewModel
+        ..selectedGroupRim = 999
+        ..updateGroupRim("0");
 
       expect(viewModel.selectedGroupRim, 999);
     });
 
     test("updateGroupRim does not update when groupRim is empty", () {
-      viewModel.selectedGroupRim = 999;
-
-      viewModel.updateGroupRim("");
+      viewModel
+        ..selectedGroupRim = 999
+        ..updateGroupRim("");
 
       expect(viewModel.selectedGroupRim, 999);
     });
@@ -866,16 +869,16 @@ void main() {
 
   group("File/document management", () {
     test("removeFileAt removes selected document at valid index", () {
-      viewModel.selectedFiles = [
-        PlatformFile(name: "file1.pdf", size: 100),
-        PlatformFile(name: "file2.pdf", size: 200),
-      ];
-      viewModel.selectedDocuments = [
-        Document(documentName: "doc1"),
-        Document(documentName: "doc2"),
-      ];
-
-      viewModel.removeFileAt(0);
+      viewModel
+        ..selectedFiles = [
+          PlatformFile(name: "file1.pdf", size: 100),
+          PlatformFile(name: "file2.pdf", size: 200),
+        ]
+        ..selectedDocuments = [
+          Document(documentName: "doc1"),
+          Document(documentName: "doc2"),
+        ]
+        ..removeFileAt(0);
 
       expect(viewModel.selectedDocuments.length, 1);
       expect(viewModel.selectedDocuments[0].documentName, "doc2");
@@ -883,17 +886,17 @@ void main() {
     });
 
     test("removeFileAt does nothing when index is out of bounds", () {
-      viewModel.selectedDocuments = [Document(documentName: "doc1")];
-
-      viewModel.removeFileAt(5);
+      viewModel
+        ..selectedDocuments = [Document(documentName: "doc1")]
+        ..removeFileAt(5);
 
       expect(viewModel.selectedDocuments.length, 1);
     });
 
     test("removeFileAt does nothing when index is negative", () {
-      viewModel.selectedDocuments = [Document(documentName: "doc1")];
-
-      viewModel.removeFileAt(-1);
+      viewModel
+        ..selectedDocuments = [Document(documentName: "doc1")]
+        ..removeFileAt(-1);
 
       expect(viewModel.selectedDocuments.length, 1);
     });
@@ -914,8 +917,9 @@ void main() {
 
       verify(() => mockFileAttachmentRepo.uploadDigitalDocuments(any()))
           .called(1);
-      verifyNever(() => mockAlertManager.showInfoToast("Uploaded successfully"))
-          .called(0);
+      verifyNever(
+        () => mockAlertManager.showInfoToast("Uploaded successfully"),
+      ).called(0);
 
       expect(viewModel.state.uploadButtonStatus, LoadingStatus.loaded);
     });
@@ -942,26 +946,25 @@ void main() {
 
   group("Form reset", () {
     test("resetFormFields clears all transient fields", () {
-      viewModel.selectedDocumentType = Reference(id: 1, name: "Doc");
-      viewModel.selectedLanguageType = Reference(id: 1, name: "English");
-      viewModel.selectedSubTypeFinancial = Reference(id: 2, name: "Financial");
-      viewModel.selectedSubTypeCreditLens = Reference(id: 3, name: "Credit");
-      viewModel.selectedSubSubTypeFinancial =
-          Reference(id: 4, name: "SubFinancial");
-      viewModel.selectedCompanyRims = [
-        Customer(customerRimNo: 1),
-        Customer(customerRimNo: 2),
-      ];
-      viewModel.isSelectAllCompanyRims = true;
-      viewModel.documentName = "Test Doc";
-      viewModel.entityId = "ENT-1";
-      viewModel.documentNameCtrl.text = "Test";
-      viewModel.entityIdCtrl.text = "ENT-1";
-      viewModel.selectedDate = DateTime.now();
-      viewModel.selectedGroupRim = 123;
-      viewModel.applicationId = "APP-123";
-
-      viewModel.resetFormFields();
+      viewModel
+        ..selectedDocumentType = Reference(id: 1, name: "Doc")
+        ..selectedLanguageType = Reference(id: 1, name: "English")
+        ..selectedSubTypeFinancial = Reference(id: 2, name: "Financial")
+        ..selectedSubTypeCreditLens = Reference(id: 3, name: "Credit")
+        ..selectedSubSubTypeFinancial = Reference(id: 4, name: "SubFinancial")
+        ..selectedCompanyRims = [
+          Customer(customerRimNo: 1),
+          Customer(customerRimNo: 2),
+        ]
+        ..isSelectAllCompanyRims = true
+        ..documentName = "Test Doc"
+        ..entityId = "ENT-1"
+        ..documentNameCtrl.text = "Test"
+        ..entityIdCtrl.text = "ENT-1"
+        ..selectedDate = DateTime.now()
+        ..selectedGroupRim = 123
+        ..applicationId = "APP-123"
+        ..resetFormFields();
 
       expect(viewModel.selectedDocumentType, null);
       expect(viewModel.selectedLanguageType, null);
@@ -1048,25 +1051,24 @@ void main() {
         validator: (_) => null,
       );
 
-      testVm.selectedDocumentType = Reference(id: 1, name: "DocType");
-      testVm.selectedSubTypeFinancial = Reference(id: 2, name: "SubFinancial");
-      testVm.selectedSubSubTypeFinancial =
-          Reference(id: 3, name: "SubSubFinancial");
-      testVm.selectedLanguageType =
-          Reference(id: ServerConstants.languageEnglish, name: "English");
-      testVm.documentName = "My Document";
-      testVm.entityId = "ENTITY-1";
-      testVm.selectedDate = DateTime(2025, 1, 1);
-      testVm.selectedCustomerRim = 222;
-      testVm.isGroupApp = false;
-      testVm.applicationId = "APP-1";
-
-      testVm.nextPickedFiles = [
-        PlatformFile(name: "a.pdf", size: 100),
-        PlatformFile(name: "b.pdf", size: 200),
-      ];
-
-      await testVm.pickMultipleFiles();
+      await (testVm
+        ..selectedDocumentType = Reference(id: 1, name: "DocType")
+        ..selectedSubTypeFinancial = Reference(id: 2, name: "SubFinancial")
+        ..selectedSubSubTypeFinancial =
+            Reference(id: 3, name: "SubSubFinancial")
+        ..selectedLanguageType =
+            Reference(id: ServerConstants.languageEnglish, name: "English")
+        ..documentName = "My Document"
+        ..entityId = "ENTITY-1"
+        ..selectedDate = DateTime(2025, 1, 1)
+        ..selectedCustomerRim = 222
+        ..isGroupApp = false
+        ..applicationId = "APP-1"
+        ..nextPickedFiles = [
+          PlatformFile(name: "a.pdf", size: 100),
+          PlatformFile(name: "b.pdf", size: 200),
+        ])
+          .pickMultipleFiles();
 
       expect(testVm.selectedFiles.length, 2);
       expect(testVm.selectedDocuments.length, 2);
@@ -1091,27 +1093,26 @@ void main() {
         validator: (_) => null,
       );
 
-      testVm.selectedDocumentType = Reference(id: 1, name: "DocType");
-      testVm.selectedSubTypeCreditLens = Reference(id: 5, name: "CL Sub");
-      testVm.selectedLanguageType =
-          Reference(id: ServerConstants.languageEnglish, name: "English");
-      testVm.documentName = "Group Document";
-      testVm.entityId = "G-1";
-      testVm.selectedDate = DateTime(2025, 1, 1);
-      testVm.selectedGroupRim = 999;
-      testVm.applicationId = "APP-GRP";
-      testVm.isGroupApp = true;
-      testVm.selectedCompanyRims = [
-        Customer(customerRimNo: 101),
-        Customer(customerRimNo: 202),
-      ];
-
-      testVm.nextPickedFiles = [
-        PlatformFile(name: "a.pdf", size: 100),
-        PlatformFile(name: "b.pdf", size: 200),
-      ];
-
-      await testVm.pickMultipleFiles();
+      await (testVm
+        ..selectedDocumentType = Reference(id: 1, name: "DocType")
+        ..selectedSubTypeCreditLens = Reference(id: 5, name: "CL Sub")
+        ..selectedLanguageType =
+            Reference(id: ServerConstants.languageEnglish, name: "English")
+        ..documentName = "Group Document"
+        ..entityId = "G-1"
+        ..selectedDate = DateTime(2025, 1, 1)
+        ..selectedGroupRim = 999
+        ..applicationId = "APP-GRP"
+        ..isGroupApp = true
+        ..selectedCompanyRims = [
+          Customer(customerRimNo: 101),
+          Customer(customerRimNo: 202),
+        ]
+        ..nextPickedFiles = [
+          PlatformFile(name: "a.pdf", size: 100),
+          PlatformFile(name: "b.pdf", size: 200),
+        ])
+          .pickMultipleFiles();
 
       expect(testVm.selectedDocuments.length, 4);
       expect(testVm.selectedDocuments[0].companyRim, "101");
@@ -1120,7 +1121,8 @@ void main() {
       expect(testVm.selectedDocuments[3].companyRim, "202");
     });
 
-    testWidgets("no files selected sets error message and clears selectedFiles",
+    testWidgets(
+        "no files selected sets error message and clears selectedFiles",
         (tester) async {
       await pumpFormShell(
         tester,
@@ -1128,12 +1130,12 @@ void main() {
         validator: (_) => null,
       );
 
-      testVm.selectedDocumentType = Reference(id: 1, name: "DocType");
-      testVm.selectedCustomerRim = 123;
-      testVm.applicationId = "APP-1";
-      testVm.nextPickedFiles = [];
-
-      await testVm.pickMultipleFiles();
+      await (testVm
+        ..selectedDocumentType = Reference(id: 1, name: "DocType")
+        ..selectedCustomerRim = 123
+        ..applicationId = "APP-1"
+        ..nextPickedFiles = [])
+          .pickMultipleFiles();
 
       expect(testVm.selectedFiles, isEmpty);
       expect(testVm.errorMessage, isNotNull);
@@ -1148,12 +1150,12 @@ void main() {
         validator: (_) => null,
       );
 
-      testVm.selectedDocumentType = Reference(id: 1, name: "DocType");
-      testVm.selectedCustomerRim = 123;
-      testVm.applicationId = "APP-1";
-      testVm.nextPickedFiles = null;
-
-      await testVm.pickMultipleFiles();
+      await (testVm
+        ..selectedDocumentType = Reference(id: 1, name: "DocType")
+        ..selectedCustomerRim = 123
+        ..applicationId = "APP-1"
+        ..nextPickedFiles = null)
+          .pickMultipleFiles();
 
       expect(testVm.selectedFiles, isEmpty);
       expect(testVm.errorMessage, isNotNull);
@@ -1169,12 +1171,12 @@ void main() {
         validator: (_) => null,
       );
 
-      testVm.selectedDocumentType = Reference(id: 1, name: "DocType");
-      testVm.selectedCustomerRim = 123;
-      testVm.applicationId = "APP-1";
-      testVm.pickFilesError = Exception("picker failed");
-
-      await testVm.pickMultipleFiles();
+      await (testVm
+        ..selectedDocumentType = Reference(id: 1, name: "DocType")
+        ..selectedCustomerRim = 123
+        ..applicationId = "APP-1"
+        ..pickFilesError = Exception("picker failed"))
+          .pickMultipleFiles();
 
       verify(() => mockAlertManager.showFailureToast(any())).called(1);
       expect(testVm.state.loaderStatus, LoadingStatus.loaded);
@@ -1189,15 +1191,15 @@ void main() {
         validator: (_) => null,
       );
 
-      testVm.selectedDocumentType = Reference(id: 1, name: "DocType");
-      testVm.isGroupApp = true;
-      testVm.selectedCompanyRims = [];
-      testVm.applicationId = "APP-1";
-      testVm.nextPickedFiles = [
-        PlatformFile(name: "a.pdf", size: 100),
-      ];
-
-      await testVm.pickMultipleFiles();
+      await (testVm
+        ..selectedDocumentType = Reference(id: 1, name: "DocType")
+        ..isGroupApp = true
+        ..selectedCompanyRims = []
+        ..applicationId = "APP-1"
+        ..nextPickedFiles = [
+          PlatformFile(name: "a.pdf", size: 100),
+        ])
+          .pickMultipleFiles();
 
       expect(testVm.selectedFiles.length, 1);
       expect(testVm.selectedDocuments, isEmpty);
@@ -1225,7 +1227,8 @@ void main() {
   group("Document type helpers", () {
     test("isConstitutionalDocumentsSelected returns true when selected", () {
       viewModel.selectedDocumentType = Reference(
-        id: ServerConstants.documentTypeId[DocumentType.constitutionalDocument],
+        id: ServerConstants
+            .documentTypeId[DocumentType.constitutionalDocument],
         name: "Constitutional",
       );
 
@@ -1313,17 +1316,17 @@ void main() {
 
   group("Document type changed", () {
     test("onDocumentTypeChanged resets related fields", () {
-      viewModel.selectedDocumentType = Reference(id: 1, name: "Old Type");
-      viewModel.documentName = "Old Name";
-      viewModel.entityId = "OLD-ENTITY";
-      viewModel.selectedCompanyRims = [
-        Customer(customerRimNo: 1),
-      ];
-      viewModel.selectedSubTypeFinancial = Reference(id: 2, name: "Financial");
-      viewModel.selectedSubTypeCreditLens = Reference(id: 3, name: "Credit");
-      viewModel.selectedSubSubTypeFinancial =
-          Reference(id: 4, name: "SubFinancial");
-      viewModel.selectedDate = DateTime.now();
+      viewModel
+        ..selectedDocumentType = Reference(id: 1, name: "Old Type")
+        ..documentName = "Old Name"
+        ..entityId = "OLD-ENTITY"
+        ..selectedCompanyRims = [
+          Customer(customerRimNo: 1),
+        ]
+        ..selectedSubTypeFinancial = Reference(id: 2, name: "Financial")
+        ..selectedSubTypeCreditLens = Reference(id: 3, name: "Credit")
+        ..selectedSubSubTypeFinancial = Reference(id: 4, name: "SubFinancial")
+        ..selectedDate = DateTime.now();
 
       final newType = Reference(id: 5, name: "New Type");
       viewModel.onDocumentTypeChanged(newType);

@@ -36,12 +36,11 @@ void main() {
     final mockAlertManager = MockAlertManager();
     mockRepository = MockAdminRepository();
     // mockBuildContext = MockBuildContext();
-    viewModel = UserListViewModel();
-    viewModel.repository = mockRepository;
-    // Clear search fields
-    viewModel.userIdSearch = null;
-    viewModel.userNameSearch = null;
-    viewModel.userRoleSearch = null;
+    viewModel = UserListViewModel()
+      ..repository = mockRepository
+      ..userIdSearch = null
+      ..userNameSearch = null
+      ..userRoleSearch = null;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
       connectivityChannel,
@@ -58,10 +57,10 @@ void main() {
   test("init() should initialize repository and load user list", () async {
     when(() => mockRepository.getUserList()).thenAnswer((_) async => [User()]);
 
-    viewModel.repository = mockRepository;
-    await viewModel.getUserList();
-    viewModel
-        .emit(viewModel.state.copyWith(loaderStatus: LoadingStatus.loaded));
+    await (viewModel..repository = mockRepository).getUserList();
+    viewModel.emit(
+      viewModel.state.copyWith(loaderStatus: LoadingStatus.loaded),
+    );
 
     expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
   });
@@ -101,27 +100,27 @@ void main() {
   test("filterTable by userRoleSearch case insensitive", () async {
     final adminRole = Role(name: "Admin", roleId: 1);
 
-    viewModel.users = [
-      User(id: "123", name: "Alice", availableRoles: [adminRole]),
-    ];
-    viewModel.userRoleSearch = "admin";
-
-    viewModel.filterTable();
+    viewModel
+      ..users = [
+        User(id: "123", name: "Alice", availableRoles: [adminRole]),
+      ]
+      ..userRoleSearch = "admin"
+      ..filterTable();
 
     expect(viewModel.filteredUsers?.length, 1);
   });
 
   test("filterTable by userRoleSearch with null role name", () async {
-    viewModel.users = [
-      User(
-        id: "123",
-        name: "Alice",
-        availableRoles: [Role(name: null, roleId: 1)],
-      ),
-    ];
-    viewModel.userRoleSearch = "Admin";
-
-    viewModel.filterTable();
+    viewModel
+      ..users = [
+        User(
+          id: "123",
+          name: "Alice",
+          availableRoles: [Role(name: null, roleId: 1)],
+        ),
+      ]
+      ..userRoleSearch = "Admin"
+      ..filterTable();
 
     expect(viewModel.filteredUsers?.length, 0);
   });
@@ -136,70 +135,70 @@ void main() {
   });
 
   test("filterTable with no matches", () async {
-    viewModel.users = [
-      User(id: "123", name: "Alice"),
-      User(id: "456", name: "Bob"),
-    ];
-    viewModel.userNameSearch = "NonExistent";
-
-    viewModel.filterTable();
+    viewModel
+      ..users = [
+        User(id: "123", name: "Alice"),
+        User(id: "456", name: "Bob"),
+      ]
+      ..userNameSearch = "NonExistent"
+      ..filterTable();
 
     expect(viewModel.filteredUsers, isEmpty);
   });
 
   test("filterTable emits tableLoader states", () async {
-    viewModel.users = [User(id: "1", name: "Test")];
-
-    viewModel.filterTable();
+    viewModel
+      ..users = [User(id: "1", name: "Test")]
+      ..filterTable();
 
     expect(viewModel.state.tableLoader, LoadingStatus.loaded);
   });
 
   test("filterTable by userIdSearch filters correctly", () async {
-    viewModel.users = [
-      User(id: "user123", name: "Alice"),
-      User(id: "admin456", name: "Bob"),
-      User(id: "guest789", name: "Charlie"),
-    ];
-    viewModel.userIdSearch = "user";
-
-    viewModel.filterTable();
+    viewModel
+      ..users = [
+        User(id: "user123", name: "Alice"),
+        User(id: "admin456", name: "Bob"),
+        User(id: "guest789", name: "Charlie"),
+      ]
+      ..userIdSearch = "user"
+      ..filterTable();
 
     expect(viewModel.filteredUsers?.length, 1);
     expect(viewModel.filteredUsers?[0].id, "user123");
   });
 
   test("filterTable by userIdSearch case insensitive", () async {
-    viewModel.users = [
-      User(id: "USER123", name: "Alice"),
-      User(id: "admin456", name: "Bob"),
-    ];
-    viewModel.userIdSearch = "user";
-
-    viewModel.filterTable();
+    viewModel
+      ..users = [
+        User(id: "USER123", name: "Alice"),
+        User(id: "admin456", name: "Bob"),
+      ]
+      ..userIdSearch = "user"
+      ..filterTable();
 
     expect(viewModel.filteredUsers?.length, 1);
     expect(viewModel.filteredUsers?[0].id, "USER123");
   });
 
   test("filterTable handles empty search strings", () async {
-    viewModel.users = [User(id: "1", name: "Test")];
-    viewModel.userIdSearch = "";
-    viewModel.userNameSearch = "";
-    viewModel.userRoleSearch = "";
-
-    viewModel.filterTable();
+    viewModel
+      ..users = [User(id: "1", name: "Test")]
+      ..userIdSearch = ""
+      ..userNameSearch = ""
+      ..userRoleSearch = ""
+      ..filterTable();
 
     expect(viewModel.filteredUsers, isNotEmpty);
     expect(viewModel.state.tableLoader, LoadingStatus.loaded);
   });
 
   test("filterTable handles null filteredUsers", () async {
-    viewModel.users = [User(id: "1", name: "Test")];
-    viewModel.filteredUsers = null;
-    viewModel.userIdSearch = "";
-
-    viewModel.filterTable();
+    viewModel
+      ..users = [User(id: "1", name: "Test")]
+      ..filteredUsers = null
+      ..userIdSearch = ""
+      ..filterTable();
 
     expect(viewModel.filteredUsers, isNotNull);
     expect(viewModel.state.tableLoader, LoadingStatus.loaded);

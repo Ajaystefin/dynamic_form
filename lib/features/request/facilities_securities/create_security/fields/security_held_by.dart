@@ -25,7 +25,7 @@ class SecurityHeldBy extends StatelessWidget {
         ],
         onSelected: (selectedValue) {
           if (selectedValue.isNotEmpty) {
-            viewModel.security.securityHeldAs = (selectedValue.first);
+            viewModel.security.securityHeldAs = selectedValue.first;
           }
         },
         itemBuilder: (context, item, isDisabled, isSelected) {

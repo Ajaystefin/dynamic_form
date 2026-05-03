@@ -91,7 +91,7 @@ class CcsysApprovalViewModel extends SafeCubit<CcsysApprovalState>
   PageMode pageMode = PageMode.na;
 
   void initRightsAndMode(Request request) {
-    final bool rights = (request.ccsysCanEditReadOnly ?? true);
+    final bool rights = request.ccsysCanEditReadOnly ?? true;
     pageMode =
         AuthRepository.getPageMode(RightConstants.ccsysRecommendationApproval);
     if (!rights) {
@@ -179,7 +179,7 @@ class CcsysApprovalViewModel extends SafeCubit<CcsysApprovalState>
           referenceData[ReferenceDataKeys.ccsysRecommendenRolesList] ?? [];
       ccsysReturnedRolesList =
           referenceData[ReferenceDataKeys.ccsysReturnedRolesList] ?? [];
-      final Reference appType = (applicationType).firstWhere(
+      final Reference appType = applicationType.firstWhere(
         (e) => e.id == ServerConstants.ccsysAppReferenceId,
         orElse: () => Reference(
           id: ServerConstants.ccsysAppReferenceId,
@@ -221,14 +221,14 @@ class CcsysApprovalViewModel extends SafeCubit<CcsysApprovalState>
 
   Future<void> fetchAndSetStrategyComments() async {
     try {
-      final List<Comment> commentsd = (await CommonRepository.instance
-          .getComments(CommentsType.ccsys, EntityIdentifier.ccsys));
+      final List<Comment> commentsd = await CommonRepository.instance
+          .getComments(CommentsType.ccsys, EntityIdentifier.ccsys);
       if (commentsd.isNotEmpty) {
         comments = commentsd
             .where(
-              (cmt) => (cmt.applicationRefNo
+              (cmt) => cmt.applicationRefNo
                       ?.contains(Globals.request?.applicationRefNo ?? "") ??
-                  false),
+                  false,
             )
             .toList();
         debugPrint("Strategy comment: ${comments[0].comment}");
@@ -374,24 +374,24 @@ class CcsysApprovalViewModel extends SafeCubit<CcsysApprovalState>
     try {
       bool isValid = false;
       if (action != "saveAndContinue") {
-        final CCSYSApproval ccsysApproval = CCSYSApproval();
-        ccsysApproval.appRefNo = Globals.request?.applicationRefNo;
-        ccsysApproval.mode = 0;
-
-        ccsysApproval.commentId = comments.isNotEmpty
-            ? (int.tryParse(comments.first.reviewCommentId.toString()) ?? 0)
-            : 0;
-
-        ccsysApproval.avoidWarning = true;
-        ccsysApproval.approveOnBehalfOf = null;
-        ccsysApproval.approveOnBehalfOfRole = null;
+        final CCSYSApproval ccsysApproval = CCSYSApproval()
+          ..appRefNo = Globals.request?.applicationRefNo
+          ..mode = 0
+          ..commentId = (comments.isNotEmpty
+              ? (int.tryParse(comments.first.reviewCommentId.toString()) ?? 0)
+              : 0)
+          ..avoidWarning = true
+          ..approveOnBehalfOf = null
+          ..approveOnBehalfOfRole = null;
 
         if (action == "recommend" && showRecommendButton) {
-          ccsysApproval.userAction = ServerConstants.userActionRecommend;
-          ccsysApproval.returnToUser = false;
+          ccsysApproval
+            ..userAction = ServerConstants.userActionRecommend
+            ..returnToUser = false;
           if ((selectedUserId ?? "").isNotEmpty) {
-            ccsysApproval.assignedTo = selectedUserId;
-            ccsysApproval.assignedRole = selectedUserBpmRole;
+            ccsysApproval
+              ..assignedTo = selectedUserId
+              ..assignedRole = selectedUserBpmRole;
           } else {
             AlertManager().showFailureToast(
               "approval.comments.selectUserbeforeSubmit".tr(),
@@ -401,25 +401,29 @@ class CcsysApprovalViewModel extends SafeCubit<CcsysApprovalState>
         }
 
         if (action == "approve" && showApproveButton) {
-          ccsysApproval.userAction = ServerConstants.userActionApproved;
-          ccsysApproval.returnToUser = false;
-          ccsysApproval.assignedTo = "";
-          ccsysApproval.assignedRole = "";
+          ccsysApproval
+            ..userAction = ServerConstants.userActionApproved
+            ..returnToUser = false
+            ..assignedTo = ""
+            ..assignedRole = "";
         }
 
         if (action == "cancel" && showDeclineCancelButton) {
-          ccsysApproval.userAction = ServerConstants.userActionDeclineCancel;
-          ccsysApproval.returnToUser = false;
-          ccsysApproval.assignedTo = "";
-          ccsysApproval.assignedRole = "";
+          ccsysApproval
+            ..userAction = ServerConstants.userActionDeclineCancel
+            ..returnToUser = false
+            ..assignedTo = ""
+            ..assignedRole = "";
         }
 
         if (action == "return" && showReturnButton) {
-          ccsysApproval.userAction = ServerConstants.userActionReturn;
-          ccsysApproval.returnToUser = true;
+          ccsysApproval
+            ..userAction = ServerConstants.userActionReturn
+            ..returnToUser = true;
           if ((selectedReturnUserId ?? "").isNotEmpty) {
-            ccsysApproval.assignedTo = selectedReturnUserId;
-            ccsysApproval.assignedRole = selectedReturnUserBpmRole;
+            ccsysApproval
+              ..assignedTo = selectedReturnUserId
+              ..assignedRole = selectedReturnUserBpmRole;
           } else {
             AlertManager().showFailureToast(
               "approval.comments.selectUserbeforeSubmit".tr(),

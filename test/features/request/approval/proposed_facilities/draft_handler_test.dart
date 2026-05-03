@@ -66,24 +66,21 @@ void main() {
     // ---------------------------------------------------------------------
     test("buildDraftData → serializes cleanExposure for proposed & present",
         () {
-      final vm = _TestProposedFacilitiesVM();
-
-      vm.groupPositionList = GroupPosition(
-        proposedPosition: [
-          makePosition(101),
-          makePosition(102),
-        ],
-        presentPosition: [
-          makePosition(201),
-        ],
-      );
-
-      vm.cleanExposureControllers?["101_proposed"] =
-          TextEditingController(text: "11.11");
-      vm.cleanExposureControllers?["102_proposed"] =
-          TextEditingController(text: "22.22");
-      vm.cleanExposureControllers?["201_present"] =
-          TextEditingController(text: "33.33");
+      final vm = _TestProposedFacilitiesVM()
+        ..groupPositionList = GroupPosition(
+          proposedPosition: [
+            makePosition(101),
+            makePosition(102),
+          ],
+          presentPosition: [
+            makePosition(201),
+          ],
+        )
+        ..cleanExposureControllers = {
+          "101_proposed": TextEditingController(text: "11.11"),
+          "102_proposed": TextEditingController(text: "22.22"),
+          "201_present": TextEditingController(text: "33.33"),
+        };
 
       final draft = handler.buildDraftData(vm);
 
@@ -101,12 +98,11 @@ void main() {
     });
 
     test("buildDraftData → missing controller returns empty string", () {
-      final vm = _TestProposedFacilitiesVM();
-
-      vm.groupPositionList = GroupPosition(
-        proposedPosition: [makePosition(500)],
-        presentPosition: [],
-      );
+      final vm = _TestProposedFacilitiesVM()
+        ..groupPositionList = GroupPosition(
+          proposedPosition: [makePosition(500)],
+          presentPosition: [],
+        );
 
       // No controller added → should produce ""
       final draft = handler.buildDraftData(vm);
@@ -123,17 +119,15 @@ void main() {
     test(
         "applyDraft → restores values to controllers"
         " & calls updateExposureField", () async {
-      final vm = _TestProposedFacilitiesVM();
-
-      vm.groupPositionList = GroupPosition(
-        proposedPosition: [makePosition(101)],
-        presentPosition: [makePosition(201)],
-      );
-
-      vm.cleanExposureControllers?["101_proposed"] =
-          TextEditingController(text: "0");
-      vm.cleanExposureControllers?["201_present"] =
-          TextEditingController(text: "0");
+      final vm = _TestProposedFacilitiesVM()
+        ..groupPositionList = GroupPosition(
+          proposedPosition: [makePosition(101)],
+          presentPosition: [makePosition(201)],
+        )
+        ..cleanExposureControllers = {
+          "101_proposed": TextEditingController(text: "0"),
+          "201_present": TextEditingController(text: "0"),
+        };
 
       final draft = {
         "proposed": [
@@ -156,15 +150,13 @@ void main() {
     });
 
     test("applyDraft → mismatch rimNo should not overwrite anything", () {
-      final vm = _TestProposedFacilitiesVM();
-
-      vm.groupPositionList = GroupPosition(
-        proposedPosition: [makePosition(101)],
-        presentPosition: [],
-      );
-
-      vm.cleanExposureControllers?["101_proposed"] =
-          TextEditingController(text: "INITIAL");
+      final vm = _TestProposedFacilitiesVM()
+        ..groupPositionList = GroupPosition(
+          proposedPosition: [makePosition(101)],
+          presentPosition: [],
+        )
+        ..cleanExposureControllers?["101_proposed"] =
+            TextEditingController(text: "INITIAL");
 
       final draft = {
         "proposed": [
@@ -180,20 +172,18 @@ void main() {
     });
 
     test("applyDraft → handles draft shorter than rows safely", () {
-      final vm = _TestProposedFacilitiesVM();
-
-      vm.groupPositionList = GroupPosition(
-        proposedPosition: [
-          makePosition(101),
-          makePosition(102),
-        ],
-        presentPosition: [],
-      );
-
-      vm.cleanExposureControllers?["101_proposed"] =
-          TextEditingController(text: "A");
-      vm.cleanExposureControllers?["102_proposed"] =
-          TextEditingController(text: "B");
+      final vm = _TestProposedFacilitiesVM()
+        ..groupPositionList = GroupPosition(
+          proposedPosition: [
+            makePosition(101),
+            makePosition(102),
+          ],
+          presentPosition: [],
+        )
+        ..cleanExposureControllers = {
+          "101_proposed": TextEditingController(text: "A"),
+          "102_proposed": TextEditingController(text: "B"),
+        };
 
       final draft = {
         "proposed": [
@@ -203,24 +193,20 @@ void main() {
 
       handler.applyDraft(vm, draft);
 
-      expect(vm.cleanExposureControllers?["101_proposed"]!.text, "FIRST_ONLY");
-      expect(
-        vm.cleanExposureControllers?["102_proposed"]!.text,
-        "B",
-      ); // unchanged
+      expect(vm.cleanExposureControllers?["101_proposed"]?.text, "FIRST_ONLY");
+      // unchanged
+      expect(vm.cleanExposureControllers?["102_proposed"]?.text, "B");
       expect(vm.spyCallCount, 1);
     });
 
     test("applyDraft → handles null / invalid sections gracefully", () {
-      final vm = _TestProposedFacilitiesVM();
-
-      vm.groupPositionList = GroupPosition(
-        proposedPosition: [makePosition(123)],
-        presentPosition: [],
-      );
-
-      vm.cleanExposureControllers?["123_proposed"] =
-          TextEditingController(text: "X");
+      final vm = _TestProposedFacilitiesVM()
+        ..groupPositionList = GroupPosition(
+          proposedPosition: [makePosition(123)],
+          presentPosition: [],
+        )
+        ..cleanExposureControllers?["123_proposed"] =
+            TextEditingController(text: "X");
 
       final draft = {
         "proposed": null,

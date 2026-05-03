@@ -111,24 +111,24 @@ class GuarantorsExposureTable extends StatelessWidget {
               // Center(child: Text('${p.tangiblePresentSecurity}')),
               Center(
                 child: Text(
-                  "${(p.totalFundNonfund ?? 0)}",
+                  "${p.totalFundNonfund ?? 0}",
                 ),
               ), // total = funded + non funded
               Center(child: Text("${p.totalTangiblePresentSecurity}")),
               Center(child: Text("${p.totalCCPresentSecurity}")),
               Center(
                 child: Text(
-                  "${(p.calTotalTangible ?? 0)}",
+                  "${p.calTotalTangible ?? 0}",
                 ),
               ), // = total - totalTangiblePresentSecurity
               Center(
                 child: Text(
-                  "${(p.calofWhichCash ?? 0)}",
+                  "${p.calofWhichCash ?? 0}",
                 ),
               ), // = total - ofwhichco
               Center(
                 child: Text(
-                  "${(viewModel.cleanExposureValues[p.rimNo.toString()] ?? 0)}",
+                  "${viewModel.cleanExposureValues[p.rimNo.toString()] ?? 0}",
                   style: const TextStyle(color: AppColors.highlightedTextColor),
                 ),
               ), // clean exposure (check json key)

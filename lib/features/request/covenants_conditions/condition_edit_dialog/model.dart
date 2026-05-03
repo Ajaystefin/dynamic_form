@@ -67,8 +67,8 @@ class ConditionEditDialogViewModel extends SafeCubit<ConditionEditDialogState> {
   PageMode pageMode = PageMode.na;
 
   PageMode? conditionEditPageMode;
-  bool get canEdit => (conditionEditPageMode ==
-      PageMode.edit); // && Utils.canEditApplication();
+  bool get canEdit => conditionEditPageMode ==
+      PageMode.edit; // && Utils.canEditApplication();
 
   List<Customer>? customerList = [];
 
@@ -136,7 +136,7 @@ class ConditionEditDialogViewModel extends SafeCubit<ConditionEditDialogState> {
     try {
       if (Utils.isGroupApplication()) {
         customerList =
-            (await CustomerRepository.instance.getChildRimsForGroup() ?? []);
+            await CustomerRepository.instance.getChildRimsForGroup() ?? [];
       } else {
         customerList = Globals.request?.customers ?? [];
       }
@@ -406,7 +406,7 @@ class ConditionEditDialogViewModel extends SafeCubit<ConditionEditDialogState> {
   }
 
   /// Determines whether inline editing is allowed.
-  bool isInlineEditable() => (!isStandartList());
+  bool isInlineEditable() => !isStandartList();
 
   /// Check whether the standartList selected or Not
   bool isStandartList() =>

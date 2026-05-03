@@ -71,10 +71,8 @@ class Globals {
       "createdBy : ${applicationDetails!.createdBy == Globals.user!.id}",
     );
     // not assigend to user & not created by user
-    final bool isInitiated =
-        (applicationDetails!.createdBy == Globals.user!.id);
     // &&    (Globals.user!.currentRole!.roleId == ServerConstants.roId);
-    return isInitiated;
+    return (applicationDetails!.createdBy == Globals.user!.id);
   }
 
   static bool checkCanEdit(String rights) {
@@ -106,9 +104,7 @@ class Globals {
     if (requestStatus.isEmpty) {
       return false;
     }
-    bool isCurrent = false;
-
-    isCurrent = statusList.any((status) {
+    return statusList.any((status) {
       final String title = ServerConstants.requestStatusTitle[status] ?? "";
 
       final int id = requestStatus.firstWhereOrNull(
@@ -117,8 +113,6 @@ class Globals {
           0;
       return applicationDetails?.status == id;
     });
-
-    return isCurrent;
   }
 
   static bool isQueriesTabVisible() {
@@ -312,11 +306,11 @@ class Globals {
                 RequestStatus.pendingLimitRelease,
                 RequestStatus.folNotRequired,
               ]) &&
-              !(checkAppSubStatus(
+              !checkAppSubStatus(
                 ServerConstants
                         .applicationSubType[ApplicationSubType.riskRating] ??
                     "",
-              ));
+              );
           return status;
         } else {
           return false;

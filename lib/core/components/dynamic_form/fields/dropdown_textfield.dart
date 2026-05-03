@@ -71,7 +71,7 @@ class _DynamicFormDropdownTextfieldState
       _textController.text = initialValue;
     }
 
-    setFormatter(("(${_selectedUnit ?? ""})"));
+    setFormatter("(${_selectedUnit ?? ""})");
 
     // Auto-submit initial values if they exist
     if (hadStored) {

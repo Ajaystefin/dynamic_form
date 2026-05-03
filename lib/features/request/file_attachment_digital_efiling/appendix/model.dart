@@ -507,7 +507,7 @@ class AppendixViewModel extends SafeCubit<AppendixState>
     return sAndP
         .map(
           (Reference rating) =>
-              ((rating.name ?? rating.reference1 ?? "").trim()),
+              (rating.name ?? rating.reference1 ?? "").trim(),
         )
         .where((String data) => data.isNotEmpty)
         .toList();
@@ -565,7 +565,7 @@ class AppendixViewModel extends SafeCubit<AppendixState>
           _toastSafe(
             () => AlertManager().showFailureToast(
               "${"eDigitalFilingFileAttachments.appendix"
-                    ".allowedImgExt".tr()}\n",
+                  ".allowedImgExt".tr()}\n",
             ),
           );
         } else {
@@ -1372,12 +1372,12 @@ class AppendixViewModel extends SafeCubit<AppendixState>
   }
 
   void updateStrengths(List<String>? updated) {
-    appendix.strengths = (updated ?? <String>[]);
+    appendix.strengths = updated ?? <String>[];
     _emitSafe(state.copyWith(loaderStatus: LoadingStatus.loaded));
   }
 
   void updateThreats(List<String>? updated) {
-    appendix.threats = (updated ?? <String>[]);
+    appendix.threats = updated ?? <String>[];
     _emitSafe(state.copyWith(loaderStatus: LoadingStatus.loaded));
   }
 

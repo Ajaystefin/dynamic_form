@@ -53,7 +53,7 @@ class LimitCapsSummary extends StatelessWidget {
             ? customer
             : (all.firstWhere(
                 (c) =>
-                    (c.rims?.any((r) => r.rimName == rimNameAtOpen) ?? false),
+                    c.rims?.any((r) => r.rimName == rimNameAtOpen) ?? false,
                 orElse: () => customer,
               ));
 
@@ -205,8 +205,7 @@ class LimitCapsSummary extends StatelessWidget {
       const SizedBox.shrink(),
     ];
 
-    final List<List<Widget>> tableRows = <List<Widget>>[];
-    tableRows.add(filterRows);
+    final List<List<Widget>> tableRows = <List<Widget>>[filterRows];
 
     int totalExistingLimit = 0;
     int totalProposedLimit = 0;
@@ -304,8 +303,9 @@ class LimitCapsSummary extends StatelessWidget {
                   FilteringTextInputFormatter.digitsOnly,
                 ],
                 onChanged: (String? value) {
-                  f.proposedLimit = int.tryParse(value ?? "");
-                  f.isEdited = true;
+                  f
+                    ..proposedLimit = int.tryParse(value ?? "")
+                    ..isEdited = true;
                   viewModel.updateConvertedTooltipFor(f);
                 },
               ),

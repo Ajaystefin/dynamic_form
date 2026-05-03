@@ -238,13 +238,13 @@ void main() {
       expect(json["targetDate"], "2025-04-04");
 
       // Borrowers serialized via Customer.toJson()
-      final borrowersJson = (json["borrowerIdList"] as List);
+      final borrowersJson = json["borrowerIdList"] as List;
       expect(borrowersJson.length, 2);
       expect(borrowersJson.first["rimNo"], 1);
       expect(borrowersJson.first["custName"], null);
 
       // Facilities serialized via Facility.toJson()
-      final facilitiesJson = (json["facilityDetailList"] as List);
+      final facilitiesJson = json["facilityDetailList"] as List;
       expect(facilitiesJson.length, 2);
       // We only need to assert presence; exact shape depends on
       // Facility.toJson()
@@ -384,7 +384,7 @@ void main() {
       expect(json["isIncludedInTermaSheet"], true);
 
       // borrowers mapped to { rimNo, custName }
-      final borrowerList = (json["borrowerIdList"] as List);
+      final borrowerList = json["borrowerIdList"] as List;
       expect(borrowerList.length, 1);
       expect(borrowerList.first["rimNo"], 9);
       expect(borrowerList.first["custName"], "Nine");

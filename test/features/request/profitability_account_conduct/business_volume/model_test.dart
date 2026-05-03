@@ -147,8 +147,7 @@ void main() {
       ),
     );
 
-    viewModel = TestBusinessVolumeViewModel();
-    viewModel.repository = mockRepository;
+    viewModel = TestBusinessVolumeViewModel()..repository = mockRepository;
   });
 
   group("constructor / initial state / getters", () {
@@ -315,12 +314,13 @@ void main() {
         },
       );
 
-      viewModel.customerWiseBusinessVolume = <Customer, List<BusinessVolume>>{
-        Customer(id: "C1"): <BusinessVolume>[
-          BusinessVolume(natureOfBusiness: "200"),
-        ],
-      };
-      viewModel.comments = "Test comment";
+      viewModel
+        ..customerWiseBusinessVolume = <Customer, List<BusinessVolume>>{
+          Customer(id: "C1"): <BusinessVolume>[
+            BusinessVolume(natureOfBusiness: "200"),
+          ],
+        }
+        ..comments = "Test comment";
 
       when(
         () => mockRepository.saveBusinessVolumes(
@@ -352,8 +352,9 @@ void main() {
         onSaved: (_) {},
       );
 
-      viewModel.customerWiseBusinessVolume = <Customer, List<BusinessVolume>>{};
-      viewModel.comments = "Continue comment";
+      viewModel
+        ..customerWiseBusinessVolume = <Customer, List<BusinessVolume>>{}
+        ..comments = "Continue comment";
 
       when(() => mockRepository.saveBusinessVolumes(any(), any()))
           .thenAnswer((_) async => "Saved successfully");
@@ -366,8 +367,9 @@ void main() {
     });
 
     test("failure emits error and shows failure toast", () async {
-      viewModel.customerWiseBusinessVolume = <Customer, List<BusinessVolume>>{};
-      viewModel.comments = "Test comment";
+      viewModel
+        ..customerWiseBusinessVolume = <Customer, List<BusinessVolume>>{}
+        ..comments = "Test comment";
 
       when(() => mockRepository.saveBusinessVolumes(any(), any()))
           .thenThrow(Exception("Save failed"));

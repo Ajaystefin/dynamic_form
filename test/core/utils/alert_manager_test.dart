@@ -354,10 +354,11 @@ void main() {
       test("should handle rapid successive calls", () {
         // Call methods rapidly
         for (int i = 0; i < 5; i++) {
-          alertManager.showFailureToast("Rapid failure $i");
-          alertManager.showSuccessToast("Rapid success $i");
-          alertManager.showWarningToast("Rapid warning $i");
-          alertManager.showInfoToast("Rapid info $i");
+          alertManager
+            ..showFailureToast("Rapid failure $i")
+            ..showSuccessToast("Rapid success $i")
+            ..showWarningToast("Rapid warning $i")
+            ..showInfoToast("Rapid info $i");
         }
 
         // Verify total calls (5 calls for each of the 4 methods = 20 calls)

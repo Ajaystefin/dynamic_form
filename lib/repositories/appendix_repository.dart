@@ -99,13 +99,11 @@ class AppendixRepository {
     // Normalize backend message from statusDescription (if present)
     final String? statusDescription = response.body?["baseResponse"]?["status"]
         ?["statusDescription"] as String?;
-    final String message = statusDescription ?? response.message;
-
     if (response.status != ResponseStatus.success) {
-      throw message;
+      throw statusDescription ?? response.message;
     }
 
-    return message;
+    return statusDescription ?? response.message;
   }
 
   Future<String?> getAppendixImageBase64({
@@ -316,9 +314,7 @@ class AppendixRepository {
 
     if (response.status == ResponseStatus.success) {
       // Map<String, dynamic> → String
-      response.message =
-          response.body["baseResponse"]["status"]["statusDescription"];
-      return response.message;
+      return response.body["baseResponse"]["status"]["statusDescription"];
     } else {
       throw response.message;
     }
@@ -379,8 +375,7 @@ class AppendixRepository {
 
     final String? statusDescription = response.body?["baseResponse"]?["status"]
         ?["statusDescription"] as String?;
-    response.message = statusDescription ?? response.message;
-    return response.message;
+    return statusDescription ?? response.message;
   }
 
   /// Retrieves Appendix Business Segment and builds an `Appendix` model.
@@ -507,8 +502,7 @@ class AppendixRepository {
 
     final String? statusDescription = response.body?["baseResponse"]?["status"]
         ?["statusDescription"] as String?;
-    response.message = statusDescription ?? response.message;
-    return response.message;
+    return statusDescription ?? response.message;
   }
 
   Future<String> saveGroupCorporateStructureCommentList(

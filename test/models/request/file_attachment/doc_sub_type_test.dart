@@ -8,11 +8,9 @@ void main() {
     // Helper to build Reference instances (adjust to your actual Reference
     // implementation)
     Reference ref(int id, String name) {
-      final r = Reference();
-      // If your Reference uses named params or immutability, adjust this
-      // accordingly
-      r.id = id;
-      r.name = name;
+      final r = Reference()
+        ..id = id
+        ..name = name;
       return r;
     }
 

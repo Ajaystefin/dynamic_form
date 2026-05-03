@@ -41,16 +41,17 @@ class OtherCertificationsDraftHandler
             } catch (_) {}
 
             if (option != null && certData.selectedOption?.id != option.id) {
-              certData.selectedOption = option;
-              certData.isUpdated =
-                  true; // Mark as updated so saving persists it
+              certData
+                ..selectedOption = option
+                ..isUpdated = true; // Mark as updated so saving persists it
             }
           }
 
           // Restore remarks
           if (remarks != null && remarks != certData.remarks) {
-            certData.remarks = remarks;
-            certData.isUpdated = true;
+            certData
+              ..remarks = remarks
+              ..isUpdated = true;
           }
         }
       }

@@ -37,9 +37,9 @@ class PreviousCreditApprovalViewModel
   String reviewCommentId = "0";
 
   /// If this screen is accessible for edit from rights
-  bool get isEdit => (Globals
+  bool get isEdit => Globals
           .user?.currentRole?.rights?[RightConstants.previousCreditApproval] ==
-      AccessType.edit);
+      AccessType.edit;
 
   /// Controller to avoid `initialValue` refresh issues
   final TextEditingController commentController = TextEditingController();

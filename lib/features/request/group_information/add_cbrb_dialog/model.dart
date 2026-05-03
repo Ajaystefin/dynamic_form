@@ -144,8 +144,9 @@ class AddCbrbDialogViewModel extends SafeCubit<AddCbrbDialogState> {
 
         final result = await repository.saveCBRBData(jsonData);
         AlertManager().showSuccessToast(result.toString());
-        logger.i("onSaveButtonPressed: $result");
-        logger.i("onSaveButtonPresseda: $jsonData");
+        logger
+          ..i("onSaveButtonPressed: $result")
+          ..i("onSaveButtonPresseda: $jsonData");
 
         router.pop();
       }

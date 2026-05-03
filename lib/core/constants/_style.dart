@@ -51,24 +51,26 @@ class AppStyle {
 }
 
 void testStyles() {
-  AppStyle.fieldWidth;
-  AppStyle.spacing;
-  AppStyle.spacingSmall;
-  AppStyle.spacingLarge;
-  AppStyle.spacingForm;
-  AppStyle.spacingColum;
-  AppStyle.boldLabel;
-  AppStyle.columnName;
-  AppStyle.tableHeaderStyle;
-  AppStyle.tableSuffixHeaderStyle;
-  AppStyle.singleRowColumnHeaderHeight;
-  AppStyle.groupBorrowersTextField;
-  AppStyle.groupBorrowersRimSection;
-  AppStyle.customTextEditorWidget;
-  AppStyle.linkContractFormSpacing;
-  AppStyle.linkContractProceedButton;
-  AppStyle.linkContractScopeField;
-  AppStyle.fontSizeSmall;
-  AppStyle.fontSizeMedium;
-  AppStyle.fontSizeLarge;
+  [
+    AppStyle.fieldWidth,
+    AppStyle.spacing,
+    AppStyle.spacingSmall,
+    AppStyle.spacingLarge,
+    AppStyle.spacingForm,
+    AppStyle.spacingColum,
+    AppStyle.boldLabel,
+    AppStyle.columnName,
+    AppStyle.tableHeaderStyle,
+    AppStyle.tableSuffixHeaderStyle,
+    AppStyle.singleRowColumnHeaderHeight,
+    AppStyle.groupBorrowersTextField,
+    AppStyle.groupBorrowersRimSection,
+    AppStyle.customTextEditorWidget,
+    AppStyle.linkContractFormSpacing,
+    AppStyle.linkContractProceedButton,
+    AppStyle.linkContractScopeField,
+    AppStyle.fontSizeSmall,
+    AppStyle.fontSizeMedium,
+    AppStyle.fontSizeLarge,
+  ];
 }

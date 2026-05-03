@@ -131,8 +131,9 @@ void main() {
       originalDraftRepo = DraftRepository.instance;
       DraftRepository.overrideInstance(FakeDraftRepository());
 
-      viewModel.setMockCommonRepository(mockCommonRepo);
-      viewModel.setAlertManager(alertSpy);
+      viewModel
+        ..setMockCommonRepository(mockCommonRepo)
+        ..setAlertManager(alertSpy);
 
       // IMPORTANT: init() assigns repository = ProfitabilityRepository.instance
       // so we need to make sure .instance returns our mock.
@@ -246,9 +247,10 @@ void main() {
       originalDraftRepo = DraftRepository.instance;
       DraftRepository.overrideInstance(FakeDraftRepository());
 
-      viewModel.setMockRepository(mockRepo);
-      viewModel.setMockCommonRepository(mockCommonRepo);
-      viewModel.setAlertManager(alertSpy);
+      viewModel
+        ..setMockRepository(mockRepo)
+        ..setMockCommonRepository(mockCommonRepo)
+        ..setAlertManager(alertSpy);
     });
 
     tearDown(() {
@@ -335,14 +337,15 @@ void main() {
       testWidgets("success: shows success toast and returns to loaded",
           (tester) async {
         // Arrange
-        viewModel.incomeSummaryList = [
-          IncomeSummary(
-            rimNo: 1,
-            custName: "Customer A",
-            lastYearAmount: "100.0",
-          ),
-        ];
-        viewModel.rmComments = "RM note";
+        viewModel
+          ..incomeSummaryList = [
+            IncomeSummary(
+              rimNo: 1,
+              custName: "Customer A",
+              lastYearAmount: "100.0",
+            ),
+          ]
+          ..rmComments = "RM note";
 
         when(() => mockRepo.saveIncomeSummary(any(), any()))
             .thenAnswer((_) async => "Saved Successfully");
@@ -362,14 +365,15 @@ void main() {
       testWidgets(
           "success: navigateNext=true does not crash (navigation not asserted)",
           (tester) async {
-        viewModel.incomeSummaryList = [
-          IncomeSummary(
-            rimNo: 2,
-            custName: "Customer B",
-            lastYearAmount: "200.0",
-          ),
-        ];
-        viewModel.rmComments = "Next please";
+        viewModel
+          ..incomeSummaryList = [
+            IncomeSummary(
+              rimNo: 2,
+              custName: "Customer B",
+              lastYearAmount: "200.0",
+            ),
+          ]
+          ..rmComments = "Next please";
 
         when(() => mockRepo.saveIncomeSummary(any(), any()))
             .thenAnswer((_) async => "Saved Successfully");
@@ -389,14 +393,15 @@ void main() {
       testWidgets(
           "error: repository throws -> shows failure"
           " toast and returns to loaded", (tester) async {
-        viewModel.incomeSummaryList = [
-          IncomeSummary(
-            rimNo: 3,
-            custName: "Customer C",
-            lastYearAmount: "300.0",
-          ),
-        ];
-        viewModel.rmComments = "Will fail";
+        viewModel
+          ..incomeSummaryList = [
+            IncomeSummary(
+              rimNo: 3,
+              custName: "Customer C",
+              lastYearAmount: "300.0",
+            ),
+          ]
+          ..rmComments = "Will fail";
 
         when(() => mockRepo.saveIncomeSummary(any(), any()))
             .thenThrow(Exception("Save failed"));
@@ -414,8 +419,9 @@ void main() {
           "defensive: incomeSummaryList "
           "== null -> "
           "shows failure toast and returns to loaded", (tester) async {
-        viewModel.incomeSummaryList = null;
-        viewModel.rmComments = "No data";
+        viewModel
+          ..incomeSummaryList = null
+          ..rmComments = "No data";
 
         await viewModel.saveIncomeSummaryData(FakeBuildContext(), false);
 
@@ -432,14 +438,15 @@ void main() {
 
       testWidgets("loaderStatus transitions: loading -> loaded on success",
           (tester) async {
-        viewModel.incomeSummaryList = [
-          IncomeSummary(
-            rimNo: 4,
-            custName: "Customer D",
-            lastYearAmount: "400.0",
-          ),
-        ];
-        viewModel.rmComments = "Transition check";
+        viewModel
+          ..incomeSummaryList = [
+            IncomeSummary(
+              rimNo: 4,
+              custName: "Customer D",
+              lastYearAmount: "400.0",
+            ),
+          ]
+          ..rmComments = "Transition check";
 
         when(() => mockRepo.saveIncomeSummary(any(), any()))
             .thenAnswer((_) async => "OK");
@@ -506,8 +513,9 @@ void main() {
       testWidgets(
           "null formState: validation block skipped, null list returns early",
           (tester) async {
-        viewModel.formKey = GlobalKey<FormState>(); // fresh key, never attached
-        viewModel.incomeSummaryList = null;
+        viewModel
+          ..formKey = GlobalKey<FormState>() // fresh key, never attached
+          ..incomeSummaryList = null;
 
         await tester.pumpWidget(
           const MaterialApp(home: Scaffold(body: SizedBox())),

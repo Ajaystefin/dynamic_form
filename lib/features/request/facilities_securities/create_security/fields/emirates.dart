@@ -22,7 +22,7 @@ class Emirates extends StatelessWidget {
             ? [viewModel.security.emirates]
             : null,
         onSelected: (selectedValue) {
-          viewModel.security.emirates = (selectedValue.first);
+          viewModel.security.emirates = selectedValue.first;
         },
         itemBuilder: (context, item, isDisabled, isSelected) {
           return dropdownItemBuildWidget(

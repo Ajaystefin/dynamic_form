@@ -62,8 +62,7 @@ void main() {
 
   setUp(() {
     mockRepository = MockApprovalRepository();
-    viewModel = ListOutputFormsDialogViewModel();
-    viewModel.repository = mockRepository;
+    viewModel = ListOutputFormsDialogViewModel()..repository = mockRepository;
   });
 
   tearDown(() {
@@ -109,8 +108,8 @@ void main() {
         () async {
       // Test the init method using the testable version to properly cover lines
       // 32-35
-      final testableViewModel = TestableListOutputFormsDialogViewModel();
-      testableViewModel.setMockRepository(mockRepository);
+      final testableViewModel = TestableListOutputFormsDialogViewModel()
+        ..setMockRepository(mockRepository);
 
       final mockForms = [
         OutputForm(name: "Init Test Form", id: 1, isSelected: false, url: ""),
@@ -133,8 +132,8 @@ void main() {
 
     test("additional coverage paths", () async {
       // Test additional paths to improve coverage
-      final testableViewModel = TestableListOutputFormsDialogViewModel();
-      testableViewModel.setMockRepository(mockRepository);
+      final testableViewModel = TestableListOutputFormsDialogViewModel()
+        ..setMockRepository(mockRepository);
 
       // Test error handling in init method
       when(() => mockRepository.getOutputForms())
@@ -455,9 +454,10 @@ void main() {
       when(() => mockRepository.getOutputForms()).thenAnswer((_) async => []);
       await viewModel.fetchOutputForms();
 
-      viewModel.toggleSelection(0);
-      viewModel.toggleSelection(-1);
-      viewModel.toggleSelection(10);
+      viewModel
+        ..toggleSelection(0)
+        ..toggleSelection(-1)
+        ..toggleSelection(10);
 
       expect(viewModel.outputForms, isEmpty);
     });
@@ -641,9 +641,10 @@ void main() {
       await viewModel.fetchOutputForms();
 
       // Perform various operations
-      viewModel.toggleSelection(1);
-      viewModel.toggleSelection(3);
-      viewModel.toggleSelection(0);
+      viewModel
+        ..toggleSelection(1)
+        ..toggleSelection(3)
+        ..toggleSelection(0);
 
       // Verify order is maintained
       expect(viewModel.outputForms[0].name, "Alpha");
@@ -661,9 +662,9 @@ void main() {
 
   group("Integration Tests", () {
     test("complete workflow from initialization to selection", () async {
-      final newViewModel = ListOutputFormsDialogViewModel();
       final mockRepo = MockApprovalRepository();
-      newViewModel.repository = mockRepo;
+      final newViewModel = ListOutputFormsDialogViewModel()
+        ..repository = mockRepo;
 
       final mockForms = [
         OutputForm(
@@ -688,8 +689,9 @@ void main() {
       expect(newViewModel.state.loaderStatus, LoadingStatus.loaded);
       expect(newViewModel.outputForms.length, 2);
 
-      newViewModel.toggleSelection(0);
-      newViewModel.toggleSelection(1);
+      newViewModel
+        ..toggleSelection(0)
+        ..toggleSelection(1);
 
       expect(newViewModel.outputForms[0].isSelected, true);
       expect(newViewModel.outputForms[1].isSelected, true);
@@ -776,21 +778,14 @@ void main() {
     test("actual init method lines 32-35 coverage via manual execution",
         () async {
       // Create a new viewmodel to test actual init method
-      final newViewModel = ListOutputFormsDialogViewModel();
-
-      // Mock the ApprovalRepository.instance call by manually testing the
-      // sequence
       final mockForms = [
         OutputForm(name: "Direct Init Form", id: 1, isSelected: false, url: ""),
       ];
       when(() => mockRepository.getOutputForms())
           .thenAnswer((_) async => mockForms);
 
-      // Simulate the actual init method by manually executing its steps:
-      // Line 33: logger.i('initialising ListOutputFormsDialogViewModel')
-      // Line 34: repository = ApprovalRepository.instance
-      newViewModel.repository =
-          mockRepository; // Manual assignment to simulate line 34
+      final newViewModel = ListOutputFormsDialogViewModel()
+        ..repository = mockRepository;
 
       // Line 35: await fetchOutputForms()
       await newViewModel.fetchOutputForms();
@@ -804,8 +799,8 @@ void main() {
 
     test("comprehensive line coverage by exercising all code paths", () async {
       // Test to ensure we hit as many lines as possible
-      final vm1 = ListOutputFormsDialogViewModel();
-      final vm2 = ListOutputFormsDialogViewModel();
+      final vm1 = ListOutputFormsDialogViewModel()..repository = mockRepository;
+      final vm2 = ListOutputFormsDialogViewModel()..repository = mockRepository;
 
       // Test multiple state transitions
       expect(vm1.state.loaderStatus, LoadingStatus.loading);
@@ -814,10 +809,6 @@ void main() {
       // Test getter methods (lines 25, etc)
       expect(vm1.outputForms, isEmpty);
       expect(vm2.outputForms, isEmpty);
-
-      // Test repository assignment
-      vm1.repository = mockRepository;
-      vm2.repository = mockRepository;
 
       expect(vm1.repository, mockRepository);
       expect(vm2.repository, mockRepository);
@@ -880,16 +871,14 @@ void main() {
 
     test("real fetchOutputForms method directly", () async {
       // Test fetchOutputForms method (lines 41-48)
-      final realVM = ListOutputFormsDialogViewModel();
-
       final mockForms = [
         OutputForm(name: "Direct Fetch", id: 1, isSelected: false, url: ""),
       ];
       when(() => mockRepository.getOutputForms())
           .thenAnswer((_) async => mockForms);
 
-      // Set repository directly
-      realVM.repository = mockRepository;
+      final realVM = ListOutputFormsDialogViewModel()
+        ..repository = mockRepository;
 
       // Call fetchOutputForms directly
       await realVM.fetchOutputForms();
@@ -904,16 +893,14 @@ void main() {
 
     test("real toggleSelection method with forms", () async {
       // Test toggleSelection method (lines 56-65)
-      final realVM = ListOutputFormsDialogViewModel();
-
       final mockForms = [
         OutputForm(name: "Toggle Test", id: 1, isSelected: false, url: ""),
       ];
       when(() => mockRepository.getOutputForms())
           .thenAnswer((_) async => mockForms);
 
-      // Set repository and fetch forms
-      realVM.repository = mockRepository;
+      final realVM = ListOutputFormsDialogViewModel()
+        ..repository = mockRepository;
       await realVM.fetchOutputForms();
 
       // Test valid index toggle
@@ -930,14 +917,14 @@ void main() {
       final realVM = ListOutputFormsDialogViewModel();
 
       // Test with empty list
-      realVM.toggleSelection(-1);
-      realVM.toggleSelection(0);
-      realVM.toggleSelection(1);
+      (realVM
+            ..toggleSelection(-1)
+            ..toggleSelection(0)
+            ..toggleSelection(1))
+          .close();
 
       // State should remain unchanged
       expect(realVM.state.loaderStatus, LoadingStatus.loading);
-
-      realVM.close();
     });
 
     test("batch viewmodel operations without late field access", () async {
@@ -946,16 +933,13 @@ void main() {
       final vms = <ListOutputFormsDialogViewModel>[];
 
       for (int i = 0; i < 3; i++) {
-        final vm = ListOutputFormsDialogViewModel();
+        final vm = ListOutputFormsDialogViewModel()
+          ..repository = mockRepository;
         vms.add(vm);
 
         // Test all getters and properties (avoid repository getter)
         expect(vm.outputForms, isEmpty);
         expect(vm.state.loaderStatus, LoadingStatus.loading);
-
-        // Set repository to ensure we test assignment (don't access it before
-        // setting)
-        vm.repository = mockRepository;
       }
 
       // Test batch operations
@@ -991,9 +975,10 @@ void main() {
       expect(vm.state.loaderStatus, LoadingStatus.loading);
 
       // Assign repository multiple times to test setter
-      vm.repository = mockRepository;
-      vm.repository = MockApprovalRepository();
-      vm.repository = mockRepository;
+      vm
+        ..repository = mockRepository
+        ..repository = MockApprovalRepository()
+        ..repository = mockRepository;
 
       expect(vm.repository, mockRepository);
 

@@ -23,8 +23,7 @@ class GroupName extends StatelessWidget {
           // Build display text: "Group Name (Group ID)"
           final String groupName = request.groupName ?? "";
           final String groupId = request.groupId?.toString() ?? "";
-          final String idPart =
-              groupId.isNotEmpty ? " ($groupId)" : "";
+          final String idPart = groupId.isNotEmpty ? " ($groupId)" : "";
           return "$groupName$idPart";
         }(),
         style: const TextStyle(color: AppColors.black),

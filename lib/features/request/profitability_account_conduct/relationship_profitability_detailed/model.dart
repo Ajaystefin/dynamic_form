@@ -71,7 +71,7 @@ class RelationshipProfitabilityDetailedViewModel
   ///
 
   PageMode pageMode = PageMode.na;
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
 
   Future<void> init(BuildContext context) async {
     logger.i("initialising RelationshipProfitabilityDetailedViewModel");

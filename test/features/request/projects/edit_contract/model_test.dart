@@ -35,10 +35,7 @@ void main() {
   setUp(() {
     projectRepo = MockProjectRepository();
 
-    vm = EditContractViewModel();
-
-    // Inject repositories directly
-    vm.repository = projectRepo;
+    vm = EditContractViewModel()..repository = projectRepo;
   });
 
   tearDown(() async {
@@ -63,11 +60,11 @@ void main() {
   // ------------------------------------------------------------
   group("model/controller sync", () {
     test("syncModelFromControllers updates contract", () {
-      vm.contractorValueController.text = "1000";
-      vm.contractorScopeController.text = "Scope";
-      vm.customerNameController.text = "Customer";
-
-      vm.syncModelFromControllers();
+      vm
+        ..contractorValueController.text = "1000"
+        ..contractorScopeController.text = "Scope"
+        ..customerNameController.text = "Customer"
+        ..syncModelFromControllers();
 
       expect(vm.contract.contractValue, "1000");
       expect(vm.contract.contractScope, "Scope");
@@ -103,10 +100,10 @@ void main() {
     });
 
     test("updateConvertedAmount calculates value", () {
-      vm.selectedCurrencyLabel = "USD";
-      vm.contractorValueController.text = "100";
-
-      vm.updateConvertedAmount();
+      vm
+        ..selectedCurrencyLabel = "USD"
+        ..contractorValueController.text = "100"
+        ..updateConvertedAmount();
 
       expect(vm.convertedAmountController.text, isNotEmpty);
     });
@@ -131,9 +128,9 @@ void main() {
     });
 
     test("clearCommentInputs resets to single blank", () {
-      vm.commentInputs = ["a", "b"];
-
-      vm.clearCommentInputs();
+      vm
+        ..commentInputs = ["a", "b"]
+        ..clearCommentInputs();
 
       expect(vm.commentInputs.length, 1);
       expect(vm.commentInputs.first, "");
@@ -153,8 +150,9 @@ void main() {
     });
 
     test("removePpcRow removes PPC safely", () {
-      vm.addPpcRow();
-      vm.addPpcRow();
+      vm
+        ..addPpcRow()
+        ..addPpcRow();
 
       final before = vm.ppc.length;
 
@@ -182,8 +180,9 @@ void main() {
       final vm = EditContractViewModel();
       final repo = MockProjectRepository();
 
-      vm.repository = repo;
-      vm.contract = Contract(contractCurrency: "USD");
+      vm
+        ..repository = repo
+        ..contract = Contract(contractCurrency: "USD");
 
       when(repo.getcountryCode).thenAnswer(
         (_) async => [
@@ -204,8 +203,9 @@ void main() {
       final vm = EditContractViewModel();
       final repo = MockProjectRepository();
 
-      vm.repository = repo;
-      vm.contract = Contract(contractCurrency: "AED");
+      vm
+        ..repository = repo
+        ..contract = Contract(contractCurrency: "AED");
 
       when(repo.getcountryCode).thenAnswer(
         (_) async => [Reference(name: "AED")],
@@ -222,9 +222,10 @@ void main() {
       final vm = EditContractViewModel();
       final repo = MockProjectRepository();
 
-      vm.repository = repo;
-      vm.contract = Contract(contractCode: "C1");
-      vm.project = Project(projectId: 10);
+      vm
+        ..repository = repo
+        ..contract = Contract(contractCode: "C1")
+        ..project = Project(projectId: 10);
 
       final contractFromApi = Contract(
         contractCode: "C1",
@@ -256,8 +257,9 @@ void main() {
       final vm = EditContractViewModel();
       final repo = MockProjectRepository();
 
-      vm.repository = repo;
-      vm.contract = Contract(contractCode: "C1");
+      vm
+        ..repository = repo
+        ..contract = Contract(contractCode: "C1");
 
       when(
         () => repo.getContractByContractCodeDetails(
@@ -316,10 +318,8 @@ void main() {
   group("prefillPpcControllersFromModel()", () {
     test("prefills empty controllers from PPC model", () {
       // Arrange
-      final vm = EditContractViewModel();
-
-      // Create one empty PPC controller row
-      vm.ppcControllers = [PpcControllers.empty()];
+      final vm = EditContractViewModel()
+        ..ppcControllers = [PpcControllers.empty()];
 
       final ppc = PPC(
         ppcNo: "PPC-1",
@@ -367,21 +367,18 @@ void main() {
     });
 
     test("does nothing when index is out of range", () {
-      final vm = EditContractViewModel();
-      vm.ppcControllers = [];
-
-      vm.prefillPpcControllersFromModel(0, PPC());
+      final vm = EditContractViewModel()
+        ..ppcControllers = []
+        ..prefillPpcControllersFromModel(0, PPC());
 
       expect(vm.ppcControllers, isEmpty);
     });
 
     test("does nothing when restoring draft", () {
-      final vm = EditContractViewModel();
-      vm.isRestoringDraft = true;
-
-      vm.ppcControllers = [PpcControllers.empty()];
-
-      vm.prefillPpcControllersFromModel(0, PPC(ppcNo: "PPC-1"));
+      final vm = EditContractViewModel()
+        ..isRestoringDraft = true
+        ..ppcControllers = [PpcControllers.empty()]
+        ..prefillPpcControllersFromModel(0, PPC(ppcNo: "PPC-1"));
 
       expect(vm.ppcControllers.first.ppcCtrl.text, "");
     });
@@ -498,11 +495,11 @@ void main() {
 
   group("recomputeDerivedForSingleRow()", () {
     setUp(() {
-      vm.contractValue = 1000;
-      vm.contractorValueController.text = "1000";
-
-      vm.ppc = [
-        PPC(
+      vm
+        ..contractValue = 1000
+        ..contractorValueController.text = "1000"
+        ..ppc = [
+          PPC(
           grossPPCValue: 200,
           advancePaymentDeduction: 20,
           retentionDeduction: 10,
@@ -550,21 +547,19 @@ void main() {
   });
   group("syncRowFromControllersSoft()", () {
     test("updates PPC row from controllers without recompute", () {
-      vm.ppcControllers = [PpcControllers.empty()];
-      vm.ppc = [
-        PPC(
-          ppcId: 1,
-          cumulativePpcValue: 100,
-          netPpcValue: 50,
-        ),
-      ];
-
-      final c = vm.ppcControllers.first;
-      c.ppcCtrl.text = "10";
-      c.grossPPCValueCtrl.text = "200";
-      c.commentsCtrl.text = "note";
-
-      vm.syncRowFromControllersSoft(0);
+      vm
+        ..ppcControllers = [PpcControllers.empty()]
+        ..ppc = [
+          PPC(
+            ppcId: 1,
+            cumulativePpcValue: 100,
+            netPpcValue: 50,
+          ),
+        ]
+        ..ppcControllers.first.ppcCtrl.text = "10"
+        ..ppcControllers.first.grossPPCValueCtrl.text = "200"
+        ..ppcControllers.first.commentsCtrl.text = "note"
+        ..syncRowFromControllersSoft(0);
 
       final row = vm.ppc.first;
       expect(row.ppc, 10);
@@ -602,27 +597,24 @@ void main() {
     test("syncs PPC model from controllers and preserves non-controller fields",
         () {
       // Arrange
-      vm.ppcControllers = [PpcControllers.empty()];
-      vm.ppc = [
-        PPC(
-          contractorId: "CID",
-          ppcNo: "PPC-1",
-        ),
-      ];
-
-      final c = vm.ppcControllers.first;
-      c.ppcCtrl.text = "10";
-      c.ppcDateCtrl.text = "01/01/2026";
-      c.grossPPCValueCtrl.text = "200";
-      c.advancePaymentDeductionCtrl.text = "20";
-      c.retentionDeductionCtrl.text = "10";
-      c.vatAmountCtrl.text = "5";
-      c.otherPaymentCtrl.text = "2";
-      c.actualPaymentReceivedCtrl.text = "173";
-      c.commentsCtrl.text = "note";
-
-      // Act
-      vm.syncRowFromControllers(0);
+      vm
+        ..ppcControllers = [PpcControllers.empty()]
+        ..ppc = [
+          PPC(
+            contractorId: "CID",
+            ppcNo: "PPC-1",
+          ),
+        ]
+        ..ppcControllers.first.ppcCtrl.text = "10"
+        ..ppcControllers.first.ppcDateCtrl.text = "01/01/2026"
+        ..ppcControllers.first.grossPPCValueCtrl.text = "200"
+        ..ppcControllers.first.advancePaymentDeductionCtrl.text = "20"
+        ..ppcControllers.first.retentionDeductionCtrl.text = "10"
+        ..ppcControllers.first.vatAmountCtrl.text = "5"
+        ..ppcControllers.first.otherPaymentCtrl.text = "2"
+        ..ppcControllers.first.actualPaymentReceivedCtrl.text = "173"
+        ..ppcControllers.first.commentsCtrl.text = "note"
+        ..syncRowFromControllers(0);
 
       final row = vm.ppc.first;
 
@@ -642,12 +634,11 @@ void main() {
     });
 
     test("does nothing when restoring draft", () {
-      vm.isRestoringDraft = true;
-
-      vm.ppcControllers = [PpcControllers.empty()];
-      vm.ppc = [PPC(ppcNo: "KEEP")];
-
-      vm.syncRowFromControllers(0);
+      vm
+        ..isRestoringDraft = true
+        ..ppcControllers = [PpcControllers.empty()]
+        ..ppc = [PPC(ppcNo: "KEEP")]
+        ..syncRowFromControllers(0);
 
       expect(vm.ppc.first.ppcNo, "KEEP");
     });
@@ -765,10 +756,10 @@ void main() {
   });
   group("enrichLinkCommitmentNumberWith()", () {
     test("does nothing when lists are empty", () {
-      vm.contract.linkCommitmentNumberWith = [];
-      vm.linkContract = [];
-
-      vm.enrichLinkCommitmentNumberWith();
+      vm
+        ..contract.linkCommitmentNumberWith = []
+        ..linkContract = []
+        ..enrichLinkCommitmentNumberWith();
 
       expect(vm.contract.linkCommitmentNumberWith, isEmpty);
     });
@@ -829,9 +820,10 @@ void main() {
       vm = TestEditContractViewModel();
       repo = MockProjectRepository();
 
-      vm.repository = repo;
-      vm.contract = Contract(contractCode: "C1");
-      vm.project = Project(projectId: 10);
+      vm
+        ..repository = repo
+        ..contract = Contract(contractCode: "C1")
+        ..project = Project(projectId: 10);
     });
 
     test("loads contract and updates state correctly", () async {
@@ -906,9 +898,9 @@ void main() {
   group("getLinkCommitment()", () {
     test("loads linked commitment and updates state", () async {
       final repo = MockProjectRepository();
-      final vm = EditContractViewModel()..repository = repo;
-
-      vm.contract = Contract(rimNo: "123");
+      final vm = EditContractViewModel()
+        ..repository = repo
+        ..contract = Contract(rimNo: "123");
 
       when(() => repo.getLinkedCMNForRimDetails(contractRimNo: "123"))
           .thenAnswer(

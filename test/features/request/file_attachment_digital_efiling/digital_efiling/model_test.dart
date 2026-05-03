@@ -128,10 +128,10 @@ void main() {
     mockRefService = MockReferenceDataService();
     mockAlertManager = MockAlertManager();
 
-    viewModel = DigitalEfilingViewModel();
-    viewModel.requestRepository = mockRequestRepo;
-    viewModel.customerRepository = mockCustomerRepo;
-    viewModel.fileAttachmentRepository = mockFileAttachmentRepo;
+    viewModel = DigitalEfilingViewModel()
+      ..requestRepository = mockRequestRepo
+      ..customerRepository = mockCustomerRepo
+      ..fileAttachmentRepository = mockFileAttachmentRepo;
 
     AlertManager.overrideInstance(mockAlertManager);
     ReferenceDataService.overrideInstance(mockRefService);
@@ -160,8 +160,7 @@ void main() {
         ReferenceDataKeys.subSegmentValidation: [
           Reference(
             reference1: ServerConstants.subSegmentValidationRefId,
-            reference2:
-                "${UserRole.relationshipManager.index},"
+            reference2: "${UserRole.relationshipManager.index},"
                 "${UserRole.relationshipOfficer.index}",
           ),
         ],
@@ -215,14 +214,14 @@ void main() {
     });
 
     test("setValueOfBusinessSegment sets corporate business segment", () {
-      viewModel.bussinessSegments = [
-        Reference(id: 9999),
-        Reference(
-          id: ServerConstants.businessSegmentId[BusinessSegment.corporate],
-        ),
-      ];
-
-      viewModel.setValueOfBusinessSegment();
+      viewModel
+        ..bussinessSegments = [
+          Reference(id: 9999),
+          Reference(
+            id: ServerConstants.businessSegmentId[BusinessSegment.corporate],
+          ),
+        ]
+        ..setValueOfBusinessSegment();
 
       expect(
         viewModel.businessSegmentValue?.id,
@@ -264,12 +263,12 @@ void main() {
     });
 
     test("handleFieldControl resets fields when data is empty", () {
-      viewModel.customerName = "John";
-      viewModel.groupName = "Group";
-      viewModel.customerRimNo = "123";
-      viewModel.groupId = "456";
-
-      viewModel.handleFieldControl(ControlFields.customerName, "");
+      viewModel
+        ..customerName = "John"
+        ..groupName = "Group"
+        ..customerRimNo = "123"
+        ..groupId = "456"
+        ..handleFieldControl(ControlFields.customerName, "");
 
       expect(viewModel.customerName, null);
       expect(viewModel.customerRimNo, null);
@@ -280,13 +279,13 @@ void main() {
     test("stopAllLoaders should reset all loading statuses", () {
       final initialResetFlag = viewModel.isResetPressed;
 
-      viewModel.customerRimNoLoadingStatus = LoadingStatus.loading;
-      viewModel.customerNameLoadingStatus = LoadingStatus.loading;
-      viewModel.groupIdLoadingStatus = LoadingStatus.loading;
-      viewModel.groupNameLoadingStatus = LoadingStatus.loading;
-      viewModel.submitLoadingStatus = LoadingStatus.loading;
-
-      viewModel.stopAllLoaders();
+      viewModel
+        ..customerRimNoLoadingStatus = LoadingStatus.loading
+        ..customerNameLoadingStatus = LoadingStatus.loading
+        ..groupIdLoadingStatus = LoadingStatus.loading
+        ..groupNameLoadingStatus = LoadingStatus.loading
+        ..submitLoadingStatus = LoadingStatus.loading
+        ..stopAllLoaders();
 
       expect(viewModel.customerRimNoLoadingStatus, LoadingStatus.loaded);
       expect(viewModel.customerNameLoadingStatus, LoadingStatus.loaded);
@@ -298,19 +297,21 @@ void main() {
     });
 
     test("isFieldsFilled returns true when all fields are filled", () {
-      viewModel.customerRimNo = "123";
-      viewModel.customerName = "John";
-      viewModel.groupId = "456";
-      viewModel.groupName = "Group";
+      viewModel
+        ..customerRimNo = "123"
+        ..customerName = "John"
+        ..groupId = "456"
+        ..groupName = "Group";
 
       expect(viewModel.isFieldsFilled(), isTrue);
     });
 
     test("isFieldsFilled returns false when any field is null", () {
-      viewModel.customerRimNo = "123";
-      viewModel.customerName = null;
-      viewModel.groupId = "456";
-      viewModel.groupName = "Group";
+      viewModel
+        ..customerRimNo = "123"
+        ..customerName = null
+        ..groupId = "456"
+        ..groupName = "Group";
 
       expect(viewModel.isFieldsFilled(), isFalse);
     });
@@ -329,8 +330,9 @@ void main() {
       when(() => mockCustomerRepo.searchCustomerProfile(any(), any(), any()))
           .thenAnswer((_) async => [customer]);
 
-      viewModel.customerName = "John Doe";
-      viewModel.isSearched = false;
+      viewModel
+        ..customerName = "John Doe"
+        ..isSearched = false;
 
       await viewModel.onCustomerNameSearchPressed(showDialog: false);
 
@@ -346,8 +348,9 @@ void main() {
 
     test("onCustomerNameSearchPressed shows toast when name is too short",
         () async {
-      viewModel.customerName = "abc";
-      viewModel.isSearched = false;
+      viewModel
+        ..customerName = "abc"
+        ..isSearched = false;
 
       await viewModel.onCustomerNameSearchPressed();
 
@@ -356,8 +359,9 @@ void main() {
 
     test("onCustomerNameSearchPressed does nothing when already searched",
         () async {
-      viewModel.customerName = "John Doe";
-      viewModel.isSearched = true;
+      viewModel
+        ..customerName = "John Doe"
+        ..isSearched = true;
 
       await viewModel.onCustomerNameSearchPressed();
 
@@ -367,8 +371,9 @@ void main() {
 
     test("onCustomerNameSearchPressed shows toast when name is empty",
         () async {
-      viewModel.customerName = "";
-      viewModel.isSearched = false;
+      viewModel
+        ..customerName = ""
+        ..isSearched = false;
 
       await viewModel.onCustomerNameSearchPressed();
 
@@ -389,8 +394,9 @@ void main() {
       when(() => mockCustomerRepo.searchCustomerProfile(any(), any(), any()))
           .thenAnswer((_) async => [customer]);
 
-      viewModel.groupName = "ValidGroupName";
-      viewModel.isSearched = false;
+      viewModel
+        ..groupName = "ValidGroupName"
+        ..isSearched = false;
 
       await viewModel.onGroupNameSearchPressed(showDialog: false);
 
@@ -402,8 +408,9 @@ void main() {
 
     test("onGroupNameSearchPressed shows toast when name is too short",
         () async {
-      viewModel.groupName = "abc";
-      viewModel.isSearched = false;
+      viewModel
+        ..groupName = "abc"
+        ..isSearched = false;
 
       await viewModel.onGroupNameSearchPressed();
 
@@ -412,8 +419,9 @@ void main() {
 
     test("onGroupNameSearchPressed does nothing when already searched",
         () async {
-      viewModel.groupName = "ValidGroupName";
-      viewModel.isSearched = true;
+      viewModel
+        ..groupName = "ValidGroupName"
+        ..isSearched = true;
 
       await viewModel.onGroupNameSearchPressed();
 
@@ -435,8 +443,9 @@ void main() {
       when(() => mockCustomerRepo.searchCustomerProfile(any(), any(), any()))
           .thenAnswer((_) async => [customer]);
 
-      viewModel.groupId = "G123";
-      viewModel.isSearched = false;
+      viewModel
+        ..groupId = "G123"
+        ..isSearched = false;
 
       await viewModel.onGroupIdSearchPressed();
 
@@ -446,8 +455,9 @@ void main() {
     });
 
     test("onGroupIdSearchPressed shows toast when groupId is empty", () async {
-      viewModel.groupId = "";
-      viewModel.isSearched = false;
+      viewModel
+        ..groupId = ""
+        ..isSearched = false;
 
       await viewModel.onGroupIdSearchPressed();
 
@@ -455,8 +465,9 @@ void main() {
     });
 
     test("onGroupIdSearchPressed does nothing when already searched", () async {
-      viewModel.groupId = "G123";
-      viewModel.isSearched = true;
+      viewModel
+        ..groupId = "G123"
+        ..isSearched = true;
 
       await viewModel.onGroupIdSearchPressed();
 
@@ -478,8 +489,9 @@ void main() {
       when(() => mockCustomerRepo.searchUserDetails(any(), any(), any(), any()))
           .thenAnswer((_) async => customer);
 
-      viewModel.customerRimNo = "RIM123";
-      viewModel.isSearched = false;
+      viewModel
+        ..customerRimNo = "RIM123"
+        ..isSearched = false;
 
       await viewModel.onCustomerRimNoSearchPressed();
 
@@ -493,8 +505,9 @@ void main() {
 
     test("onCustomerRimNoSearchPressed shows toast when rimNo is empty",
         () async {
-      viewModel.customerRimNo = "";
-      viewModel.isSearched = false;
+      viewModel
+        ..customerRimNo = ""
+        ..isSearched = false;
 
       await viewModel.onCustomerRimNoSearchPressed();
 
@@ -503,8 +516,9 @@ void main() {
 
     test("onCustomerRimNoSearchPressed does nothing when already searched",
         () async {
-      viewModel.customerRimNo = "RIM123";
-      viewModel.isSearched = true;
+      viewModel
+        ..customerRimNo = "RIM123"
+        ..isSearched = true;
 
       await viewModel.onCustomerRimNoSearchPressed();
 
@@ -629,8 +643,9 @@ void main() {
         groups: Group(id: "500", name: "Group X", groupOwner: 202),
       );
 
-      viewModel.groupIdLoadingStatus = LoadingStatus.loaded;
-      viewModel.customerNameLoadingStatus = LoadingStatus.loading;
+      viewModel
+        ..groupIdLoadingStatus = LoadingStatus.loaded
+        ..customerNameLoadingStatus = LoadingStatus.loading;
 
       when(() => mockCustomerRepo.searchCustomerProfile(any(), any(), any()))
           .thenAnswer((_) async => [customer1, customer2]);
@@ -743,13 +758,13 @@ void main() {
     test("onSelectionCancelButtonPress resets fields", () {
       final initialResetFlag = viewModel.isResetPressed;
 
-      viewModel.customer = Customer(id: "123");
-      viewModel.customerName = "John";
-      viewModel.groupName = "Group";
-      viewModel.customerRimNo = "456";
-      viewModel.groupId = "789";
-
-      viewModel.onSelectionCancelButtonPress();
+      viewModel
+        ..customer = Customer(id: "123")
+        ..customerName = "John"
+        ..groupName = "Group"
+        ..customerRimNo = "456"
+        ..groupId = "789"
+        ..onSelectionCancelButtonPress();
 
       expect(viewModel.customer, null);
       expect(viewModel.customerName, null);
@@ -761,18 +776,18 @@ void main() {
     });
 
     test("resetDependentFields should clear all dependent fields", () {
-      viewModel.isSearched = true;
-      viewModel.searchAllowed = true;
-      viewModel.customer = Customer(id: "123");
-      viewModel.customerRimNo = "456";
-      viewModel.customerName = "John";
-      viewModel.groupId = "789";
-      viewModel.groupName = "Demo";
-      viewModel.selectedCustomer.value = Customer(id: "123");
-      viewModel.selectedDocumentIds = ["1"];
-      viewModel.selectedDocs = ["doc"];
-
-      viewModel.resetDependentFields();
+      viewModel
+        ..isSearched = true
+        ..searchAllowed = true
+        ..customer = Customer(id: "123")
+        ..customerRimNo = "456"
+        ..customerName = "John"
+        ..groupId = "789"
+        ..groupName = "Demo"
+        ..selectedCustomer.value = Customer(id: "123")
+        ..selectedDocumentIds = ["1"]
+        ..selectedDocs = ["doc"]
+        ..resetDependentFields();
 
       expect(viewModel.isSearched, false);
       expect(viewModel.searchAllowed, false);
@@ -789,22 +804,20 @@ void main() {
     });
 
     test("onResetButtonPress should reset all form fields and state", () async {
-      viewModel.isSearched = true;
-      viewModel.isFileSearched = true;
-      viewModel.searchAllowed = true;
-      viewModel.customer = Customer(id: "123");
-      viewModel.customerRimNo = "456";
-      viewModel.customerName = "John";
-      viewModel.groupId = "789";
-      viewModel.grpId = "111";
-      viewModel.groupName = "Demo";
-      viewModel.grpName = "DemoGrp";
-      viewModel.selectedDocumentIds = ["doc1"];
-      viewModel.selectedDocs = ["doc"];
-      viewModel.applicationIdController.text = "APP123";
-      viewModel.fileUploadDatas = [FileDetail(type: "x", documents: [])];
-
-      viewModel.onResetButtonPress();
+      viewModel
+        ..isSearched = true
+        ..isFileSearched = true
+        ..searchAllowed = true
+        ..customer = Customer(id: "123")
+        ..customerRimNo = "456"
+        ..customerName = "John"
+        ..groupId = "789"
+        ..grpId = "111"
+        ..groupName = "Demo"
+        ..grpName = "DemoGrp"
+        ..selectedDocumentIds = ["doc1"]
+        ..selectedDocs = ["doc"]
+        ..onResetButtonPress();
 
       await Future.delayed(const Duration(milliseconds: 20));
 
@@ -907,10 +920,11 @@ void main() {
     });
 
     test("doSearch with valid search criteria", () async {
-      viewModel.customerRimNo = "123";
-      viewModel.customerName = "John";
-      viewModel.groupId = "456";
-      viewModel.groupName = "Group";
+      viewModel
+        ..customerRimNo = "123"
+        ..customerName = "John"
+        ..groupId = "456"
+        ..groupName = "Group";
 
       when(
         () => mockFileAttachmentRepo.getFileUploadData(
@@ -942,11 +956,12 @@ void main() {
     });
 
     test("doSearch calls repository when criteria is valid", () async {
-      viewModel.customerRimNo = "123";
-      viewModel.customerName = "John";
-      viewModel.groupId = "";
-      viewModel.groupName = "";
-      viewModel.applicationId = "";
+      viewModel
+        ..customerRimNo = "123"
+        ..customerName = "John"
+        ..groupId = ""
+        ..groupName = ""
+        ..applicationId = "";
 
       when(
         () => mockFileAttachmentRepo.getFileUploadData(
@@ -987,11 +1002,12 @@ void main() {
     });
 
     test("doSearch with empty criteria shows toast", () async {
-      viewModel.customerRimNo = null;
-      viewModel.customerName = null;
-      viewModel.groupId = null;
-      viewModel.groupName = null;
-      viewModel.applicationId = null;
+      viewModel
+        ..customerRimNo = null
+        ..customerName = null
+        ..groupId = null
+        ..groupName = null
+        ..applicationId = null;
 
       await viewModel.doSearch();
       await Future.delayed(const Duration(milliseconds: 100));
@@ -1092,8 +1108,9 @@ void main() {
 
     test("downloadDocumentsZip downloads multiple documents with exact args",
         () async {
-      viewModel.selectedDocumentIds = ["doc1", "doc2"];
-      viewModel.selectedDocs = ["docObj1", "docObj2"];
+      viewModel
+        ..selectedDocumentIds = ["doc1", "doc2"]
+        ..selectedDocs = ["docObj1", "docObj2"];
       viewModel.customerRimController.text = "123";
       viewModel.groupRimController.text = "456";
       viewModel.applicationIdController.text = "APP789";
@@ -1142,11 +1159,12 @@ void main() {
     });
 
     test("mergeDownloadDocument merges documents", () async {
-      viewModel.selectedDocs = ["docObj1", "docObj2"];
-      viewModel.selectedDocumentIds = ["doc1", "doc2"];
-      viewModel.customerRimNo = "123";
-      viewModel.groupId = "456";
-      viewModel.applicationId = "APP789";
+      viewModel
+        ..selectedDocs = ["docObj1", "docObj2"]
+        ..selectedDocumentIds = ["doc1", "doc2"]
+        ..customerRimNo = "123"
+        ..groupId = "456"
+        ..applicationId = "APP789";
 
       when(
         () => mockFileAttachmentRepo.mergeDownloadDigitalAttachment(
@@ -1457,18 +1475,18 @@ void main() {
 
       _safeSetUser(roleId: UserRole.relationshipManager.index);
 
-      viewModel.subSegmentValidation = [
-        Reference(
-          reference1: ServerConstants.subSegmentValidationRefId,
-          reference2: "${UserRole.relationshipManager.index}",
-        ),
-      ];
-
-      viewModel.customer = Customer(
-        relationshipMgr: [
-          {"RelationshipMgrIdent": "RM001"},
-        ],
-      );
+      viewModel
+        ..subSegmentValidation = [
+          Reference(
+            reference1: ServerConstants.subSegmentValidationRefId,
+            reference2: "${UserRole.relationshipManager.index}",
+          ),
+        ]
+        ..customer = Customer(
+          relationshipMgr: [
+            {"RelationshipMgrIdent": "RM001"},
+          ],
+        );
 
       await viewModel.validateSubSegment();
 
@@ -1490,16 +1508,16 @@ void main() {
 
       _safeSetUser(roleId: UserRole.relationshipManager.index);
 
-      viewModel.subSegmentValidation = [
-        Reference(
-          reference1: ServerConstants.subSegmentValidationRefId,
-          reference2: "${UserRole.relationshipManager.index}",
-        ),
-      ];
-
-      viewModel.customer = Customer(
-        relationshipMgr: [],
-      );
+      viewModel
+        ..subSegmentValidation = [
+          Reference(
+            reference1: ServerConstants.subSegmentValidationRefId,
+            reference2: "${UserRole.relationshipManager.index}",
+          ),
+        ]
+        ..customer = Customer(
+          relationshipMgr: [],
+        );
 
       await viewModel.validateSubSegment();
 
@@ -1547,24 +1565,23 @@ void main() {
 
       _safeSetUser(roleId: UserRole.relationshipManager.index);
 
-      viewModel.customerRimNo = "123";
-      viewModel.customerName = "John";
-      viewModel.groupId = "456";
-      viewModel.groupName = "Group";
-      viewModel.isSearched = true;
-
-      viewModel.subSegmentValidation = [
-        Reference(
-          reference1: ServerConstants.subSegmentValidationRefId,
-          reference2: "${UserRole.relationshipManager.index}",
-        ),
-      ];
-
-      viewModel.customer = Customer(
-        relationshipMgr: [
-          {"RelationshipMgrIdent": "RM001"},
-        ],
-      );
+      viewModel
+        ..customerRimNo = "123"
+        ..customerName = "John"
+        ..groupId = "456"
+        ..groupName = "Group"
+        ..isSearched = true
+        ..subSegmentValidation = [
+          Reference(
+            reference1: ServerConstants.subSegmentValidationRefId,
+            reference2: "${UserRole.relationshipManager.index}",
+          ),
+        ]
+        ..customer = Customer(
+          relationshipMgr: [
+            {"RelationshipMgrIdent": "RM001"},
+          ],
+        );
 
       when(() => mockCustomerRepo.validateSubSegment(any()))
           .thenThrow(Exception("subsegment failed"));

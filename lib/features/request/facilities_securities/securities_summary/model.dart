@@ -94,10 +94,10 @@ class SecuritiesSummaryViewModel extends SafeCubit<SecuritiesSummaryState> {
     filteredData = securities.where((data) {
       switch (filter) {
         case Filter.securityNumber:
-          return ((data.securityNumber.toString()))
+          return data.securityNumber.toString()
               .contains(value.toUpperCase());
         case Filter.securityType:
-          return ((data.securityCode.toString())).contains(value.toUpperCase());
+          return data.securityCode.toString().contains(value.toUpperCase());
       }
     }).toList();
 

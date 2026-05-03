@@ -42,7 +42,7 @@ class SectionOne extends StatelessWidget {
         .toList();
 
     final List<String> filteredExcludedActivities = viewModel.excludedActivities
-        .where((code) => (sicCodes.contains(code)))
+        .where(sicCodes.contains)
         .toList();
 
     final int secId = viewModel.sectionIdAt(0);
@@ -110,8 +110,7 @@ class SectionOne extends StatelessWidget {
                       label: Text(label),
                       onDeleted: () {
                         final List<String> newList =
-                            List<String>.from(selected);
-                        newList.removeAt(index);
+                            List<String>.from(selected)..removeAt(index);
                         viewModel.updateExcludedActivities(newList);
                       },
                     );

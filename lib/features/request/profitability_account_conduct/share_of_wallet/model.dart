@@ -62,7 +62,7 @@ class ShareOfWalletViewModel extends SafeCubit<ShareOfWalletState>
 
   // ---------------------------------------------------------------------------
   PageMode pageMode = PageMode.na;
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
 
   /// Initializes the ViewModel.
   ///
@@ -102,7 +102,7 @@ class ShareOfWalletViewModel extends SafeCubit<ShareOfWalletState>
   /// and the state is updated to error.
   Future<void> getShareOfWallet() async {
     try {
-      shareOfWalletList = (await repository.getShareOfWallet());
+      shareOfWalletList = await repository.getShareOfWallet();
     } catch (e) {
       rethrow;
     }

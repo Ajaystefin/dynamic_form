@@ -32,7 +32,7 @@ class FinancialCovenantDescriptionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isStd = (row.isStandard ?? true);
+    final bool isStd = row.isStandard ?? true;
     return SizedBox(
       width: width,
       child: isStd

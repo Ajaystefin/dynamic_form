@@ -54,7 +54,7 @@ class CustomTooltip extends StatelessWidget {
               ),
             )
           : null,
-      constraints: BoxConstraints(minHeight: height ?? 0.0),
+      height: height,
       // constraints:
       //     height != null ? BoxConstraints(minHeight: height ?? 0) : null,
       textStyle: isRichMessage

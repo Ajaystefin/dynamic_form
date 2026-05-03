@@ -240,12 +240,12 @@ void main() {
     });
 
     test("return actual labels when accountConduct is set directly", () {
-      final vm = AccountConductViewModel();
-      vm.accountConduct = AccountConductResponseData(
-        previousYearLable: "FY 2021",
-        currentYearLable: "FY 2022",
-        accountConductDtoList: const [],
-      );
+      final vm = AccountConductViewModel()
+        ..accountConduct = AccountConductResponseData(
+          previousYearLable: "FY 2021",
+          currentYearLable: "FY 2022",
+          accountConductDtoList: const [],
+        );
       expect(vm.previousYearHeader, "FY 2021");
       expect(vm.currentYearHeader, "FY 2022");
       vm.dispose();
@@ -264,8 +264,8 @@ void main() {
     });
 
     test("returns true when pageMode is edit", () {
-      final vm = AccountConductViewModel();
-      vm.pageMode = PageMode.edit;
+      final vm = AccountConductViewModel()
+        ..pageMode = PageMode.edit;
       expect(vm.canEdit, isTrue);
       vm.dispose();
     });
@@ -292,9 +292,9 @@ void main() {
     });
 
     test("returns cached controller when key already exists in map", () {
-      final vm = AccountConductViewModel();
-      vm.customers = [sampleDto];
-      vm.reseedControllersFromCustomers();
+      final vm = AccountConductViewModel()
+        ..customers = [sampleDto]
+        ..reseedControllersFromCustomers();
 
       final cached = vm.controllerFor("passDueOrExcesses", 0);
       expect(cached.text, "1");
@@ -308,8 +308,8 @@ void main() {
 
   group("updateCustomer()", () {
     test("replaces DTO at valid index", () {
-      final vm = AccountConductViewModel();
-      vm.customers = [sampleDto];
+      final vm = AccountConductViewModel()
+        ..customers = [sampleDto];
       final updated = sampleDto.copyWith(passDueOrExcesses: "99");
 
       vm.updateCustomer(0, updated);
@@ -319,25 +319,25 @@ void main() {
     });
 
     test("does nothing for negative index", () {
-      final vm = AccountConductViewModel();
-      vm.customers = [sampleDto];
-      vm.updateCustomer(-1, sampleDto.copyWith(passDueOrExcesses: "99"));
+      final vm = AccountConductViewModel()
+        ..customers = [sampleDto]
+        ..updateCustomer(-1, sampleDto.copyWith(passDueOrExcesses: "99"));
       expect(vm.customers[0].passDueOrExcesses, "1");
       vm.dispose();
     });
 
     test("does nothing when index equals list length", () {
-      final vm = AccountConductViewModel();
-      vm.customers = [sampleDto];
-      vm.updateCustomer(1, sampleDto.copyWith(passDueOrExcesses: "99"));
+      final vm = AccountConductViewModel()
+        ..customers = [sampleDto]
+        ..updateCustomer(1, sampleDto.copyWith(passDueOrExcesses: "99"));
       expect(vm.customers[0].passDueOrExcesses, "1");
       vm.dispose();
     });
 
     test("does nothing when customers list is empty", () {
-      final vm = AccountConductViewModel();
-      vm.customers = [];
-      vm.updateCustomer(0, sampleDto);
+      final vm = AccountConductViewModel()
+        ..customers = []
+        ..updateCustomer(0, sampleDto);
       expect(vm.customers, isEmpty);
       vm.dispose();
     });
@@ -349,8 +349,8 @@ void main() {
 
   group("syncCustomersFromControllers()", () {
     test("maps controller text back to DTO fields", () {
-      final vm = AccountConductViewModel();
-      vm.customers = [sampleDto];
+      final vm = AccountConductViewModel()
+        ..customers = [sampleDto];
 
       vm.controllerFor("passDueOrExcesses", 0).text = "10";
       vm.controllerFor("chequeReturns", 0).text = "20";
@@ -373,10 +373,10 @@ void main() {
     });
 
     test("handles missing controllers (absent keys stay null/empty)", () {
-      final vm = AccountConductViewModel();
-      vm.customers = [sampleDto];
-      vm.syncCustomersFromControllers();
-      vm.dispose();
+      AccountConductViewModel()
+        ..customers = [sampleDto]
+        ..syncCustomersFromControllers()
+        ..dispose();
     });
   });
 
@@ -430,9 +430,9 @@ void main() {
 
   group("reseedControllersFromCustomers()", () {
     test("updates controllers from DTO values", () {
-      final vm = AccountConductViewModel();
-      vm.customers = [sampleDto];
-      vm.reseedControllersFromCustomers();
+      final vm = AccountConductViewModel()
+        ..customers = [sampleDto]
+        ..reseedControllersFromCustomers();
 
       expect(vm.controllerFor("passDueOrExcesses", 0).text, "1");
       expect(vm.controllerFor("chequeReturns", 0).text, "2");
@@ -445,9 +445,9 @@ void main() {
     });
 
     test("treats 'null' string values as empty string", () {
-      final vm = AccountConductViewModel();
-      vm.customers = [nullStringDto];
-      vm.reseedControllersFromCustomers();
+      final vm = AccountConductViewModel()
+        ..customers = [nullStringDto]
+        ..reseedControllersFromCustomers();
 
       expect(vm.controllerFor("passDueOrExcesses", 0).text, "");
       expect(vm.controllerFor("chequeReturns", 0).text, "");
@@ -458,18 +458,18 @@ void main() {
 
     test("creates controllers if missing (lazy path in _setControllerText)",
         () {
-      final vm = AccountConductViewModel();
-      vm.customers = [sampleDto];
-      vm.reseedControllersFromCustomers();
+      final vm = AccountConductViewModel()
+        ..customers = [sampleDto]
+        ..reseedControllersFromCustomers();
       expect(vm.controllerFor("odHardcore", 0).text, "4");
       vm.dispose();
     });
 
     test("does not update controller when text is already correct (no-op path)",
         () {
-      final vm = AccountConductViewModel();
-      vm.customers = [sampleDto];
-      vm.reseedControllersFromCustomers();
+      final vm = AccountConductViewModel()
+        ..customers = [sampleDto]
+        ..reseedControllersFromCustomers();
       final controller = vm.controllerFor("chequeReturns", 0);
       vm.reseedControllersFromCustomers();
       expect(controller.text, "2");
@@ -478,9 +478,9 @@ void main() {
 
     test("_setControllerText updates existing controller when text differs",
         () {
-      final vm = AccountConductViewModel();
-      vm.customers = [sampleDto];
-      vm.reseedControllersFromCustomers();
+      final vm = AccountConductViewModel()
+        ..customers = [sampleDto]
+        ..reseedControllersFromCustomers();
 
       vm.customers[0] = sampleDto.copyWith(passDueOrExcesses: "999");
       vm.reseedControllersFromCustomers();
@@ -492,9 +492,9 @@ void main() {
     test(
         "_setControllerText does not update controller"
         " when text is already correct", () {
-      final vm = AccountConductViewModel();
-      vm.customers = [sampleDto];
-      vm.reseedControllersFromCustomers();
+      final vm = AccountConductViewModel()
+        ..customers = [sampleDto]
+        ..reseedControllersFromCustomers();
 
       final controller = vm.controllerFor("passDueOrExcesses", 0);
       final listenerCallCount = <int>[0];
@@ -524,8 +524,8 @@ void main() {
       when(() => mockRepository.postAccountConductData(any()))
           .thenAnswer((_) async => "SUCCESS");
 
-      final vm = _TestAccountConductViewModel(repository: mockRepository);
-      vm.customers = [sampleDto];
+      final vm = _TestAccountConductViewModel(repository: mockRepository)
+        ..customers = [sampleDto];
 
       await vm.saveAccConductData();
       await flushToastTimers(tester);
@@ -545,8 +545,8 @@ void main() {
       when(() => mockRepository.postAccountConductData(any()))
           .thenAnswer((_) async => "OK");
 
-      final vm = _TestAccountConductViewModel(repository: mockRepository);
-      vm.customers = [sampleDto];
+      final vm = _TestAccountConductViewModel(repository: mockRepository)
+        ..customers = [sampleDto];
 
       await vm.saveAccConductData();
       await flushToastTimers(tester);
@@ -567,13 +567,13 @@ void main() {
       when(() => mockRepository.postAccountConductData(any()))
           .thenAnswer((_) async => "OK");
 
-      final vm = _TestAccountConductViewModel(repository: mockRepository);
-      vm.customers = [sampleDto];
-      vm.accountConduct = AccountConductResponseData(
-        previousYearLable: "2022",
-        currentYearLable: "2023",
-        accountConductDtoList: const [],
-      );
+      final vm = _TestAccountConductViewModel(repository: mockRepository)
+        ..customers = [sampleDto]
+        ..accountConduct = AccountConductResponseData(
+          previousYearLable: "2022",
+          currentYearLable: "2023",
+          accountConductDtoList: const [],
+        );
 
       await vm.saveAccConductData();
       await flushToastTimers(tester);
@@ -592,8 +592,8 @@ void main() {
       when(() => mockRepository.postAccountConductData(any()))
           .thenAnswer((_) async => "OK");
 
-      final vm = _NavigatingTestViewModel(repository: mockRepository);
-      vm.customers = [sampleDto];
+      final vm = _NavigatingTestViewModel(repository: mockRepository)
+        ..customers = [sampleDto];
 
       await vm.saveAccConductData(ifNavigate: true);
       await flushToastTimers(tester);
@@ -612,8 +612,8 @@ void main() {
       when(() => mockRepository.postAccountConductData(any()))
           .thenAnswer((_) async => "OK");
 
-      final vm = _TrackingTestViewModel(repository: mockRepository);
-      vm.customers = [sampleDto];
+      final vm = _TrackingTestViewModel(repository: mockRepository)
+        ..customers = [sampleDto];
 
       await vm.saveAccConductData();
       await flushToastTimers(tester);
@@ -633,9 +633,9 @@ void main() {
       when(() => mockRepository.postAccountConductData(any()))
           .thenAnswer((_) async => "OK");
 
-      final vm = _TestAccountConductViewModel(repository: mockRepository);
-      vm.customers = [sampleDto];
-      vm.accountConduct = _ThrowingResponseData();
+      final vm = _TestAccountConductViewModel(repository: mockRepository)
+        ..customers = [sampleDto]
+        ..accountConduct = _ThrowingResponseData();
 
       await vm.saveAccConductData();
       await flushToastTimers(tester);
@@ -663,8 +663,8 @@ void main() {
       when(() => mockRepository.postAccountConductData(any()))
           .thenThrow(Exception("Network error"));
 
-      final vm = _NavigatingTestViewModel(repository: mockRepository);
-      vm.customers = [sampleDto];
+      final vm = _NavigatingTestViewModel(repository: mockRepository)
+        ..customers = [sampleDto];
 
       await expectLater(
         () async => vm.saveAccConductData(ifNavigate: true),
@@ -689,8 +689,8 @@ void main() {
       when(() => mockRepository.postAccountConductData(any()))
           .thenAnswer((_) async => "FAILED");
 
-      final vm = _NavigatingTestViewModel(repository: mockRepository);
-      vm.customers = [sampleDto];
+      final vm = _NavigatingTestViewModel(repository: mockRepository)
+        ..customers = [sampleDto];
 
       await expectLater(
         () async => vm.saveAccConductData(ifNavigate: true),
@@ -715,8 +715,8 @@ void main() {
       when(() => mockRepository.postAccountConductData(any()))
           .thenAnswer((_) async => "");
 
-      final vm = _TestAccountConductViewModel(repository: mockRepository);
-      vm.customers = [sampleDto];
+      final vm = _TestAccountConductViewModel(repository: mockRepository)
+        ..customers = [sampleDto];
 
       await expectLater(() async => vm.saveAccConductData(), returnsNormally);
       await flushToastTimers(tester);
@@ -733,8 +733,8 @@ void main() {
         ),
       );
 
-      final vm = _TestAccountConductViewModel(repository: mockRepository);
-      vm.customers = [];
+      final vm = _TestAccountConductViewModel(repository: mockRepository)
+        ..customers = [];
 
       await expectLater(() async => vm.saveAccConductData(), returnsNormally);
       await flushToastTimers(tester);
@@ -783,8 +783,8 @@ void main() {
       when(() => mockRepository.postAccountConductData(any()))
           .thenThrow(Exception("fail"));
 
-      final vm = _NavigatingTestViewModel(repository: mockRepository);
-      vm.customers = [sampleDto];
+      final vm = _NavigatingTestViewModel(repository: mockRepository)
+        ..customers = [sampleDto];
 
       await vm.saveAccConductData(ifNavigate: false);
       await flushToastTimers(tester);
@@ -800,9 +800,9 @@ void main() {
 
   group("dispose()", () {
     test("clears all controllers without throwing", () {
-      final vm = AccountConductViewModel();
-      vm.customers = [sampleDto];
-      vm.reseedControllersFromCustomers();
+      final vm = AccountConductViewModel()
+        ..customers = [sampleDto]
+        ..reseedControllersFromCustomers();
       expect(vm.dispose, returnsNormally);
     });
 
@@ -813,9 +813,9 @@ void main() {
 
     test("all text controllers are disposed and inaccessible after dispose()",
         () {
-      final vm = AccountConductViewModel();
-      vm.customers = [sampleDto];
-      vm.reseedControllersFromCustomers();
+      final vm = AccountConductViewModel()
+        ..customers = [sampleDto]
+        ..reseedControllersFromCustomers();
 
       final controller = vm.controllerFor("passDueOrExcesses", 0);
       vm.dispose();

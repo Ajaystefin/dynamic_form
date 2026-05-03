@@ -79,8 +79,7 @@ void main() {
     AlertManager.overrideInstance(alertSpy);
 
     mockRepo = MockBorrowerRepository();
-    vm = GroupBorrowersViewModel();
-    vm.repository = mockRepo;
+    vm = GroupBorrowersViewModel()..repository = mockRepo;
 
     Globals.request = Request(
       applicationRefNo: "APP-DEFAULT",
@@ -127,10 +126,11 @@ void main() {
     test(
         "canAddPotentialBorrower returns true only when typed/search/customer are consistent",
         () {
-      vm.addRimInput = "999";
-      vm.searchedCustomerRim = "999";
-      vm.searchedCustomerName = "John";
-      vm.customer = c(rim: 999, name: "John", isBorrower: true);
+      vm
+        ..addRimInput = "999"
+        ..searchedCustomerRim = "999"
+        ..searchedCustomerName = "John"
+        ..customer = c(rim: 999, name: "John", isBorrower: true);
 
       expect(vm.canAddPotentialBorrower, isTrue);
     });
@@ -138,19 +138,21 @@ void main() {
     test(
         "canAddPotentialBorrower returns false when"
         " typed and searched rim differ", () {
-      vm.addRimInput = "111";
-      vm.searchedCustomerRim = "222";
-      vm.searchedCustomerName = "John";
-      vm.customer = c(rim: 222, name: "John", isBorrower: true);
+      vm
+        ..addRimInput = "111"
+        ..searchedCustomerRim = "222"
+        ..searchedCustomerName = "John"
+        ..customer = c(rim: 222, name: "John", isBorrower: true);
 
       expect(vm.canAddPotentialBorrower, isFalse);
     });
 
     test("canAddPotentialBorrower returns false when customer is null", () {
-      vm.addRimInput = "999";
-      vm.searchedCustomerRim = "999";
-      vm.searchedCustomerName = "John";
-      vm.customer = null;
+      vm
+        ..addRimInput = "999"
+        ..searchedCustomerRim = "999"
+        ..searchedCustomerName = "John"
+        ..customer = null;
 
       expect(vm.canAddPotentialBorrower, isFalse);
     });
@@ -238,9 +240,10 @@ void main() {
 
       await vm.fetchCustomersList();
 
-      vm.toggleBorrowerSelection(20, true);
-      vm.toggleBorrowerSelection(30, true);
-      vm.includeSelectedBorrowers();
+      vm
+        ..toggleBorrowerSelection(20, true)
+        ..toggleBorrowerSelection(30, true)
+        ..includeSelectedBorrowers();
 
       expect(vm.originalBorrowers.map((e) => e.customerRimNo), [10]);
       expect(vm.manualBorrowers.map((e) => e.customerRimNo), [20, 30]);
@@ -373,8 +376,9 @@ void main() {
 
   group("searchCustomerByRim()", () {
     test("non-numeric input clears fields and emits loaded", () async {
-      vm.searchedCustomerName = "Old Name";
-      vm.searchedCustomerRim = "123";
+      vm
+        ..searchedCustomerName = "Old Name"
+        ..searchedCustomerRim = "123";
 
       await vm.searchCustomerByRim("foo");
 
@@ -526,10 +530,10 @@ void main() {
 
       await vm.fetchCustomersList();
 
-      vm.toggleBorrowerSelection(2, true);
-      vm.toggleBorrowerSelection(3, true);
-
-      vm.includeSelectedBorrowers();
+      vm
+        ..toggleBorrowerSelection(2, true)
+        ..toggleBorrowerSelection(3, true)
+        ..includeSelectedBorrowers();
 
       expect(vm.state.loaderStatus, LoadingStatus.loaded);
       expect(vm.isSelectedForInclusion(c(rim: 2)), isFalse);
@@ -564,10 +568,11 @@ void main() {
 
       await vm.fetchCustomersList();
 
-      vm.toggleBorrowerSelection(2, true);
-      vm.includeSelectedBorrowers();
-      vm.toggleBorrowerSelection(2, true);
-      vm.includeSelectedBorrowers();
+      vm
+        ..toggleBorrowerSelection(2, true)
+        ..includeSelectedBorrowers()
+        ..toggleBorrowerSelection(2, true)
+        ..includeSelectedBorrowers();
 
       final List<int?> rims =
           Globals.request!.borrowers!.map((e) => e.customerRimNo).toList();
@@ -591,14 +596,16 @@ void main() {
 
       await vm.fetchCustomersList();
 
-      vm.toggleBorrowerSelection(2, true);
-      vm.includeSelectedBorrowers();
+      vm
+        ..toggleBorrowerSelection(2, true)
+        ..includeSelectedBorrowers();
 
       expect(vm.isManuallyAdded(c(rim: 2)), isTrue);
       expect(Globals.request!.borrowers!.map((e) => e.customerRimNo), [1, 2]);
 
-      vm.toggleBorrowerExclusion(1, true); // original borrower
-      vm.toggleBorrowerExclusion(2, true); // manual borrower
+      vm
+        ..toggleBorrowerExclusion(1, true) // original borrower
+        ..toggleBorrowerExclusion(2, true); // manual borrower
       expect(vm.isSelectedForExclusion(c(rim: 1)), isTrue);
       expect(vm.isSelectedForExclusion(c(rim: 2)), isTrue);
 
@@ -628,12 +635,12 @@ void main() {
         nonBorrowers: <Customer>[],
       );
 
-      vm.customers = <Customer>[
-        c(rim: null, name: "No Rim", isBorrower: true),
-      ];
-
-      vm.toggleBorrowerExclusion(999, true);
-      vm.excludeSelectedBorrowers();
+      vm
+        ..customers = <Customer>[
+          c(rim: null, name: "No Rim", isBorrower: true),
+        ]
+        ..toggleBorrowerExclusion(999, true)
+        ..excludeSelectedBorrowers();
 
       expect(vm.state.loaderStatus, LoadingStatus.loaded);
       expect(Globals.request!.borrowers!.length, 1);
@@ -642,10 +649,10 @@ void main() {
 
   group("potential borrower flows", () {
     test("addPotentialBorrower without search shows failure", () {
-      vm.searchedCustomerRim = null;
-      vm.searchedCustomerName = null;
-
-      vm.addPotentialBorrower();
+      vm
+        ..searchedCustomerRim = null
+        ..searchedCustomerName = null
+        ..addPotentialBorrower();
 
       expect(
         alertSpy.lastFailure,
@@ -656,11 +663,11 @@ void main() {
     test(
         "addPotentialBorrower with partial search "
         "toggles section and shows failure", () {
-      vm.showAddRimSection = false;
-      vm.searchedCustomerRim = "99";
-      vm.searchedCustomerName = null;
-
-      vm.addPotentialBorrower();
+      vm
+        ..showAddRimSection = false
+        ..searchedCustomerRim = "99"
+        ..searchedCustomerName = null
+        ..addPotentialBorrower();
 
       expect(vm.showAddRimSection, isTrue);
       expect(
@@ -670,11 +677,11 @@ void main() {
     });
 
     test("addPotentialBorrower with rim 0 shows failure", () {
-      vm.searchedCustomerRim = "0";
-      vm.searchedCustomerName = "Dana";
-      vm.customer = c(rim: 0, name: "Dana", isBorrower: true);
-
-      vm.addPotentialBorrower();
+      vm
+        ..searchedCustomerRim = "0"
+        ..searchedCustomerName = "Dana"
+        ..customer = c(rim: 0, name: "Dana", isBorrower: true)
+        ..addPotentialBorrower();
 
       expect(
         alertSpy.lastFailure,
@@ -696,13 +703,13 @@ void main() {
 
       await vm.fetchCustomersList();
 
-      vm.showAddRimSection = false;
-      vm.addRimInput = "99";
-      vm.searchedCustomerRim = "99";
-      vm.searchedCustomerName = "Existing";
-      vm.customer = c(rim: 99, name: "Existing", isBorrower: true);
-
-      vm.addPotentialBorrower();
+      vm
+        ..showAddRimSection = false
+        ..addRimInput = "99"
+        ..searchedCustomerRim = "99"
+        ..searchedCustomerName = "Existing"
+        ..customer = c(rim: 99, name: "Existing", isBorrower: true)
+        ..addPotentialBorrower();
 
       expect(
         alertSpy.lastWarning,
@@ -723,12 +730,12 @@ void main() {
         nonBorrowers: <Customer>[],
       );
 
-      vm.showAddRimSection = false;
-      vm.searchedCustomerRim = "55";
-      vm.searchedCustomerName = "Eve";
-      vm.customer = c(rim: 55, name: "Eve", isBorrower: true);
-
-      vm.addPotentialBorrower();
+      vm
+        ..showAddRimSection = false
+        ..searchedCustomerRim = "55"
+        ..searchedCustomerName = "Eve"
+        ..customer = c(rim: 55, name: "Eve", isBorrower: true)
+        ..addPotentialBorrower();
 
       expect(vm.showAddRimSection, isTrue);
       expect(vm.addedFromPotential, contains(55));
@@ -755,11 +762,11 @@ void main() {
         nonBorrowers: <Customer>[],
       );
 
-      vm.searchedCustomerRim = "66";
-      vm.searchedCustomerName = "NoResolvedCustomer";
-      vm.customer = null;
-
-      vm.addPotentialBorrower();
+      vm
+        ..searchedCustomerRim = "66"
+        ..searchedCustomerName = "NoResolvedCustomer"
+        ..customer = null
+        ..addPotentialBorrower();
 
       expect(vm.addedFromPotential, contains(66));
       expect(vm.customers.map((e) => e.customerRimNo), contains(66));
@@ -773,10 +780,11 @@ void main() {
         nonBorrowers: <Customer>[],
       );
 
-      vm.searchedCustomerRim = "77";
-      vm.searchedCustomerName = "Remove Me";
-      vm.customer = c(rim: 77, name: "Remove Me", isBorrower: true);
-      vm.addPotentialBorrower();
+      vm
+        ..searchedCustomerRim = "77"
+        ..searchedCustomerName = "Remove Me"
+        ..customer = c(rim: 77, name: "Remove Me", isBorrower: true)
+        ..addPotentialBorrower();
 
       expect(vm.addedFromPotential, contains(77));
       expect(vm.customers.map((e) => e.customerRimNo), contains(77));
@@ -820,9 +828,10 @@ void main() {
     test(
         "updateAddRimInput invalidates previous "
         "successful search when typed rim changes", () {
-      vm.searchedCustomerRim = "123";
-      vm.searchedCustomerName = "Charlie";
-      vm.customer = c(rim: 123, name: "Charlie", isBorrower: true);
+      vm
+        ..searchedCustomerRim = "123"
+        ..searchedCustomerName = "Charlie"
+        ..customer = c(rim: 123, name: "Charlie", isBorrower: true);
       vm.customerNameController.text = "Charlie";
 
       vm.updateAddRimInput("999");
@@ -835,9 +844,10 @@ void main() {
     });
 
     test("updateAddRimInput keeps previous search when typed rim is same", () {
-      vm.searchedCustomerRim = "123";
-      vm.searchedCustomerName = "Charlie";
-      vm.customer = c(rim: 123, name: "Charlie", isBorrower: true);
+      vm
+        ..searchedCustomerRim = "123"
+        ..searchedCustomerName = "Charlie"
+        ..customer = c(rim: 123, name: "Charlie", isBorrower: true);
       vm.customerNameController.text = "Charlie";
 
       vm.updateAddRimInput("123");
@@ -851,10 +861,11 @@ void main() {
     test(
         "clearPotentialRimSearchResult clears fields "
         "but preserves typed input when requested", () {
-      vm.addRimInput = "123";
-      vm.searchedCustomerRim = "123";
-      vm.searchedCustomerName = "Test";
-      vm.customer = c(rim: 123, name: "Test", isBorrower: true);
+      vm
+        ..addRimInput = "123"
+        ..searchedCustomerRim = "123"
+        ..searchedCustomerName = "Test"
+        ..customer = c(rim: 123, name: "Test", isBorrower: true);
       vm.customerNameController.text = "Test";
 
       vm.clearPotentialRimSearchResult(clearTypedRimInput: false);
@@ -867,10 +878,11 @@ void main() {
     });
 
     test("clearPotentialRimSearchResult clears typed input when requested", () {
-      vm.addRimInput = "123";
-      vm.searchedCustomerRim = "123";
-      vm.searchedCustomerName = "Test";
-      vm.customer = c(rim: 123, name: "Test", isBorrower: true);
+      vm
+        ..addRimInput = "123"
+        ..searchedCustomerRim = "123"
+        ..searchedCustomerName = "Test"
+        ..customer = c(rim: 123, name: "Test", isBorrower: true);
       vm.customerNameController.text = "Test";
 
       vm.clearPotentialRimSearchResult(clearTypedRimInput: true);
@@ -884,11 +896,12 @@ void main() {
 
     test("cancelAddPotentialRimSection closes section and clears all state",
         () {
-      vm.showAddRimSection = true;
-      vm.addRimInput = "123";
-      vm.searchedCustomerRim = "123";
-      vm.searchedCustomerName = "Test";
-      vm.customer = c(rim: 123, name: "Test", isBorrower: true);
+      vm
+        ..showAddRimSection = true
+        ..addRimInput = "123"
+        ..searchedCustomerRim = "123"
+        ..searchedCustomerName = "Test"
+        ..customer = c(rim: 123, name: "Test", isBorrower: true);
       vm.customerNameController.text = "Test";
 
       vm.cancelAddPotentialRimSection();
@@ -971,8 +984,9 @@ void main() {
 
       final GroupBorrowersViewModel vm1 = GroupBorrowersViewModel();
       await vm1.init(null);
-      vm1.toggleBorrowerSelection(2, true);
-      vm1.includeSelectedBorrowers();
+      vm1
+        ..toggleBorrowerSelection(2, true)
+        ..includeSelectedBorrowers();
 
       expect(vm1.manualBorrowers.map((e) => e.customerRimNo), [2]);
       expect(vm1.originalBorrowers.map((e) => e.customerRimNo), [1]);

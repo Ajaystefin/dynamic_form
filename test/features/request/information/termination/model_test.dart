@@ -135,8 +135,8 @@ void main() {
     // Set up LocalStorageService mock
     LocalStorageService().setStorage(mockLocalStorageService);
 
-    viewModel = TerminationViewModel();
-    viewModel.repository = mockRepository;
+    viewModel = TerminationViewModel()
+      ..repository = mockRepository;
 
     registerFallbackValue(CommentsType.terminateWithdraw);
     registerFallbackValue(EntityIdentifier.terminateWithdraw);
@@ -144,8 +144,9 @@ void main() {
   testWidgets(
       "onTerminateButtonPressed does not show dialog when form is invalid",
       (WidgetTester tester) async {
-    viewModel.terminationPageMode = PageMode.edit;
-    viewModel.formKey = GlobalKey<FormState>();
+    viewModel
+      ..terminationPageMode = PageMode.edit
+      ..formKey = GlobalKey<FormState>();
 
     await tester.pumpWidget(
       MaterialApp(
@@ -176,8 +177,9 @@ void main() {
   });
   testWidgets("onTerminateButtonPressed shows dialog when form is valid",
       (WidgetTester tester) async {
-    viewModel.terminationPageMode = PageMode.edit;
-    viewModel.formKey = GlobalKey<FormState>();
+    viewModel
+      ..terminationPageMode = PageMode.edit
+      ..formKey = GlobalKey<FormState>();
 
     await tester.pumpWidget(
       MaterialApp(

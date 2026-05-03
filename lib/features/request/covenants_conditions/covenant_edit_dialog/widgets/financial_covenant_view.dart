@@ -115,7 +115,7 @@ class FinancialCovenantView extends StatelessWidget {
               FinancialSubtypeDropdownRow(
                 viewModel: viewModel,
                 row: financialCovenant,
-                isEnabled: (financialCovenant.isStandard ?? true),
+                isEnabled: financialCovenant.isStandard ?? true,
               ),
               InternalFinancialCevenant(
                 viewModel: viewModel,

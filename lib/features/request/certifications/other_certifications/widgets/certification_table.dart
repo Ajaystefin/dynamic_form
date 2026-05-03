@@ -83,8 +83,9 @@ class CertificateTable extends StatelessWidget {
                               if (current != null &&
                                   current.selectedOption?.id !=
                                       selectedValue.id) {
-                                current.selectedOption = selectedValue;
-                                current.isUpdated = true;
+                                current
+                                  ..selectedOption = selectedValue
+                                  ..isUpdated = true;
                               }
 
                               field.didChange(selectedValue);
@@ -126,8 +127,9 @@ class CertificateTable extends StatelessWidget {
                         final CertificationData? current =
                             viewModel.certificationDataMap[referenceId];
                         if (current != null && current.remarks != value) {
-                          current.remarks = value;
-                          current.isUpdated = true;
+                          current
+                            ..remarks = value
+                            ..isUpdated = true;
                         }
                         field.didChange(value);
                       },

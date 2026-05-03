@@ -86,12 +86,13 @@ class EditContractDraftHandler extends DraftHandler<EditContractViewModel> {
       // --------------------------------------------------
       // 1Restore MODEL (raw state)
       // --------------------------------------------------
-      vm.contract = Contract.fromContractByContractCodeJson(json);
+      vm
+        ..contract = Contract.fromContractByContractCodeJson(json)
 
-      // --------------------------------------------------
-      // 2Restore STATIC controllers
-      // --------------------------------------------------
-      vm.syncControllersFromModel();
+        // --------------------------------------------------
+        // 2Restore STATIC controllers
+        // --------------------------------------------------
+        ..syncControllersFromModel();
 
       DateTime? parseDdMmYyyy(String? v) {
         if (v == null || v.isEmpty) return null;
@@ -171,10 +172,10 @@ class EditContractDraftHandler extends DraftHandler<EditContractViewModel> {
           (json["ppcList"] as List?)?.map((e) => PPC.fromJson(e)).toList() ??
               <PPC>[];
 
-      vm.ppc = List<PPC>.from(restoredPpc);
-      vm.isNewRow = List<bool>.filled(vm.ppc.length, true, growable: true);
-
-      vm.initializeControllers(vm.ppc);
+      vm
+        ..ppc = List<PPC>.from(restoredPpc)
+        ..isNewRow = List<bool>.filled(vm.ppc.length, true, growable: true)
+        ..initializeControllers(vm.ppc);
       logger.i(
         "EditContract draft applied for contractCode=$draftCode",
       );

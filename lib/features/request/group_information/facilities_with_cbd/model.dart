@@ -38,7 +38,7 @@ class FacilitiesWithCbdViewModel extends SafeCubit<FacilitiesWithCbdState>
       Globals.user?.currentRole?.rights?[RightConstants.facilitiesWithCbd] ==
           AccessType.edit;
 
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
   PageMode pageMode = PageMode.na;
 
   final TextEditingController commentController = TextEditingController();

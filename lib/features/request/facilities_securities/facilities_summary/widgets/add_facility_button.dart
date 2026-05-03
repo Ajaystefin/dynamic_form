@@ -34,8 +34,8 @@ class AddFacilityButton extends StatelessWidget {
         // project groups are 11315 (Project Specific) and 11317 (Project
         // Standby
         final bool isProjectGroup =
-            (limitGroup == ServerConstants.projectSpecificLimitsID ||
-                limitGroup == ServerConstants.projectStandByLimitID);
+            limitGroup == ServerConstants.projectSpecificLimitsID ||
+                limitGroup == ServerConstants.projectStandByLimitID;
         final int? rimNo = selectedRim;
 
         // Always resolve header limitNo per rim (order "0" row)

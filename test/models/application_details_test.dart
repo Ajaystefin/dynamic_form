@@ -760,14 +760,13 @@ void main() {
         conventional: true,
         islamic: false,
         groupApplication: true,
-      );
-
-      applicationDetails.shariaApproval = true;
-      applicationDetails.ermApproval = false;
-      applicationDetails.esgApproval = true;
-      applicationDetails.pricingCommitteApproval = false;
-      applicationDetails.interimReviewDateRequired = true;
-      applicationDetails.isOverrideNextReviewDate = false;
+      )
+        ..shariaApproval = true
+        ..ermApproval = false
+        ..esgApproval = true
+        ..pricingCommitteApproval = false
+        ..interimReviewDateRequired = true
+        ..isOverrideNextReviewDate = false;
 
       final json = applicationDetails.toSaveApplicationJson();
 
@@ -843,14 +842,14 @@ void main() {
     });
 
     test("should handle borrowers and nonBorrowers", () {
-      final applicationDetails = ApplicationDetails();
-      applicationDetails.cda = "11/11/2025";
-      applicationDetails.borrowers = [
-        Customer(id: "123", preferredName: "Borrower 1"),
-      ];
-      applicationDetails.nonBorrowers = [
-        Customer(id: "456", preferredName: "Non-Borrower 1"),
-      ];
+      final applicationDetails = ApplicationDetails()
+        ..cda = "11/11/2025"
+        ..borrowers = [
+          Customer(id: "123", preferredName: "Borrower 1"),
+        ]
+        ..nonBorrowers = [
+          Customer(id: "456", preferredName: "Non-Borrower 1"),
+        ];
 
       final json = applicationDetails.toSaveApplicationJson();
       expect(json["caDate"], "2025-11-11T00:00:00.000");

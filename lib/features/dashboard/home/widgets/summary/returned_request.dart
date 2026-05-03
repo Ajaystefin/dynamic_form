@@ -66,8 +66,7 @@ class ReturnedRequest extends StatelessWidget {
         returnedToRMB,
         returnedToTLB,
         returnedToSHB,
-      ];
-      returnedToUHs.removeWhere((int? count) => count == -1);
+      ]..removeWhere((int? count) => count == -1);
       returnedToUnitHead = returnedToUHs
           .reduce((value, element) => (value ?? 0) + (element ?? 0));
     }

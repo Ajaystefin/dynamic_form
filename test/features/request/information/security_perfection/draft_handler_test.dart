@@ -28,16 +28,14 @@ void main() {
     List<SecurityCovenantCondition>? covenant,
     List<SecurityCovenantCondition>? condition,
   }) {
-    final vm = SecurityPerfectionViewModel();
-
-    vm.formKey = GlobalKey<FormState>();
-    vm.comments = [Comment(comment: "Test comment")];
-
-    vm.securityDeferral = SecurityPerfection(
-      securityDeferralList: securityList,
-      covenant: covenant ?? [],
-      condition: condition ?? [],
-    );
+    final vm = SecurityPerfectionViewModel()
+      ..formKey = GlobalKey<FormState>()
+      ..comments = [Comment(comment: "Test comment")]
+      ..securityDeferral = SecurityPerfection(
+        securityDeferralList: securityList,
+        covenant: covenant ?? [],
+        condition: condition ?? [],
+      );
 
     return vm;
   }
@@ -139,8 +137,8 @@ void main() {
   });
 
   test("applyDraft ensures fallback comment when none restored", () {
-    final vm = buildVm();
-    vm.comments = [];
+    final vm = buildVm()
+      ..comments = [];
 
     handler.applyDraft(vm, {"commentList": []});
 
@@ -197,8 +195,8 @@ void main() {
   // ---------------------------------------------------------------------------
 
   test("applyDraft catches exception and does not crash", () {
-    final vm = buildVm();
-    vm.comments = [];
+    final vm = buildVm()
+      ..comments = [];
 
     handler.applyDraft(vm, {
       "commentList": Object(),

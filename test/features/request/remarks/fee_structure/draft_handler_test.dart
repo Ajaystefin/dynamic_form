@@ -41,11 +41,9 @@ void main() {
       bool includeExtraRow = false,
       int customerRim = 555,
     }) {
-      final vm = _TestFeeStructureViewModel();
-
-      vm.selectedCustomer = Customer(customerRimNo: customerRim);
-
-      vm.feeRows = <FeeStructure>[];
+      final vm = _TestFeeStructureViewModel()
+        ..selectedCustomer = Customer(customerRimNo: customerRim)
+        ..feeRows = <FeeStructure>[];
 
       if (includeExtraRow) {
         vm.feeRows.add(
@@ -60,8 +58,9 @@ void main() {
       }
 
       final rows = vm.combinedRows;
-      vm.amountControllers.clear();
-      vm.commentsControllers.clear();
+      vm
+        ..amountControllers.clear()
+        ..commentsControllers.clear();
 
       for (int i = 0; i < rows.length; i++) {
         vm.amountControllers.add(TextEditingController(text: "0.00"));
@@ -113,8 +112,9 @@ void main() {
       final rows = vm.combinedRows;
       expect(rows, isNotEmpty);
 
-      vm.amountControllers[0].text = "12.34";
-      vm.commentsControllers[0].text = "first row comment";
+      vm
+        ..amountControllers[0].text = "12.34"
+        ..commentsControllers[0].text = "first row comment";
 
       final data = handler.buildDraftData(vm);
 

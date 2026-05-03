@@ -136,8 +136,7 @@ class _ScreenIndexState extends State<ScreenIndex> {
       }
 
       // Show comprehensive success message
-      final List<String> updates = [];
-      updates.add("App Ref No.: ${_appRefNoController.text}");
+      final List<String> updates = ["App Ref No.: ${_appRefNoController.text}"];
       if (_selectedApplicationType != null) {
         updates.add(
           "Application Type: "

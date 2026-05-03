@@ -221,41 +221,17 @@ class Customer {
     emailAddress = isValid(json["emailAddress"]) ? json["emailAddress"] : null;
     phone = isValid(json["phone"]) ? json["phone"] : null;
     residentCountry = json["PartyInfo"]?["ResidentCountry"]?.trim();
-    customerAddress1 = isValid(
-      json["PartyInfo"]?["PersonData"]["Contact"]["Locator"]["PostAddr"]
-          ["Addr1"],
-    )
-        ? (json["PartyInfo"]?["PersonData"]["Contact"]["Locator"]["PostAddr"]
-            ["Addr1"])
-        : null;
-    customerAddress2 = isValid(
-      json["PartyInfo"]?["PersonData"]["Contact"]["Locator"]["PostAddr"]
-          ["Addr2"],
-    )
-        ? (json["PartyInfo"]?["PersonData"]["Contact"]["Locator"]["PostAddr"]
-            ["Addr2"])
-        : null;
-    customerAddress3 = isValid(
-      json["PartyInfo"]?["PersonData"]["Contact"]["Locator"]["PostAddr"]
-          ["Addr3"],
-    )
-        ? (json["PartyInfo"]?["PersonData"]["Contact"]["Locator"]["PostAddr"]
-            ["Addr3"])
-        : null;
-    city = isValid(
-      json["PartyInfo"]?["PersonData"]["Contact"]["Locator"]["PostAddr"]
-          ["city"],
-    )
-        ? (json["PartyInfo"]?["PersonData"]["Contact"]["Locator"]["PostAddr"]
-            ["city"])
-        : null;
-    country = isValid(
-      json["PartyInfo"]?["PersonData"]["Contact"]["Locator"]["PostAddr"]
-          ["city"],
-    )
-        ? (json["PartyInfo"]?["PersonData"]["Contact"]["Locator"]["PostAddr"]
-            ["country"])
-        : null;
+    final dynamic postAddr = json["PartyInfo"]?["PersonData"]?["Contact"]
+        ?["Locator"]?["PostAddr"];
+
+    customerAddress1 =
+        isValid(postAddr?["Addr1"]) ? (postAddr?["Addr1"]) : null;
+    customerAddress2 =
+        isValid(postAddr?["Addr2"]) ? (postAddr?["Addr2"]) : null;
+    customerAddress3 =
+        isValid(postAddr?["Addr3"]) ? (postAddr?["Addr3"]) : null;
+    city = isValid(postAddr?["city"]) ? (postAddr?["city"]) : null;
+    country = isValid(postAddr?["city"]) ? (postAddr?["country"]) : null;
 
     // customerGroupId= json['GroupKeys']['GroupId'];
     customerTlExpiryDate = json["PartyInfo"]?["TLExpiryDt"];
@@ -431,13 +407,13 @@ class Customer {
   int? worldRank;
   int? countryRank;
   String? category;
-  String? poBox,
-      addressLine1,
-      addressLine2,
-      addressLine3,
-      emailAddress,
-      phone,
-      reasonForWaiver;
+  String? poBox;
+  String? addressLine1;
+  String? addressLine2;
+  String? addressLine3;
+  String? emailAddress;
+  String? phone;
+  String? reasonForWaiver;
   bool? isLimitWithinPolicy = true;
   List<Reference>? issuedIdent;
   List<Reference>? policyDeviations;
@@ -497,7 +473,7 @@ class Customer {
   String concatNonEmpty(List<String?> parts, {String sep = " "}) {
     return parts
         .map((p) => p?.trim())
-        .where((p) => p != null && (p).isNotEmpty)
+        .where((p) => p != null && p.isNotEmpty)
         .map((p) => p ?? "")
         .join(sep);
   }
@@ -622,7 +598,7 @@ class Customer {
     data["tlExpiryDate"] = tlExpiryDateLong;
     data["establishmentDate"] = establishmentDateLong;
     data["cbdRltnStartDate"] = relatnStartDateLong;
-    data["borrowRltnFrom"] = (isBorrowerRelationshipDate)
+    data["borrowRltnFrom"] = isBorrowerRelationshipDate
         ? borrowRelationShipDateLong
         : borrowRelationShipDate;
 
@@ -699,7 +675,7 @@ class Customer {
     data["preferredName"] = preferredName;
     data["customerStatus"] = "Active";
 
-    data["rimType"] ??= (isFI)
+    data["rimType"] ??= isFI
         ? (isSelectedCountryFI == true)
             ? CustomerType.country.name
             : (isSelected == true)
@@ -812,7 +788,8 @@ class CustomerException {
   }
   String? type;
   String? facilityId;
-  int? exceptionId, custInfoId;
+  int? exceptionId;
+  int? custInfoId;
   String? description;
   String? dueDate;
   String? status;

@@ -38,8 +38,9 @@ class IncomeStatementAnalysis extends StatelessWidget {
               width: 165.w,
               widget: CustomTextField(
                 width: 155.w,
-                initialValue:
-                    viewModel.longNameFor(entityId) ?? viewModel.longName ?? "",
+                initialValue: viewModel.longNameFor(entityId) ??
+                    viewModel.longName ??
+                    "",
                 onChanged: (txt) => viewModel.updateLongNameFor(entityId, txt),
                 onSubmitted: (_) {},
               ),
@@ -215,32 +216,26 @@ class IncomeStatementAnalysis extends StatelessWidget {
 
   List<List<Widget>> getRows(int id) {
     return viewModel.incomeRowsFor(id).map((row) {
-      final cells = <Widget>[];
-
-      // Company Name
-      cells.add(
+      final cells = <Widget>[
         row.isNew
             ? Center(
                 child: CustomTextField(
                   initialValue: row.incomePositions,
                   validator: CustomValidator.twoDecimalNumeric,
                   maxLength: 100,
-                  inputFormatters: [AlphanumericOrTwoDecimalInputFormatter()],
+                  inputFormatters: [
+                    AlphanumericOrTwoDecimalInputFormatter(),
+                  ],
                   onChanged: (v) => row.incomePositions = v,
                 ),
               )
             : Text(row.incomePositions),
-      );
-
-      // Audited 1..3 (index-based onChange to avoid duplication)
-      final auditedValues = [row.audited1, row.audited2, row.audited3];
-      for (int i = 0; i < auditedValues.length; i++) {
-        final v = auditedValues[i];
-        cells.add(
+        for (int i = 0; i < 3; i++)
           Center(
             child: row.isNew
                 ? CustomTextField(
-                    initialValue: v,
+                    initialValue:
+                        [row.audited1, row.audited2, row.audited3][i],
                     validator: CustomValidator.twoDecimalNumeric,
                     inputFormatters: [DecimalInputFormatterTwoDigit()],
                     onChanged: (txt) {
@@ -249,12 +244,14 @@ class IncomeStatementAnalysis extends StatelessWidget {
                       if (i == 2) row.audited3 = txt;
                     },
                   )
-                : Text((v.trim().isEmpty) ? viewModel.unavailableText : v),
+                : Text(
+                    ([row.audited1, row.audited2, row.audited3][i]
+                            .trim()
+                            .isEmpty)
+                        ? viewModel.unavailableText
+                        : [row.audited1, row.audited2, row.audited3][i],
+                  ),
           ),
-        );
-      }
-
-      cells.add(
         Center(
           child: row.isNew
               ? CustomTextField(
@@ -269,9 +266,6 @@ class IncomeStatementAnalysis extends StatelessWidget {
                       : row.inhouse,
                 ),
         ),
-      );
-
-      cells.add(
         Center(
           child: row.isNew
               ? CustomTextField(
@@ -286,10 +280,7 @@ class IncomeStatementAnalysis extends StatelessWidget {
                       : row.estimated,
                 ),
         ),
-      );
-
-      if (_hasActionColumnFor(id)) {
-        cells.add(
+        if (_hasActionColumnFor(id))
           row.isNew
               ? IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
@@ -299,8 +290,7 @@ class IncomeStatementAnalysis extends StatelessWidget {
                   ), //  NEW
                 )
               : const SizedBox.shrink(),
-        );
-      }
+      ];
 
       return cells;
     }).toList();

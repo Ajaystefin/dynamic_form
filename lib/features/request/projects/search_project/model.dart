@@ -31,7 +31,7 @@ class SearchProjectViewModel extends SafeCubit<SearchProjectState> {
     // _referenceDataService = service;
   }
 
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
   PageMode pageMode = PageMode.na;
 
   Map<String, List<Reference>> referenceData = {};
@@ -93,14 +93,14 @@ class SearchProjectViewModel extends SafeCubit<SearchProjectState> {
 
       // Map rows to Reference objects
       projectTypeRefItems = projectRows?.map((row) {
-        final description = (row.reference2)?.trim() ??
+        final description = row.reference2?.trim() ??
             ""; //Dont change this Search API Keyword
-        final name = (row.name)?.trim() ?? "";
-        final ref1 = (row.reference1)?.trim() ?? "";
-        final ref2 = (row.reference2)?.trim() ?? "";
-        final ref3 = (row.reference3)?.trim() ?? "";
-        final ref4 = (row.reference4)?.trim() ?? "";
-        final ref5 = (row.reference5)?.trim() ?? "";
+        final name = row.name?.trim() ?? "";
+        final ref1 = row.reference1?.trim() ?? "";
+        final ref2 = row.reference2?.trim() ?? "";
+        final ref3 = row.reference3?.trim() ?? "";
+        final ref4 = row.reference4?.trim() ?? "";
+        final ref5 = row.reference5?.trim() ?? "";
         return Reference(
           description: description,
           name: name,
@@ -113,14 +113,14 @@ class SearchProjectViewModel extends SafeCubit<SearchProjectState> {
       }).toList();
 
       contractTypeRefItems = contractRows?.map((row) {
-        final description = (row.reference2)?.trim() ??
+        final description = row.reference2?.trim() ??
             ""; //Dont change this Search API Keyword
-        final name = (row.name)?.trim() ?? "";
-        final ref1 = (row.reference1)?.trim() ?? "";
-        final ref2 = (row.reference2)?.trim() ?? "";
-        final ref3 = (row.reference3)?.trim() ?? "";
-        final ref4 = (row.reference4)?.trim() ?? "";
-        final ref5 = (row.reference5)?.trim() ?? "";
+        final name = row.name?.trim() ?? "";
+        final ref1 = row.reference1?.trim() ?? "";
+        final ref2 = row.reference2?.trim() ?? "";
+        final ref3 = row.reference3?.trim() ?? "";
+        final ref4 = row.reference4?.trim() ?? "";
+        final ref5 = row.reference5?.trim() ?? "";
         return Reference(
           description: description,
           name: name,

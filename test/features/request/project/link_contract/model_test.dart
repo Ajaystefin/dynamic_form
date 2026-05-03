@@ -170,12 +170,12 @@ void main() {
     when(() => mockAlert.showFailureToast(any())).thenReturn(null);
     when(() => mockAlert.showWarningToast(any())).thenReturn(null);
     when(() => mockAlert.showSuccessToast(any())).thenReturn(null);
-    vm = TestLinkContractViewModel(projectRepo: mockProjectRepo);
-    vm = LinkContractViewModel()..repository = mockProjectRepo;
-    vm.project = Project()
-      ..projectId = 100
-      ..projectCode = "PRJ-001"
-      ..projectName = "Alpha Project";
+    vm = LinkContractViewModel()
+      ..repository = mockProjectRepo
+      ..project = (Project()
+        ..projectId = 100
+        ..projectCode = "PRJ-001"
+        ..projectName = "Alpha Project");
   });
 
   // -------------------------------------------------------------
@@ -253,8 +253,9 @@ void main() {
   // -------------------------------------------------------------
   group("onProceed()", () {
     test("empty inputs => toast", () async {
-      vm.searchRimController.text = "";
-      vm.searchNameController.text = "";
+      vm
+        ..searchRimController.text = ""
+        ..searchNameController.text = "";
 
       await vm.onProceed();
 
@@ -262,8 +263,9 @@ void main() {
     });
 
     test("rim only", () async {
-      vm.searchRimController.text = "10";
-      vm.searchNameController.text = "";
+      vm
+        ..searchRimController.text = "10"
+        ..searchNameController.text = "";
 
       await vm.onProceed();
 
@@ -272,8 +274,9 @@ void main() {
     });
 
     test("name only", () async {
-      vm.searchRimController.text = "";
-      vm.searchNameController.text = "Alice";
+      vm
+        ..searchRimController.text = ""
+        ..searchNameController.text = "Alice";
 
       await vm.onProceed();
       expect(vm.contract.customerName, "Alice");
@@ -286,10 +289,10 @@ void main() {
   // -------------------------------------------------------------
   group("clearAll()", () {
     test("clears form + contract", () {
-      vm.searchRimController.text = "7";
-      vm.contract.contractorScope = "some";
-
-      vm.clearAll();
+      vm
+        ..searchRimController.text = "7"
+        ..contract.contractorScope = "some"
+        ..clearAll();
 
       expect(vm.searchRimController.text, "");
       expect(vm.contract.contractorScope, null);
@@ -337,8 +340,9 @@ void main() {
     });
 
     test("getComments returns list", () {
-      vm.addComment("A");
-      vm.addComment("B");
+      vm
+        ..addComment("A")
+        ..addComment("B");
       expect(vm.getComments().length, 2);
     });
   });
@@ -366,11 +370,11 @@ void main() {
   // -------------------------------------------------------------
   group("onBorrowerRoleSelected()", () {
     test("main contractor", () {
-      vm.project = Project()..projectUltimateOwnerName = "BIG BOSS";
-
-      vm.onBorrowerRoleSelected(
-        Reference(id: ServerConstants.mainContractorId, name: "Main"),
-      );
+      vm
+        ..project = (Project()..projectUltimateOwnerName = "BIG BOSS")
+        ..onBorrowerRoleSelected(
+          Reference(id: ServerConstants.mainContractorId, name: "Main"),
+        );
 
       expect(vm.contract.isMainContractor, true);
       expect(vm.contract.paymasterName, "BIG BOSS");
@@ -388,8 +392,9 @@ void main() {
   // -------------------------------------------------------------
   group("onSave()", () {
     test("empty rim + name => toast", () async {
-      vm.searchRimController.text = "";
-      vm.searchNameController.text = "";
+      vm
+        ..searchRimController.text = ""
+        ..searchNameController.text = "";
 
       await vm.onSave(MockBuildContext());
 
@@ -410,9 +415,9 @@ void main() {
     });
 
     test("invalid start date (end before start) → ignored", () {
-      vm.onCompletionDateSubmitted2(DateTime(2025, 1, 5));
-
-      vm.onStartDateSubmitted2(DateTime(2025, 1, 10));
+      vm
+        ..onCompletionDateSubmitted2(DateTime(2025, 1, 5))
+        ..onStartDateSubmitted2(DateTime(2025, 1, 10));
 
       // Should NOT update start
       expect(vm.contract.expectedStartDate, isNull);
@@ -422,9 +427,9 @@ void main() {
 
   group("onCompletionDateSubmitted2", () {
     test("valid end date sets expectedCompletionDate", () {
-      vm.onStartDateSubmitted2(DateTime(2025, 1, 1));
-
-      vm.onCompletionDateSubmitted2(DateTime(2025, 2, 1));
+      vm
+        ..onStartDateSubmitted2(DateTime(2025, 1, 1))
+        ..onCompletionDateSubmitted2(DateTime(2025, 2, 1));
 
       expect(vm.contract.expectedCompletionDate, DateTime(2025, 2, 1));
       expect(vm.completionDateController.text, "01/02/2025");
@@ -432,9 +437,9 @@ void main() {
     });
 
     test("invalid end date triggers reset + sets validate flag", () {
-      vm.onStartDateSubmitted2(DateTime(2025, 3, 10));
-
-      vm.onCompletionDateSubmitted2(DateTime(2025, 3, 1));
+      vm
+        ..onStartDateSubmitted2(DateTime(2025, 3, 10))
+        ..onCompletionDateSubmitted2(DateTime(2025, 3, 1));
 
       expect(vm.contract.projectTenor, null);
       expect(vm.projectTenorController.text, "");
@@ -445,13 +450,13 @@ void main() {
   group("callEndDateTenor", () {
     test("valid call updates endDate, controller and tenor when isFirst=true",
         () {
-      vm.onStartDateSubmitted2(DateTime(2025, 1, 1));
-
-      vm.callEndDateTenor(
-        DateTime(2025, 2, 1),
-        const YearRules(),
-        isFirst: true,
-      );
+      vm
+        ..onStartDateSubmitted2(DateTime(2025, 1, 1))
+        ..callEndDateTenor(
+          DateTime(2025, 2, 1),
+          const YearRules(),
+          isFirst: true,
+        );
 
       expect(vm.contract.expectedCompletionDate, DateTime(2025, 2, 1));
       expect(vm.completionDateController.text, "01/02/2025");
@@ -468,14 +473,11 @@ void main() {
 
   group("_updateTenor", () {
     test("start/end null → clears tenor", () {
-      vm.onStartDateSubmitted2(null);
-      vm.onCompletionDateSubmitted2(null);
-
       vm
+        ..onStartDateSubmitted2(null)
+        ..onCompletionDateSubmitted2(null)
         ..contract.projectTenor = 5
-        ..projectTenorController.text = "dummy";
-
-      vm
+        ..projectTenorController.text = "dummy"
         ..onStartDateSubmitted2(null)
         ..onCompletionDateSubmitted2(null);
 
@@ -485,9 +487,9 @@ void main() {
     });
 
     test("end < start → warning + clears tenor", () {
-      vm.onStartDateSubmitted2(DateTime(2025, 5, 10));
-
-      vm.onCompletionDateSubmitted2(DateTime(2025, 5, 1));
+      vm
+        ..onStartDateSubmitted2(DateTime(2025, 5, 10))
+        ..onCompletionDateSubmitted2(DateTime(2025, 5, 1));
 
       verify(() => mockAlert.showWarningToast(any())).called(1);
 
@@ -496,8 +498,9 @@ void main() {
     });
 
     test("valid dates → correct months count & tenor text", () {
-      vm.onStartDateSubmitted2(DateTime(2025, 1, 1));
-      vm.onCompletionDateSubmitted2(DateTime(2025, 3, 15));
+      vm
+        ..onStartDateSubmitted2(DateTime(2025, 1, 1))
+        ..onCompletionDateSubmitted2(DateTime(2025, 3, 15));
 
       expect(vm.contract.projectTenor, 2);
       expect(vm.projectTenorController.text, "2 Months");
@@ -525,8 +528,7 @@ void main() {
       AlertManager.overrideInstance(mockAlert);
       when(() => mockAlert.showFailureToast(any())).thenReturn(null);
 
-      vm = LinkContractViewModel();
-      vm.repository = MockProjectRepository(); // repo not used in this method
+      vm = LinkContractViewModel()..repository = MockProjectRepository();
     });
 
     test("SUCCESS → calculates converted AED amount & updates controller",
@@ -598,8 +600,9 @@ void main() {
     test("SUCCESS → populates name (preferredName), rim and emits loaded",
         () async {
       // Arrange: simulate user search criteria
-      vm.searchNameController.text = "Acme";
-      vm.searchRimController.text = "12345";
+      vm
+        ..searchNameController.text = "Acme"
+        ..searchRimController.text = "12345";
 
       // Repo returns a matched customer with preferredName & rim
       final list = <Customer>[
@@ -642,8 +645,9 @@ void main() {
 
     test("SUCCESS → falls back to displayRIMName when preferredName is null",
         () async {
-      vm.searchNameController.text = "Beta";
-      vm.searchRimController.text = "0";
+      vm
+        ..searchNameController.text = "Beta"
+        ..searchRimController.text = "0";
 
       final list = <Customer>[
         Customer()
@@ -667,8 +671,9 @@ void main() {
     });
 
     test("FAILURE → shows failure toast and emits loaded", () async {
-      vm.searchNameController.text = "Zeta";
-      vm.searchRimController.text = "999";
+      vm
+        ..searchNameController.text = "Zeta"
+        ..searchRimController.text = "999";
 
       when(
         () => mockProjectRepo.getProjectBorrowerSearch(
@@ -694,18 +699,13 @@ void main() {
         "end earlier than start "
         "-> warning, clears "
         "tenor & controller, emits tenor=null", () {
-      // Pick a valid start first via the public method (commits _startDate)
-      vm.onStartDateSubmitted2(DateTime(2025, 5, 10));
-
-      // Now force an earlier end and call with isFirst=true
-      // This path invokes _updateTenor without re-validating through
-      // validateDates,
-      // so the "end < start" branch is executed.
-      vm.callEndDateTenor(
-        DateTime(2025, 5, 1),
-        const YearRules(),
-        isFirst: true,
-      );
+      vm
+        ..onStartDateSubmitted2(DateTime(2025, 5, 10))
+        ..callEndDateTenor(
+          DateTime(2025, 5, 1),
+          const YearRules(),
+          isFirst: true,
+        );
 
       // Verify side-effects from the branch
       verify(() => mockAlert.showWarningToast(any())).called(1);
@@ -761,8 +761,9 @@ void main() {
   group("onSave()", () {
     testWidgets("1) Empty RIM + Name → failure toast + loaded", (tester) async {
       await pumpForm(tester, formKey: vm.formKey, valid: true);
-      vm.searchRimController.text = "";
-      vm.searchNameController.text = "";
+      vm
+        ..searchRimController.text = ""
+        ..searchNameController.text = "";
 
       await vm.onSave(MockBuildContext());
 
@@ -773,8 +774,9 @@ void main() {
 
     testWidgets("2) Form invalid → stops and stays loaded", (tester) async {
       await pumpForm(tester, formKey: vm.formKey, valid: false);
-      vm.searchRimController.text = "1001"; // bypass empty check
-      vm.searchNameController.text = "";
+      vm
+        ..searchRimController.text = "1001"
+        ..searchNameController.text = "";
 
       await vm.onSave(MockBuildContext());
 
@@ -786,16 +788,15 @@ void main() {
         (tester) async {
       await pumpForm(tester, formKey: vm.formKey, valid: true);
 
-      vm.searchRimController.text = "123";
-      vm.searchNameController.text = "Acme";
-
-      // Start after end to make validateDates() fail
-      vm.onStartDateSubmitted2(DateTime(2025, 6, 10));
-      vm.callEndDateTenor(
-        DateTime(2025, 6, 1),
-        const YearRules(),
-        isFirst: false,
-      );
+      vm
+        ..searchRimController.text = "123"
+        ..searchNameController.text = "Acme"
+        ..onStartDateSubmitted2(DateTime(2025, 6, 10))
+        ..callEndDateTenor(
+          DateTime(2025, 6, 1),
+          const YearRules(),
+          isFirst: false,
+        );
 
       await vm.onSave(MockBuildContext());
 
@@ -810,10 +811,10 @@ void main() {
 
       vm.searchRimController.text = "789";
       vm.searchNameController.text = "Beta";
-      vm.onStartDateSubmitted2(DateTime(2025, 1, 1));
-      vm.onCompletionDateSubmitted2(DateTime(2025, 1, 15));
-
-      vm.completionDateValidate = true; // legacy guard set
+      vm
+        ..onStartDateSubmitted2(DateTime(2025, 1, 1))
+        ..onCompletionDateSubmitted2(DateTime(2025, 1, 15))
+        ..completionDateValidate = true; // legacy guard set
 
       await vm.onSave(MockBuildContext());
 
@@ -826,18 +827,17 @@ void main() {
         "called, contract updated, success toast", (tester) async {
       await pumpForm(tester, formKey: vm.formKey, valid: true);
 
-      vm.searchRimController.text = "555";
-      vm.searchNameController.text = "Gamma Ltd";
-
-      vm.onStartDateSubmitted2(DateTime(2025, 2, 1));
-      vm.onCompletionDateSubmitted2(DateTime(2025, 2, 20));
-
-      vm.borrowerCustomer = [
-        Customer()
-          ..applicationRefNo = "APP-42"
-          ..preferredName = "Pref"
-          ..customerRimNo = 555,
-      ];
+      vm
+        ..searchRimController.text = "555"
+        ..searchNameController.text = "Gamma Ltd"
+        ..onStartDateSubmitted2(DateTime(2025, 2, 1))
+        ..onCompletionDateSubmitted2(DateTime(2025, 2, 20))
+        ..borrowerCustomer = [
+          Customer()
+            ..applicationRefNo = "APP-42"
+            ..preferredName = "Pref"
+            ..customerRimNo = 555,
+        ];
 
       when(() => mockProjectRepo.saveLinkContractDetails(any()))
           .thenAnswer((_) async => "CON-777");
@@ -860,10 +860,11 @@ void main() {
         (tester) async {
       await pumpForm(tester, formKey: vm.formKey, valid: true);
 
-      vm.searchRimController.text = "9";
-      vm.searchNameController.text = "Zeta";
-      vm.onStartDateSubmitted2(DateTime(2025, 1, 1));
-      vm.onCompletionDateSubmitted2(DateTime(2025, 1, 2));
+      vm
+        ..searchRimController.text = "9"
+        ..searchNameController.text = "Zeta"
+        ..onStartDateSubmitted2(DateTime(2025, 1, 1))
+        ..onCompletionDateSubmitted2(DateTime(2025, 1, 2));
 
       when(() => mockProjectRepo.saveLinkContractDetails(any()))
           .thenThrow(Exception("save failed"));

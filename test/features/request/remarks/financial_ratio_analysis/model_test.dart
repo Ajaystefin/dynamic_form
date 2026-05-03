@@ -242,17 +242,19 @@ void main() {
       expect(vm.hasActionColumnCashflow, isFalse);
       expect(vm.hasActionColumnBalanceSheet, isFalse);
 
-      vm.addIncomeRow();
-      vm.addCashflowRow();
-      vm.addBalanceRow();
+      vm
+        ..addIncomeRow()
+        ..addCashflowRow()
+        ..addBalanceRow();
 
       expect(vm.hasActionColumn, isTrue);
       expect(vm.hasActionColumnCashflow, isTrue);
       expect(vm.hasActionColumnBalanceSheet, isTrue);
 
-      vm.deleteIncomeRow(vm.incomeStatementRows.first.id);
-      vm.deleteCashflowRow(vm.cashflowSheetRows.first.id);
-      vm.deleteBalanceRow(vm.balanceSheetRows.first.id);
+      vm
+        ..deleteIncomeRow(vm.incomeStatementRows.first.id)
+        ..deleteCashflowRow(vm.cashflowSheetRows.first.id)
+        ..deleteBalanceRow(vm.balanceSheetRows.first.id);
 
       expect(vm.hasActionColumn, isFalse);
       expect(vm.hasActionColumnCashflow, isFalse);
@@ -261,9 +263,10 @@ void main() {
 
     test("row-add guards keep max length at 10 for each table", () {
       for (var i = 0; i < 12; i++) {
-        vm.addIncomeRow();
-        vm.addCashflowRow();
-        vm.addBalanceRow();
+        vm
+          ..addIncomeRow()
+          ..addCashflowRow()
+          ..addBalanceRow();
       }
       expect(vm.incomeStatementRows.length, 10);
       expect(vm.cashflowSheetRows.length, 10);
@@ -927,13 +930,12 @@ void main() {
       final testVm = TestFinancialRatioAnalysisViewModel(
         remarksRepository: mockRepository,
         referenceDataService: mockRefService,
-      );
-
-      testVm.updateEntityId("123");
-      testVm.hasSavedAnalysisData = true;
-      testVm.incomeRows = [];
-      testVm.balanceRows = [];
-      testVm.cashflowRows = [];
+      )
+        ..updateEntityId("123")
+        ..hasSavedAnalysisData = true
+        ..incomeRows = []
+        ..balanceRows = []
+        ..cashflowRows = [];
 
       when(
         () => mockRepository.saveFinancialRatioAnalysisDetails(
@@ -953,21 +955,20 @@ void main() {
       final testVm = TestFinancialRatioAnalysisViewModel(
         remarksRepository: mockRepository,
         referenceDataService: mockRefService,
-      );
-
-      testVm.updateEntityId("123");
-      testVm.hasCreditLensData = true;
-      testVm.incomeStatements = [
-        Statement(
-          id: 1,
-          date: DateTime(2021, 12, 31),
-          periods: 12,
-          statementConsts: [
-            StatementConst(id: 0, value: "Audited"),
-            StatementConst(id: 1, value: ""),
-          ],
-        ),
-      ];
+      )
+        ..updateEntityId("123")
+        ..hasCreditLensData = true
+        ..incomeStatements = [
+          Statement(
+            id: 1,
+            date: DateTime(2021, 12, 31),
+            periods: 12,
+            statementConsts: [
+              StatementConst(id: 0, value: "Audited"),
+              StatementConst(id: 1, value: ""),
+            ],
+          ),
+        ];
 
       testVm.incomeStatementRows.add(
         IncomeStatementAnalysisRow(
@@ -2253,38 +2254,37 @@ void main() {
 
   group("valuesFromRow", () {
     setUp(() {
-      // Setup 3 income statements with constants
-      vm.incomeStatements = [
-        Statement(
-          id: 1,
-          date: DateTime(2021, 12, 31),
-          periods: 12,
-          statementConsts: [
-            StatementConst(id: 0, value: "Audited-Full"),
-            StatementConst(id: 1, value: "KPMG"),
-          ],
-        ),
-        Statement(
-          id: 2,
-          date: DateTime(2022, 12, 31),
-          periods: 12,
-          statementConsts: [
-            StatementConst(id: 0, value: "Audited-Limited"),
-            StatementConst(id: 1, value: "--"),
-          ],
-        ),
-        Statement(
-          id: 3,
-          date: DateTime(2023, 12, 31),
-          periods: 12,
-          statementConsts: [
-            StatementConst(id: 0, value: "Review"),
-            StatementConst(id: 1, value: "Deloitte"),
-          ],
-        ),
-      ];
-
-      vm.unavailableText = "--";
+      vm
+        ..incomeStatements = [
+          Statement(
+            id: 1,
+            date: DateTime(2021, 12, 31),
+            periods: 12,
+            statementConsts: [
+              StatementConst(id: 0, value: "Audited"),
+              StatementConst(id: 1, value: "E&Y"),
+            ],
+          ),
+          Statement(
+            id: 2,
+            date: DateTime(2022, 12, 31),
+            periods: 12,
+            statementConsts: [
+              StatementConst(id: 0, value: "Unaudited"),
+              StatementConst(id: 1, value: ""),
+            ],
+          ),
+          Statement(
+            id: 3,
+            date: DateTime(2023, 12, 31),
+            periods: 12,
+            statementConsts: [
+              StatementConst(id: 0, value: "Review"),
+              StatementConst(id: 1, value: "Deloitte"),
+            ],
+          ),
+        ]
+        ..unavailableText = "--";
     });
 
     test("maps columns to financial values correctly", () {
@@ -2305,7 +2305,7 @@ void main() {
       expect(result[0].financialYear, 2021);
       expect(result[0].period, "12M");
       expect(result[0].value, 100.50);
-      expect(result[0].auditMethod, "Full");
+      expect(result[0].auditMethod, "Audited");
       expect(result[0].auditor, "KPMG");
 
       expect(result[1].value, 200);

@@ -117,8 +117,7 @@ class AuthRepository {
       }
     }
 
-    final User user = User.fromJson(userResponse);
-    user.availableRoles = roles;
+    final User user = User.fromJson(userResponse)..availableRoles = roles;
     if (roles.isNotEmpty) {
       user.currentRole = roles.first;
     }
@@ -148,7 +147,7 @@ class AuthRepository {
     final int tokenExpiresIn =
         tokenResponse["expiresIn"]; //Duration in milliseconds
     final int tokenExpiryTime = DateTimeUtils.datetimeToInt(DateTime.now()) +
-        (tokenExpiresIn); // Epoch time in milliseconds
+        tokenExpiresIn; // Epoch time in milliseconds
     await _localStorageService.put(
       LocalStorageBoxes.user,
       LocalStorageKeys.tokenExpiryTime,
@@ -164,7 +163,13 @@ class AuthRepository {
 
   Future<void> updateLoggedinUserData(Map<String, dynamic> userResponse) async {
     final User user = await _processUserResponse(userResponse);
-    Globals.user = user;
+    Globals.user
+      ?..segments = user.segments
+      ..regions = user.regions
+      ..approvalAccess = user.approvalAccess
+      ..approveOnBehalfOf = user.approveOnBehalfOf
+      ..isIslamic = user.isIslamic
+      ..tranApprovalAccess = user.tranApprovalAccess;
     await updateUserInCache();
   }
 
@@ -189,7 +194,7 @@ class AuthRepository {
       final int tokenExpiresIn =
           responseData["expiresIn"]; //Duration in milliseconds
       final int tokenExpiryTime = DateTimeUtils.datetimeToInt(DateTime.now()) +
-          (tokenExpiresIn); // Epoch time in milliseconds
+          tokenExpiresIn; // Epoch time in milliseconds
       await _localStorageService.put(
         LocalStorageBoxes.user,
         LocalStorageKeys.tokenExpiryTime,

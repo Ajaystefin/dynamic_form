@@ -51,7 +51,7 @@ class LimitControllingSecurity extends StatelessWidget {
         isEnabled: !viewModel.isCmoUpdate(),
         options: viewModel.yesAndNo ?? [],
         selectedValue: (viewModel.security.isLimitCtrlSecurity ?? false)
-            ? (viewModel.yesAndNo?.first)
+            ? viewModel.yesAndNo?.first
             : viewModel.yesAndNo?.last,
         onChanged: (value) {
           viewModel.changeLimitControllingSecurityValue(value);

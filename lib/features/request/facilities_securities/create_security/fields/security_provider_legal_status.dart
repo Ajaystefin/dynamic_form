@@ -37,7 +37,7 @@ class SecurityProviderLegalStatus extends StatelessWidget {
         //     : viewModel.isEntityProvider && !viewModel.isCmoUpdate(),
         onSelected: (selectedValue) {
           viewModel.security.securityProviderLegalStatus =
-              (selectedValue.first);
+              selectedValue.first;
         },
         itemBuilder: (context, item, isDisabled, isSelected) {
           return dropdownItemBuildWidget(

@@ -73,7 +73,7 @@ class FiTradeTable extends StatelessWidget {
       isSubSection: true,
       children: [
         const Gap(),
-        (hasApiLimits)
+        hasApiLimits
             ? CustomRawTable(
                 key: UniqueKey(),
                 rowHeight: 46,
@@ -175,8 +175,7 @@ class FiTradeTable extends StatelessWidget {
       const SizedBox.shrink(),
     ];
 
-    final List<List<Widget>> tableRows = <List<Widget>>[];
-    tableRows.add(filterRows);
+    final List<List<Widget>> tableRows = <List<Widget>>[filterRows];
 
     int totalExistingLimit = 0;
     int totalProposedLimit = 0;
@@ -225,7 +224,7 @@ class FiTradeTable extends StatelessWidget {
 
       final List<Reference> selectedSustainability = (() {
         final String raw =
-            (facilitySummaryDataItem.sustainabilityClassification ?? "");
+            facilitySummaryDataItem.sustainabilityClassification ?? "";
         if (raw.trim().isEmpty) return <Reference>[];
         final Set<String> ids = raw
             .split(",")
@@ -325,8 +324,9 @@ class FiTradeTable extends StatelessWidget {
               onSelected: (selectedValue) {
                 if (selectedValue.isNotEmpty) {
                   final sel = selectedValue.first;
-                  facilitySummaryDataItem.currency = sel.name;
-                  facilitySummaryDataItem.isEdited = true;
+                  facilitySummaryDataItem
+                    ..currency = sel.name
+                    ..isEdited = true;
                   viewModel.facility.proposedLimitValue =
                       sel; // keep your UI bindin
                   viewModel.updateConvertedTooltipFor(
@@ -357,9 +357,9 @@ class FiTradeTable extends StatelessWidget {
             ],
             onChanged: (String? value) {
               final String raw = (value ?? "").replaceAll(RegExp("[^0-9]"), "");
-              facilitySummaryDataItem.proposedLimit =
-                  raw.isEmpty ? 0 : int.parse(raw);
-              facilitySummaryDataItem.isEdited = true;
+              facilitySummaryDataItem
+                ..proposedLimit = raw.isEmpty ? 0 : int.parse(raw)
+                ..isEdited = true;
               viewModel.updateConvertedTooltipFor(facilitySummaryDataItem);
             },
           ),
@@ -398,16 +398,16 @@ class FiTradeTable extends StatelessWidget {
               title: Text(item.name ?? ""),
             );
           },
-          items: (viewModel.sustanabilityClassifications),
+          items: viewModel.sustanabilityClassifications,
           onSelected: (value) {
             final ids = value
                 .map((r) => r.id?.toString())
                 .where((id) => id != null && id.isNotEmpty)
                 .cast<String>()
                 .toList();
-            facilitySummaryDataItem.sustainabilityClassification =
-                ids.join(", ");
-            facilitySummaryDataItem.isEdited = true;
+            facilitySummaryDataItem
+              ..sustainabilityClassification = ids.join(", ")
+              ..isEdited = true;
           },
         ),
 
@@ -422,8 +422,8 @@ class FiTradeTable extends StatelessWidget {
           child: CustomTextField(
             width: 150.w,
             validator: (_) {
-              final noUnit = (facilitySummaryDataItem.tenorUnit == null ||
-                  facilitySummaryDataItem.tenorUnit!.trim().isEmpty);
+              final noUnit = facilitySummaryDataItem.tenorUnit == null ||
+                  facilitySummaryDataItem.tenorUnit!.trim().isEmpty;
               final noValue = (facilitySummaryDataItem.tenorValue == null);
               return (noUnit || noValue)
                   ? "Tenor (unit & value) is required"
@@ -443,8 +443,9 @@ class FiTradeTable extends StatelessWidget {
               onSelected: (selectedValue) {
                 if (selectedValue.isNotEmpty) {
                   final sel = selectedValue.first;
-                  facilitySummaryDataItem.tenorUnit = sel.name;
-                  facilitySummaryDataItem.isEdited = true;
+                  facilitySummaryDataItem
+                    ..tenorUnit = sel.name
+                    ..isEdited = true;
                   viewModel.facility.proposedLimitValue =
                       sel; // keep UI binding
                 }
@@ -468,10 +469,10 @@ class FiTradeTable extends StatelessWidget {
             keyboardType: TextInputType.number,
             onChanged: (String? value) {
               final match = RegExp(r"\d+").firstMatch(value ?? "");
-              facilitySummaryDataItem.tenorValue =
-                  match != null ? int.tryParse(match.group(0)!) : null;
-
-              facilitySummaryDataItem.isEdited = true;
+              facilitySummaryDataItem
+                ..tenorValue =
+                    match != null ? int.tryParse(match.group(0)!) : null
+                ..isEdited = true;
             },
           ),
         ),
@@ -494,9 +495,9 @@ class FiTradeTable extends StatelessWidget {
             onSelected: (selectedValue) {
               if (selectedValue.isNotEmpty) {
                 final sel = selectedValue.first;
-                facilitySummaryDataItem.index =
-                    sel.id?.toString() ?? sel.name ?? "";
-                facilitySummaryDataItem.isEdited = true;
+                facilitySummaryDataItem
+                  ..index = sel.id?.toString() ?? sel.name ?? ""
+                  ..isEdited = true;
                 viewModel.facility.proposedLimitValue = sel;
               }
             },
@@ -520,7 +521,7 @@ class FiTradeTable extends StatelessWidget {
           message: (facilitySummaryDataItem.marginValue != null ||
                   (facilitySummaryDataItem.marginSign ?? "").isNotEmpty)
               ? "Initial Value: "
-                  "${(facilitySummaryDataItem.marginSign ?? "").trim()} "
+                      "${(facilitySummaryDataItem.marginSign ?? "").trim()} "
                       "${facilitySummaryDataItem.marginValue ?? ""}"
                   .trim()
               : "",
@@ -550,8 +551,9 @@ class FiTradeTable extends StatelessWidget {
                     onSelected: (selectedValue) {
                       if (selectedValue.isNotEmpty) {
                         final sel = selectedValue.first;
-                        facilitySummaryDataItem.marginSign = sel.reference1;
-                        facilitySummaryDataItem.isEdited = true;
+                        facilitySummaryDataItem
+                          ..marginSign = sel.reference1
+                          ..isEdited = true;
                         viewModel.facility.proposedLimitValue = sel;
                       }
                     },
@@ -574,9 +576,10 @@ class FiTradeTable extends StatelessWidget {
             keyboardType: TextInputType.number,
             onChanged: (String? value) {
               final match = RegExp(r"[-+]?\d*\.?\d+").firstMatch(value ?? "");
-              facilitySummaryDataItem.marginValue =
-                  match != null ? num.tryParse(match.group(0)!) : null;
-              facilitySummaryDataItem.isEdited = true;
+              facilitySummaryDataItem
+                ..marginValue =
+                    match != null ? num.tryParse(match.group(0)!) : null
+                ..isEdited = true;
             },
           ),
         ),

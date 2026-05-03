@@ -44,9 +44,9 @@ class _AssociatedTableState extends State<AssociatedTable> {
         showPagination: true,
         key: UniqueKey(),
         columns: getTableColumns(),
-        rows: (widget.viewModel.facilityList).isEmpty
+        rows: widget.viewModel.facilityList.isEmpty
             ? emptyRow()
-            : List.generate((widget.viewModel.facilityList.length), (index) {
+            : List.generate(widget.viewModel.facilityList.length, (index) {
                 return [
                   Text(
                     "${widget.viewModel.facilityList[index].rimNo}",

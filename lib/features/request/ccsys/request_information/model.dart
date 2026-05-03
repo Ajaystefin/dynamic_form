@@ -53,7 +53,7 @@ class RequestInformationViewModel extends SafeCubit<RequestInformationState> {
   PageMode pageMode = PageMode.na;
 
   void initRightsAndMode(Request request) {
-    final bool rights = (request.ccsysCanEditReadOnly ?? true);
+    final bool rights = request.ccsysCanEditReadOnly ?? true;
     pageMode =
         AuthRepository.getPageMode(RightConstants.ccsysRequestInformation);
     if (!rights) {
@@ -168,7 +168,7 @@ class RequestInformationViewModel extends SafeCubit<RequestInformationState> {
   Future<void> onSavePressed(BuildContext context) async {
     try {
       formKey.currentState?.save();
-      final Reference appType = (applicationType).firstWhere(
+      final Reference appType = applicationType.firstWhere(
         (e) => e.id == ServerConstants.ccsysAppReferenceId,
         orElse: () => Reference(
           id: ServerConstants.ccsysAppReferenceId,
@@ -289,7 +289,7 @@ class RequestInformationViewModel extends SafeCubit<RequestInformationState> {
           context: context,
           title: "requestInformation.requestInformation.confirmation".tr(),
           content: CustomSelectableText(
-            text: (isNew)
+            text: isNew
                 ? "requestInformation.requestInformation.informationMsg".tr() +
                     (appRefNo ?? "")
                 : (otherRolesCheck == true)

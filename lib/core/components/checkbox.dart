@@ -75,7 +75,7 @@ class CustomCheckbox extends StatelessWidget {
       },
       onSaved: (newValue) {
         if (newValue != null) {
-          onSaved ?? (newValue);
+          onSaved ?? newValue;
         }
       },
       builder: (state) => CustomTooltip(

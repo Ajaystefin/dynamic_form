@@ -105,7 +105,7 @@ class EditContractViewModel extends SafeCubit<EditContractState>
 
   // Model rows + controllers
   List<PpcControllers> ppcControllers = [];
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
   PageMode pageMode = PageMode.na;
   bool completionDateValidate = false;
 
@@ -413,11 +413,11 @@ class EditContractViewModel extends SafeCubit<EditContractState>
   Future<void> fetchAndSetStrategyComments({String? appRefNo}) async {
     try {
       final List<Comment> comments =
-          (await CommonRepository.instance.getStategyComment(
+          await CommonRepository.instance.getStategyComment(
         ServerConstants.commentTypeId[CommentsType.contract],
         ServerConstants.strategyCategoryContract,
         appRefNo: appRefNo,
-      ));
+      );
 
       commentItem = comments
           .where(
@@ -465,8 +465,7 @@ class EditContractViewModel extends SafeCubit<EditContractState>
         (ref?.name ?? contract?.contractCurrency ?? selectedCurrencyLabel ?? "")
             .toUpperCase();
 
-    isAedRates = code == ServerConstants.aedCurrency;
-    return isAedRates;
+    return isAedRates = code == ServerConstants.aedCurrency;
   }
 
   num exchangeRate = 0;
@@ -488,7 +487,7 @@ class EditContractViewModel extends SafeCubit<EditContractState>
 
       // Pick the correct amount based on the flag
       final double amount =
-          (double.tryParse(contract.contractAmount.toString()) ?? 0);
+          double.tryParse(contract.contractAmount.toString()) ?? 0;
 
       // Convert
       final double convertedValue = amount * exchangeRate;
@@ -1246,9 +1245,9 @@ class EditContractViewModel extends SafeCubit<EditContractState>
     // Guard: non-positive contractValue disables % calculations and capping
     // logic
     final bool hasPositiveContract =
-        ((double.tryParse(contractorValueController.text.toString()) ??
+        (double.tryParse(contractorValueController.text.toString()) ??
                 contractValue) >
-            0.0);
+            0.0;
     final double contractCap =
         hasPositiveContract ? contractValue : double.infinity;
 
@@ -1291,9 +1290,10 @@ class EditContractViewModel extends SafeCubit<EditContractState>
 
       // (4) Net PPC Value = Gross – Advance – Retention
       final double net = gross - adv - ret;
-      row.advancePaymentDeduction = adv;
-      row.retentionDeduction = ret;
-      row.netPPCValue = net;
+      row
+        ..advancePaymentDeduction = adv
+        ..retentionDeduction = ret
+        ..netPPCValue = net;
 
       // (5) Net Certified Amount + VAT = Net + VAT + Other
       final double total = net + vat + other;
@@ -1313,8 +1313,9 @@ class EditContractViewModel extends SafeCubit<EditContractState>
           ProjectContractNumericHelper.fmt4(cumulativeWorkDonePercent),
         );
       } else {
-        row.workDonePercent = 0.0;
-        row.cumulativeWorkDonePercent = 0.0;
+        row
+          ..workDonePercent = 0.0
+          ..cumulativeWorkDonePercent = 0.0;
       }
 
       // Optional: If you prefer to visibly overwrite the requested gross when
@@ -1397,9 +1398,9 @@ class EditContractViewModel extends SafeCubit<EditContractState>
     ppc = List<PPC>.from(ppc)..add(newRow);
 
     // Create fresh controllers and attach listeners
-    final newCtrls = PpcControllers.empty();
-    // (Optional) preload from model explicitly, will set all to empty strings
-    newCtrls.loadFromModel(newRow);
+    final newCtrls = PpcControllers.empty()
+      // (Optional) preload from model explicitly, will set all to empty strings
+      ..loadFromModel(newRow);
 
     final index = ppcControllers.length;
     _attachRowListeners(newCtrls, index);
@@ -1676,9 +1677,9 @@ class EditContractViewModel extends SafeCubit<EditContractState>
     }
 
     final bool hasPositiveContract =
-        ((double.tryParse(contractorValueController.text.toString()) ??
+        (double.tryParse(contractorValueController.text.toString()) ??
                 contractValue) >
-            0.0);
+            0.0;
     final double contractCap =
         hasPositiveContract ? contractValue : double.infinity;
 
@@ -1699,8 +1700,9 @@ class EditContractViewModel extends SafeCubit<EditContractState>
         : requestedGross.clamp(0.0, remainingHeadroom);
 
     final double runningCumulative = prevCum + appliedGross;
-    row.cumulativePPCValue = runningCumulative;
-    row.cumulativePpcValue = runningCumulative;
+    row
+      ..cumulativePPCValue = runningCumulative
+      ..cumulativePpcValue = runningCumulative;
 
     final double adv = row.advancePaymentDeduction ?? 0.0;
     final double ret = row.retentionDeduction ?? 0.0;
@@ -1708,29 +1710,31 @@ class EditContractViewModel extends SafeCubit<EditContractState>
     final double other = row.otherPayment ?? 0.0;
 
     final double net = appliedGross - adv - ret;
-    row.netPPCValue = net;
-    row.netPpcValue = net;
+    row
+      ..netPPCValue = net
+      ..netPpcValue = net;
 
     final double total = net + vat + other;
     row.netCertifiedAmountVat = total;
 
     if (hasPositiveContract) {
       final double workDonePercent = (appliedGross / contractValue) * 100.0;
-      row.workDonePercent =
-          double.tryParse(ProjectContractNumericHelper.fmt4(workDonePercent));
-      row.workDone = row.workDonePercent;
-
       final double cumulativeWorkDonePercent =
           (runningCumulative / contractValue) * 100.0;
-      row.cumulativeWorkDonePercent = double.tryParse(
-        ProjectContractNumericHelper.fmt4(cumulativeWorkDonePercent),
-      );
-      row.cumulativeWorkDone = row.cumulativeWorkDonePercent;
+      row
+        ..workDonePercent =
+            double.tryParse(ProjectContractNumericHelper.fmt4(workDonePercent))
+        ..workDone = row.workDonePercent
+        ..cumulativeWorkDonePercent = double.tryParse(
+          ProjectContractNumericHelper.fmt4(cumulativeWorkDonePercent),
+        )
+        ..cumulativeWorkDone = row.cumulativeWorkDonePercent;
     } else {
-      row.workDonePercent = 0.0;
-      row.cumulativeWorkDonePercent = 0.0;
-      row.workDone = 0.0;
-      row.cumulativeWorkDone = 0.0;
+      row
+        ..workDonePercent = 0.0
+        ..cumulativeWorkDonePercent = 0.0
+        ..workDone = 0.0
+        ..cumulativeWorkDone = 0.0;
     }
 
     emitPpcSoft();

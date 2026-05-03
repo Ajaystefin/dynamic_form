@@ -181,24 +181,24 @@ class FacilityLimitsTable extends StatelessWidget {
   }
 
   List<List<Widget>> _rows(BuildContext context, RimGroup? group, int? rimNo) {
-    final List<List<Widget>> rows = <List<Widget>>[];
-
-    rows.add([
-      const SizedBox.shrink(),
-      const FilterTableWidget(),
-      const FilterTableWidget(),
-      const SizedBox.shrink(),
-      const FilterTableWidget(),
-      const SizedBox.shrink(),
-      const SizedBox.shrink(),
-      const SizedBox.shrink(),
-      const SizedBox.shrink(),
-      const SizedBox.shrink(),
-      const SizedBox.shrink(),
-      const SizedBox.shrink(),
-      const SizedBox.shrink(),
-      const SizedBox.shrink(),
-    ]);
+    final List<List<Widget>> rows = <List<Widget>>[
+      [
+        const SizedBox.shrink(),
+        const FilterTableWidget(),
+        const FilterTableWidget(),
+        const SizedBox.shrink(),
+        const FilterTableWidget(),
+        const SizedBox.shrink(),
+        const SizedBox.shrink(),
+        const SizedBox.shrink(),
+        const SizedBox.shrink(),
+        const SizedBox.shrink(),
+        const SizedBox.shrink(),
+        const SizedBox.shrink(),
+        const SizedBox.shrink(),
+        const SizedBox.shrink(),
+      ],
+    ];
 
     final List<FacilityDis> apiDisList = viewModel.filteredSortedDisList(group);
     final GroupAmounts totals = viewModel.computeGroupTotals(apiDisList);
@@ -334,8 +334,9 @@ class FacilityLimitsTable extends StatelessWidget {
               onSelected: (selectedValue) {
                 if (selectedValue.isNotEmpty) {
                   final Reference sel = selectedValue.first;
-                  facilitySummary.currency = sel.name;
-                  facilitySummary.isEdited = true;
+                  facilitySummary
+                    ..currency = sel.name
+                    ..isEdited = true;
                   viewModel.facility.proposedLimitValue = sel;
                   viewModel.updateConvertedTooltipFor(
                     facilitySummary,
@@ -359,11 +360,11 @@ class FacilityLimitsTable extends StatelessWidget {
               ThousandsSeparatorFormatter(),
             ],
             onChanged: (value) {
-              final String raw = (value).replaceAll(RegExp("[^0-9]"), "");
-              facilitySummary.proposedLimit = raw.isEmpty ? 0 : int.parse(raw);
-              facilitySummary.proposedLimitAED =
-                  raw.isEmpty ? 0 : int.tryParse(raw);
-              facilitySummary.isEdited = true;
+              final String raw = value.replaceAll(RegExp("[^0-9]"), "");
+              facilitySummary
+                ..proposedLimit = raw.isEmpty ? 0 : int.parse(raw)
+                ..proposedLimitAED = raw.isEmpty ? 0 : int.tryParse(raw)
+                ..isEdited = true;
               viewModel.updateConvertedTooltipFor(facilitySummary);
             },
           ),
@@ -406,8 +407,9 @@ class FacilityLimitsTable extends StatelessWidget {
                 .where((id) => id != null && id.isNotEmpty)
                 .cast<String>()
                 .toList();
-            facilitySummary.sustainabilityClassification = ids.join(", ");
-            facilitySummary.isEdited = true;
+            facilitySummary
+              ..sustainabilityClassification = ids.join(", ")
+              ..isEdited = true;
           },
         ),
 
@@ -427,8 +429,8 @@ class FacilityLimitsTable extends StatelessWidget {
                     ServerConstants.newProductCode
                 ? null
                 : (_) {
-                    final bool noUnit = (facilitySummary.tenorUnit == null ||
-                        facilitySummary.tenorUnit!.trim().isEmpty);
+                    final bool noUnit = facilitySummary.tenorUnit == null ||
+                        facilitySummary.tenorUnit!.trim().isEmpty;
                     final bool noValue = (facilitySummary.tenorValue == null);
                     return (noUnit || noValue)
                         ? "Tenor (unit & value) is required"
@@ -448,8 +450,9 @@ class FacilityLimitsTable extends StatelessWidget {
               onSelected: (selectedValue) {
                 if (selectedValue.isNotEmpty) {
                   final Reference sel = selectedValue.first;
-                  facilitySummary.tenorUnit = sel.name;
-                  facilitySummary.isEdited = true;
+                  facilitySummary
+                    ..tenorUnit = sel.name
+                    ..isEdited = true;
                 }
               },
               itemBuilder: (context, item, isDisabled, isSelected) =>
@@ -466,9 +469,10 @@ class FacilityLimitsTable extends StatelessWidget {
             keyboardType: TextInputType.number,
             onChanged: (value) {
               final RegExpMatch? match = RegExp(r"\d+").firstMatch(value);
-              facilitySummary.tenorValue =
-                  match != null ? int.tryParse(match.group(0)!) : null;
-              facilitySummary.isEdited = true;
+              facilitySummary
+                ..tenorValue =
+                    match != null ? int.tryParse(match.group(0)!) : null
+                ..isEdited = true;
             },
           ),
         ),
@@ -490,8 +494,9 @@ class FacilityLimitsTable extends StatelessWidget {
             onSelected: (selectedValue) {
               if (selectedValue.isNotEmpty) {
                 final Reference sel = selectedValue.first;
-                facilitySummary.index = sel.id?.toString() ?? sel.name ?? "";
-                facilitySummary.isEdited = true;
+                facilitySummary
+                  ..index = sel.id?.toString() ?? sel.name ?? ""
+                  ..isEdited = true;
               }
             },
             itemBuilder: (context, item, isDisabled, isSelected) =>
@@ -540,8 +545,9 @@ class FacilityLimitsTable extends StatelessWidget {
                     onSelected: (selectedValue) {
                       if (selectedValue.isNotEmpty) {
                         final Reference sel = selectedValue.first;
-                        facilitySummary.marginSign = sel.reference1;
-                        facilitySummary.isEdited = true;
+                        facilitySummary
+                          ..marginSign = sel.reference1
+                          ..isEdited = true;
                       }
                     },
                     itemBuilder: (context, item, isDisabled, isSelected) =>
@@ -562,9 +568,10 @@ class FacilityLimitsTable extends StatelessWidget {
             onChanged: (value) {
               final RegExpMatch? match =
                   RegExp(r"[-+]?\d*\.?\d+").firstMatch(value);
-              facilitySummary.marginValue =
-                  match != null ? num.tryParse(match.group(0)!) : null;
-              facilitySummary.isEdited = true;
+              facilitySummary
+                ..marginValue =
+                    match != null ? num.tryParse(match.group(0)!) : null
+                ..isEdited = true;
             },
           ),
         ),

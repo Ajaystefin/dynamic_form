@@ -88,9 +88,7 @@ class GroupInformationRepository {
     final AppResponse response =
         await _apiManager.post(APIEndpoints.saveCBRBData, data);
     if (response.status == ResponseStatus.success) {
-      response.message =
-          response.body["baseResponse"]["status"]["statusDescription"];
-      return response.message;
+      return response.body["baseResponse"]["status"]["statusDescription"];
     } else {
       throw response.message;
     }
@@ -105,9 +103,7 @@ class GroupInformationRepository {
     final AppResponse response =
         await _apiManager.post(APIEndpoints.saveFacilityWithOtherBank, data);
     if (response.status == ResponseStatus.success) {
-      response.message =
-          response.body["baseResponse"]["status"]["statusDescription"];
-      return response.message;
+      return response.body["baseResponse"]["status"]["statusDescription"];
     } else {
       throw response.message;
     }
@@ -122,9 +118,7 @@ class GroupInformationRepository {
     final AppResponse response =
         await _apiManager.post(APIEndpoints.deleteWithOtherBank, data);
     if (response.status == ResponseStatus.success) {
-      response.message =
-          response.body["baseResponse"]["status"]["statusDescription"];
-      return response.message;
+      return response.body["baseResponse"]["status"]["statusDescription"];
     } else {
       throw response.message;
     }
@@ -139,9 +133,7 @@ class GroupInformationRepository {
     final AppResponse response =
         await _apiManager.post(APIEndpoints.deletCBRBInformation, data);
     if (response.status == ResponseStatus.success) {
-      response.message =
-          response.body["baseResponse"]["status"]["statusDescription"];
-      return response.message;
+      return response.body["baseResponse"]["status"]["statusDescription"];
     } else {
       throw response.message;
     }

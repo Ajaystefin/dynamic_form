@@ -348,9 +348,8 @@ class FacilitySecurityRepository {
       for (int rowIndex = 0; rowIndex < profitGrid.length; rowIndex++) {
         final dynamic row = profitGrid[rowIndex];
         if (row is Map) {
-          final Map<String, dynamic> rowMap = Map<String, dynamic>.from(row);
-          rowMap.remove("index");
-          profitGrid[rowIndex] = rowMap;
+          profitGrid[rowIndex] = Map<String, dynamic>.from(row)
+            ..remove("index");
         }
       }
       cleaned["profitGrid"] = profitGrid;
@@ -498,27 +497,30 @@ class FacilitySecurityRepository {
           for (final DynamicField field in row.fields ?? []) {
             if (field.key == "creditInsuranceCompanyName") {
               // Use * (not +) so users can clear the field while typing
-              field.inputFormatterPattern = r"^[A-Za-z0-9 ]*$";
-              field.defaultValue = "NA";
+              field
+                ..inputFormatterPattern = r"^[A-Za-z0-9 ]*$"
+                ..defaultValue = "NA";
             }
 
             // facility_security_repository.dart → inside the sections/rows/fields loop
             if (field.controlType == FieldType.table &&
                 field.key == "preferentialExchangeRate") {
               // Table-level
-              field.isMandatory = false; // force optional at runtime
-              field.required =
-                  false; // defensive: some code paths read 'required'
-              field.message = null; // avoid “mandatory” text from JSON
+              field
+                ..isMandatory = false // force optional at runtime
+                ..required =
+                    false // defensive: some code paths read 'required'
+                ..message = null; // avoid “mandatory” text from JSON
 
               // Column-level
               for (final col in field.columnInfoList ?? []) {
                 final df = col.dynamicField;
                 if (df.key == "exchangeRateCurrency" ||
                     df.key == "percentage") {
-                  df.isMandatory = false;
-                  df.required = false;
-                  df.message = null; // no column-level mandatory message
+                  df
+                    ..isMandatory = false
+                    ..required = false
+                    ..message = null; // no column-level mandatory message
                 }
               }
             }
@@ -539,15 +541,13 @@ class FacilitySecurityRepository {
               //         ))
               //     .toList();
               final List<Option> currencyOptions =
-                  Globals.dynamicFormCurrencyCodes ?? [];
-
-              // Add "Other" option at the end
-              currencyOptions.add(
-                Option(
-                  key: "Other",
-                  pairValue: "Other",
-                ),
-              );
+                  (Globals.dynamicFormCurrencyCodes ?? [])
+                    ..add(
+                      Option(
+                        key: "Other",
+                        pairValue: "Other",
+                      ),
+                    );
 
               field.optionList = currencyOptions;
               logger.i(
@@ -585,7 +585,7 @@ class FacilitySecurityRepository {
                   )
                   .toList();
               field.optionList = List.generate(
-                (filtered).length,
+                filtered.length,
                 (index) => Option(
                   key: filtered[index],
                   pairValue: filtered[index],
@@ -1085,7 +1085,7 @@ class FacilitySecurityRepository {
       // 1) facilityDetails may be null or empty
       final dynamic mainFacilityDyn = responseData["facilityDetails"];
       final bool hasMainFacility =
-          (mainFacilityDyn is Map && mainFacilityDyn.isNotEmpty);
+          mainFacilityDyn is Map && mainFacilityDyn.isNotEmpty;
 
       final List<FacilityDetail> facilityDetails = <FacilityDetail>[];
       if (hasMainFacility) {

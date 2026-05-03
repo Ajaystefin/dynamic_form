@@ -47,9 +47,10 @@ class OwnershipDetailsTable extends StatelessWidget {
 
           /// One-time Phoenix → UI init
           if (!owner.hasRimInitialized) {
-            owner.hasRim =
-                owner.custOwnershipRim != null && owner.custOwnershipRim! > 0;
-            owner.hasRimInitialized = true;
+            owner
+              ..hasRim =
+                  owner.custOwnershipRim != null && owner.custOwnershipRim! > 0
+              ..hasRimInitialized = true;
           }
 
           final bool hasRimChecked = owner.hasRim;
@@ -57,14 +58,13 @@ class OwnershipDetailsTable extends StatelessWidget {
           final bool enableRimField = hasRimChecked;
           final bool enableOwnerNameField = !hasRimChecked;
 
-          viewModel.ensureRimController(
-            index,
-            owner.custOwnershipRim,
-            isNew: owner.isNewlyAdded == true,
-          );
-
-          /// Nationality pre‑selection
-          viewModel.residentCountryCode = owner.nationality?.trim();
+          viewModel
+            ..ensureRimController(
+              index,
+              owner.custOwnershipRim,
+              isNew: owner.isNewlyAdded == true,
+            )
+            ..residentCountryCode = owner.nationality?.trim();
 
           Country? selectedCountry;
           final matches = viewModel.countries?.where(

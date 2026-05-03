@@ -23,13 +23,17 @@ import "package:wcas_frontend/models/home/home.dart";
 import "package:wcas_frontend/models/login/user.dart";
 import "package:wcas_frontend/models/request/application_details.dart";
 import "package:wcas_frontend/models/request/request.dart";
+import "package:wcas_frontend/repositories/admin_repository.dart";
 import "package:wcas_frontend/repositories/approval_repository.dart";
+import "package:wcas_frontend/repositories/auth_repository.dart";
 import "package:wcas_frontend/repositories/dashboard_repository.dart";
 
 class HomeViewModel extends SafeCubit<HomeState> {
   HomeViewModel() : super(HomeState(loaderStatus: LoadingStatus.loading));
   late DashboardRepository repository;
   late ApprovalRepository approvalRepository;
+  late AdminRepository adminRepository;
+  late AuthRepository authRepository;
 
   // bool get canEdit => (pageMode == PageMode.edit);
   bool isQuickLinkClicked = false;
@@ -119,6 +123,8 @@ class HomeViewModel extends SafeCubit<HomeState> {
   Future<void> init(BuildContext context) async {
     repository = DashboardRepository.instance;
     approvalRepository = ApprovalRepository.instance;
+    adminRepository = AdminRepository.instance;
+    authRepository = AuthRepository.instance;
     await approvalRepository.fetchReference(); // set global values
     await _loadCustomApplicationTypes();
     showCreateReq();
@@ -132,6 +138,9 @@ class HomeViewModel extends SafeCubit<HomeState> {
     await getSummary();
     await getAgeingSummary(selectedSummary ?? SummaryType.na);
     Globals.applicationDetails = ApplicationDetails(); // reset historical data
+    final Map<String, dynamic> updatedResult =
+        await adminRepository.getUpdatedUserData();
+    await authRepository.updateLoggedinUserData(updatedResult);
   }
 
   void showCreateReq() {
@@ -272,7 +281,7 @@ class HomeViewModel extends SafeCubit<HomeState> {
             summaryType: selectedSummary!,
             stage: barGraphStage,
             crApprovalType: barGraphCrApprovalType,
-            isBarGraph: (visibleGraphType == VisibleGraphType.bar),
+            isBarGraph: visibleGraphType == VisibleGraphType.bar,
           )) ??
           [];
       filteredRequests = worklistData;
@@ -737,7 +746,7 @@ class HomeViewModel extends SafeCubit<HomeState> {
     final List<String> convertedresData = bpmRoleStr.split(",");
 
     final List<int?> roleIds = convertedresData.map(int.parse).toList();
-    final Set<int?> wanted = (roleIds).toSet();
+    final Set<int?> wanted = roleIds.toSet();
     final List<Map<String, int>> bpmRolesMap = Globals.superBpmRolesId;
 
     final List<String> roles = bpmRolesMap

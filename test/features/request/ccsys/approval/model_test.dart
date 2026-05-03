@@ -376,8 +376,8 @@ void main() {
 
   group("getUserRole", () {
     test("sets roleCode for relationshipOfficer", () {
-      final vm = CcsysApprovalViewModel();
-      vm.getUserRole(UserRole.relationshipOfficer);
+      final vm = CcsysApprovalViewModel()
+        ..getUserRole(UserRole.relationshipOfficer);
       expect(
         vm.roleCode,
         ServerConstants.userRoleCode[UserRole.relationshipOfficer],
@@ -385,8 +385,8 @@ void main() {
     });
 
     test("sets roleCode for relationshipManagerBussiness", () {
-      final vm = CcsysApprovalViewModel();
-      vm.getUserRole(UserRole.relationshipManagerBussiness);
+      final vm = CcsysApprovalViewModel()
+        ..getUserRole(UserRole.relationshipManagerBussiness);
       expect(
         vm.roleCode,
         ServerConstants.userRoleCode[UserRole.relationshipManagerBussiness],
@@ -394,8 +394,8 @@ void main() {
     });
 
     test("sets roleCode for businessUnitHead", () {
-      final vm = CcsysApprovalViewModel();
-      vm.getUserRole(UserRole.businessUnitHead);
+      final vm = CcsysApprovalViewModel()
+        ..getUserRole(UserRole.businessUnitHead);
       expect(
         vm.roleCode,
         ServerConstants.userRoleCode[UserRole.businessUnitHead],
@@ -403,8 +403,8 @@ void main() {
     });
 
     test("sets roleCode for creditCordinator", () {
-      final vm = CcsysApprovalViewModel();
-      vm.getUserRole(UserRole.creditCordinator);
+      final vm = CcsysApprovalViewModel()
+        ..getUserRole(UserRole.creditCordinator);
       expect(
         vm.roleCode,
         ServerConstants.userRoleCode[UserRole.creditCordinator],
@@ -412,8 +412,8 @@ void main() {
     });
 
     test("default branch sets empty string", () {
-      final vm = CcsysApprovalViewModel();
-      vm.getUserRole(UserRole.admin);
+      final vm = CcsysApprovalViewModel()
+        ..getUserRole(UserRole.admin);
       expect(vm.roleCode, "");
     });
   });
@@ -634,9 +634,9 @@ void main() {
 
     Future<String> csv0(UserRole role) async {
       _setUserRole(role);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = roleTypes();
-      vm.ccsysRecommendenRolesList = recommendRows();
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = roleTypes()
+        ..ccsysRecommendenRolesList = recommendRows();
       return vm.buildRecommendWcasRolesForCurrentUser();
     }
 
@@ -671,9 +671,9 @@ void main() {
 
     test("returns empty when no recommend row matches", () async {
       _setUserRole(UserRole.ccuMaker);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = roleTypes();
-      vm.ccsysRecommendenRolesList = [];
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = roleTypes()
+        ..ccsysRecommendenRolesList = [];
       expect(await vm.buildRecommendWcasRolesForCurrentUser(), "");
     });
 
@@ -696,22 +696,22 @@ void main() {
           Role(bpmRole: "UserRole.relationshipManagerBussiness"),
         ],
       );
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")];
-      vm.ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")];
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")]
+        ..ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")];
       expect(await vm.buildRecommendWcasRolesForCurrentUser(), "Officer");
     });
 
     test("deduplicates repeated wcas role labels", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [
-        Reference(reference1: "RO", reference3: "Officer"),
-        Reference(reference1: "RO2", reference3: "Officer"),
-      ];
-      vm.ccsysRecommendenRolesList = [
-        Reference(name: "RM", reference1: "RO,RO2"),
-      ];
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [
+          Reference(reference1: "RO", reference3: "Officer"),
+          Reference(reference1: "RO2", reference3: "Officer"),
+        ]
+        ..ccsysRecommendenRolesList = [
+          Reference(name: "RM", reference1: "RO,RO2"),
+        ];
       final csv = await vm.buildRecommendWcasRolesForCurrentUser();
       expect(csv.split(",").where((s) => s == "Officer").length, 1);
     });
@@ -724,26 +724,26 @@ void main() {
   group("buildReturnWcasRolesForCurrentUser", () {
     test("returns CSV for RM in returned list", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")];
-      vm.ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RO")];
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")]
+        ..ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RO")];
       expect(await vm.buildReturnWcasRolesForCurrentUser(), "Officer");
     });
 
     test("returns empty when no match in returned list", () async {
       _setUserRole(UserRole.ccuMaker);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [];
-      vm.ccsysReturnedRolesList = [];
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = []
+        ..ccsysReturnedRolesList = [];
       expect(await vm.buildReturnWcasRolesForCurrentUser(), "");
     });
 
     test("hasExactRoleTokenMatch branch appends selectedName", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [Reference(reference1: "RM", reference3: "Manager")];
-      // name == 'RM', reference1 contains token 'RM' → exact match fires
-      vm.ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RM")];
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [Reference(reference1: "RM", reference3: "Manager")]
+        // name == 'RM', reference1 contains token 'RM' → exact match fires
+        ..ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RM")];
       expect(
         (await vm.buildReturnWcasRolesForCurrentUser()).isNotEmpty,
         isTrue,
@@ -758,18 +758,18 @@ void main() {
   group("loadRecommendUsers", () {
     test("skips when showRecommendButton is false", () async {
       _setUserRole(UserRole.ccuMaker);
-      final vm = CcsysApprovalViewModel();
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..repositoryCcsys = ccsysRepo;
       await vm.loadRecommendUsers();
       verifyNever(() => ccsysRepo.getUsersByRoles(any()));
     });
 
     test("shows failure toast when wcasRoles is empty", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [];
-      vm.ccsysRecommendenRolesList = [];
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = []
+        ..ccsysRecommendenRolesList = []
+        ..repositoryCcsys = ccsysRepo;
       when(() => alert.showFailureToast(any())).thenAnswer((_) {});
 
       await vm.loadRecommendUsers();
@@ -779,10 +779,10 @@ void main() {
 
     test("builds header + user items on success", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")];
-      vm.ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")];
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")]
+        ..ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")]
+        ..repositoryCcsys = ccsysRepo;
 
       when(() => ccsysRepo.getUsersByRoles(any())).thenAnswer(
         (_) async => [
@@ -803,10 +803,10 @@ void main() {
 
     test("handles API exception gracefully", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")];
-      vm.ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")];
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")]
+        ..ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")]
+        ..repositoryCcsys = ccsysRepo;
       when(() => ccsysRepo.getUsersByRoles(any())).thenThrow(Exception("net"));
 
       await expectLater(vm.loadRecommendUsers(), completes);
@@ -820,8 +820,8 @@ void main() {
   group("loadReturnUsers", () {
     test("skips when showReturnButton is false", () async {
       _setUserRole(UserRole.ccuMaker);
-      final vm = CcsysApprovalViewModel();
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..repositoryCcsys = ccsysRepo;
       await vm.loadReturnUsers();
       verifyNever(() => ccsysRepo.getUsersByRoles(any()));
     });
@@ -829,11 +829,11 @@ void main() {
     test("failure toast when rolesReturn empty and lastAssignedRole null",
         () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [];
-      vm.ccsysReturnedRolesList = [];
-      vm.lastAssignedRole = null;
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = []
+        ..ccsysReturnedRolesList = []
+        ..lastAssignedRole = null
+        ..repositoryCcsys = ccsysRepo;
       when(() => ccsysRepo.getUsersByRoles(any())).thenAnswer((_) async => []);
       when(() => alert.showFailureToast(any())).thenAnswer((_) {});
 
@@ -848,11 +848,11 @@ void main() {
         "adds App Initiator block (2 items) when"
         " rolesReturn empty and lastAssignedRole set", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [];
-      vm.ccsysReturnedRolesList = [];
-      vm.lastAssignedRole = Role(bpmRole: "RM", createdRM: "user123");
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = []
+        ..ccsysReturnedRolesList = []
+        ..lastAssignedRole = Role(bpmRole: "RM", createdRM: "user123")
+        ..repositoryCcsys = ccsysRepo;
       when(() => ccsysRepo.getUsersByRoles(any())).thenAnswer((_) async => []);
       when(() => alert.showFailureToast(any())).thenAnswer((_) {});
 
@@ -865,10 +865,10 @@ void main() {
 
     test("builds header + users from groupsReturn", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")];
-      vm.ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RO")];
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")]
+        ..ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RO")]
+        ..repositoryCcsys = ccsysRepo;
 
       when(() => ccsysRepo.getUsersByRoles(any())).thenAnswer(
         (_) async => [
@@ -889,11 +889,11 @@ void main() {
     test("adds App Initiator block AND role group when both exist (4 items)",
         () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")];
-      vm.ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RO")];
-      vm.lastAssignedRole = Role(bpmRole: "RM", createdRM: "createdUser");
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")]
+        ..ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RO")]
+        ..lastAssignedRole = Role(bpmRole: "RM", createdRM: "createdUser")
+        ..repositoryCcsys = ccsysRepo;
 
       when(() => ccsysRepo.getUsersByRoles(any())).thenAnswer(
         (_) async => [
@@ -913,10 +913,10 @@ void main() {
 
     test("handles API exception gracefully", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")];
-      vm.ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RO")];
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")]
+        ..ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RO")]
+        ..repositoryCcsys = ccsysRepo;
       when(() => ccsysRepo.getUsersByRoles(any())).thenThrow(Exception("err"));
 
       await expectLater(vm.loadReturnUsers(), completes);
@@ -932,8 +932,8 @@ void main() {
 
   group("commentsInitialValue", () {
     test("returns empty string when comments list is empty", () {
-      final vm = CcsysApprovalViewModel();
-      vm.comments = [];
+      final vm = CcsysApprovalViewModel()
+        ..comments = [];
       expect(vm.commentsInitialValue(), "");
     });
 
@@ -949,9 +949,9 @@ void main() {
         availableRoles: [],
       );
 
-      final vm = CcsysApprovalViewModel();
-      // Build Comments via fromJson so userRoleCode/userId fields are set.
-      vm.comments = [
+      final vm = CcsysApprovalViewModel()
+        // Build Comments via fromJson so userRoleCode/userId fields are set.
+        ..comments = [
         Comment.fromJson({
           "comment": "Matching comment",
           "userRoleCode": "ROLE1",
@@ -983,8 +983,8 @@ void main() {
         availableRoles: [],
       );
 
-      final vm = CcsysApprovalViewModel();
-      vm.comments = [
+      final vm = CcsysApprovalViewModel()
+        ..comments = [
         Comment.fromJson(
           {"comment": "First", "userRoleCode": "R1", "userId": "2"},
         ),
@@ -1027,20 +1027,20 @@ void main() {
 
   group("initRightsAndMode", () {
     test("canEdit true when ccsysCanEditReadOnly is true", () {
-      final vm = CcsysApprovalViewModel();
-      vm.initRightsAndMode(Request(ccsysCanEditReadOnly: true));
+      final vm = CcsysApprovalViewModel()
+        ..initRightsAndMode(Request(ccsysCanEditReadOnly: true));
       expect(vm.canEdit, isFalse);
     });
 
     test("canEdit true when ccsysCanEditReadOnly is null (defaults true)", () {
-      final vm = CcsysApprovalViewModel();
-      vm.initRightsAndMode(Request(ccsysCanEditReadOnly: null));
+      final vm = CcsysApprovalViewModel()
+        ..initRightsAndMode(Request(ccsysCanEditReadOnly: null));
       expect(vm.canEdit, isFalse);
     });
 
     test("canEdit is a bool when ccsysCanEditReadOnly is false", () {
-      final vm = CcsysApprovalViewModel();
-      vm.initRightsAndMode(Request(ccsysCanEditReadOnly: false));
+      final vm = CcsysApprovalViewModel()
+        ..initRightsAndMode(Request(ccsysCanEditReadOnly: false));
       expect(vm.canEdit, isA<bool>());
     });
   });
@@ -1055,9 +1055,9 @@ void main() {
     testWidgets("shows failure toast when selectedUserId is empty",
         (tester) async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = _TestableViewModel();
-      vm.repositoryCcsys = ccsysRepo;
-      vm.selectedUserId = "";
+      final vm = _TestableViewModel()
+        ..repositoryCcsys = ccsysRepo
+        ..selectedUserId = "";
       when(() => alert.showFailureToast(any())).thenAnswer((_) {});
 
       await tester.pumpWidget(
@@ -1077,9 +1077,9 @@ void main() {
     testWidgets("shows failure toast when selectedReturnUserId is empty",
         (tester) async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = _TestableViewModel();
-      vm.repositoryCcsys = ccsysRepo;
-      vm.selectedReturnUserId = "";
+      final vm = _TestableViewModel()
+        ..repositoryCcsys = ccsysRepo
+        ..selectedReturnUserId = "";
       when(() => alert.showFailureToast(any())).thenAnswer((_) {});
 
       await tester.pumpWidget(
@@ -1100,10 +1100,10 @@ void main() {
         (tester) async {
       _setUserRole(UserRole.ccuMaker);
 
-      final vm = _TestableViewModel();
-      vm.repositoryCcsys = ccsysRepo;
-      vm.isRSAEnabled = false;
-      vm.comments = [];
+      final vm = _TestableViewModel()
+        ..repositoryCcsys = ccsysRepo
+        ..isRSAEnabled = false
+        ..comments = [];
 
       when(() => ccsysRepo.submitApplication(any())).thenAnswer((_) async {});
 
@@ -1131,10 +1131,10 @@ void main() {
     testWidgets("submits application", (tester) async {
       _setUserRole(UserRole.ccuChecker);
 
-      final vm = _TestableViewModel();
-      vm.repositoryCcsys = ccsysRepo;
-      vm.isRSAEnabled = false;
-      vm.comments = [];
+      final vm = _TestableViewModel()
+        ..repositoryCcsys = ccsysRepo
+        ..isRSAEnabled = false
+        ..comments = [];
 
       when(() => ccsysRepo.submitApplication(any())).thenAnswer((_) async {});
 
@@ -1161,8 +1161,8 @@ void main() {
   group("onSavePress – saveAndContinue", () {
     testWidgets("calls submitComments when text is non-empty", (tester) async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = _TestableViewModel();
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = _TestableViewModel()
+        ..repositoryCcsys = ccsysRepo;
       await vm.setEditorText("<p>some text</p>");
 
       when(() => commonRepo.saveComment(any())).thenAnswer((_) async => "OK");
@@ -1186,10 +1186,10 @@ void main() {
   group("onSavePress – exception handling", () {
     testWidgets("shows failure toast on ccsysRepo exception", (tester) async {
       _setUserRole(UserRole.ccuMaker);
-      final vm = _TestableViewModel();
-      vm.repositoryCcsys = ccsysRepo;
-      vm.isRSAEnabled = false;
-      vm.comments = [];
+      final vm = _TestableViewModel()
+        ..repositoryCcsys = ccsysRepo
+        ..isRSAEnabled = false
+        ..comments = [];
 
       when(() => ccsysRepo.submitApplication(any()))
           .thenThrow(Exception("boom"));
@@ -1215,24 +1215,23 @@ void main() {
     // validateRsaToken returns false immediately when rsaDigit.length != 10,
     // so approvalRepository is never called – no mock needed.
     test("returns false when rsaDigit length < 10", () async {
-      final vm = CcsysApprovalViewModel();
-      vm.rsaDigit = "12345";
+      final vm = CcsysApprovalViewModel()
+        ..rsaDigit = "12345";
       expect(await vm.validateRsaToken(), isFalse);
     });
 
     test("returns false when rsaDigit is empty", () async {
-      final vm = CcsysApprovalViewModel();
-      vm.rsaDigit = "";
+      final vm = CcsysApprovalViewModel()
+        ..rsaDigit = "";
       expect(await vm.validateRsaToken(), isFalse);
     });
 
     test("returns true when rsaDigit length is 10 and validation succeeds",
         () async {
-      final vm = CcsysApprovalViewModel();
       final approvalRepo = MockApprovalRepository();
-
-      vm.approvalRepository = approvalRepo;
-      vm.rsaDigit = "1234567890";
+      final vm = CcsysApprovalViewModel()
+        ..approvalRepository = approvalRepo
+        ..rsaDigit = "1234567890";
 
       when(() => approvalRepo.validateRSAToken(any()))
           .thenAnswer((_) async => true);
@@ -1288,23 +1287,23 @@ void main() {
         currentRole: null,
         availableRoles: [Role(bpmRole: bpmRole)],
       );
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [
-        Reference(reference1: "RM", reference3: "Manager"),
-        Reference(reference1: "RO", reference3: "Officer"),
-        Reference(reference1: "TLB", reference3: "TeamLeader"),
-        Reference(reference1: "CAM", reference3: "AreaManager"),
-        Reference(reference1: "SHB", reference3: "SegmentHead"),
-        Reference(reference1: "RMB", reference3: "RegionalManager"),
-      ];
-      vm.ccsysRecommendenRolesList = [
-        Reference(name: "RM", reference1: "RO"),
-        Reference(name: "RO", reference1: "RM"),
-        Reference(name: "TLB", reference1: "CAM"),
-        Reference(name: "CAM", reference1: "SHB"),
-        Reference(name: "SHB", reference1: "RMB"),
-        Reference(name: "RMB", reference1: "TLB"),
-      ];
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [
+          Reference(reference1: "RM", reference3: "Manager"),
+          Reference(reference1: "RO", reference3: "Officer"),
+          Reference(reference1: "TLB", reference3: "TeamLeader"),
+          Reference(reference1: "CAM", reference3: "AreaManager"),
+          Reference(reference1: "SHB", reference3: "SegmentHead"),
+          Reference(reference1: "RMB", reference3: "RegionalManager"),
+        ]
+        ..ccsysRecommendenRolesList = [
+          Reference(name: "RM", reference1: "RO"),
+          Reference(name: "RO", reference1: "RM"),
+          Reference(name: "TLB", reference1: "CAM"),
+          Reference(name: "CAM", reference1: "SHB"),
+          Reference(name: "SHB", reference1: "RMB"),
+          Reference(name: "RMB", reference1: "TLB"),
+        ];
       return vm.buildRecommendWcasRolesForCurrentUser();
     }
 
@@ -1341,9 +1340,9 @@ void main() {
     // UserRole.relationshipManager also maps to 'RM'
     test("UserRole.relationshipManager enum string → RM → Officer", () async {
       _setUserRole(UserRole.relationshipManager);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")];
-      vm.ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")];
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")]
+        ..ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")];
       expect(await vm.buildRecommendWcasRolesForCurrentUser(), "Officer");
     });
 
@@ -1355,13 +1354,13 @@ void main() {
         currentRole: null,
         availableRoles: [Role(bpmRole: "SomePrefix.MYCODE")],
       );
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [
-        Reference(reference1: "MYCODE", reference3: "MyLabel"),
-      ];
-      vm.ccsysRecommendenRolesList = [
-        Reference(name: "MYCODE", reference1: "MYCODE"),
-      ];
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [
+          Reference(reference1: "MYCODE", reference3: "MyLabel"),
+        ]
+        ..ccsysRecommendenRolesList = [
+          Reference(name: "MYCODE", reference1: "MYCODE"),
+        ];
       // Just must not throw – the code resolves to 'MYCODE'
       final csv = await vm.buildRecommendWcasRolesForCurrentUser();
       expect(csv, isA<String>());
@@ -1377,12 +1376,16 @@ void main() {
   group("_buildWcasRolesFor labelFromRoleType fallbacks", () {
     test("falls back to reference2 when reference3 is empty", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      // reference3 is null/empty → should fall back to reference2
-      vm.ccsysRoleType = [
-        Reference(reference1: "RO", reference2: "FallbackRef2", reference3: ""),
-      ];
-      vm.ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")];
+      final vm = CcsysApprovalViewModel()
+        // reference3 is null/empty → should fall back to reference2
+        ..ccsysRoleType = [
+          Reference(
+            reference1: "RO",
+            reference2: "FallbackRef2",
+            reference3: "",
+          ),
+        ]
+        ..ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")];
       final csv = await vm.buildRecommendWcasRolesForCurrentUser();
       expect(csv, "FallbackRef2");
     });
@@ -1390,33 +1393,33 @@ void main() {
     test("falls back to name when reference3 and reference2 are both empty",
         () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      // reference3 null, reference2 null → should fall back to name
-      vm.ccsysRoleType = [
-        Reference(
-          reference1: "RO",
-          reference2: null,
-          reference3: null,
-          name: "NameFallback",
-        ),
-      ];
-      vm.ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")];
+      final vm = CcsysApprovalViewModel()
+        // reference3 null, reference2 null → should fall back to name
+        ..ccsysRoleType = [
+          Reference(
+            reference1: "RO",
+            reference2: null,
+            reference3: null,
+            name: "NameFallback",
+          ),
+        ]
+        ..ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")];
       final csv = await vm.buildRecommendWcasRolesForCurrentUser();
       expect(csv, "NameFallback");
     });
 
     test("skips entry when all label fields are empty", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [
-        Reference(
-          reference1: "RO",
-          reference2: null,
-          reference3: null,
-          name: null,
-        ),
-      ];
-      vm.ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")];
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [
+          Reference(
+            reference1: "RO",
+            reference2: null,
+            reference3: null,
+            name: null,
+          ),
+        ]
+        ..ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")];
       final csv = await vm.buildRecommendWcasRolesForCurrentUser();
       // wcasRole is '' → skipped → result is empty
       expect(csv, "");
@@ -1439,14 +1442,14 @@ void main() {
         ),
         availableRoles: [],
       );
-      final vm = CcsysApprovalViewModel();
-      vm.comments = [
-        Comment.fromJson({
-          "comment": "Only other user",
-          "userRoleCode": "RC1",
-          "userId": "DIFFERENT_USER",
-        }),
-      ];
+      final vm = CcsysApprovalViewModel()
+        ..comments = [
+          Comment.fromJson({
+            "comment": "Only other user",
+            "userRoleCode": "RC1",
+            "userId": "DIFFERENT_USER",
+          }),
+        ];
       expect(vm.commentsInitialValue(), "");
     });
 
@@ -1461,14 +1464,14 @@ void main() {
         ),
         availableRoles: [],
       );
-      final vm = CcsysApprovalViewModel();
-      vm.comments = [
-        Comment.fromJson({
-          "comment": "Different role",
-          "userRoleCode": "DIFFERENT_ROLE",
-          "userId": "USER_B",
-        }),
-      ];
+      final vm = CcsysApprovalViewModel()
+        ..comments = [
+          Comment.fromJson({
+            "comment": "Different role",
+            "userRoleCode": "DIFFERENT_ROLE",
+            "userId": "USER_B",
+          }),
+        ];
       expect(vm.commentsInitialValue(), "");
     });
   });
@@ -1497,10 +1500,10 @@ void main() {
   group("loadRecommendUsers – multiple users per group", () {
     test("adds one header + N user rows for N users", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")];
-      vm.ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")];
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")]
+        ..ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")]
+        ..repositoryCcsys = ccsysRepo;
 
       when(() => ccsysRepo.getUsersByRoles(any())).thenAnswer(
         (_) async => [
@@ -1526,15 +1529,15 @@ void main() {
 
     test("aggregates users from multiple groups", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [
-        Reference(reference1: "RO", reference3: "Officer"),
-        Reference(reference1: "TLB", reference3: "TeamLeader"),
-      ];
-      vm.ccsysRecommendenRolesList = [
-        Reference(name: "RM", reference1: "RO,TLB"),
-      ];
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [
+          Reference(reference1: "RO", reference3: "Officer"),
+          Reference(reference1: "TLB", reference3: "TeamLeader"),
+        ]
+        ..ccsysRecommendenRolesList = [
+          Reference(name: "RM", reference1: "RO,TLB"),
+        ]
+        ..repositoryCcsys = ccsysRepo;
 
       when(() => ccsysRepo.getUsersByRoles(any())).thenAnswer(
         (_) async => [
@@ -1566,10 +1569,10 @@ void main() {
   group("loadReturnUsers – null user id fallback", () {
     test("uses _ as value when user id is null", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")];
-      vm.ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RO")];
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")]
+        ..ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RO")]
+        ..repositoryCcsys = ccsysRepo;
 
       when(() => ccsysRepo.getUsersByRoles(any())).thenAnswer(
         (_) async => [
@@ -1596,11 +1599,11 @@ void main() {
     testWidgets("submits application when selectedUserId is set",
         (tester) async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = _TestableViewModel();
-      vm.repositoryCcsys = ccsysRepo;
-      vm.selectedUserId = "U1";
-      vm.selectedUserBpmRole = "Officer";
-      vm.comments = [];
+      final vm = _TestableViewModel()
+        ..repositoryCcsys = ccsysRepo
+        ..selectedUserId = "U1"
+        ..selectedUserBpmRole = "Officer"
+        ..comments = [];
       when(() => ccsysRepo.submitApplication(any())).thenAnswer((_) async {});
 
       await tester.pumpWidget(
@@ -1623,11 +1626,11 @@ void main() {
     testWidgets("submits application when selectedReturnUserId is set",
         (tester) async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = _TestableViewModel();
-      vm.repositoryCcsys = ccsysRepo;
-      vm.selectedReturnUserId = "U2";
-      vm.selectedReturnUserBpmRole = "Officer";
-      vm.comments = [];
+      final vm = _TestableViewModel()
+        ..repositoryCcsys = ccsysRepo
+        ..selectedReturnUserId = "U2"
+        ..selectedReturnUserBpmRole = "Officer"
+        ..comments = [];
       when(() => ccsysRepo.submitApplication(any())).thenAnswer((_) async {});
 
       await tester.pumpWidget(
@@ -1652,11 +1655,11 @@ void main() {
     testWidgets("shows failedToAuth toast when RSA validation fails",
         (tester) async {
       _setUserRole(UserRole.ccuMaker);
-      final vm = _TestableViewModel();
-      vm.repositoryCcsys = ccsysRepo;
-      vm.isRSAEnabled = true;
-      vm.comments = [];
-      vm.rsaDigit = "123"; // < 10 chars → validateRsaToken returns false
+      final vm = _TestableViewModel()
+        ..repositoryCcsys = ccsysRepo
+        ..isRSAEnabled = true
+        ..comments = []
+        ..rsaDigit = "123"; // < 10 chars → validateRsaToken returns false
 
       when(() => alert.showFailureToast(any())).thenAnswer((_) {});
 
@@ -1672,8 +1675,8 @@ void main() {
       final future = vm.onSavePress(ctx, "approve");
       await tester.pump(); // render dialog
       // Pop all dialogs to unblock the await
-      final nav = tester.state<NavigatorState>(find.byType(Navigator).first);
-      nav.pop(); // close RSA dialog → returnValue stays false
+      tester.state<NavigatorState>(find.byType(Navigator).first).pop();
+      // close RSA dialog → returnValue stays false
       await tester.pumpAndSettle();
       await future;
 
@@ -1688,9 +1691,9 @@ void main() {
 
     testWidgets("showRsaDialog submit validates RSA and closes dialog",
         (tester) async {
-      final vm = CcsysApprovalViewModel();
       final approvalRepo = MockApprovalRepository();
-      vm.approvalRepository = approvalRepo;
+      final vm = CcsysApprovalViewModel()
+        ..approvalRepository = approvalRepo;
 
       when(() => approvalRepo.validateRSAToken(any()))
           .thenAnswer((_) async => true);
@@ -1735,13 +1738,13 @@ void main() {
         "with multi-token "
         "reference1 appends selectedName", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      // reference1 = 'RM,RO' → tokens include 'RM' which equals logged code
-      vm.ccsysRoleType = [
-        Reference(reference1: "RO", reference3: "Officer"),
-        Reference(reference1: "RM", reference3: "Manager"),
-      ];
-      vm.ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RM,RO")];
+      final vm = CcsysApprovalViewModel()
+        // reference1 = 'RM,RO' → tokens include 'RM' which equals logged code
+        ..ccsysRoleType = [
+          Reference(reference1: "RO", reference3: "Officer"),
+          Reference(reference1: "RM", reference3: "Manager"),
+        ]
+        ..ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RM,RO")];
       final csv = await vm.buildReturnWcasRolesForCurrentUser();
       // Should contain both 'Manager' (from RM roleType) and 'Officer' (from RO
       // roleType)
@@ -1760,11 +1763,11 @@ void main() {
         "completes cleanly when groupsReturn "
         "is empty and lastAssignedRole null", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")];
-      vm.ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RO")];
-      vm.lastAssignedRole = null;
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")]
+        ..ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RO")]
+        ..lastAssignedRole = null
+        ..repositoryCcsys = ccsysRepo;
 
       when(() => ccsysRepo.getUsersByRoles(any())).thenAnswer((_) async => []);
       when(() => alert.showFailureToast(any())).thenAnswer((_) {});
@@ -1782,8 +1785,8 @@ void main() {
 
   group("initRightsAndMode – pageMode edge cases", () {
     test("sets pageMode field (non-null)", () {
-      final vm = CcsysApprovalViewModel();
-      vm.initRightsAndMode(Request(ccsysCanEditReadOnly: false));
+      final vm = CcsysApprovalViewModel()
+        ..initRightsAndMode(Request(ccsysCanEditReadOnly: false));
       // pageMode is set by AuthRepository.getPageMode – just verify it's a
       // PageMode
       expect(vm.pageMode, isA<PageMode>());
@@ -1826,10 +1829,10 @@ void main() {
   group("_buildWcasRolesFor – case-insensitive token match", () {
     test("matches reference1 code case-insensitively", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      // 'rm' in reference1 should match 'RM' via _equalsIC
-      vm.ccsysRoleType = [Reference(reference1: "ro", reference3: "Officer")];
-      vm.ccsysRecommendenRolesList = [Reference(name: "rm", reference1: "ro")];
+      final vm = CcsysApprovalViewModel()
+        // 'rm' in reference1 should match 'RM' via _equalsIC
+        ..ccsysRoleType = [Reference(reference1: "ro", reference3: "Officer")]
+        ..ccsysRecommendenRolesList = [Reference(name: "rm", reference1: "ro")];
       final csv = await vm.buildRecommendWcasRolesForCurrentUser();
       expect(csv, "Officer");
     });
@@ -1844,10 +1847,10 @@ void main() {
       () {
     testWidgets("no dialog shown if context is unmounted", (tester) async {
       _setUserRole(UserRole.ccuMaker);
-      final vm = _TestableViewModel();
-      vm.repositoryCcsys = ccsysRepo;
-      vm.isRSAEnabled = false;
-      vm.comments = [];
+      final vm = _TestableViewModel()
+        ..repositoryCcsys = ccsysRepo
+        ..isRSAEnabled = false
+        ..comments = [];
       when(() => ccsysRepo.submitApplication(any())).thenAnswer((_) async {});
 
       await tester.pumpWidget(
@@ -1899,10 +1902,10 @@ void main() {
   group("loadRecommendUsers – group with no users", () {
     test("adds only header row when group has empty users list", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")];
-      vm.ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")];
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")]
+        ..ccsysRecommendenRolesList = [Reference(name: "RM", reference1: "RO")]
+        ..repositoryCcsys = ccsysRepo;
 
       when(() => ccsysRepo.getUsersByRoles(any())).thenAnswer(
         (_) async => [
@@ -1925,10 +1928,10 @@ void main() {
   group("loadReturnUsers – multiple users populates usersReturn", () {
     test("usersReturn has all users flattened from groups", () async {
       _setUserRole(UserRole.relationshipManagerBussiness);
-      final vm = CcsysApprovalViewModel();
-      vm.ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")];
-      vm.ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RO")];
-      vm.repositoryCcsys = ccsysRepo;
+      final vm = CcsysApprovalViewModel()
+        ..ccsysRoleType = [Reference(reference1: "RO", reference3: "Officer")]
+        ..ccsysReturnedRolesList = [Reference(name: "RM", reference1: "RO")]
+        ..repositoryCcsys = ccsysRepo;
 
       when(() => ccsysRepo.getUsersByRoles(any())).thenAnswer(
         (_) async => [

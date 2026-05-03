@@ -218,8 +218,7 @@ void main() {
 
     Globals.user = User(id: "test-user", currentRole: Role(roleId: 1));
 
-    vm = EsgCertificationViewModel();
-    vm.repository = mockRepo;
+    vm = EsgCertificationViewModel()..repository = mockRepo;
   });
 
   // =========================================================================
@@ -269,12 +268,10 @@ void main() {
   // init()
   // =========================================================================
   group("init()", () {
-    late TestEsgCertificationViewModel vm;
+    // late TestEsgCertificationViewModel vm; // Removed to avoid shadowing or unused warning if setUp handles it
 
     setUp(() {
-      vm = TestEsgCertificationViewModel();
-
-      vm.repository = mockRepo;
+      vm = TestEsgCertificationViewModel()..repository = mockRepo;
     });
 
     testWidgets("ref data error → shows failedRefData toast", (tester) async {
@@ -605,26 +602,30 @@ void main() {
     });
 
     test("non-excluded value clears excludedActivities", () {
-      vm.excludedActivities = ["X", "Y"];
-      vm.updateExcludedValue("NO");
+      vm
+        ..excludedActivities = ["X", "Y"]
+        ..updateExcludedValue("NO");
       expect(vm.excludedActivities, isEmpty);
     });
 
     test("N/A clears excludedActivities", () {
-      vm.excludedActivities = ["X", "Y"];
-      vm.updateExcludedValue("N/A");
+      vm
+        ..excludedActivities = ["X", "Y"]
+        ..updateExcludedValue("N/A");
       expect(vm.excludedActivities, isEmpty);
     });
 
     test("unknown value clears excludedActivities", () {
-      vm.excludedActivities = ["X"];
-      vm.updateExcludedValue("BOGUS");
+      vm
+        ..excludedActivities = ["X"]
+        ..updateExcludedValue("BOGUS");
       expect(vm.excludedActivities, isEmpty);
     });
 
     test("excluded value preserves excludedActivities", () {
-      vm.excludedActivities = ["X", "Y"];
-      vm.updateExcludedValue("YES");
+      vm
+        ..excludedActivities = ["X", "Y"]
+        ..updateExcludedValue("YES");
       expect(vm.excludedActivities, ["X", "Y"]);
     });
 
@@ -648,8 +649,9 @@ void main() {
     });
 
     test("empty list clears activities", () {
-      vm.excludedActivities = ["old"];
-      vm.updateExcludedActivities([]);
+      vm
+        ..excludedActivities = ["old"]
+        ..updateExcludedActivities([]);
       expect(vm.excludedActivities, isEmpty);
     });
   });
@@ -726,43 +728,49 @@ void main() {
   group("updateCategorySelectionById()", () {
     test("selects existing category", () {
       final cat = FakeSffCategory(isSelected: false, name: "CAT_A");
-      vm.esgSffCategoriess = [cat];
-      vm.updateCategorySelectionById("CAT_A", true);
+      vm
+        ..esgSffCategoriess = [cat]
+        ..updateCategorySelectionById("CAT_A", true);
       expect(vm.esgSffCategoriess.first.isSelected, isTrue);
       expect(vm.state.loaderStatus, LoadingStatus.loaded);
     });
 
     test("deselects existing category", () {
       final cat = FakeSffCategory(isSelected: true, name: "CAT_A");
-      vm.esgSffCategoriess = [cat];
-      vm.updateCategorySelectionById("CAT_A", false);
+      vm
+        ..esgSffCategoriess = [cat]
+        ..updateCategorySelectionById("CAT_A", false);
       expect(vm.esgSffCategoriess.first.isSelected, isFalse);
     });
 
     test("null treated as false for existing category", () {
       final cat = FakeSffCategory(isSelected: true, name: "CAT_A");
-      vm.esgSffCategoriess = [cat];
-      vm.updateCategorySelectionById("CAT_A", null);
+      vm
+        ..esgSffCategoriess = [cat]
+        ..updateCategorySelectionById("CAT_A", null);
       expect(vm.esgSffCategoriess.first.isSelected, isFalse);
     });
 
     test("missing + newValue=true → adds new selected entry", () {
-      vm.esgSffCategoriess = [];
-      vm.updateCategorySelectionById("NEW_CAT", true);
+      vm
+        ..esgSffCategoriess = []
+        ..updateCategorySelectionById("NEW_CAT", true);
       expect(vm.esgSffCategoriess.length, 1);
       expect(vm.esgSffCategoriess.first.sffCategory, "NEW_CAT");
       expect(vm.esgSffCategoriess.first.isSelected, isTrue);
     });
 
     test("missing + newValue=false → does NOT add entry", () {
-      vm.esgSffCategoriess = [];
-      vm.updateCategorySelectionById("GHOST", false);
+      vm
+        ..esgSffCategoriess = []
+        ..updateCategorySelectionById("GHOST", false);
       expect(vm.esgSffCategoriess, isEmpty);
     });
 
     test("missing + newValue=null → does NOT add entry", () {
-      vm.esgSffCategoriess = [];
-      vm.updateCategorySelectionById("GHOST", null);
+      vm
+        ..esgSffCategoriess = []
+        ..updateCategorySelectionById("GHOST", null);
       expect(vm.esgSffCategoriess, isEmpty);
     });
   });
@@ -774,14 +782,16 @@ void main() {
     test("updates description for existing entry", () {
       final cat =
           FakeSffCategory(isSelected: true, briefDesc: "old", name: "CAT");
-      vm.esgSffCategoriess = [cat];
-      vm.updateCategoryBriefDescById("CAT", "new-desc");
+      vm
+        ..esgSffCategoriess = [cat]
+        ..updateCategoryBriefDescById("CAT", "new-desc");
       expect(vm.esgSffCategoriess.first.briefDesc, "new-desc");
     });
 
     test("adds new entry with isSelected=false when name not found", () {
-      vm.esgSffCategoriess = [];
-      vm.updateCategoryBriefDescById("MISSING", "desc!");
+      vm
+        ..esgSffCategoriess = []
+        ..updateCategoryBriefDescById("MISSING", "desc!");
       expect(vm.esgSffCategoriess.length, 1);
       expect(vm.esgSffCategoriess.first.sffCategory, "MISSING");
       expect(vm.esgSffCategoriess.first.briefDesc, "desc!");
@@ -791,8 +801,9 @@ void main() {
     test("accepts empty description", () {
       final cat =
           FakeSffCategory(isSelected: true, briefDesc: "old", name: "CAT");
-      vm.esgSffCategoriess = [cat];
-      vm.updateCategoryBriefDescById("CAT", "");
+      vm
+        ..esgSffCategoriess = [cat]
+        ..updateCategoryBriefDescById("CAT", "");
       expect(vm.esgSffCategoriess.first.briefDesc, "");
     });
   });
@@ -817,9 +828,10 @@ void main() {
     });
 
     test("primes inputsByRefId from server on first call", () {
-      vm.serverCommentsBySectionId[5] =
-          Comment(categoryId: 5, strategyComment: "primed");
-      vm.initialTextOnceFor(5);
+      vm
+        ..serverCommentsBySectionId[5] =
+            Comment(categoryId: 5, strategyComment: "primed")
+        ..initialTextOnceFor(5);
       expect(vm.inputsByRefId[5], "primed");
     });
   });
@@ -836,8 +848,9 @@ void main() {
     });
 
     test("overwrites previous value for same refId", () {
-      vm.updateComment(7, "first");
-      vm.updateComment(7, "second");
+      vm
+        ..updateComment(7, "first")
+        ..updateComment(7, "second");
       expect(vm.inputsByRefId[7], "second");
     });
   });
@@ -846,8 +859,9 @@ void main() {
     setUp(() async => vm.loadReferenceData());
 
     test('leaveOneBlankPerSection=true seeds dynamic sections with ""', () {
-      vm.inputsByRefId[1] = "dirty";
-      vm.clearCommentInputs(leaveOneBlankPerSection: true);
+      vm
+        ..inputsByRefId[1] = "dirty"
+        ..clearCommentInputs(leaveOneBlankPerSection: true);
       for (final ref in vm.dynamicSections) {
         expect(vm.inputsByRefId[ref.id ?? 0], "");
       }
@@ -855,8 +869,9 @@ void main() {
     });
 
     test("leaveOneBlankPerSection=false fully clears map", () {
-      vm.inputsByRefId[7] = "data";
-      vm.clearCommentInputs(leaveOneBlankPerSection: false);
+      vm
+        ..inputsByRefId[7] = "data"
+        ..clearCommentInputs(leaveOneBlankPerSection: false);
       expect(vm.inputsByRefId, isEmpty);
     });
   });
@@ -927,10 +942,11 @@ void main() {
         "selected category with empty briefDesc → briefDescRequired toast",
         (tester) async {
       await tester.pumpWidget(_tree(Form(key: vm.formKey, child: Container())));
-      vm.certifications = makeCert();
-      vm.esgSffCategoriess = [
-        FakeSffCategory(isSelected: true, briefDesc: ""),
-      ];
+      vm
+        ..certifications = makeCert()
+        ..esgSffCategoriess = [
+          FakeSffCategory(isSelected: true, briefDesc: ""),
+        ];
       await vm.submitCertification();
       expect(alertSpy.lastFailure, contains("briefDescRequired"));
     });
@@ -938,10 +954,11 @@ void main() {
     testWidgets("selected category with whitespace-only briefDesc → toast",
         (tester) async {
       await tester.pumpWidget(_tree(Form(key: vm.formKey, child: Container())));
-      vm.certifications = makeCert();
-      vm.esgSffCategoriess = [
-        FakeSffCategory(isSelected: true, briefDesc: "   "),
-      ];
+      vm
+        ..certifications = makeCert()
+        ..esgSffCategoriess = [
+          FakeSffCategory(isSelected: true, briefDesc: "   "),
+        ];
       await vm.submitCertification();
       expect(alertSpy.lastFailure, contains("briefDescRequired"));
     });
@@ -949,10 +966,11 @@ void main() {
     testWidgets("unselected category with empty briefDesc → passes validation",
         (tester) async {
       await tester.pumpWidget(_tree(Form(key: vm.formKey, child: Container())));
-      vm.certifications = makeCert();
-      vm.esgSffCategoriess = [
-        FakeSffCategory(isSelected: false, briefDesc: ""),
-      ];
+      vm
+        ..certifications = makeCert()
+        ..esgSffCategoriess = [
+          FakeSffCategory(isSelected: false, briefDesc: ""),
+        ];
       when(() => mockRepo.postEsgCertificationDetails(any()))
           .thenThrow(Exception("post-fail"));
       await vm.submitCertification();
@@ -967,10 +985,11 @@ void main() {
     testWidgets("API throws → error toast, isSubmitting reset, state=loaded",
         (tester) async {
       await tester.pumpWidget(_tree(Form(key: vm.formKey, child: Container())));
-      vm.certifications = makeCert();
-      vm.esgSffCategoriess = [
-        FakeSffCategory(isSelected: true, briefDesc: "ok"),
-      ];
+      vm
+        ..certifications = makeCert()
+        ..esgSffCategoriess = [
+          FakeSffCategory(isSelected: true, briefDesc: "ok"),
+        ];
       when(() => mockRepo.postEsgCertificationDetails(any()))
           .thenThrow(Exception("post-fail"));
 
@@ -989,8 +1008,7 @@ void main() {
     late TestEsgCertificationViewModel vm;
 
     setUp(() {
-      vm = TestEsgCertificationViewModel();
-      vm.repository = mockRepo;
+      vm = TestEsgCertificationViewModel()..repository = mockRepo;
     });
 
     testWidgets("successful post calls repository and applies response",
@@ -1007,10 +1025,11 @@ void main() {
         listOfExcludedActivities: ["B"],
       );
 
-      vm.certifications = makeCert();
-      vm.esgSffCategoriess = [
-        FakeSffCategory(isSelected: true, briefDesc: "ok"),
-      ];
+      vm
+        ..certifications = makeCert()
+        ..esgSffCategoriess = [
+          FakeSffCategory(isSelected: true, briefDesc: "ok"),
+        ];
 
       when(() => mockRepo.postEsgCertificationDetails(any()))
           .thenAnswer((_) async => responseCert);
@@ -1045,10 +1064,11 @@ void main() {
         esRiskRating: [],
       );
 
-      vm.certifications = makeCert();
-      vm.esgSffCategoriess = [
-        FakeSffCategory(isSelected: true, briefDesc: "ok"),
-      ];
+      vm
+        ..certifications = makeCert()
+        ..esgSffCategoriess = [
+          FakeSffCategory(isSelected: true, briefDesc: "ok"),
+        ];
 
       when(() => mockRepo.postEsgCertificationDetails(any()))
           .thenAnswer((_) async => responseCert);

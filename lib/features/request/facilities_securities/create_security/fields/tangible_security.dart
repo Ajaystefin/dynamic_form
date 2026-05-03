@@ -20,7 +20,7 @@ class TangibleSecurity extends StatelessWidget {
     // Assumes yesAndNo is a 2-item list: [Yes, No].
     final options = viewModel.yesAndNo ?? const [];
 
-    final Reference? selectedValue = (isTangible)
+    final Reference? selectedValue = isTangible
         ? (options.isNotEmpty ? options.first : null) // Yes
         : (options.length > 1 ? options[1] : null); // No
 

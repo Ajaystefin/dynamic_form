@@ -257,7 +257,7 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
   /// data.
   List<List<Widget>> buildInitialGridRows() {
     final List<DynamicGridField> dynamicFormGridFields =
-        (widget.fieldData.columnInfoList ?? []);
+        widget.fieldData.columnInfoList ?? [];
     return [
       [
         for (int i = 0; i < dynamicFormGridFields.length; i++) ...[
@@ -428,9 +428,7 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
         final TextEditingController newController = TextEditingController();
 
         // Register this controller with DynamicForm's _controllers map
-        if (widget.onControllerCreated != null) {
-          widget.onControllerCreated!(controllerKey, newController);
-        }
+        widget.onControllerCreated?.call(controllerKey, newController);
 
         return newController;
       },
@@ -474,13 +472,11 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
             widget.document[controllerKey] = value;
 
             // Trigger onFieldChange callback for parent ViewModel
-            if (widget.onFieldChange != null) {
-              widget.onFieldChange!(dynamicField.key, {
-                "gridName": widget.fieldData.key,
-                "index": rowIndex,
-                "value": value,
-              });
-            }
+            widget.onFieldChange?.call(dynamicField.key, {
+              "gridName": widget.fieldData.key,
+              "index": rowIndex,
+              "value": value,
+            });
           },
         );
 
@@ -500,13 +496,11 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
             widget.document[controllerKey] = value;
 
             // Trigger onFieldChange callback for parent ViewModel
-            if (widget.onFieldChange != null) {
-              widget.onFieldChange!(dynamicField.key, {
-                "gridName": widget.fieldData.key,
-                "index": rowIndex,
-                "value": value,
-              });
-            }
+            widget.onFieldChange?.call(dynamicField.key, {
+              "gridName": widget.fieldData.key,
+              "index": rowIndex,
+              "value": value,
+            });
           },
         );
 
@@ -525,13 +519,11 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
             widget.document[controllerKey] = value;
 
             // Trigger onFieldChange callback for parent ViewModel
-            if (widget.onFieldChange != null) {
-              widget.onFieldChange!(dynamicField.key, {
-                "gridName": widget.fieldData.key,
-                "index": rowIndex,
-                "value": value,
-              });
-            }
+            widget.onFieldChange?.call(dynamicField.key, {
+              "gridName": widget.fieldData.key,
+              "index": rowIndex,
+              "value": value,
+            });
           },
         );
       case FieldType.percentage:
@@ -556,13 +548,11 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
             widget.document[controllerKey] = value;
 
             // Trigger onFieldChange callback for parent ViewModel
-            if (widget.onFieldChange != null) {
-              widget.onFieldChange!(dynamicField.key, {
-                "gridName": widget.fieldData.key,
-                "index": rowIndex,
-                "value": value,
-              });
-            }
+            widget.onFieldChange?.call(dynamicField.key, {
+              "gridName": widget.fieldData.key,
+              "index": rowIndex,
+              "value": value,
+            });
           },
         );
       case FieldType.datePicker:
@@ -599,13 +589,11 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
             widget.document[controllerKey] = dateValue;
 
             // Trigger onFieldChange callback for parent ViewModel
-            if (widget.onFieldChange != null) {
-              widget.onFieldChange!(dynamicField.key, {
-                "gridName": widget.fieldData.key,
-                "index": rowIndex,
-                "value": dateValue,
-              });
-            }
+            widget.onFieldChange?.call(dynamicField.key, {
+              "gridName": widget.fieldData.key,
+              "index": rowIndex,
+              "value": dateValue,
+            });
           },
         );
 
@@ -628,13 +616,11 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
               widget.document[controllerKey] = value;
 
               // Trigger onFieldChange callback for parent ViewModel
-              if (widget.onFieldChange != null) {
-                widget.onFieldChange!(dynamicField.key, {
-                  "gridName": widget.fieldData.key,
-                  "index": rowIndex,
-                  "value": value,
-                });
-              }
+              widget.onFieldChange?.call(dynamicField.key, {
+                "gridName": widget.fieldData.key,
+                "index": rowIndex,
+                "value": value,
+              });
 
               setState(() {});
             },
@@ -674,13 +660,11 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
             widget.document[controllerKey] = value.first.key;
 
             // Trigger onFieldChange callback for parent ViewModel
-            if (widget.onFieldChange != null) {
-              widget.onFieldChange!(dynamicField.key, {
-                "gridName": widget.fieldData.key,
-                "index": rowIndex,
-                "value": value,
-              });
-            }
+            widget.onFieldChange?.call(dynamicField.key, {
+              "gridName": widget.fieldData.key,
+              "index": rowIndex,
+              "value": value,
+            });
           },
           itemBuilder: (context, item, isDisabled, isSelected) {
             return dropdownItemBuildWidget(item.value);
@@ -754,26 +738,22 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
                 .clear(); // Clear edit controller when option selected
 
             // Trigger onFieldChange callback for parent ViewModel
-            if (widget.onFieldChange != null) {
-              widget.onFieldChange!(dynamicField.key, {
-                "gridName": widget.fieldData.key,
-                "index": rowIndex,
-                "value": value,
-              });
-            }
+            widget.onFieldChange?.call(dynamicField.key, {
+              "gridName": widget.fieldData.key,
+              "index": rowIndex,
+              "value": value,
+            });
           },
           onEditComplete: (text) {
             // Save custom text value when user finishes editing
             widget.document[controllerKey] = text.isEmpty ? null : text;
 
             // Trigger onFieldChange callback for parent ViewModel
-            if (widget.onFieldChange != null) {
-              widget.onFieldChange!(dynamicField.key, {
-                "gridName": widget.fieldData.key,
-                "index": rowIndex,
-                "value": text,
-              });
-            }
+            widget.onFieldChange?.call(dynamicField.key, {
+              "gridName": widget.fieldData.key,
+              "index": rowIndex,
+              "value": text,
+            });
           },
           onTextChanged: (text) {
             // Update document on every keystroke
@@ -835,13 +815,11 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
             widget.document[controllerKey] = payload;
 
             // Trigger onFieldChange callback if provided
-            if (widget.onFieldChange != null) {
-              widget.onFieldChange!(dynamicField.key, {
-                "gridName": widget.fieldData.key,
-                "index": rowIndex,
-                "value": payload,
-              });
-            }
+            widget.onFieldChange?.call(dynamicField.key, {
+              "gridName": widget.fieldData.key,
+              "index": rowIndex,
+              "value": payload,
+            });
           },
         );
       case FieldType.grid:
@@ -860,13 +838,11 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
             widget.document[controllerKey] = value;
 
             // Trigger onFieldChange callback for parent ViewModel
-            if (widget.onFieldChange != null) {
-              widget.onFieldChange!(dynamicField.key, {
-                "gridName": widget.fieldData.key,
-                "index": rowIndex,
-                "value": value,
-              });
-            }
+            widget.onFieldChange?.call(dynamicField.key, {
+              "gridName": widget.fieldData.key,
+              "index": rowIndex,
+              "value": value,
+            });
           },
         );
       case FieldType.tenorControl:
@@ -886,13 +862,11 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
             widget.document[controllerKey] = value;
 
             // Trigger onFieldChange callback for parent ViewModel
-            if (widget.onFieldChange != null) {
-              widget.onFieldChange!(dynamicField.key, {
-                "gridName": widget.fieldData.key,
-                "index": rowIndex,
-                "value": value,
-              });
-            }
+            widget.onFieldChange?.call(dynamicField.key, {
+              "gridName": widget.fieldData.key,
+              "index": rowIndex,
+              "value": value,
+            });
           },
         );
 
@@ -920,13 +894,11 @@ class _DynamicFormGridState extends State<DynamicFormGrid> {
             widget.document[controllerKey] = option.key;
 
             // Trigger onFieldChange callback for parent ViewModel
-            if (widget.onFieldChange != null) {
-              widget.onFieldChange!(dynamicField.key, {
-                "gridName": widget.fieldData.key,
-                "index": rowIndex,
-                "value": option.key,
-              });
-            }
+            widget.onFieldChange?.call(dynamicField.key, {
+              "gridName": widget.fieldData.key,
+              "index": rowIndex,
+              "value": option.key,
+            });
           },
         );
       default:

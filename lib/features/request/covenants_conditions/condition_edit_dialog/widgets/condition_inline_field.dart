@@ -45,7 +45,7 @@ class ConditionInlineField extends StatelessWidget {
               callBackString: (value) {
                 viewModel.editedInlineValue.name = value;
               },
-              inputString: (viewModel.selectedInlineValue.name.toString()),
+              inputString: viewModel.selectedInlineValue.name.toString(),
               editedPreview: viewModel.editedInlineValue.name?.toString(),
             ),
           );

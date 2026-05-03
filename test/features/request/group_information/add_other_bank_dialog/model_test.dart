@@ -117,9 +117,9 @@ void main() {
     mockReferenceService = MockReferenceDataService();
     mockLocalStorageService = MockLocalStorageService();
 
-    viewModel = AddOtherBankDialogViewModel();
-    viewModel.repository = mockRepository;
-    viewModel.repositoryDataService = mockReferenceService;
+    viewModel = AddOtherBankDialogViewModel()
+      ..repository = mockRepository
+      ..repositoryDataService = mockReferenceService;
 
     LocalStorageService().setStorage(mockLocalStorageService);
   });
@@ -241,8 +241,9 @@ void main() {
     });
 
     test("calculateTotal computes correct sum and emits loaded status", () {
-      viewModel.currentFacilityItems.fundedLimit = Decimal.fromInt(100);
-      viewModel.currentFacilityItems.nonFundedLimit = Decimal.fromInt(200);
+      viewModel.currentFacilityItems
+        ..fundedLimit = Decimal.fromInt(100)
+        ..nonFundedLimit = Decimal.fromInt(200);
 
       viewModel.calculateTotal();
 
@@ -329,8 +330,9 @@ void main() {
     });
 
     test("calculateTotal handles null values correctly", () {
-      viewModel.currentFacilityItems.fundedLimit = null;
-      viewModel.currentFacilityItems.nonFundedLimit = null;
+      viewModel.currentFacilityItems
+        ..fundedLimit = null
+        ..nonFundedLimit = null;
 
       viewModel.calculateTotal();
 
@@ -340,8 +342,9 @@ void main() {
     });
 
     test("calculateTotal handles string conversion correctly", () {
-      viewModel.currentFacilityItems.fundedLimit = Decimal.fromInt(150);
-      viewModel.currentFacilityItems.nonFundedLimit = Decimal.fromInt(250);
+      viewModel.currentFacilityItems
+        ..fundedLimit = Decimal.fromInt(150)
+        ..nonFundedLimit = Decimal.fromInt(250);
 
       viewModel.calculateTotal();
 
@@ -462,13 +465,13 @@ void main() {
     });
 
     test("onSecurityTypeSelectedById updates ids and selected refs", () {
-      viewModel.securityOptions = [
-        Reference(id: 1, name: "Cash"),
-        Reference(id: 2, name: "Property"),
-        Reference(id: 3, name: "Guarantee"),
-      ];
-
-      viewModel.onSecurityTypeSelectedById([1, 3]);
+      viewModel
+        ..securityOptions = [
+          Reference(id: 1, name: "Cash"),
+          Reference(id: 2, name: "Property"),
+          Reference(id: 3, name: "Guarantee"),
+        ]
+        ..onSecurityTypeSelectedById([1, 3]);
 
       expect(viewModel.securityWithIds, [1, 3]);
       expect(viewModel.currentFacilityItems.securityWith?.length, 2);
@@ -481,11 +484,11 @@ void main() {
     });
 
     test("onSecurityTypeSelectedById handles unmatched ids", () {
-      viewModel.securityOptions = [
-        Reference(id: 1, name: "Cash"),
-      ];
-
-      viewModel.onSecurityTypeSelectedById([999]);
+      viewModel
+        ..securityOptions = [
+          Reference(id: 1, name: "Cash"),
+        ]
+        ..onSecurityTypeSelectedById([999]);
 
       expect(viewModel.securityWithIds, [999]);
       expect(viewModel.currentFacilityItems.securityWith, isEmpty);

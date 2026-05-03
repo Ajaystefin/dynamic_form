@@ -42,8 +42,7 @@ class CommonTabsViewModel extends SafeCubit<CommonTabsState>
   // Create a unique form key based on the route, customer string identifier,
   // and the active tab's name
   @override
-  String get draftFormKey =>
-      "${Routes.remarksCommonTabs}_"
+  String get draftFormKey => "${Routes.remarksCommonTabs}_"
       "${selectedCustomer?.customerRimNo}_${state.activeTab.name}";
 
   @override
@@ -111,7 +110,7 @@ class CommonTabsViewModel extends SafeCubit<CommonTabsState>
     try {
       if (Utils.isGroupApplication()) {
         customerList =
-            (await CustomerRepository.instance.getChildRimsForGroup() ?? []);
+            await CustomerRepository.instance.getChildRimsForGroup() ?? [];
         if ((customerList ?? []).isNotEmpty) {
           selectedCustomer = customerList?.first;
         } else {

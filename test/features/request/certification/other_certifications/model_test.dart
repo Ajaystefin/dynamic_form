@@ -271,27 +271,17 @@ void main() {
     test("canEdit getter is true only when effectivePageMode is edit", () {
       final vm = OtherCertificationsViewModel();
 
-      vm.effectivePageMode = PageMode.view;
-      expect(vm.canEdit, false);
-
-      vm.effectivePageMode = PageMode.na;
-      expect(vm.canEdit, false);
-
-      vm.effectivePageMode = PageMode.edit;
-      expect(vm.canEdit, true);
+      expect((vm..effectivePageMode = PageMode.view).canEdit, false);
+      expect((vm..effectivePageMode = PageMode.na).canEdit, false);
+      expect((vm..effectivePageMode = PageMode.edit).canEdit, true);
     });
 
     test("isNA getter is true only when effectivePageMode is na", () {
       final vm = OtherCertificationsViewModel();
 
-      vm.effectivePageMode = PageMode.view;
-      expect(vm.isNA, false);
-
-      vm.effectivePageMode = PageMode.edit;
-      expect(vm.isNA, false);
-
-      vm.effectivePageMode = PageMode.na;
-      expect(vm.isNA, true);
+      expect((vm..effectivePageMode = PageMode.view).isNA, false);
+      expect((vm..effectivePageMode = PageMode.edit).isNA, false);
+      expect((vm..effectivePageMode = PageMode.na).isNA, true);
     });
   });
 
@@ -325,8 +315,6 @@ void main() {
     test("success filters types correctly for RM and populates lists",
         () async {
       final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
-      vm.emit(vm.state.copyWith(type: CertificationType.rm));
 
       final yes = Reference(id: ServerConstants.optionYESid, name: "YES");
 
@@ -369,7 +357,10 @@ void main() {
         ReferenceDataKeys.yesNoNa: [yes],
       };
 
-      await vm.fetchReferenceData();
+      await (vm
+            ..repository = repo
+            ..emit(vm.state.copyWith(type: CertificationType.rm)))
+          .fetchReferenceData();
 
       expect(vm.yesNoNaOptions.length, 1);
       expect(vm.attachmentCertifications.length, 1);
@@ -382,8 +373,7 @@ void main() {
 
     test("with empty data keeps lists empty and loader remains loading",
         () async {
-      final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
+      final vm = OtherCertificationsViewModel()..repository = repo;
       refService.nextData = {};
 
       await vm.fetchReferenceData();
@@ -396,8 +386,7 @@ void main() {
     });
 
     test("error emits error and shows failure toast", () async {
-      final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
+      final vm = OtherCertificationsViewModel()..repository = repo;
       refService.throwError = true;
 
       await expectLater(vm.fetchReferenceData(), throwsException);
@@ -410,12 +399,11 @@ void main() {
 
   group("fetchCertificationDetails", () {
     test("success maps repository items by certificate id", () async {
-      final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
-
       final yes = Reference(id: ServerConstants.optionYESid, name: "YES");
-      vm.yesNoNaOptions = [yes];
-      vm.allCertifications = [Reference(id: 1, name: "A")];
+      final vm = OtherCertificationsViewModel()
+        ..repository = repo
+        ..yesNoNaOptions = [yes]
+        ..allCertifications = [Reference(id: 1, name: "A")];
 
       repo.nextList = [
         CertificationData(
@@ -435,12 +423,12 @@ void main() {
     });
 
     test("success with empty list keeps data map empty", () async {
-      final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
-      vm.yesNoNaOptions = [
-        Reference(id: ServerConstants.optionNAid, name: "NA"),
-      ];
-      vm.allCertifications = [Reference(id: 1, name: "A")];
+      final vm = OtherCertificationsViewModel()
+        ..repository = repo
+        ..yesNoNaOptions = [
+          Reference(id: ServerConstants.optionNAid, name: "NA"),
+        ]
+        ..allCertifications = [Reference(id: 1, name: "A")];
       repo.nextList = [];
 
       await vm.fetchCertificationDetails();
@@ -450,12 +438,11 @@ void main() {
     });
 
     test("ignores entries where certificateInformation.id is null", () async {
-      final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
-
       final yes = Reference(id: ServerConstants.optionYESid, name: "YES");
-      vm.yesNoNaOptions = [yes];
-      vm.allCertifications = [Reference(id: 10, name: "X")];
+      final vm = OtherCertificationsViewModel()
+        ..repository = repo
+        ..yesNoNaOptions = [yes]
+        ..allCertifications = [Reference(id: 10, name: "X")];
 
       repo.nextList = [
         CertificationData(
@@ -472,11 +459,13 @@ void main() {
     });
 
     test("error emits error and shows failure toast", () async {
-      final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
+      final vm = OtherCertificationsViewModel()..repository = repo;
       repo.throwGetError = true;
 
-      await expectLater(vm.fetchCertificationDetails(), throwsException);
+      await expectLater(
+        vm.fetchCertificationDetails(),
+        throwsException,
+      );
 
       expect(vm.state.loaderStatus, LoadingStatus.error);
       expect(alerts.failureCalls, 1);
@@ -486,17 +475,14 @@ void main() {
 
   group("certificate data helpers", () {
     test("initializeMissingCertificates creates defaults with YES option", () {
-      final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
-
       final yes = Reference(id: ServerConstants.optionYESid, name: "YES");
-      vm.yesNoNaOptions = [yes];
-
       final a = Reference(id: 1, name: "A");
       final b = Reference(id: 2, name: "B");
-      vm.allCertifications = [a, b];
-
-      vm.initializeMissingCertificates();
+      final vm = OtherCertificationsViewModel()
+        ..repository = repo
+        ..yesNoNaOptions = [yes]
+        ..allCertifications = [a, b]
+        ..initializeMissingCertificates();
 
       expect(vm.certificationDataMap.length, 2);
       expect(vm.certificationDataMap[1]!.selectedOption!.id, yes.id);
@@ -507,25 +493,21 @@ void main() {
 
     test("initializeMissingCertificates does not overwrite existing records",
         () {
-      final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
-
       final yes = Reference(id: ServerConstants.optionYESid, name: "YES");
-      vm.yesNoNaOptions = [yes];
-
-      vm.allCertifications = [
-        Reference(id: 1, name: "A"),
-        Reference(id: 2, name: "B"),
-      ];
-
-      vm.certificationDataMap[1] = CertificationData(
-        appCertificationId: 999,
-        certificateInformation: Reference(id: 1, name: "A"),
-        selectedOption: yes,
-        remarks: "existing",
-      );
-
-      vm.initializeMissingCertificates();
+      final vm = OtherCertificationsViewModel()
+        ..repository = repo
+        ..yesNoNaOptions = [yes]
+        ..allCertifications = [
+          Reference(id: 1, name: "A"),
+          Reference(id: 2, name: "B"),
+        ]
+        ..certificationDataMap[1] = CertificationData(
+          appCertificationId: 999,
+          certificateInformation: Reference(id: 1, name: "A"),
+          selectedOption: yes,
+          remarks: "existing",
+        )
+        ..initializeMissingCertificates();
 
       expect(vm.certificationDataMap.length, 2);
       expect(vm.certificationDataMap[1]!.appCertificationId, 999);
@@ -534,40 +516,36 @@ void main() {
     });
 
     test("getDefaultOption returns YES option", () {
-      final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
-
       final yes = Reference(id: ServerConstants.optionYESid, name: "YES");
-      vm.yesNoNaOptions = [yes];
+      final vm = OtherCertificationsViewModel()
+        ..repository = repo
+        ..yesNoNaOptions = [yes];
 
       expect(vm.getDefaultOption().id, yes.id);
     });
 
     test("getDefaultOption throws if YES option is missing", () {
-      final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
-
-      vm.yesNoNaOptions = [
-        Reference(id: ServerConstants.optionNOid, name: "NO"),
-        Reference(id: ServerConstants.optionNAid, name: "NA"),
-      ];
+      final vm = OtherCertificationsViewModel()
+        ..repository = repo
+        ..yesNoNaOptions = [
+          Reference(id: ServerConstants.optionNOid, name: "NO"),
+          Reference(id: ServerConstants.optionNAid, name: "NA"),
+        ];
 
       expect(vm.getDefaultOption, throwsStateError);
     });
 
     test("getCertificationById returns existing record if present", () {
-      final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
-
       final yes = Reference(id: ServerConstants.optionYESid, name: "YES");
-      vm.yesNoNaOptions = [yes];
-
-      vm.certificationDataMap[5] = CertificationData(
-        appCertificationId: 3,
-        certificateInformation: Reference(id: 5),
-        selectedOption: yes,
-        remarks: "x",
-      );
+      final vm = OtherCertificationsViewModel()
+        ..repository = repo
+        ..yesNoNaOptions = [yes]
+        ..certificationDataMap[5] = CertificationData(
+          appCertificationId: 3,
+          certificateInformation: Reference(id: 5),
+          selectedOption: yes,
+          remarks: "x",
+        );
 
       final result = vm.getCertificationById(5);
 
@@ -577,11 +555,10 @@ void main() {
     });
 
     test("getCertificationById returns default record if missing", () {
-      final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
-
       final yes = Reference(id: ServerConstants.optionYESid, name: "YES");
-      vm.yesNoNaOptions = [yes];
+      final vm = OtherCertificationsViewModel()
+        ..repository = repo
+        ..yesNoNaOptions = [yes];
 
       final result = vm.getCertificationById(9);
 
@@ -592,18 +569,16 @@ void main() {
     });
 
     test("getSelectedDropdownOption returns only selected option", () {
-      final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
-
       final na = Reference(id: ServerConstants.optionNAid, name: "NA");
       final yes = Reference(id: ServerConstants.optionYESid, name: "YES");
-      vm.yesNoNaOptions = [na, yes];
-
-      vm.certificationDataMap[1] = CertificationData(
-        appCertificationId: 1,
-        certificateInformation: Reference(id: 1),
-        selectedOption: yes,
-      );
+      final vm = OtherCertificationsViewModel()
+        ..repository = repo
+        ..yesNoNaOptions = [na, yes]
+        ..certificationDataMap[1] = CertificationData(
+          appCertificationId: 1,
+          certificateInformation: Reference(id: 1),
+          selectedOption: yes,
+        );
 
       final list = vm.getSelectedDropdownOption(1);
 
@@ -614,18 +589,16 @@ void main() {
     test(
         "getSelectedDropdownOption returns empty when"
         " selected option not found", () {
-      final vm = OtherCertificationsViewModel();
-      vm.repository = repo;
-
-      vm.yesNoNaOptions = [
-        Reference(id: ServerConstants.optionNAid, name: "NA"),
-      ];
-
-      vm.certificationDataMap[1] = CertificationData(
-        appCertificationId: 1,
-        certificateInformation: Reference(id: 1),
-        selectedOption: Reference(id: 123456, name: "UNKNOWN"),
-      );
+      final vm = OtherCertificationsViewModel()
+        ..repository = repo
+        ..yesNoNaOptions = [
+          Reference(id: ServerConstants.optionNAid, name: "NA"),
+        ]
+        ..certificationDataMap[1] = CertificationData(
+          appCertificationId: 1,
+          certificateInformation: Reference(id: 1),
+          selectedOption: Reference(id: 123456, name: "UNKNOWN"),
+        );
 
       final list = vm.getSelectedDropdownOption(1);
 
@@ -635,31 +608,22 @@ void main() {
 
   group("checkReadAccess", () {
     test("copies pageMode=view into effectivePageMode", () async {
-      final vm = OtherCertificationsViewModel();
-      vm.pageMode = PageMode.view;
-
+      final vm = OtherCertificationsViewModel()..pageMode = PageMode.view;
       await vm.checkReadAccess();
-
       expect(vm.effectivePageMode, PageMode.view);
       expect(vm.canEdit, false);
     });
 
     test("copies pageMode=edit into effectivePageMode", () async {
-      final vm = OtherCertificationsViewModel();
-      vm.pageMode = PageMode.edit;
-
+      final vm = OtherCertificationsViewModel()..pageMode = PageMode.edit;
       await vm.checkReadAccess();
-
       expect(vm.effectivePageMode, PageMode.edit);
       expect(vm.canEdit, true);
     });
 
     test("copies pageMode=na into effectivePageMode", () async {
-      final vm = OtherCertificationsViewModel();
-      vm.pageMode = PageMode.na;
-
+      final vm = OtherCertificationsViewModel()..pageMode = PageMode.na;
       await vm.checkReadAccess();
-
       expect(vm.effectivePageMode, PageMode.na);
       expect(vm.isNA, true);
     });
@@ -667,9 +631,9 @@ void main() {
 
   group("onSaveContinueButtonPressed", () {
     test("returns early when already submitting", () async {
-      final vm = _TestableOtherCertificationsViewModel();
-      vm.repository = repo;
-      vm.isSubmitting = true;
+      final vm = _TestableOtherCertificationsViewModel()
+        ..repository = repo
+        ..isSubmitting = true;
 
       await vm.onSaveContinueButtonPressed();
 
@@ -679,20 +643,18 @@ void main() {
     });
 
     test("posts only updated items and completes success path", () async {
-      final vm = _TestableOtherCertificationsViewModel();
-      vm.repository = repo;
-
-      vm.certificationDataMap[1] = CertificationData(
-        appCertificationId: 1,
-        certificateInformation: Reference(id: 1),
-        isUpdated: true,
-      );
-
-      vm.certificationDataMap[2] = CertificationData(
-        appCertificationId: 2,
-        certificateInformation: Reference(id: 2),
-        isUpdated: false,
-      );
+      final vm = _TestableOtherCertificationsViewModel()
+        ..repository = repo
+        ..certificationDataMap[1] = CertificationData(
+          appCertificationId: 1,
+          certificateInformation: Reference(id: 1),
+          isUpdated: true,
+        )
+        ..certificationDataMap[2] = CertificationData(
+          appCertificationId: 2,
+          certificateInformation: Reference(id: 2),
+          isUpdated: false,
+        );
 
       await vm.onSaveContinueButtonPressed();
 
@@ -706,14 +668,13 @@ void main() {
     });
 
     test("success path still posts empty list if nothing updated", () async {
-      final vm = _TestableOtherCertificationsViewModel();
-      vm.repository = repo;
-
-      vm.certificationDataMap[1] = CertificationData(
-        appCertificationId: 1,
-        certificateInformation: Reference(id: 1),
-        isUpdated: false,
-      );
+      final vm = _TestableOtherCertificationsViewModel()
+        ..repository = repo
+        ..certificationDataMap[1] = CertificationData(
+          appCertificationId: 1,
+          certificateInformation: Reference(id: 1),
+          isUpdated: false,
+        );
 
       await vm.onSaveContinueButtonPressed();
 
@@ -726,16 +687,14 @@ void main() {
 
     test("error path shows failure toast and ends with loaded status",
         () async {
-      final vm = _TestableOtherCertificationsViewModel();
-      vm.repository = repo;
-
-      vm.certificationDataMap[1] = CertificationData(
-        appCertificationId: 1,
-        certificateInformation: Reference(id: 1),
-        isUpdated: true,
-      );
-
       repo.throwPostError = true;
+      final vm = _TestableOtherCertificationsViewModel()
+        ..repository = repo
+        ..certificationDataMap[1] = CertificationData(
+          appCertificationId: 1,
+          certificateInformation: Reference(id: 1),
+          isUpdated: true,
+        );
 
       await vm.onSaveContinueButtonPressed();
 
@@ -754,7 +713,6 @@ void main() {
         "type, loads data, "
         "initializes defaults, and marks loaded", () async {
       final vm = _TestableOtherCertificationsViewModel();
-
       await vm.init(CertificationType.rm);
 
       expect(vm.state.type, CertificationType.rm);

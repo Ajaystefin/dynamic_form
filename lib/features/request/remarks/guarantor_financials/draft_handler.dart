@@ -50,10 +50,11 @@ class GuarantorFinancialDraftHandler
     GuarantorFinancialViewModel vm,
     Map<String, dynamic> data,
   ) {
-    vm.hasCreditLensData =
-        data["hasCreditLensData"] as bool? ?? vm.hasCreditLensData;
-    vm.hasSavedAnalysisData =
-        data["hasSavedAnalysisData"] as bool? ?? vm.hasSavedAnalysisData;
+    vm
+      ..hasCreditLensData =
+          data["hasCreditLensData"] as bool? ?? vm.hasCreditLensData
+      ..hasSavedAnalysisData =
+          data["hasSavedAnalysisData"] as bool? ?? vm.hasSavedAnalysisData;
 
     final List<dynamic>? draftList = data["entities"] as List<dynamic>?;
     if (draftList == null) return;
@@ -100,14 +101,17 @@ class GuarantorFinancialDraftHandler
 
         final rows = vm.incomeRowsFor(entityId);
         if (rows.isNotEmpty) {
-          rows.clear();
-          rows.addAll(restoredRows);
+          rows
+            ..clear()
+            ..addAll(restoredRows);
         }
 
         // Also update the active table if this is the currently viewed entity
         if (vm.state.currentEntityId == entityId) {
           vm.incomeStatementRows.clear();
-          vm.incomeStatementRows.addAll(restoredRows);
+          vm.incomeStatementRows
+            ..clear()
+            ..addAll(restoredRows);
           final newRows = vm.incomeStatementRows.where((r) => r.isNew).toList();
           vm.incomeRows = [...vm.incomeStatementRows, ...newRows];
 

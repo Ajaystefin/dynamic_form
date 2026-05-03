@@ -96,7 +96,10 @@ class DigitalEfilingViewModel extends SafeCubit<DigitalEfilingState> {
   bool showError = true;
   String? customerRimNo;
   String? customerName;
-  String? groupName, groupId, grpId, grpName;
+  String? groupName;
+  String? groupId;
+  String? grpId;
+  String? grpName;
   ApplicationDetails? applicationDetails;
 
   List<Customer>? rimList = [];
@@ -160,8 +163,9 @@ class DigitalEfilingViewModel extends SafeCubit<DigitalEfilingState> {
     customerNameLoadingStatus = LoadingStatus.loaded;
     groupIdLoadingStatus = LoadingStatus.loaded;
     groupNameLoadingStatus = LoadingStatus.loaded;
-    logger.i("groupIdLoadingStatus. $groupIdLoadingStatus");
-    logger.i("customerRimNoLoadingStatus. $customerRimNoLoadingStatus");
+    logger
+      ..i("groupIdLoadingStatus. $groupIdLoadingStatus")
+      ..i("customerRimNoLoadingStatus. $customerRimNoLoadingStatus");
 
     emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
   }

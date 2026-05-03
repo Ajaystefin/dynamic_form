@@ -408,9 +408,10 @@ class CovenantsSummaryViewModel extends SafeCubit<CovenantsSummaryState>
     try {
       emit(state.copyWith(loaderStatus: LoadingStatus.loading));
 
-      covenatDelete.isDeleted = true;
-      covenatDelete.isNew = false;
-      covenatDelete.isCovenant = true;
+      covenatDelete
+        ..isDeleted = true
+        ..isNew = false
+        ..isCovenant = true;
 
       final Map<String, dynamic> raw =
           covenatDelete.toDeleteJson(Globals.request?.applicationRefNo);

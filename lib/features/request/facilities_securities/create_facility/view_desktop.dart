@@ -382,8 +382,7 @@ class ViewDesktop extends StatelessWidget {
                     FiTenor(viewModel: viewModel),
                   ],
                 ),
-              if (viewModel.isFIFlow)
-                _buildCcRecommendedRow(viewModel),
+              if (viewModel.isFIFlow) _buildCcRecommendedRow(viewModel),
               const Gap(),
               FormRow(
                 children: [
@@ -399,10 +398,10 @@ class ViewDesktop extends StatelessWidget {
                   SharedLimit(viewModel: viewModel),
                   BorrowerRim(viewModel: viewModel),
                   Visibility(
-                    visible: (viewModel.getFacility.sharedLimit?.id ==
+                    visible: viewModel.getFacility.sharedLimit?.id ==
                             ServerConstants.optionYESid &&
                         Utils.isGroupApplication() &&
-                        viewModel.borrowersByRimInTable.isNotEmpty),
+                        viewModel.borrowersByRimInTable.isNotEmpty,
                     child: LimitAllocationTable(viewModel: viewModel),
                   ),
                 ],
@@ -607,18 +606,17 @@ class ViewDesktop extends StatelessWidget {
     // Aliases: avoids repeating the 60-char property names inline
     final bool showRbCredit =
         viewModel.showNewRevisedBankLimitRecommendedByCreditAmount;
-    final bool showExcessCc = viewModel
-        .showNewExcessOverMaxLimitAllowanceRecommendedByCreditAmount;
-    final ccController = viewModel
-        .newExcessOverMaxLimitAllowanceRecommendedByCreditController;
+    final bool showExcessCc =
+        viewModel.showNewExcessOverMaxLimitAllowanceRecommendedByCreditAmount;
+    final ccController =
+        viewModel.newExcessOverMaxLimitAllowanceRecommendedByCreditController;
     return FormRow(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         showRbCredit
             ? CommonCurrencyConvertField(
                 viewModel: viewModel,
-                textController:
-                    viewModel.newProposedByccController,
+                textController: viewModel.newProposedByccController,
               )
             : const SizedBox.shrink(),
         showExcessCc

@@ -91,16 +91,18 @@ class ApplicationBorrowersViewModel
         switch (t) {
           case CustomerType.investmentGradeBanks:
             if (c.isCountryFI == false) {
-              c.isSelected = true;
-              c.isSelectedBelowGrade = false;
-              c.isSelectedCountryFI = false;
+              c
+                ..isSelected = true
+                ..isSelectedBelowGrade = false
+                ..isSelectedCountryFI = false;
             }
 
           case CustomerType.belowInvestmentGradeBanks:
             if (c.isCountryFI == false) {
-              c.isSelectedBelowGrade = true;
-              c.isSelected = false;
-              c.isSelectedCountryFI = false;
+              c
+                ..isSelectedBelowGrade = true
+                ..isSelected = false
+                ..isSelectedCountryFI = false;
             }
 
           case CustomerType.country:
@@ -174,8 +176,9 @@ class ApplicationBorrowersViewModel
           pinned.isSelected = true;
         }
 
-        customers.removeWhere((c) => c.customerRimNo == pinned.customerRimNo);
-        customers.insert(0, pinned);
+        customers
+          ..removeWhere((c) => c.customerRimNo == pinned.customerRimNo)
+          ..insert(0, pinned);
       }
     }
 
@@ -218,7 +221,8 @@ class ApplicationBorrowersViewModel
         "IG=${customers.where((c) => c.isSelected == true).length}, "
         "BIG=${customers.where((c) => c.isSelectedBelowGrade == true).length}, "
         "COUNTRY=${customers.where(
-                (c) => c.isSelectedCountryFI == true,).length}");
+              (c) => c.isSelectedCountryFI == true,
+            ).length}");
 
     emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
   }
@@ -360,9 +364,10 @@ class ApplicationBorrowersViewModel
       return;
     }
 
-    customer.isSelectedCountryFI = isSelected;
-    customer.isSelected = false;
-    customer.isSelectedBelowGrade = false;
+    customer
+      ..isSelectedCountryFI = isSelected
+      ..isSelected = false
+      ..isSelectedBelowGrade = false;
 
     selectedCustomers.removeWhere((c) => c.customerRimNo.toString() == rim);
     if (isSelected) selectedCustomers.add(customer);

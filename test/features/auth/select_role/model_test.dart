@@ -24,8 +24,8 @@ void main() {
     AlertManager.overrideInstance(mockAlertManager);
     await TestConfig.setupTestEnvironment();
     await EnvConfig.setEnvironment();
-    viewModel = SelectRoleViewModel();
-    viewModel.repository = mockRepository;
+    viewModel = SelectRoleViewModel()
+      ..repository = mockRepository;
   });
 
   group("SelectRoleViewModel Tests", () {
@@ -49,9 +49,10 @@ void main() {
     });
 
     test("check routeAfterRoleChange with different role", () {
-      viewModel.routeAfterRoleChange(UserRole.admin);
-      viewModel.routeAfterRoleChange(UserRole.boardDirectorProxy);
-      viewModel.routeAfterRoleChange(UserRole.icsAdmin);
+      viewModel
+        ..routeAfterRoleChange(UserRole.admin)
+        ..routeAfterRoleChange(UserRole.boardDirectorProxy)
+        ..routeAfterRoleChange(UserRole.icsAdmin);
     });
   });
 }

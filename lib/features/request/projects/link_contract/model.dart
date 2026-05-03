@@ -96,7 +96,7 @@ class LinkContractViewModel extends SafeCubit<LinkContractState>
   Reference? selectedBorrowerRole;
   Project? project = Project();
 
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
   PageMode pageMode = PageMode.na;
 
   // ---------------------------------------------------------------------------
@@ -230,7 +230,7 @@ class LinkContractViewModel extends SafeCubit<LinkContractState>
 
       // Pick the correct amount based on the flag
       final double amount =
-          (double.tryParse(contract.contractAmount.toString()) ?? 0);
+          double.tryParse(contract.contractAmount.toString()) ?? 0;
 
       // Convert
       final double convertedValue = amount * exchangeRate;
@@ -684,7 +684,7 @@ class LinkContractViewModel extends SafeCubit<LinkContractState>
     contract.borrowerRole = selected.name;
     contract.isMainContractor =
         (selected.id == ServerConstants.mainContractorId);
-    if ((selected.id == ServerConstants.mainContractorId)) {
+    if (selected.id == ServerConstants.mainContractorId) {
       paymasterNameController.text = project?.projectUltimateOwnerName ?? "";
       contract.paymasterName = project?.projectUltimateOwnerName ?? "";
     } else {

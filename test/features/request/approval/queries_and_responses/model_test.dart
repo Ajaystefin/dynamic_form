@@ -100,8 +100,9 @@ class TestableQueriesAndResponsesViewModel
 
   @override
   Future<void> init(context) async {
-    initCalled = true;
-    emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
+    this
+      ..initCalled = true
+      ..emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
   }
 
   @override
@@ -657,9 +658,7 @@ void main() {
         // Verify and capture only ONCE to avoid the "VERIFIED" mocktail error.
         final verification = verify(
           () => mockApprovalRepository.saveReviewComments(captureAny()),
-        );
-
-        verification.called(1);
+        )..called(1);
 
         final captured = verification.captured.single as Comment;
 

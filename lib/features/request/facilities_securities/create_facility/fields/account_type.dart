@@ -17,7 +17,7 @@ class FacilityAccountType extends StatelessWidget {
       isEnabled: (!viewModel.isCmoUpdate() ||
               !viewModel.isEditableForProposedByCC()) &&
           viewModel.canEdit,
-      isRequired: (!viewModel.isFIFlow),
+      isRequired: !viewModel.isFIFlow,
       child: CustomMultiSelectDropdown<Reference>(
         validationMessage:
             viewModel.isFIFlow ? null : "common.validation.emptyField".tr(),

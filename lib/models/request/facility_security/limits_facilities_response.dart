@@ -548,7 +548,7 @@ int? _epochSeconds(dynamic v) {
   if (v is num) return v.toInt();
   try {
     final dt = DateTime.parse(v.toString()).toUtc();
-    return (dt.millisecondsSinceEpoch ~/ 1000);
+    return dt.millisecondsSinceEpoch ~/ 1000;
   } catch (_) {
     return null;
   }

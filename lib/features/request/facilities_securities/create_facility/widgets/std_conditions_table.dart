@@ -59,7 +59,7 @@ class ConditionsTable extends StatelessWidget {
 
               final String description = item.description ?? "";
               final bool canAmend =
-                  (viewModel.standardCondition[index].isAmended ?? false);
+                  viewModel.standardCondition[index].isAmended ?? false;
               String stripBrackets(String s) =>
                   s.replaceAll("[", "").replaceAll("]", "");
               // Build description cell; widget auto-detects [ ... ] or ...
@@ -257,9 +257,10 @@ class _MultiEditableTextState extends State<MultiEditableText> {
           value = _controllers[controllerIndex].text.trim();
         }
         // Keep placeholders persistent for future edits
-        buffer.write("[");
-        buffer.write(value);
-        buffer.write("]");
+        buffer
+          ..write("[")
+          ..write(value)
+          ..write("]");
         controllerIndex++;
       }
     }

@@ -13,33 +13,33 @@ class ProfitabilityData {
   });
 
   ProfitabilityData.fromJhson(Map<String, dynamic> json) {
-    nii = (json["nii"])?.toString();
-    nfi = (json["nfi"])?.toString();
-    expectedNetIncome = (json["expectedNetIncome"])?.toString();
-    avgCasa = (json["avgCasa"])?.toString();
-    rwa = (json["rwa"])?.toString();
+    nii = json["nii"]?.toString();
+    nfi = json["nfi"]?.toString();
+    expectedNetIncome = json["expectedNetIncome"]?.toString();
+    avgCasa = json["avgCasa"]?.toString();
+    rwa = json["rwa"]?.toString();
 
-    realizedNii = (json["realizedNii"])?.toString();
-    realizedNfi = (json["realizedNfi"])?.toString();
-    realizedExpectedNetIncome = (json["realizedExpectedNetIncome"])?.toString();
-    realizedAvgCasa = (json["realizedAvgCasa"])?.toString();
-    realizedRwa = (json["realizedRwa"])?.toString();
+    realizedNii = json["realizedNii"]?.toString();
+    realizedNfi = json["realizedNfi"]?.toString();
+    realizedExpectedNetIncome = json["realizedExpectedNetIncome"]?.toString();
+    realizedAvgCasa = json["realizedAvgCasa"]?.toString();
+    realizedRwa = json["realizedRwa"]?.toString();
   }
 
   ProfitabilityData.fromProjectedNext12MonthsJson(Map<String, dynamic> json) {
-    nii = (json["nii"])?.toString();
-    nfi = (json["nfi"])?.toString();
-    expectedNetIncome = (json["expectedNetIncome"])?.toString();
-    avgCasa = (json["avgCasa"])?.toString();
-    rwa = (json["rwa"])?.toString();
+    nii = json["nii"]?.toString();
+    nfi = json["nfi"]?.toString();
+    expectedNetIncome = json["expectedNetIncome"]?.toString();
+    avgCasa = json["avgCasa"]?.toString();
+    rwa = json["rwa"]?.toString();
   }
 
   ProfitabilityData.fromRealizedLastYearsJson(Map<String, dynamic> json) {
-    nii = (json["nii"])?.toString();
-    nfi = (json["nfi"])?.toString();
-    expectedNetIncome = (json["expectedNetIncome"])?.toString();
-    avgCasa = (json["avgCasa"])?.toString();
-    rwa = (json["rwa"])?.toString();
+    nii = json["nii"]?.toString();
+    nfi = json["nfi"]?.toString();
+    expectedNetIncome = json["expectedNetIncome"]?.toString();
+    avgCasa = json["avgCasa"]?.toString();
+    rwa = json["rwa"]?.toString();
   }
   String? nii;
   String? nfi;

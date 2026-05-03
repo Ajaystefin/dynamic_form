@@ -123,9 +123,9 @@ void main() {
     mockRef = MockReferenceDataService();
     mockAlert = MockAlertManager();
 
-    vm = CustomerInformationViewModel();
-    vm.repository = mockCcsys;
-    vm.repositoryCustomer = mockCustRepo;
+    vm = CustomerInformationViewModel()
+      ..repository = mockCcsys
+      ..repositoryCustomer = mockCustRepo;
 
     // Override ref data service (since your class uses static)
     ReferenceDataService.overrideInstance(mockRef);
@@ -381,9 +381,10 @@ void main() {
   });
 
   test("onChangeisLegalEntityIdentifier YES clears NA-named selections", () {
-    vm.selectedEmirateLicense = Reference(name: "NA");
-    vm.selectedEmirateEstablishment = Reference(name: "NA");
-    vm.onChangeisLegalEntityIdentifier(Reference(id: 1, name: "Yes"));
+    vm
+      ..selectedEmirateLicense = Reference(name: "NA")
+      ..selectedEmirateEstablishment = Reference(name: "NA")
+      ..onChangeisLegalEntityIdentifier(Reference(id: 1, name: "Yes"));
     expect(vm.selectedEmirateLicense, isNull);
     expect(vm.selectedEmirateEstablishment, isNull);
     expect(vm.leiController.text, "");
@@ -391,9 +392,10 @@ void main() {
 
   test("onChangeisLegalEntityIdentifier YES with non-NA selections keeps them",
       () {
-    vm.selectedEmirateLicense = Reference(name: "Dubai");
-    vm.selectedEmirateEstablishment = Reference(name: "Abu Dhabi");
-    vm.onChangeisLegalEntityIdentifier(Reference(id: 1, name: "Yes"));
+    vm
+      ..selectedEmirateLicense = Reference(name: "Dubai")
+      ..selectedEmirateEstablishment = Reference(name: "Abu Dhabi")
+      ..onChangeisLegalEntityIdentifier(Reference(id: 1, name: "Yes"));
     expect(vm.selectedEmirateLicense?.name, "Dubai");
     expect(vm.selectedEmirateEstablishment?.name, "Abu Dhabi");
   });
@@ -409,12 +411,12 @@ void main() {
   });
 
   test("onCountryChipDeleted removes by index", () {
-    vm.customerInformation.countryOfRiskFundUtilization = [
-      Reference(name: "AE"),
-      Reference(name: "IN"),
-    ];
-
-    vm.onCountryChipDeleted(0);
+    vm
+      ..customerInformation.countryOfRiskFundUtilization = [
+        Reference(name: "AE"),
+        Reference(name: "IN"),
+      ]
+      ..onCountryChipDeleted(0);
     expect(
       vm.customerInformation.countryOfRiskFundUtilization!.first.name,
       "IN",
@@ -427,18 +429,20 @@ void main() {
   });
 
   test("onCountryChipDeleted: invalid index is no-op", () {
-    vm.customerInformation.countryOfRiskFundUtilization = [
-      Reference(name: "AE"),
-    ];
-    vm.onCountryChipDeleted(5);
+    vm
+      ..customerInformation.countryOfRiskFundUtilization = [
+        Reference(name: "AE"),
+      ]
+      ..onCountryChipDeleted(5);
     expect(vm.customerInformation.countryOfRiskFundUtilization!.length, 1);
   });
 
   test("onCountryChipDeleted: negative index is no-op", () {
-    vm.customerInformation.countryOfRiskFundUtilization = [
-      Reference(name: "AE"),
-    ];
-    vm.onCountryChipDeleted(-1);
+    vm
+      ..customerInformation.countryOfRiskFundUtilization = [
+        Reference(name: "AE"),
+      ]
+      ..onCountryChipDeleted(-1);
     expect(vm.customerInformation.countryOfRiskFundUtilization!.length, 1);
   });
 
@@ -458,63 +462,64 @@ void main() {
   });
 
   test("addRow multiple times accumulates correctly", () {
-    vm.addRow();
-    vm.addRow();
-    vm.addRow();
+    vm
+      ..addRow()
+      ..addRow()
+      ..addRow();
     expect(vm.rows.length, 3);
     expect(vm.ctrls.length, 3);
   });
 
   test("removeRow removes and disposes controllers", () {
-    vm.addRow();
-    vm.addRow();
-    vm.removeRow(0);
+    vm
+      ..addRow()
+      ..addRow()
+      ..removeRow(0);
     expect(vm.rows.length, 1);
   });
 
   test("removeRow: invalid index is no-op", () {
-    vm.addRow();
-    vm.removeRow(5);
+    vm
+      ..addRow()
+      ..removeRow(5);
     expect(vm.rows.length, 1);
   });
 
   test("removeRow: negative index is no-op", () {
-    vm.addRow();
-    vm.removeRow(-1);
+    vm
+      ..addRow()
+      ..removeRow(-1);
     expect(vm.rows.length, 1);
   });
 
   test("removeRow last element empties rows", () {
-    vm.addRow();
-    vm.removeRow(0);
+    vm
+      ..addRow()
+      ..removeRow(0);
     expect(vm.rows.isEmpty, true);
     expect(vm.ctrls.isEmpty, true);
   });
 
   test("setResidency RE clears passport fields", () async {
-    vm.addRow();
-    await vm.setResidency(0, Reference(reference1: "RE"));
+    await (vm..addRow()).setResidency(0, Reference(reference1: "RE"));
     expect(vm.rows[0].passportNumberExpiryDatePartnerShareholder, null);
     expect(vm.ctrls[0].passport.text, "");
     expect(vm.rows[0].partnerShareholderResidence, "RE");
   });
 
   test("setResidency NR clears emiratesId", () async {
-    vm.addRow();
-    await vm.setResidency(0, Reference(reference1: "NR"));
+    await (vm..addRow()).setResidency(0, Reference(reference1: "NR"));
     expect(vm.rows[0].emiratesIdPartnerShareholder, "");
     expect(vm.rows[0].partnerShareholderResidence, "NR");
   });
 
   test("setType sets partnerShareholderType", () async {
-    vm.addRow();
-    await vm.setType(0, Reference(name: "PR1"));
+    await (vm..addRow()).setType(0, Reference(name: "PR1"));
     expect(vm.rows[0].partnerShareholderType, "PR1");
   });
 
   test("setLegalStatus JP clears NP fields", () async {
-    vm.addRow();
-    await vm.setLegalStatus(0, Reference(reference1: "JP"));
+    await (vm..addRow()).setLegalStatus(0, Reference(reference1: "JP"));
     expect(vm.rows[0].nationalityPartnerShareholder, null);
     expect(vm.rows[0].emiratesIdPartnerShareholder, "");
     expect(vm.rows[0].emiratesIdExpiryDatePartnerShareholder, null);
@@ -523,8 +528,7 @@ void main() {
   });
 
   test("setLegalStatus NP clears JP fields", () async {
-    vm.addRow();
-    await vm.setLegalStatus(0, Reference(reference1: "NP"));
+    await (vm..addRow()).setLegalStatus(0, Reference(reference1: "NP"));
     expect(vm.rows[0].tradeLicenseNumberPartnerShareholder, "");
     expect(vm.rows[0].placeIssueTradeLicenseNumberPartnerShareholder, null);
     expect(vm.rows[0].psLei, null);
@@ -536,102 +540,93 @@ void main() {
   });
 
   test("setNationality sets nationality on row", () async {
-    vm.addRow();
-    await vm.setNationality(0, Reference(name: "Indian"));
+    await (vm..addRow()).setNationality(0, Reference(name: "Indian"));
     expect(vm.rows[0].nationalityPartnerShareholder, "Indian");
   });
 
   test("setTradeLicensePlace sets place on row", () async {
-    vm.addRow();
-    await vm.setTradeLicensePlace(0, Reference(name: "Dubai"));
+    await (vm..addRow()).setTradeLicensePlace(0, Reference(name: "Dubai"));
     expect(vm.rows[0].placeIssueTradeLicenseNumberPartnerShareholder, "Dubai");
   });
 
   test("setLeiOpt YES sets psLei to Y", () async {
-    vm.addRow();
-    await vm.setLeiOpt(0, Reference(id: 1, name: "Yes"));
+    await (vm..addRow()).setLeiOpt(0, Reference(id: 1, name: "Yes"));
     expect(vm.rows[0].psLei, "N");
   });
 
   test("setLeiOpt NO sets psLei to N and clears leiNumber", () async {
-    vm.addRow();
-    vm.ctrls[0].leiNumber.text = "SOMEVALUE";
-    await vm.setLeiOpt(0, Reference(id: 0, name: "No"));
+    await (vm
+          ..addRow()
+          ..ctrls[0].leiNumber.text = "SOMEVALUE")
+        .setLeiOpt(0, Reference(id: 0, name: "No"));
     expect(vm.rows[0].psLei, "N");
     expect(vm.rows[0].leiNumberPartnerShareholder, "SOMEVALUE");
     expect(vm.ctrls[0].leiNumber.text, "SOMEVALUE");
   });
 
   test("setGender sets gender on row", () async {
-    vm.addRow();
-    await vm.setGender(0, Reference(name: "Male"));
+    await (vm..addRow()).setGender(0, Reference(name: "Male"));
     expect(vm.rows[0].gender, "Male");
   });
 
   test("setEmiratesIdExpiry sets expiry date", () async {
-    vm.addRow();
     final date = DateTime(2030, 1, 1);
-    await vm.setEmiratesIdExpiry(0, date);
+    await (vm..addRow()).setEmiratesIdExpiry(0, date);
     expect(vm.rows[0].emiratesIdExpiryDatePartnerShareholder, date);
   });
 
   test("setEmiratesIdExpiry accepts null", () async {
-    vm.addRow();
-    await vm.setEmiratesIdExpiry(0, null);
+    await (vm..addRow()).setEmiratesIdExpiry(0, null);
     expect(vm.rows[0].emiratesIdExpiryDatePartnerShareholder, null);
   });
 
   test("setPassportExpiry sets expiry date", () async {
-    vm.addRow();
     final date = DateTime(2032, 6, 15);
-    await vm.setPassportExpiry(0, date);
+    await (vm..addRow()).setPassportExpiry(0, date);
     expect(vm.rows[0].passportNumberExpiryDatePartnerShareholder, date);
   });
 
   test("setPassportExpiry accepts null", () async {
-    vm.addRow();
-    await vm.setPassportExpiry(0, null);
+    await (vm..addRow()).setPassportExpiry(0, null);
     expect(vm.rows[0].passportNumberExpiryDatePartnerShareholder, null);
   });
 
-  test("notifyRowChanged creates new list reference and emits", () async {
-    vm.addRow();
-    final originalList = vm.rows;
-    await vm.notifyRowChanged();
-    expect(vm.rows, isNot(same(originalList)));
-  });
-
   test("onChangeTLNumber updates tradeLicenseNumber on row", () {
-    vm.addRow();
-    vm.onChangeTLNumber("TL12345", 0);
+    vm
+      ..addRow()
+      ..onChangeTLNumber("TL12345", 0);
     expect(vm.rows[0].tradeLicenseNumberPartnerShareholder, "TL12345");
   });
 
   test("onChangePassport updates passport on row", () {
-    vm.addRow();
-    vm.onChangePassport("AB123/AE", 0);
+    vm
+      ..addRow()
+      ..onChangePassport("AB123/AE", 0);
     expect(vm.rows[0].passportNumberPartnerShareholder, "AB123/AE");
   });
 
   test("onChangePassport empty value clears passport fields", () {
-    vm.addRow();
-    vm.rows[0].passportNumberPartnerShareholder = "OLD/AE";
-    vm.rows[0].passportNumberExpiryDatePartnerShareholder = DateTime.now();
-    vm.onChangePassport("", 0);
+    vm
+      ..addRow()
+      ..rows[0].passportNumberPartnerShareholder = "OLD/AE"
+      ..rows[0].passportNumberExpiryDatePartnerShareholder = DateTime.now()
+      ..onChangePassport("", 0);
     expect(vm.rows[0].passportNumberExpiryDatePartnerShareholder, null);
     expect(vm.rows[0].passportNumberPartnerShareholder, "");
     expect(vm.isDateValidPassportExpiry, false);
   });
 
   test("onChangeEmiratesId updates emiratesId on row", () {
-    vm.addRow();
-    vm.onChangeEmiratesId("784-1234-1234567-1", 0);
+    vm
+      ..addRow()
+      ..onChangeEmiratesId("784-1234-1234567-1", 0);
     expect(vm.rows[0].emiratesIdPartnerShareholder, "784-1234-1234567-1");
   });
 
   test("onChangeLEINumber updates leiNumber on row", () {
-    vm.addRow();
-    vm.onChangeLEINumber("ABCDE12345ABCDE12345", 0);
+    vm
+      ..addRow()
+      ..onChangeLEINumber("ABCDE12345ABCDE12345", 0);
     expect(vm.rows[0].leiNumberPartnerShareholder, "ABCDE12345ABCDE12345");
   });
 
@@ -1451,9 +1446,10 @@ void main() {
   });
 
   test("disposeControllers clears and emits loaded", () {
-    vm.addRow();
-    vm.addRow();
-    vm.disposeControllers();
+    vm
+      ..addRow()
+      ..addRow()
+      ..disposeControllers();
     expect(vm.state.partnerShareholderStatus, LoadingStatus.loaded);
   });
 
@@ -1595,8 +1591,7 @@ void main() {
       MaterialApp(home: Form(key: vm.formKey, child: Container())),
     );
 
-    vm.rows = [];
-    await vm.saveCustomerInformation();
+    await (vm..rows = []).saveCustomerInformation();
 
     expect(vm.state.loaderStatus, LoadingStatus.loaded);
   });

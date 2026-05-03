@@ -16,16 +16,20 @@ class LocalStorageKeys {
 }
 
 void testLocalStorageBoxes() {
-  LocalStorageBoxes.user;
-  LocalStorageBoxes.references;
-  LocalStorageBoxes.referenceData;
+  [
+    LocalStorageBoxes.user,
+    LocalStorageBoxes.references,
+    LocalStorageBoxes.referenceData,
+  ];
 }
 
 void testLocalStorageKeys() {
-  LocalStorageKeys.authToken;
-  LocalStorageKeys.refreshToken;
-  LocalStorageKeys.sessionID;
-  LocalStorageKeys.tokenExpiryTime;
-  LocalStorageKeys.isGracePeriodPopupShown;
-  LocalStorageKeys.userInfo;
+  [
+    LocalStorageKeys.authToken,
+    LocalStorageKeys.refreshToken,
+    LocalStorageKeys.sessionID,
+    LocalStorageKeys.tokenExpiryTime,
+    LocalStorageKeys.isGracePeriodPopupShown,
+    LocalStorageKeys.userInfo,
+  ];
 }

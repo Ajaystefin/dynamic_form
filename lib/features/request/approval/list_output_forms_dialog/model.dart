@@ -28,7 +28,8 @@ class ListOutputFormsDialogViewModel
   /// Public getter for the list of output forms.
   List<OutputForm> get outputForms => _outputForms;
 
-  String? selectedPreviewDoctype, selectedDownloadDoctype;
+  String? selectedPreviewDoctype;
+  String? selectedDownloadDoctype;
 
   /// Initializes the ViewModel by setting up the repository and fetching output
   /// forms.
@@ -84,7 +85,7 @@ class ListOutputFormsDialogViewModel
     _outputForms[index] = OutputForm(
       name: current.name,
       id: current.id,
-      isSelected: !(current.isSelected),
+      isSelected: !current.isSelected,
       url: current.url,
     );
 

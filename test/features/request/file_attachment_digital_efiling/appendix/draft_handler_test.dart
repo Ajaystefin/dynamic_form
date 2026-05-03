@@ -44,10 +44,9 @@ void main() {
   // Helper (NO editor setText calls)
   // ---------------------------------------------------------------------------
   AppendixViewModel buildVm() {
-    final vm = AppendixViewModel();
-
-    vm.selectedSectionType = "corporate";
-    vm.selectedRimNumber = "RIM-001";
+    final vm = AppendixViewModel()
+      ..selectedSectionType = "corporate"
+      ..selectedRimNumber = "RIM-001";
 
     // DO NOT call gcsController.setText in unit tests
     // Editor is intentionally unmounted
@@ -204,8 +203,7 @@ void main() {
   });
   test("applyDraft does not overwrite selectedSectionType with empty value",
       () async {
-    final vm = buildVm();
-    vm.selectedSectionType = "corporate";
+    final vm = buildVm()..selectedSectionType = "corporate";
 
     await applyDraftSafely(handler, vm, {
       "selectedSectionType": "",
@@ -216,8 +214,7 @@ void main() {
   });
   test("applyDraft does not overwrite selectedRimNumber with empty value",
       () async {
-    final vm = buildVm();
-    vm.selectedRimNumber = "RIM-001";
+    final vm = buildVm()..selectedRimNumber = "RIM-001";
 
     await applyDraftSafely(handler, vm, {
       "selectedRimNumber": "",

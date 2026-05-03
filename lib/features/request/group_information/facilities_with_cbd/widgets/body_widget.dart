@@ -176,7 +176,8 @@ class BodyWidget extends StatelessWidget {
     final List<List<Widget>> rows = [];
 
     for (final FacilitiesWithCbd item in groupFacilities) {
-      double fundedPresent, proposedLimit;
+      double fundedPresent;
+      double proposedLimit;
 
       switch (item.category) {
         case ServerConstants.indi:

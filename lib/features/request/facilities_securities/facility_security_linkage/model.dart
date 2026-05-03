@@ -157,7 +157,8 @@ class FacilitySecurityLinkageViewModel
     emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
   }
 
-  String? securityNumberFilter, securityTypeFilter;
+  String? securityNumberFilter;
+  String? securityTypeFilter;
 
   Future<void> onFilter({
     required String value,

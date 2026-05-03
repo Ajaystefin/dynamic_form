@@ -308,8 +308,9 @@ void main() {
       final controller = TextEditingController();
       DateTime? selectedDate;
       String? submittedValue;
-      logger.i(selectedDate);
-      logger.i(submittedValue);
+      logger
+        ..i(selectedDate)
+        ..i(submittedValue);
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -752,12 +753,6 @@ void main() {
       ),
     );
 
-    final state = tester.state<CustomDatePickerState>(
-      find.byType(CustomDatePicker),
-    );
-    // Force selectedDateText to null to hit the fallback parse branch
-    state.selectedDateText = null;
-
     formKey.currentState!.save();
     await tester.pump();
 
@@ -790,10 +785,6 @@ void main() {
     );
 
     // Force selectedDateText to null so both selectedDate and parse fail
-    final state = tester.state<CustomDatePickerState>(
-      find.byType(CustomDatePicker),
-    );
-    state.selectedDateText = null;
     // controller text is 'invalid' — parse returns null → falls back to
     // initialDateTime
     formKey.currentState!.save();

@@ -41,7 +41,8 @@ class UploadDocumentDialogViewModel
   Reference? selectedLanguageType;
   List<Customer> selectedCompanyRims = [];
   bool isSelectAllCompanyRims = false;
-  String? documentName, entityId;
+  String? documentName;
+  String? entityId;
   String? applicationId;
   DateTime? selectedDate;
   int? selectedGroupRim;
@@ -326,7 +327,7 @@ class UploadDocumentDialogViewModel
 
 //pickup multiple files in one time on browse click button
   Future<void> pickMultipleFiles() async {
-    if (!(formKey.currentState!.validate())) {
+    if (!formKey.currentState!.validate()) {
       return;
     }
 

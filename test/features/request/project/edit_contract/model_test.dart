@@ -260,57 +260,53 @@ void main() {
     when(() => mockAlertManager.showWarningToast(any())).thenReturn(null);
     when(() => mockAlertManager.showSuccessToast(any())).thenReturn(null);
 
-    viewModel = EditContractViewModel()..repository = mockRepository;
+    viewModel = EditContractViewModel()
+      ..repository = mockRepository
+      ..ppc = <PPC>[]
+      ..ppcControllers = <PpcControllers>[]
+      ..isNewRow = <bool>[]
+      ..contractValue = 1000
+      ..contractorValueController.text = "1000"
+      ..contract = (Contract()
+        ..appRefNo = "APP-001"
+        ..rimNo = "123")
+      ..project = (Project()
+        ..projectId = 1
+        ..projectCode = "PRJ-001"
+        ..projectName = "Test Project")
+      ..startDateController = TextEditingController()
+      ..completionDateController = TextEditingController()
+      ..projectTenorController = TextEditingController()
+      ..variationController = TextEditingController()
+      ..variationCompletionDateController = TextEditingController()
+      ..customerNameController = TextEditingController()
+      ..contractorCommentsController = TextEditingController()
+      ..contractorValueController = TextEditingController()
+      ..convertedAmountController = TextEditingController()
+      ..contractorScopeController = TextEditingController()
+      ..completionPercentageController = TextEditingController()
+      ..commentInputs = [""];
 
-    viewModel.ppc = <PPC>[];
-    viewModel.ppcControllers = <PpcControllers>[];
-    viewModel.isNewRow = <bool>[];
-
-    viewModel.contractValue = 1000;
-    viewModel.contractorValueController.text = "1000";
-
-    viewModel.contract = Contract()
-      ..appRefNo = "APP-001"
-      ..rimNo = "123";
-
-    viewModel.project = Project()
-      ..projectId = 1
-      ..projectCode = "PRJ-001"
-      ..projectName = "Test Project";
-
-    viewModel.startDateController = TextEditingController();
-    viewModel.completionDateController = TextEditingController();
-    viewModel.projectTenorController = TextEditingController();
-    viewModel.variationController = TextEditingController();
-    viewModel.variationCompletionDateController = TextEditingController();
-    viewModel.customerNameController = TextEditingController();
-    viewModel.contractorCommentsController = TextEditingController();
-    viewModel.contractorValueController = TextEditingController();
-    viewModel.convertedAmountController = TextEditingController();
-    viewModel.contractorScopeController = TextEditingController();
-    viewModel.completionPercentageController = TextEditingController();
-    viewModel.commentInputs = [""];
-
-    vm = TestEditContractViewModel()..repo = mockRepository;
-    vm.contract = Contract()
-      ..appRefNo = "APP-001"
-      ..rimNo = "123";
-    vm.project = Project()
-      ..projectId = 1
-      ..projectCode = "PRJ-001"
-      ..projectName = "Test Project";
-
-    vm.customerNameController = TextEditingController();
-    vm.convertedAmountController = TextEditingController();
-    vm.contractorValueController = TextEditingController();
-    vm.contractorScopeController = TextEditingController();
-    vm.contractorCommentsController = TextEditingController();
-    vm.projectTenorController = TextEditingController();
-    vm.startDateController = TextEditingController();
-    vm.completionDateController = TextEditingController();
-    vm.variationController = TextEditingController();
-    vm.variationCompletionDateController = TextEditingController();
-    vm.completionPercentageController = TextEditingController();
+    vm = TestEditContractViewModel()
+      ..repo = mockRepository
+      ..contract = (Contract()
+        ..appRefNo = "APP-001"
+        ..rimNo = "123")
+      ..project = (Project()
+        ..projectId = 1
+        ..projectCode = "PRJ-001"
+        ..projectName = "Test Project")
+      ..customerNameController = TextEditingController()
+      ..convertedAmountController = TextEditingController()
+      ..contractorValueController = TextEditingController()
+      ..contractorScopeController = TextEditingController()
+      ..contractorCommentsController = TextEditingController()
+      ..projectTenorController = TextEditingController()
+      ..startDateController = TextEditingController()
+      ..completionDateController = TextEditingController()
+      ..variationController = TextEditingController()
+      ..variationCompletionDateController = TextEditingController()
+      ..completionPercentageController = TextEditingController();
   });
 
   tearDown(() {
@@ -352,13 +348,13 @@ void main() {
 
   group("basic sync helpers", () {
     test("syncModelFromControllers copies static controllers into model", () {
-      viewModel.customerNameController.text = "Contract A";
-      viewModel.contractorValueController.text = "5000";
-      viewModel.contractorScopeController.text = "Scope A";
-      viewModel.completionPercentageController.text = "45.5";
-      viewModel.selectedCurrencyLabel = "USD";
-
-      viewModel.syncModelFromControllers();
+      viewModel
+        ..customerNameController.text = "Contract A"
+        ..contractorValueController.text = "5000"
+        ..contractorScopeController.text = "Scope A"
+        ..completionPercentageController.text = "45.5"
+        ..selectedCurrencyLabel = "USD"
+        ..syncModelFromControllers();
 
       expect(viewModel.contract.contractName, "Contract A");
       expect(viewModel.contract.contractValue, "5000");
@@ -368,15 +364,15 @@ void main() {
     });
 
     test("syncControllersFromModel copies model into static controllers", () {
-      viewModel.contract = Contract()
-        ..completionPercentage = 88.8
-        ..contractName = "Loaded Contract"
-        ..contractValue = "7500"
-        ..contractScope = "Loaded Scope"
-        ..projectTenor = 4
-        ..contractCurrency = "AED";
-
-      viewModel.syncControllersFromModel();
+      viewModel
+        ..contract = (Contract()
+          ..completionPercentage = 88.8
+          ..contractName = "Loaded Contract"
+          ..contractValue = "7500"
+          ..contractScope = "Loaded Scope"
+          ..projectTenor = 4
+          ..contractCurrency = "AED")
+        ..syncControllersFromModel();
 
       expect(viewModel.completionPercentageController.text, "88.8");
       expect(viewModel.customerNameController.text, "Loaded Contract");
@@ -416,16 +412,18 @@ void main() {
     });
 
     test("updateCommentInput updates valid index and draft controller", () {
-      viewModel.commentInputs = ["initial"];
-      viewModel.updateCommentInput(0, "updated");
+      viewModel
+        ..commentInputs = ["initial"]
+        ..updateCommentInput(0, "updated");
 
       expect(viewModel.commentInputs[0], "updated");
       expect(viewModel.contractorCommentsController.text, "updated");
     });
 
     test("updateCommentInput ignores invalid index", () {
-      viewModel.commentInputs = ["only"];
-      viewModel.updateCommentInput(5, "ignored");
+      viewModel
+        ..commentInputs = ["only"]
+        ..updateCommentInput(5, "ignored");
 
       expect(viewModel.commentInputs, ["only"]);
     });
@@ -574,8 +572,9 @@ void main() {
     });
 
     test("onCompletionDateSubmitted2 valid end updates model/controller", () {
-      viewModel.onStartDateSubmitted2(DateTime(2025, 1, 4));
-      viewModel.onCompletionDateSubmitted2(DateTime(2025, 2, 10));
+      viewModel
+        ..onStartDateSubmitted2(DateTime(2025, 1, 4))
+        ..onCompletionDateSubmitted2(DateTime(2025, 2, 10));
 
       expect(viewModel.contract.expectedEndDate, DateTime(2025, 2, 10));
       expect(viewModel.contract.expectedCompletionDate, DateTime(2025, 2, 10));
@@ -586,9 +585,9 @@ void main() {
     test(
         "onCompletionDateSubmitted2 invalid clears completion/tenor and sets flag",
         () {
-      viewModel.onStartDateSubmitted2(DateTime(2025, 5, 10));
-
-      viewModel.onCompletionDateSubmitted2(DateTime(2025, 5, 1));
+      viewModel
+        ..onStartDateSubmitted2(DateTime(2025, 5, 10))
+        ..onCompletionDateSubmitted2(DateTime(2025, 5, 1));
 
       expect(viewModel.contract.expectedEndDate, isNull);
       expect(viewModel.contract.expectedCompletionDate, isNull);
@@ -609,13 +608,13 @@ void main() {
     test(
         "callEndDateTenor(valid, isFirst: true) updates and recalculates tenor",
         () {
-      viewModel.onStartDateSubmitted2(DateTime(2025, 1, 1));
-
-      viewModel.callEndDateTenor(
-        DateTime(2025, 3, 15),
-        const YearRules(),
-        isFirst: true,
-      );
+      viewModel
+        ..onStartDateSubmitted2(DateTime(2025, 1, 1))
+        ..callEndDateTenor(
+          DateTime(2025, 3, 15),
+          const YearRules(),
+          isFirst: true,
+        );
 
       expect(viewModel.contract.expectedCompletionDate, DateTime(2025, 3, 15));
       expect(viewModel.completionDateController.text, "15/03/2025");
@@ -644,12 +643,13 @@ void main() {
 
     test("_updateTenor via public path warns and clears tenor when end < start",
         () {
-      viewModel.onStartDateSubmitted2(DateTime(2025, 5, 10));
-      viewModel.callEndDateTenor(
-        DateTime(2025, 5, 1),
-        const YearRules(),
-        isFirst: true,
-      );
+      viewModel
+        ..onStartDateSubmitted2(DateTime(2025, 5, 10))
+        ..callEndDateTenor(
+          DateTime(2025, 5, 1),
+          const YearRules(),
+          isFirst: true,
+        );
 
       expect(viewModel.contract.projectTenor, isNull);
       expect(viewModel.projectTenorController.text, "");
@@ -658,12 +658,13 @@ void main() {
     });
 
     test("_updateTenor via public path computes completed months", () {
-      viewModel.onStartDateSubmitted2(DateTime(2025, 1, 1));
-      viewModel.callEndDateTenor(
-        DateTime(2025, 3, 15),
-        const YearRules(),
-        isFirst: true,
-      );
+      viewModel
+        ..onStartDateSubmitted2(DateTime(2025, 1, 1))
+        ..callEndDateTenor(
+          DateTime(2025, 3, 15),
+          const YearRules(),
+          isFirst: true,
+        );
 
       expect(viewModel.contract.projectTenor, 2);
       expect(viewModel.projectTenorController.text, "2 Months");
@@ -965,27 +966,26 @@ void main() {
   group("LinkCommitmentNumberWith helpers", () {
     test("enrichLinkCommitmentNumberWith merges API data into selected list",
         () {
-      viewModel.contract.linkCommitmentNumberWith = [
-        LinkCommitmentNumber(projectAllocationAccount: "100001"),
-        LinkCommitmentNumber(projectAllocationAccount: "200002"),
-      ];
-
-      viewModel.linkContract = [
-        LinkCommitmentNumber(
-          projectAllocationAccount: "100001",
-          facilityType: 100,
-          limitAmountInAED: 500000,
-          currentOSInAED: 125000,
-        ),
-        LinkCommitmentNumber(
-          projectAllocationAccount: "200002",
-          facilityType: 101,
-          limitAmountInAED: 300000,
-          currentOSInAED: 45000,
-        ),
-      ];
-
-      viewModel.enrichLinkCommitmentNumberWith();
+      viewModel
+        ..contract.linkCommitmentNumberWith = [
+          LinkCommitmentNumber(projectAllocationAccount: "100001"),
+          LinkCommitmentNumber(projectAllocationAccount: "200002"),
+        ]
+        ..linkContract = [
+          LinkCommitmentNumber(
+            projectAllocationAccount: "100001",
+            facilityType: 100,
+            limitAmountInAED: 500000,
+            currentOSInAED: 125000,
+          ),
+          LinkCommitmentNumber(
+            projectAllocationAccount: "200002",
+            facilityType: 101,
+            limitAmountInAED: 300000,
+            currentOSInAED: 45000,
+          ),
+        ]
+        ..enrichLinkCommitmentNumberWith();
 
       final merged = viewModel.contract.linkCommitmentNumberWith!;
       expect(merged.length, 2);
@@ -997,14 +997,16 @@ void main() {
     });
 
     test("enrichLinkCommitmentNumberWith no-ops when lists are null/empty", () {
-      viewModel.contract.linkCommitmentNumberWith = null;
-      viewModel.linkContract = null;
-      viewModel.enrichLinkCommitmentNumberWith();
+      viewModel
+        ..contract.linkCommitmentNumberWith = null
+        ..linkContract = null
+        ..enrichLinkCommitmentNumberWith();
       expect(viewModel.contract.linkCommitmentNumberWith, isNull);
 
-      viewModel.contract.linkCommitmentNumberWith = [];
-      viewModel.linkContract = [];
-      viewModel.enrichLinkCommitmentNumberWith();
+      viewModel
+        ..contract.linkCommitmentNumberWith = []
+        ..linkContract = []
+        ..enrichLinkCommitmentNumberWith();
       expect(viewModel.contract.linkCommitmentNumberWith, isEmpty);
     });
 
@@ -1028,8 +1030,9 @@ void main() {
         LinkCommitmentNumber(projectAllocationAccount: "X"),
       ];
 
-      viewModel.linkCommitmentNumberDeleted(-1);
-      viewModel.linkCommitmentNumberDeleted(99);
+      viewModel
+        ..linkCommitmentNumberDeleted(-1)
+        ..linkCommitmentNumberDeleted(99);
 
       expect(viewModel.contract.linkCommitmentNumberWith!.length, 1);
     });
@@ -1394,8 +1397,9 @@ void main() {
         netCertifiedAmountVat: 0,
         actualPaymentReceived: 0,
       );
-      viewModel.ppc = [row];
-      viewModel.ppcControllers = [PpcControllers.empty()];
+      viewModel
+        ..ppc = [row]
+        ..ppcControllers = [PpcControllers.empty()];
 
       final c = viewModel.ppcControllers.first;
       c.grossPPCValueCtrl.text = "250.5";
@@ -1412,9 +1416,10 @@ void main() {
     });
 
     test("returns immediately when isRestoringDraft=true", () {
-      viewModel.isRestoringDraft = true;
-      viewModel.ppc = [PPC(grossPPCValue: 1)];
-      viewModel.ppcControllers = [PpcControllers.empty()];
+      viewModel
+        ..isRestoringDraft = true
+        ..ppc = [PPC(grossPPCValue: 1)]
+        ..ppcControllers = [PpcControllers.empty()];
       viewModel.ppcControllers.first.grossPPCValueCtrl.text = "999";
 
       viewModel.syncRowFromControllers(0);
@@ -1430,31 +1435,31 @@ void main() {
       viewModel.contractValue = 100;
       viewModel.contractorValueController.text = "100";
 
-      viewModel.ppc = [
-        PPC(
-          grossPPCValue: -10,
-          advancePaymentDeduction: 5,
-          retentionDeduction: 5,
-          vatAmount: 2,
-          otherPayment: 3,
-        ),
-        PPC(
-          grossPPCValue: 80,
-          advancePaymentDeduction: 0,
-          retentionDeduction: 0,
-          vatAmount: 0,
-          otherPayment: 0,
-        ),
-        PPC(
-          grossPPCValue: 50,
-          advancePaymentDeduction: 0,
-          retentionDeduction: 0,
-          vatAmount: 0,
-          otherPayment: 0,
-        ),
-      ];
-
-      viewModel.recomputeDerived();
+      viewModel
+        ..ppc = [
+          PPC(
+            grossPPCValue: -10,
+            advancePaymentDeduction: 5,
+            retentionDeduction: 5,
+            vatAmount: 2,
+            otherPayment: 3,
+          ),
+          PPC(
+            grossPPCValue: 80,
+            advancePaymentDeduction: 0,
+            retentionDeduction: 0,
+            vatAmount: 0,
+            otherPayment: 0,
+          ),
+          PPC(
+            grossPPCValue: 50,
+            advancePaymentDeduction: 0,
+            retentionDeduction: 0,
+            vatAmount: 0,
+            otherPayment: 0,
+          ),
+        ]
+        ..recomputeDerived();
 
       expect(viewModel.ppc[0].cumulativePPCValue, 0);
       expect(viewModel.ppc[0].netPPCValue, -10);
@@ -1468,14 +1473,13 @@ void main() {
     });
 
     test("when contract <= 0, percent fields become 0", () {
-      viewModel.contractValue = 0;
-      viewModel.contractorValueController.text = "0";
-
-      viewModel.ppc = [
-        PPC(grossPPCValue: 10),
-      ];
-
-      viewModel.recomputeDerived();
+      viewModel
+        ..contractValue = 0
+        ..contractorValueController.text = "0"
+        ..ppc = [
+          PPC(grossPPCValue: 10),
+        ]
+        ..recomputeDerived();
 
       expect(viewModel.ppc.first.workDonePercent, 0.0);
       expect(viewModel.ppc.first.cumulativeWorkDonePercent, 0.0);
@@ -1494,9 +1498,9 @@ void main() {
 
   group("add/remove PPC rows", () {
     test("onAddRowPressed prevents adding when last row blank", () {
-      viewModel.ppcControllers = [PpcControllers.empty()];
-
-      viewModel.onAddRowPressed();
+      viewModel
+        ..ppcControllers = [PpcControllers.empty()]
+        ..onAddRowPressed();
 
       expect(viewModel.ppcControllers.length, 1);
       verify(() => mockAlertManager.showFailureToast(any())).called(1);
@@ -1505,11 +1509,11 @@ void main() {
     test("onAddRowPressed adds when last row has input", () {
       final c = PpcControllers.empty();
       c.commentsCtrl.text = "has value";
-      viewModel.ppcControllers = [c];
-      viewModel.ppc = [PPC()];
-      viewModel.isNewRow = [false];
-
-      viewModel.onAddRowPressed();
+      viewModel
+        ..ppcControllers = [c]
+        ..ppc = [PPC()]
+        ..isNewRow = [false]
+        ..onAddRowPressed();
 
       expect(viewModel.ppc.length, 2);
       expect(viewModel.ppcControllers.length, 2);
@@ -1528,9 +1532,9 @@ void main() {
     });
 
     test("removePpcRow removes row/controllers/isNewRow", () {
-      viewModel.addPpcRow();
-
-      viewModel.removePpcRow(0);
+      viewModel
+        ..addPpcRow()
+        ..removePpcRow(0);
 
       expect(viewModel.ppc.length, 0);
       expect(viewModel.ppcControllers.length, 0);
@@ -1538,8 +1542,9 @@ void main() {
     });
 
     test("removePpcRow out-of-range is safe", () {
-      viewModel.removePpcRow(-1);
-      viewModel.removePpcRow(99);
+      viewModel
+        ..removePpcRow(-1)
+        ..removePpcRow(99);
       expect(true, isTrue);
     });
   });
@@ -1552,8 +1557,9 @@ void main() {
     });
 
     test("returns immediately when restoring draft", () async {
-      viewModel.isRestoringDraft = true;
-      viewModel.emitPpcSoft();
+      viewModel
+        ..isRestoringDraft = true
+        ..emitPpcSoft();
       await Future<void>.delayed(const Duration(milliseconds: 220));
       expect(true, isTrue);
     });
@@ -1702,24 +1708,30 @@ void main() {
     test(
         "syncRowFromControllersSoft updates only this row; "
         "recomputeDerivedForSingleRow uses prev baseline", () {
-      viewModel.contractValue = 100;
-      viewModel.contractorValueController.text = "100";
-      viewModel.ppc = [
-        PPC(grossPPCValue: 60, cumulativePPCValue: 60, cumulativePpcValue: 60),
-        PPC(grossPPCValue: 10, cumulativePPCValue: 10, cumulativePpcValue: 10),
-      ];
-
-      viewModel.ppcControllers = [
-        PpcControllers.empty(),
-        PpcControllers.empty(),
-      ];
+      viewModel
+        ..contractValue = 100
+        ..contractorValueController.text = "100"
+        ..ppc = [
+          PPC(
+            grossPPCValue: 60,
+            cumulativePPCValue: 60,
+            cumulativePpcValue: 60,
+          ),
+          PPC(
+            grossPPCValue: 10,
+            cumulativePPCValue: 10,
+            cumulativePpcValue: 10,
+          ),
+        ]
+        ..ppcControllers = [
+          PpcControllers.empty(),
+          PpcControllers.empty(),
+        ];
 
       viewModel.ppcControllers[1].grossPPCValueCtrl.text = "50";
-      viewModel.syncRowFromControllersSoft(1);
-
-      expect(viewModel.ppc[1].grossPPCValue, 50);
-
-      viewModel.recomputeDerivedForSingleRow(1);
+      viewModel
+        ..syncRowFromControllersSoft(1)
+        ..recomputeDerivedForSingleRow(1);
 
       expect(viewModel.ppc[1].cumulativePPCValue, 100);
       expect(viewModel.ppc[1].cumulativePpcValue, 100);
@@ -1730,21 +1742,22 @@ void main() {
     });
 
     test("recomputeDerivedForSingleRow with invalid index is safe", () {
-      viewModel.ppc = [];
-      viewModel.recomputeDerivedForSingleRow(-1);
-      viewModel.recomputeDerivedForSingleRow(99);
+      viewModel
+        ..ppc = []
+        ..recomputeDerivedForSingleRow(-1)
+        ..recomputeDerivedForSingleRow(99);
       expect(true, isTrue);
     });
 
     test(
         "recomputeDerivedForSingleRow with "
         "non-positive contract sets percents to 0", () {
-      viewModel.contractValue = 0;
-      viewModel.contractorValueController.text = "0";
-      viewModel.ppc = [PPC(grossPPCValue: 10, cumulativePPCValue: 0)];
-      viewModel.ppcControllers = [PpcControllers.empty()];
-
-      viewModel.recomputeDerivedForSingleRow(0);
+      viewModel
+        ..contractValue = 0
+        ..contractorValueController.text = "0"
+        ..ppc = [PPC(grossPPCValue: 10, cumulativePPCValue: 0)]
+        ..ppcControllers = [PpcControllers.empty()]
+        ..recomputeDerivedForSingleRow(0);
 
       expect(viewModel.ppc[0].workDonePercent, 0.0);
       expect(viewModel.ppc[0].cumulativeWorkDonePercent, 0.0);
@@ -1755,12 +1768,12 @@ void main() {
 
   group("disposeControllers", () {
     test("disposes each controller set and clears list", () {
-      viewModel.ppcControllers = [
-        PpcControllers.empty(),
-        PpcControllers.empty(),
-      ];
-
-      viewModel.disposeControllers();
+      viewModel
+        ..ppcControllers = [
+          PpcControllers.empty(),
+          PpcControllers.empty(),
+        ]
+        ..disposeControllers();
 
       expect(viewModel.ppcControllers, isEmpty);
     });
@@ -1770,11 +1783,11 @@ void main() {
     test(
         "updateVariationField writes formatted "
         "value and stores numeric (AED mode)", () {
-      viewModel.contract.initialContractValue = "100.0";
-      viewModel.isAedRates = true;
-      viewModel.contract.contractValue = "130.0";
-
-      viewModel.updateVariationField(epsilon: 1e-6);
+      viewModel
+        ..contract.initialContractValue = "100.0"
+        ..isAedRates = true
+        ..contract.contractValue = "130.0"
+        ..updateVariationField(epsilon: 1e-6);
 
       expect(viewModel.variationController.text, isNotEmpty);
       expect(viewModel.contract.variationAmount, closeTo(30.0, 1e-6));
@@ -1809,8 +1822,9 @@ void main() {
   group("prefillPpcControllersFromModel", () {
     test("prefills empty controllers from PPC model", () {
       final c = PpcControllers.empty();
-      viewModel.ppcControllers = [c];
-      viewModel.ppc = [PPC()];
+      viewModel
+        ..ppcControllers = [c]
+        ..ppc = [PPC()];
 
       final data = PPC(
         ppcNo: "PPC-007",
@@ -1840,8 +1854,9 @@ void main() {
 
     test("when ppcNo is null, falls back to ppcId for ppcCtrl", () {
       final c = PpcControllers.empty();
-      viewModel.ppcControllers = [c];
-      viewModel.ppc = [PPC()];
+      viewModel
+        ..ppcControllers = [c]
+        ..ppc = [PPC()];
 
       final data = PPC(
         ppcNo: null,
@@ -1865,8 +1880,9 @@ void main() {
         ..actualPaymentReceivedCtrl.text = "11"
         ..datePaymentReceivedCtrl.text = "01/01/2024";
 
-      viewModel.ppcControllers = [c];
-      viewModel.ppc = [PPC()];
+      viewModel
+        ..ppcControllers = [c]
+        ..ppc = [PPC()];
 
       final data = PPC(
         ppcNo: "NEW",
@@ -1895,25 +1911,25 @@ void main() {
     });
 
     test("out-of-range index is no-op", () {
-      viewModel.ppcControllers = [PpcControllers.empty()];
-      viewModel.ppc = [PPC()];
-
-      viewModel.prefillPpcControllersFromModel(-1, PPC(ppcNo: "X"));
-      viewModel.prefillPpcControllersFromModel(99, PPC(ppcNo: "X"));
+      viewModel
+        ..ppcControllers = [PpcControllers.empty()]
+        ..ppc = [PPC()]
+        ..prefillPpcControllersFromModel(-1, PPC(ppcNo: "X"))
+        ..prefillPpcControllersFromModel(99, PPC(ppcNo: "X"));
 
       expect(true, isTrue);
     });
 
     test("returns immediately when restoring draft", () {
       final c = PpcControllers.empty();
-      viewModel.ppcControllers = [c];
-      viewModel.ppc = [PPC()];
-      viewModel.isRestoringDraft = true;
-
-      viewModel.prefillPpcControllersFromModel(
-        0,
-        PPC(ppcNo: "WILL_NOT_SET"),
-      );
+      viewModel
+        ..ppcControllers = [c]
+        ..ppc = [PPC()]
+        ..isRestoringDraft = true
+        ..prefillPpcControllersFromModel(
+          0,
+          PPC(ppcNo: "WILL_NOT_SET"),
+        );
 
       expect(c.ppcCtrl.text, "");
     });
@@ -1967,9 +1983,10 @@ void main() {
     testWidgets("rapid repeated enter presses are ignored by cooldown",
         (tester) async {
       final ctrls = PpcControllers.empty()..commentsCtrl.text = "x";
-      vm.ppcControllers = [ctrls];
-      vm.ppc = [PPC()];
-      vm.isNewRow = [true];
+      vm
+        ..ppcControllers = [ctrls]
+        ..ppc = [PPC()]
+        ..isNewRow = [true];
 
       int called = 0;
 
@@ -1984,8 +2001,9 @@ void main() {
         ),
       );
 
-      vm.handleSubmitForRow(ctx, ctrls, 0, () => called++);
-      vm.handleSubmitForRow(ctx, ctrls, 0, () => called++);
+      vm
+        ..handleSubmitForRow(ctx, ctrls, 0, () => called++)
+        ..handleSubmitForRow(ctx, ctrls, 0, () => called++);
 
       expect(called, 1);
     });
@@ -1997,11 +2015,12 @@ void main() {
         ..grossPPCValueCtrl.text = "50"
         ..commentsCtrl.text = "row";
 
-      vm.contractValue = 100;
-      vm.contractorValueController.text = "100";
-      vm.ppcControllers = [ctrls];
-      vm.ppc = [PPC(grossPPCValue: 10)];
-      vm.isNewRow = [false];
+      vm
+        ..contractValue = 100
+        ..contractorValueController.text = "100"
+        ..ppcControllers = [ctrls]
+        ..ppc = [PPC(grossPPCValue: 10)]
+        ..isNewRow = [false];
 
       late BuildContext ctx;
       await pumpSimpleFocusShell(
@@ -2026,11 +2045,12 @@ void main() {
     testWidgets("API row path without gross only soft-emits", (tester) async {
       final ctrls = PpcControllers.empty()..commentsCtrl.text = "row";
 
-      vm.contractValue = 100;
-      vm.contractorValueController.text = "100";
-      vm.ppcControllers = [ctrls];
-      vm.ppc = [PPC(grossPPCValue: 10)];
-      vm.isNewRow = [false];
+      vm
+        ..contractValue = 100
+        ..contractorValueController.text = "100"
+        ..ppcControllers = [ctrls]
+        ..ppc = [PPC(grossPPCValue: 10)]
+        ..isNewRow = [false];
 
       late BuildContext ctx;
       await pumpSimpleFocusShell(
@@ -2052,9 +2072,10 @@ void main() {
     testWidgets("new row path calls onAnyFieldChanged", (tester) async {
       final ctrls = PpcControllers.empty()..commentsCtrl.text = "row";
 
-      vm.ppcControllers = [ctrls];
-      vm.ppc = [PPC()];
-      vm.isNewRow = [true];
+      vm
+        ..ppcControllers = [ctrls]
+        ..ppc = [PPC()]
+        ..isNewRow = [true];
 
       int called = 0;
 
@@ -2100,8 +2121,9 @@ void main() {
         validator: (_) => null,
       );
 
-      viewModel.ppcControllers = [PpcControllers.empty()];
-      viewModel.ppc = [PPC()];
+      viewModel
+        ..ppcControllers = [PpcControllers.empty()]
+        ..ppc = [PPC()];
 
       await viewModel.onSubmit(tester.element(find.byType(Form)));
 
@@ -2115,8 +2137,9 @@ void main() {
         validator: (_) => null,
       );
 
-      viewModel.onStartDateSubmitted2(DateTime(2025, 5, 10));
-      viewModel.onCompletionDateSubmitted2(DateTime(2025, 5, 1));
+      viewModel
+        ..onStartDateSubmitted2(DateTime(2025, 5, 10))
+        ..onCompletionDateSubmitted2(DateTime(2025, 5, 1));
 
       await viewModel.onSubmit(tester.element(find.byType(Form)));
 
@@ -2179,15 +2202,15 @@ void main() {
       );
 
       // IMPORTANT: set dates using public methods so _startDate/_endDate are populated
-      viewModel.onStartDateSubmitted2(DateTime(2025, 1, 1));
-      viewModel.onCompletionDateSubmitted2(DateTime(2025, 2, 1));
-
-      viewModel.selectedCurrencyLabel = "AED";
-      viewModel.contractorValueController.text = "100";
-      viewModel.contractorCommentsController.text = "hello";
-      viewModel.ppc = [];
-      viewModel.ppcControllers = [];
-      viewModel.completionDateValidate = false;
+      viewModel
+        ..onStartDateSubmitted2(DateTime(2025, 1, 1))
+        ..onCompletionDateSubmitted2(DateTime(2025, 2, 1))
+        ..selectedCurrencyLabel = "AED"
+        ..contractorValueController.text = "100"
+        ..contractorCommentsController.text = "hello"
+        ..ppc = []
+        ..ppcControllers = []
+        ..completionDateValidate = false;
 
       when(
         () => mockCommonRepo.saveStategyComment(
@@ -2243,14 +2266,14 @@ void main() {
       );
 
       // IMPORTANT: set dates through the public handlers
-      viewModel.onStartDateSubmitted2(DateTime(2025, 1, 1));
-      viewModel.onCompletionDateSubmitted2(DateTime(2025, 2, 1));
-
-      viewModel.selectedCurrencyLabel = "AED";
-      viewModel.contractorValueController.text = "100";
-      viewModel.ppc = [];
-      viewModel.ppcControllers = [];
-      viewModel.completionDateValidate = false;
+      viewModel
+        ..onStartDateSubmitted2(DateTime(2025, 1, 1))
+        ..onCompletionDateSubmitted2(DateTime(2025, 2, 1))
+        ..selectedCurrencyLabel = "AED"
+        ..contractorValueController.text = "100"
+        ..ppc = []
+        ..ppcControllers = []
+        ..completionDateValidate = false;
 
       when(() => mockRepository.saveContractDetail(any()))
           .thenThrow(Exception("save failed"));

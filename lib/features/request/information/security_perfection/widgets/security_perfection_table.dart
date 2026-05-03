@@ -25,7 +25,7 @@ class SecurityPerfectionTable extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasSelectedSecurity =
         (viewModel.securityDeferral.securityDeferralList ?? [])
-            .any((c) => (c.selected ?? false));
+            .any((c) => c.selected ?? false);
 
     return LabelWidget(
       label: "requestInformation.securityPerfection.title".tr(),
@@ -75,10 +75,9 @@ class SecurityPerfectionTable extends StatelessWidget {
                 final checked = value ?? false;
 
                 // UI field
-                info.isChecked = checked;
-
-                // Payload/draft field
-                info.selected = checked;
+                info
+                  ..isChecked = checked
+                  ..selected = checked;
 
                 logger.i(
                   "Checkbox changed at index $index -> "

@@ -69,8 +69,7 @@ void main() {
     mockAlertManager = MockAlertManager();
     mockReferenceDataService = MockReferenceDataService();
 
-    viewModel = ConditionEditDialogViewModel();
-    viewModel.repository = mockRepository;
+    viewModel = ConditionEditDialogViewModel()..repository = mockRepository;
     AlertManager.overrideInstance(mockAlertManager);
   });
 
@@ -98,14 +97,18 @@ void main() {
   });
 
   test("getModifyData should populate fields from condition", () {
-    viewModel.referenceData = {
-      "covenantFrequency": [Reference(name: "1")],
-      "conditionStandard": [Reference(id: ServerConstants.conditionStandardId)],
-      "conditionGeneral": [Reference(id: ServerConstants.conditionSpecificId)],
-    };
-    viewModel.conditionData = mockCondition;
-
-    viewModel.getModifyData();
+    viewModel
+      ..referenceData = {
+        "covenantFrequency": [Reference(name: "1")],
+        "conditionStandard": [
+          Reference(id: ServerConstants.conditionStandardId),
+        ],
+        "conditionGeneral": [
+          Reference(id: ServerConstants.conditionSpecificId),
+        ],
+      }
+      ..conditionData = mockCondition
+      ..getModifyData();
 
     expect(viewModel.selectedCustomer?.customerName, null);
   });
@@ -168,9 +171,7 @@ void main() {
       ],
     };
     final ref = Reference(name: "TypeA", id: 32);
-    viewModel.selectedType = ref;
-
-    final result = viewModel.getDescritionSubTypes();
+    final result = (viewModel..selectedType = ref).getDescritionSubTypes();
     expect(result?.length, 1);
     expect(result?.first.name, "Sub1");
   });
@@ -182,15 +183,22 @@ void main() {
   });
 
   test("isInlineEditable returns true for custom or update", () {
-    viewModel.conditionData = CovenantCondition();
-    viewModel.selectedDescriptionType = Reference(name: "custom");
-    expect(viewModel.isInlineEditable(), true);
+    expect(
+      (viewModel
+            ..conditionData = CovenantCondition()
+            ..selectedDescriptionType = Reference(name: "custom"))
+          .isInlineEditable(),
+      true,
+    );
   });
 
   test("isStandartList returns true if standard ID matches", () {
-    viewModel.selectedDescriptionType =
-        Reference(id: ServerConstants.conditionStandardId);
-    expect(viewModel.isStandartList(), true);
+    expect(
+      (viewModel..selectedDescriptionType = Reference(
+        id: ServerConstants.conditionStandardId,
+      )).isStandartList(),
+      true,
+    );
   });
 
   test("onIncludeTermChange updates value and emits loaded", () {
@@ -199,8 +207,12 @@ void main() {
   });
 
   test("isSpecificSelected returns true if specific ID matches", () {
-    viewModel.generalField = Reference(id: ServerConstants.conditionSpecificId);
-    expect(viewModel.isSpecificSelected(), true);
+    expect(
+      (viewModel..generalField = Reference(
+        id: ServerConstants.conditionSpecificId,
+      )).isSpecificSelected(),
+      true,
+    );
   });
 
   test("onActionFieldChange updates value and emits loaded", () {
@@ -265,8 +277,7 @@ void main() {
       description: "Custom description",
     );
 
-    viewModel.conditionData = customCondition;
-    viewModel.getModifyData();
+    (viewModel..conditionData = customCondition).getModifyData();
 
     expect(viewModel.selectedCustomer?.customerName, null);
     expect(viewModel.selectedInlineValue.name, "Custom description");
@@ -373,127 +384,122 @@ void main() {
   // });
 
   test("getModifyData should handle frequency  found in reference data", () {
-    viewModel.referenceData = {
-      ReferenceDataKeys.conditionFrequency: [
-        Reference(id: 1, name: "Monthly"), // Matching ID to avoid exception
-      ],
-      ReferenceDataKeys.conditionStandard: [
-        Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
-      ],
-      ReferenceDataKeys.conditionGeneral: [
-        Reference(id: ServerConstants.conditionGeneralId, name: "General"),
-      ],
-    };
-
     final conditionWithFrequency = CovenantCondition(
       frequency: 1, // This will match the reference data
       isStandard: true,
       isGeneric: true,
     );
-
-    viewModel.conditionData = conditionWithFrequency;
-    viewModel.getModifyData();
+    viewModel
+      ..referenceData = {
+        ReferenceDataKeys.conditionFrequency: [
+          Reference(id: 1, name: "Monthly"), // Matching ID to avoid exception
+        ],
+        ReferenceDataKeys.conditionStandard: [
+          Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
+        ],
+        ReferenceDataKeys.conditionGeneral: [
+          Reference(id: ServerConstants.conditionGeneralId, name: "General"),
+        ],
+      }
+      ..conditionData = conditionWithFrequency
+      ..getModifyData();
     // Frequency should be set since match was found
     expect(viewModel.selectedFrequency?.id, 1);
     expect(viewModel.selectedFrequency?.name, "Monthly");
   });
   test("getModifyData should handle frequency not found in reference data", () {
-    viewModel.referenceData = {
-      ReferenceDataKeys.conditionFrequency: [
-        Reference(id: 1, name: "Monthly"), // Matching ID to avoid exception
-      ],
-      ReferenceDataKeys.conditionStandard: [
-        Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
-      ],
-      ReferenceDataKeys.conditionGeneral: [
-        Reference(id: ServerConstants.conditionGeneralId, name: "General"),
-      ],
-    };
-
     final conditionWithFrequency = CovenantCondition(
       frequency: 10, // This will match the reference data
       isStandard: true,
       isGeneric: true,
     );
-
-    viewModel.conditionData = conditionWithFrequency;
-    viewModel.getModifyData();
+    viewModel
+      ..referenceData = {
+        ReferenceDataKeys.conditionFrequency: [
+          Reference(id: 1, name: "Monthly"), // Matching ID to avoid exception
+        ],
+        ReferenceDataKeys.conditionStandard: [
+          Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
+        ],
+        ReferenceDataKeys.conditionGeneral: [
+          Reference(id: ServerConstants.conditionGeneralId, name: "General"),
+        ],
+      }
+      ..conditionData = conditionWithFrequency
+      ..getModifyData();
     // Frequency should be set since match was found
     expect(viewModel.selectedFrequency?.id, null);
     // expect(viewModel.selectedFrequency?.name, 'Monthly');
   });
 
   test("getModifyData should handle Acions  found in reference data", () {
-    viewModel.referenceData = {
-      ReferenceDataKeys.covenantConditionAction: [
-        Reference(id: 1, name: "MET"), // Matching ID to avoid exception
-      ],
-      ReferenceDataKeys.conditionStandard: [
-        Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
-      ],
-      ReferenceDataKeys.conditionGeneral: [
-        Reference(id: ServerConstants.conditionGeneralId, name: "General"),
-      ],
-    };
-
     final conditionWithFrequency = CovenantCondition(
       action: 1, // This will match the reference data
       isStandard: true,
       isGeneric: true,
     );
-
-    viewModel.conditionData = conditionWithFrequency;
-    viewModel.getModifyData();
+    viewModel
+      ..referenceData = {
+        ReferenceDataKeys.covenantConditionAction: [
+          Reference(id: 1, name: "MET"), // Matching ID to avoid exception
+        ],
+        ReferenceDataKeys.conditionStandard: [
+          Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
+        ],
+        ReferenceDataKeys.conditionGeneral: [
+          Reference(id: ServerConstants.conditionGeneralId, name: "General"),
+        ],
+      }
+      ..conditionData = conditionWithFrequency
+      ..getModifyData();
     // Frequency should be set since match was found
     //expect(viewModel.selectedAction?.id, 1);
     //expect(viewModel.selectedAction?.name, 'MET');
   });
   test("getModifyData should handle Actions not found in reference data", () {
-    viewModel.referenceData = {
-      ReferenceDataKeys.covenantConditionAction: [
-        Reference(id: 1, name: "Monthly"), // Matching ID to avoid exception
-      ],
-      ReferenceDataKeys.conditionStandard: [
-        Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
-      ],
-      ReferenceDataKeys.conditionGeneral: [
-        Reference(id: ServerConstants.conditionGeneralId, name: "General"),
-      ],
-    };
-
     final conditionWithFrequency = CovenantCondition(
       action: 10, // This will match the reference data
       isStandard: true,
       isGeneric: true,
     );
-
-    viewModel.conditionData = conditionWithFrequency;
-    viewModel.getModifyData();
+    viewModel
+      ..referenceData = {
+        ReferenceDataKeys.covenantConditionAction: [
+          Reference(id: 1, name: "Monthly"), // Matching ID to avoid exception
+        ],
+        ReferenceDataKeys.conditionStandard: [
+          Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
+        ],
+        ReferenceDataKeys.conditionGeneral: [
+          Reference(id: ServerConstants.conditionGeneralId, name: "General"),
+        ],
+      }
+      ..conditionData = conditionWithFrequency
+      ..getModifyData();
     // Frequency should be set since match was found
     expect(viewModel.selectedAction?.id, null);
     // expect(viewModel.selectedFrequency?.name, 'Monthly');
   });
   test("getModifyData should handle Type  found in reference data", () {
-    viewModel.referenceData = {
-      ReferenceDataKeys.covenantConditionType: [
-        Reference(id: 1, name: "NEW"), // Matching ID to avoid exception
-      ],
-      ReferenceDataKeys.conditionStandard: [
-        Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
-      ],
-      ReferenceDataKeys.conditionGeneral: [
-        Reference(id: ServerConstants.conditionGeneralId, name: "General"),
-      ],
-    };
-
     final conditionWithFrequency = CovenantCondition(
       conditionType: 1, // This will match the reference data
       isStandard: true,
       isGeneric: true,
     );
-
-    viewModel.conditionData = conditionWithFrequency;
-    viewModel.getModifyData();
+    viewModel
+      ..referenceData = {
+        ReferenceDataKeys.covenantConditionType: [
+          Reference(id: 1, name: "NEW"), // Matching ID to avoid exception
+        ],
+        ReferenceDataKeys.conditionStandard: [
+          Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
+        ],
+        ReferenceDataKeys.conditionGeneral: [
+          Reference(id: ServerConstants.conditionGeneralId, name: "General"),
+        ],
+      }
+      ..conditionData = conditionWithFrequency
+      ..getModifyData();
     // Frequency should be set since match was found
     expect(viewModel.selectedType?.id, 1);
     expect(viewModel.selectedType?.name, "NEW");
@@ -501,26 +507,25 @@ void main() {
   test(
       "getModifyData should handle condition type not  found in reference data",
       () {
-    viewModel.referenceData = {
-      ReferenceDataKeys.covenantConditionType: [
-        Reference(id: 10, name: "NEW"), // Matching ID to avoid exception
-      ],
-      ReferenceDataKeys.conditionStandard: [
-        Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
-      ],
-      ReferenceDataKeys.conditionGeneral: [
-        Reference(id: ServerConstants.conditionGeneralId, name: "General"),
-      ],
-    };
-
     final conditionWithFrequency = CovenantCondition(
       conditionType: 1, // This will match the reference data
       isStandard: true,
       isGeneric: true,
     );
-
-    viewModel.conditionData = conditionWithFrequency;
-    viewModel.getModifyData();
+    viewModel
+      ..referenceData = {
+        ReferenceDataKeys.covenantConditionType: [
+          Reference(id: 10, name: "NEW"), // Matching ID to avoid exception
+        ],
+        ReferenceDataKeys.conditionStandard: [
+          Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
+        ],
+        ReferenceDataKeys.conditionGeneral: [
+          Reference(id: ServerConstants.conditionGeneralId, name: "General"),
+        ],
+      }
+      ..conditionData = conditionWithFrequency
+      ..getModifyData();
     // Frequency should be set since match was found
     expect(viewModel.selectedType?.id, null);
     // expect(viewModel.selectedType?.name, 'NEW');
@@ -551,26 +556,25 @@ void main() {
   //   expect(viewModel.selectedStatus?.name, 'NEW');
   // });
   test("getModifyData should handle status not found in reference data", () {
-    viewModel.referenceData = {
-      ReferenceDataKeys.covenantConditionStatus: [
-        Reference(id: 1, name: "Monthly"), // Matching ID to avoid exception
-      ],
-      ReferenceDataKeys.conditionStandard: [
-        Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
-      ],
-      ReferenceDataKeys.conditionGeneral: [
-        Reference(id: ServerConstants.conditionGeneralId, name: "General"),
-      ],
-    };
-
     final conditionWithFrequency = CovenantCondition(
       status: 10, // This will match the reference data
       isStandard: true,
       isGeneric: true,
     );
-
-    viewModel.conditionData = conditionWithFrequency;
-    viewModel.getModifyData();
+    viewModel
+      ..referenceData = {
+        ReferenceDataKeys.covenantConditionStatus: [
+          Reference(id: 1, name: "Monthly"), // Matching ID to avoid exception
+        ],
+        ReferenceDataKeys.conditionStandard: [
+          Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
+        ],
+        ReferenceDataKeys.conditionGeneral: [
+          Reference(id: ServerConstants.conditionGeneralId, name: "General"),
+        ],
+      }
+      ..conditionData = conditionWithFrequency
+      ..getModifyData();
     // Frequency should be set since match was found
     expect(viewModel.selectedStatus?.id, null);
     // expect(viewModel.selectedFrequency?.name, 'Monthly');
@@ -578,26 +582,25 @@ void main() {
   test(
       "getModifyData should handle different"
       " isStandard and isGeneric combinations", () {
-    viewModel.referenceData = {
-      ReferenceDataKeys.conditionStandard: [
-        Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
-        Reference(id: ServerConstants.conditionCustomId, name: "Custom"),
-      ],
-      ReferenceDataKeys.conditionGeneral: [
-        Reference(id: ServerConstants.conditionGeneralId, name: "General"),
-        Reference(id: ServerConstants.conditionSpecificId, name: "Specific"),
-      ],
-    };
-
     // Test isStandard: false, isGeneric: false combination
     final customSpecificCondition = CovenantCondition(
       isStandard: false,
       isGeneric: false,
       description: "Custom specific description",
     );
-
-    viewModel.conditionData = customSpecificCondition;
-    viewModel.getModifyData();
+    viewModel
+      ..referenceData = {
+        ReferenceDataKeys.conditionStandard: [
+          Reference(id: ServerConstants.conditionStandardId, name: "Standard"),
+          Reference(id: ServerConstants.conditionCustomId, name: "Custom"),
+        ],
+        ReferenceDataKeys.conditionGeneral: [
+          Reference(id: ServerConstants.conditionGeneralId, name: "General"),
+          Reference(id: ServerConstants.conditionSpecificId, name: "Specific"),
+        ],
+      }
+      ..conditionData = customSpecificCondition
+      ..getModifyData();
 
     expect(
       viewModel.selectedDescriptionType?.id,

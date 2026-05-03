@@ -80,8 +80,8 @@ void main() {
     });
 
     test("width can be set after creation", () {
-      final header = StackedHeader();
-      header.width = 150.0;
+      final header = StackedHeader()
+        ..width = 150.0;
 
       expect(header.width, 150.0);
     });
@@ -135,8 +135,9 @@ void main() {
               onPageChanged: (page) {
                 pageChanged = true;
                 newPage = page;
-                logger.i(pageChanged);
-                logger.i(newPage);
+                logger
+                  ..i(pageChanged)
+                  ..i(newPage);
               },
             ),
           ),

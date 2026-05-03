@@ -105,7 +105,7 @@ class GroupSummaryViewModel extends SafeCubit<GroupSummaryState>
     isInitByUser =
         (role == Globals.user?.currentRole?.code) && Globals.checkIsInitiated();
     isReadOnly = Utils.checkIfAppReadOnly() ||
-        !(userRoleList.contains(Globals.user?.currentRole?.roleId)) ||
+        !userRoleList.contains(Globals.user?.currentRole?.roleId) ||
         !Globals.checkCurrentStatus(requestStatus);
     isInitByCA = (role == ServerConstants.userRoleCode[UserRole.creditAnalyst]);
     isInitByCCOOD =

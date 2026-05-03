@@ -56,8 +56,8 @@ void main() {
     ReferenceDataService.overrideInstance(mockReferenceDataService);
     AlertManager.overrideInstance(mockAlertManager);
 
-    viewModel = FileAttachmentViewModel();
-    viewModel.fileAttachmentRepository = mockRepository;
+    viewModel = FileAttachmentViewModel()
+      ..fileAttachmentRepository = mockRepository;
   });
 
   tearDown(() {
@@ -331,8 +331,9 @@ void main() {
         () {
       final DocSubTypeData docData = DocSubTypeData(edmsDriveItemId: "doc123");
 
-      viewModel.toggleDocumentSelection("doc1", true, docData);
-      viewModel.toggleDocumentSelection("doc1", false, docData);
+      viewModel
+        ..toggleDocumentSelection("doc1", true, docData)
+        ..toggleDocumentSelection("doc1", false, docData);
 
       expect(viewModel.selectedDocumentIds, isNot(contains("doc123")));
       expect(viewModel.selectedDocs, isNot(contains(docData)));
@@ -360,18 +361,18 @@ void main() {
 
   group("removeFileAt", () {
     test("should remove document at valid index", () {
-      viewModel.selectedDocuments = <Document>[
-        Document(documentName: "Doc1"),
-        Document(documentName: "Doc2"),
-        Document(documentName: "Doc3"),
-      ];
-      viewModel.selectedFiles = <PlatformFile>[
-        PlatformFile(name: "file1.pdf", size: 100),
-        PlatformFile(name: "file2.pdf", size: 100),
-        PlatformFile(name: "file3.pdf", size: 100),
-      ];
-
-      viewModel.removeFileAt(1);
+      viewModel
+        ..selectedDocuments = <Document>[
+          Document(documentName: "Doc1"),
+          Document(documentName: "Doc2"),
+          Document(documentName: "Doc3"),
+        ]
+        ..selectedFiles = <PlatformFile>[
+          PlatformFile(name: "file1.pdf", size: 100),
+          PlatformFile(name: "file2.pdf", size: 100),
+          PlatformFile(name: "file3.pdf", size: 100),
+        ]
+        ..removeFileAt(1);
 
       expect(viewModel.selectedDocuments.length, 2);
       expect(viewModel.selectedDocuments[0].documentName, "Doc1");
@@ -380,21 +381,21 @@ void main() {
     });
 
     test("should ignore when index is out of bounds", () {
-      viewModel.selectedDocuments = <Document>[
-        Document(documentName: "Doc1"),
-      ];
-
-      viewModel.removeFileAt(5);
+      viewModel
+        ..selectedDocuments = <Document>[
+          Document(documentName: "Doc1"),
+        ]
+        ..removeFileAt(5);
 
       expect(viewModel.selectedDocuments.length, 1);
     });
 
     test("should ignore when index is negative", () {
-      viewModel.selectedDocuments = <Document>[
-        Document(documentName: "Doc1"),
-      ];
-
-      viewModel.removeFileAt(-1);
+      viewModel
+        ..selectedDocuments = <Document>[
+          Document(documentName: "Doc1"),
+        ]
+        ..removeFileAt(-1);
 
       expect(viewModel.selectedDocuments.length, 1);
     });
@@ -402,19 +403,19 @@ void main() {
 
   group("resetFormFields", () {
     test("should clear all form fields", () {
-      viewModel.selectedLanguageType = Reference(name: "English");
-      viewModel.selectedSubType = Reference(name: "SubType");
-      viewModel.selectedSubTypeCreditLens = Reference(name: "Credit Lens");
-      viewModel.selectedSubSubType = Reference(name: "SubFinancial");
-      viewModel.selectedSubSubSubType = Reference(name: "Third");
-      viewModel.selectedCompanyRims = <Customer>[Customer(customerRimNo: 1)];
-      viewModel.documentName = "Test";
-      viewModel.entityId = "ENT-1";
-      viewModel.selectedDate = DateTime.now();
-      viewModel.selectedDocumentType = Reference(name: "DocType");
-      viewModel.isSelectAllCompanyRims = true;
-
-      viewModel.resetFormFields();
+      viewModel
+        ..selectedLanguageType = Reference(name: "English")
+        ..selectedSubType = Reference(name: "SubType")
+        ..selectedSubTypeCreditLens = Reference(name: "Credit Lens")
+        ..selectedSubSubType = Reference(name: "SubFinancial")
+        ..selectedSubSubSubType = Reference(name: "Third")
+        ..selectedCompanyRims = <Customer>[Customer(customerRimNo: 1)]
+        ..documentName = "Test"
+        ..entityId = "ENT-1"
+        ..selectedDate = DateTime.now()
+        ..selectedDocumentType = Reference(name: "DocType")
+        ..isSelectAllCompanyRims = true
+        ..resetFormFields();
 
       expect(viewModel.selectedLanguageType, isNull);
       expect(viewModel.selectedSubType, isNull);
@@ -554,13 +555,13 @@ void main() {
         children: <FileAccess>[],
       );
 
-      viewModel.allDocuments = <Document>[
-        Document(documentName: "Doc1", folderID: 1),
-        Document(documentName: "Doc2", folderID: 2),
-        Document(documentName: "Doc3", folderID: 1),
-      ];
-
-      viewModel.onSelectFolder(fileAccess);
+      viewModel
+        ..allDocuments = <Document>[
+          Document(documentName: "Doc1", folderID: 1),
+          Document(documentName: "Doc2", folderID: 2),
+          Document(documentName: "Doc3", folderID: 1),
+        ]
+        ..onSelectFolder(fileAccess);
 
       expect(viewModel.selectedFolder, fileAccess);
       expect(viewModel.uploadedDocuments.length, 2);
@@ -579,9 +580,9 @@ void main() {
         children: <FileAccess>[],
       );
 
-      viewModel.allDocuments = <Document>[];
-
-      viewModel.onSelectFolder(fileAccess);
+      viewModel
+        ..allDocuments = <Document>[]
+        ..onSelectFolder(fileAccess);
 
       expect(viewModel.uploadedDocuments, isEmpty);
       expect(viewModel.state.documentsLoaderStatus, LoadingStatus.empty);
@@ -602,28 +603,28 @@ void main() {
     });
 
     test("showUploadForm should update state for edit access", () {
-      viewModel.selectedFolder = FileAccess(
-        id: 1,
-        name: "Test Folder",
-        access: AccessType.edit,
-        children: <FileAccess>[],
-      );
-
-      viewModel.showUploadForm();
+      viewModel
+        ..selectedFolder = FileAccess(
+          id: 1,
+          name: "Test Folder",
+          access: AccessType.edit,
+          children: <FileAccess>[],
+        )
+        ..showUploadForm();
 
       expect(viewModel.state.showUploadForm, isTrue);
       expect(viewModel.state.showUploadButton, isFalse);
     });
 
     test("showUploadForm should return early for non-edit access", () {
-      viewModel.selectedFolder = FileAccess(
-        id: 1,
-        name: "Test Folder",
-        access: AccessType.none,
-        children: <FileAccess>[],
-      );
-
-      viewModel.showUploadForm();
+      viewModel
+        ..selectedFolder = FileAccess(
+          id: 1,
+          name: "Test Folder",
+          access: AccessType.none,
+          children: <FileAccess>[],
+        )
+        ..showUploadForm();
 
       expect(viewModel.state.showUploadForm, isNot(true));
     });
@@ -637,8 +638,8 @@ void main() {
         groupId: null,
       );
 
-      viewModel = FileAttachmentViewModel();
-      viewModel.fileAttachmentRepository = mockRepository;
+      viewModel = FileAttachmentViewModel()
+        ..fileAttachmentRepository = mockRepository;
 
       await viewModel.getCompanyRims();
 
@@ -728,8 +729,8 @@ void main() {
         groupId: null,
       );
 
-      viewModel = FileAttachmentViewModel();
-      viewModel.fileAttachmentRepository = mockRepository;
+      viewModel = FileAttachmentViewModel()
+        ..fileAttachmentRepository = mockRepository;
 
       when(
         () => mockRepository.getFileUploadData(
@@ -773,8 +774,8 @@ void main() {
         groupId: 99999,
       );
 
-      viewModel = FileAttachmentViewModel();
-      viewModel.fileAttachmentRepository = mockRepository;
+      viewModel = FileAttachmentViewModel()
+        ..fileAttachmentRepository = mockRepository;
 
       when(
         () => mockRepository.getFileUploadData(
@@ -815,15 +816,16 @@ void main() {
   group("upload documents", () {
     test("onUploadDocumentsPressed should upload and clear documents",
         () async {
-      viewModel.selectedDocuments = <Document>[
-        Document(documentName: "Test"),
-      ];
-      viewModel.selectedFolder = FileAccess(
-        id: 1,
-        name: "Test Folder",
-        access: AccessType.edit,
-        children: <FileAccess>[],
-      );
+      viewModel
+        ..selectedDocuments = <Document>[
+          Document(documentName: "Test"),
+        ]
+        ..selectedFolder = FileAccess(
+          id: 1,
+          name: "Test Folder",
+          access: AccessType.edit,
+          children: <FileAccess>[],
+        );
 
       when(() => mockRepository.uploadDocumentsMultipart(any()))
           .thenAnswer((_) async => "Uploaded successfully");
@@ -927,10 +929,11 @@ void main() {
     });
 
     test("downloadDocumentsZip should call repository successfully", () async {
-      viewModel.selectedDocumentIds = <String>["1", "2"];
-      viewModel.selectedDocs = <dynamic>[
-        DocSubTypeData(edmsDriveItemId: "1"),
-      ];
+      viewModel
+        ..selectedDocumentIds = <String>["1", "2"]
+        ..selectedDocs = <dynamic>[
+          DocSubTypeData(edmsDriveItemId: "1"),
+        ];
 
       when(
         () => mockRepository.zipDownloadDigitalAttachment(
@@ -973,10 +976,11 @@ void main() {
     });
 
     test("mergeDownloadDocument should call repository successfully", () async {
-      viewModel.selectedDocumentIds = <String>["1", "2"];
-      viewModel.selectedDocs = <dynamic>[
-        DocSubTypeData(edmsDriveItemId: "1"),
-      ];
+      viewModel
+        ..selectedDocumentIds = <String>["1", "2"]
+        ..selectedDocs = <dynamic>[
+          DocSubTypeData(edmsDriveItemId: "1"),
+        ];
 
       when(
         () => mockRepository.mergeDownloadDigitalAttachment(
@@ -1060,12 +1064,12 @@ void main() {
 
   group("company rim selection", () {
     test("toggleSelectAllCompanyRims should select all rims when true", () {
-      viewModel.rimList = <Customer>[
-        Customer(customerRimNo: 1),
-        Customer(customerRimNo: 2),
-      ];
-
-      viewModel.toggleSelectAllCompanyRims(true);
+      viewModel
+        ..rimList = <Customer>[
+          Customer(customerRimNo: 1),
+          Customer(customerRimNo: 2),
+        ]
+        ..toggleSelectAllCompanyRims(true);
 
       expect(viewModel.isSelectAllCompanyRims, isTrue);
       expect(viewModel.selectedCompanyRims.length, 2);
@@ -1073,13 +1077,13 @@ void main() {
     });
 
     test("toggleSelectAllCompanyRims should clear rims when false", () {
-      viewModel.rimList = <Customer>[
-        Customer(customerRimNo: 1),
-        Customer(customerRimNo: 2),
-      ];
-      viewModel.selectedCompanyRims = List<Customer>.from(viewModel.rimList);
-
-      viewModel.toggleSelectAllCompanyRims(false);
+      viewModel
+        ..rimList = <Customer>[
+          Customer(customerRimNo: 1),
+          Customer(customerRimNo: 2),
+        ]
+        ..selectedCompanyRims = List<Customer>.from(viewModel.rimList)
+        ..toggleSelectAllCompanyRims(false);
 
       expect(viewModel.isSelectAllCompanyRims, isFalse);
       expect(viewModel.selectedCompanyRims, isEmpty);
@@ -1091,12 +1095,13 @@ void main() {
     test(
         "should return early when selected docs"
         " contain credit application type", () async {
-      viewModel.selectedDocs = <dynamic>[
-        DocSubTypeData(
-          edmsDriveItemId: "1",
-        ),
-      ];
-      viewModel.selectedDocumentIds = <String>["1"];
+      viewModel
+        ..selectedDocs = <dynamic>[
+          DocSubTypeData(
+            edmsDriveItemId: "1",
+          ),
+        ]
+        ..selectedDocumentIds = <String>["1"];
 
       await viewModel.linkToApplication();
 
@@ -1105,12 +1110,13 @@ void main() {
     });
 
     test("should call repository when docs are valid", () async {
-      viewModel.selectedDocs = <dynamic>[
-        DocSubTypeData(
-          edmsDriveItemId: "1",
-        ),
-      ];
-      viewModel.selectedDocumentIds = <String>["1", "2"];
+      viewModel
+        ..selectedDocs = <dynamic>[
+          DocSubTypeData(
+            edmsDriveItemId: "1",
+          ),
+        ]
+        ..selectedDocumentIds = <String>["1", "2"];
 
       when(() => mockRepository.linkToApplication(any(), any()))
           .thenAnswer((_) async {
@@ -1129,12 +1135,13 @@ void main() {
     });
 
     test("should handle exception from repository", () async {
-      viewModel.selectedDocs = <dynamic>[
-        DocSubTypeData(
-          edmsDriveItemId: "1",
-        ),
-      ];
-      viewModel.selectedDocumentIds = <String>["1"];
+      viewModel
+        ..selectedDocs = <dynamic>[
+          DocSubTypeData(
+            edmsDriveItemId: "1",
+          ),
+        ]
+        ..selectedDocumentIds = <String>["1"];
 
       when(() => mockRepository.linkToApplication(any(), any()))
           .thenThrow(Exception("link failed"));

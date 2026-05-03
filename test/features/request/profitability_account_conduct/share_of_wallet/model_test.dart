@@ -103,9 +103,9 @@ void main() {
     CommonRepository.overrideInstance(mockCommonRepo);
     AlertManager.overrideInstance(mockAlert);
 
-    viewModel = ShareOfWalletViewModel();
-    viewModel.repository = mockProfitRepo;
-    viewModel.comment = Comment();
+    viewModel = ShareOfWalletViewModel()
+      ..repository = mockProfitRepo
+      ..comment = Comment();
   });
 
   test("initial loaderStatus is loading", () {
@@ -157,8 +157,7 @@ void main() {
   // ---------------------------------------------------------------------------
   group("saveComment()", () {
     test("failure -> repository throws and shows failure toast", () async {
-      final vm = TestShareOfWalletViewModel();
-      vm.comment = Comment();
+      final vm = TestShareOfWalletViewModel()..comment = Comment();
 
       when(
         () => mockCommonRepo.saveApplicationStrategyDetails(
@@ -176,8 +175,7 @@ void main() {
     });
 
     test("null comment input still executes method path", () async {
-      final vm = TestShareOfWalletViewModel();
-      vm.comment = Comment();
+      final vm = TestShareOfWalletViewModel()..comment = Comment();
 
       when(
         () => mockCommonRepo.saveApplicationStrategyDetails(
@@ -281,8 +279,7 @@ void main() {
   group("onSaveAndContinue()", () {
     testWidgets("valid form -> saves comment and ends in loaded state",
         (tester) async {
-      final vm = TestShareOfWalletViewModel();
-      vm.comment = Comment();
+      final vm = TestShareOfWalletViewModel()..comment = Comment();
 
       when(
         () =>
@@ -316,8 +313,7 @@ void main() {
     });
 
     testWidgets("invalid form -> saveComment is not called", (tester) async {
-      final vm = TestShareOfWalletViewModel();
-      vm.comment = Comment();
+      final vm = TestShareOfWalletViewModel()..comment = Comment();
 
       await tester.pumpWidget(
         MaterialApp(

@@ -120,13 +120,15 @@ class RelationshipProfitabilityTable extends StatelessWidget {
         inputFormatters: [numberFormatter],
         onSubmitted: (value) {
           entry?.projectedNext12Months?.nii = value;
-          viewModel.calculateExpNetIncome(rimIndex, 0);
-          viewModel.debouncedTotals();
+          viewModel
+            ..calculateExpNetIncome(rimIndex, 0)
+            ..debouncedTotals();
         },
         onSaved: (value) {
           entry?.projectedNext12Months?.nii = value;
-          viewModel.calculateExpNetIncome(rimIndex, 0);
-          viewModel.debouncedTotals();
+          viewModel
+            ..calculateExpNetIncome(rimIndex, 0)
+            ..debouncedTotals();
         },
       ),
 
@@ -140,13 +142,15 @@ class RelationshipProfitabilityTable extends StatelessWidget {
         inputFormatters: [numberFormatter],
         onSubmitted: (value) {
           entry?.projectedNext12Months?.nfi = value;
-          viewModel.calculateExpNetIncome(rimIndex, 0);
-          viewModel.debouncedTotals();
+          viewModel
+            ..calculateExpNetIncome(rimIndex, 0)
+            ..debouncedTotals();
         },
         onSaved: (value) {
           entry?.projectedNext12Months?.nfi = value;
-          viewModel.calculateExpNetIncome(rimIndex, 0);
-          viewModel.debouncedTotals();
+          viewModel
+            ..calculateExpNetIncome(rimIndex, 0)
+            ..debouncedTotals();
         },
       ),
 
@@ -221,13 +225,15 @@ class RelationshipProfitabilityTable extends StatelessWidget {
         inputFormatters: [numberFormatter],
         onSubmitted: (value) {
           entry?.realizedLastYear?.nii = value;
-          viewModel.calculateExpNetIncome(rimIndex, 1);
-          viewModel.debouncedTotals();
+          viewModel
+            ..calculateExpNetIncome(rimIndex, 1)
+            ..debouncedTotals();
         },
         onSaved: (value) {
           entry?.realizedLastYear?.nii = value;
-          viewModel.calculateExpNetIncome(rimIndex, 1);
-          viewModel.debouncedTotals();
+          viewModel
+            ..calculateExpNetIncome(rimIndex, 1)
+            ..debouncedTotals();
         },
       ),
 
@@ -243,13 +249,15 @@ class RelationshipProfitabilityTable extends StatelessWidget {
         inputFormatters: [numberFormatter],
         onSubmitted: (value) {
           entry?.realizedLastYear?.nfi = value;
-          viewModel.calculateExpNetIncome(rimIndex, 1);
-          viewModel.debouncedTotals();
+          viewModel
+            ..calculateExpNetIncome(rimIndex, 1)
+            ..debouncedTotals();
         },
         onSaved: (value) {
           entry?.realizedLastYear?.nfi = value;
-          viewModel.calculateExpNetIncome(rimIndex, 1);
-          viewModel.debouncedTotals();
+          viewModel
+            ..calculateExpNetIncome(rimIndex, 1)
+            ..debouncedTotals();
         },
       ),
 

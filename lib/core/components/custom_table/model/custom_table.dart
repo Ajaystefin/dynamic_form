@@ -415,7 +415,7 @@ class _CustomRawTableState extends State<CustomRawTable> {
     if (widget.showPagination && widget.isFilterTable) {
       if (startIndex > 0) {
         startIndex -= adjustedCurrentPage;
-        endIndex -= (adjustedCurrentPage + 1);
+        endIndex -= adjustedCurrentPage + 1;
       }
 
       if (startIndex == 0) {

@@ -93,7 +93,6 @@ void main() {
   late MockRequestRepository mockRepository;
   late MockReferenceDataService mockReferenceDataService;
   late FacilitySecurityLinkageViewModel viewModel;
-  final mockAlertManager = MockAlertManager();
 
   late MockLocalStorageService mockLocalStorageService;
 
@@ -109,9 +108,7 @@ void main() {
 
   setUp(() {
     mockRepository = MockRequestRepository();
-    viewModel = FacilitySecurityLinkageViewModel();
-    AlertManager.overrideInstance(mockAlertManager);
-    viewModel.repository = mockRepository;
+    viewModel = FacilitySecurityLinkageViewModel()..repository = mockRepository;
 
     mockLocalStorageService = MockLocalStorageService();
     mockReferenceDataService = MockReferenceDataService();
@@ -204,12 +201,12 @@ void main() {
   });
 
   test("filters securities by security number", () {
-    viewModel.securities = [
-      Security(),
-      Security(),
-    ];
-
-    viewModel.filterBySecurityNumber("SEC001");
+    viewModel
+      ..securities = [
+        Security(),
+        Security(),
+      ]
+      ..filterBySecurityNumber("SEC001");
 
     expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
   });
@@ -228,12 +225,12 @@ void main() {
   });
 
   test("filters securities by security type", () {
-    viewModel.securities = [
-      Security(),
-      Security(),
-    ];
-
-    viewModel.filterBySecurityType("CODE2");
+    viewModel
+      ..securities = [
+        Security(),
+        Security(),
+      ]
+      ..filterBySecurityType("CODE2");
 
     expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
   });
@@ -467,62 +464,63 @@ void main() {
     test(
         "filterBySecurityNumber emits loaded "
         "(current code does not mutate list)", () {
-      vm.securities = <Security>[
-        Security(
-          securityNumber: "ABC",
-          securityType: Reference(id: 1, name: "Mortgage"),
-        ),
-        Security(
-          securityNumber: "DEF",
-          securityType: Reference(id: 2, name: "Lien"),
-        ),
-      ];
-
-      vm.filterBySecurityNumber("ABC");
+      vm
+        ..securities = <Security>[
+          Security(
+            securityNumber: "ABC",
+            securityType: Reference(id: 1, name: "Mortgage"),
+          ),
+          Security(
+            securityNumber: "DEF",
+            securityType: Reference(id: 2, name: "Lien"),
+          ),
+        ]
+        ..filterBySecurityNumber("ABC");
       expect(vm.state.loaderStatus, LoadingStatus.loaded);
     });
 
     test(
         "filterBySecurityType emits loaded (current code does not mutate list)",
         () {
-      vm.securities = <Security>[
-        Security(
-          securityNumber: "1",
-          securityType: Reference(id: 1, name: "Mortgage"),
-        ),
-        Security(
-          securityNumber: "2",
-          securityType: Reference(id: 2, name: "Lien"),
-        ),
-      ];
-
-      vm.filterBySecurityType("Mortgage");
+      vm
+        ..securities = <Security>[
+          Security(
+            securityNumber: "1",
+            securityType: Reference(id: 1, name: "Mortgage"),
+          ),
+          Security(
+            securityNumber: "2",
+            securityType: Reference(id: 2, name: "Lien"),
+          ),
+        ]
+        ..filterBySecurityType("Mortgage");
       expect(vm.state.loaderStatus, LoadingStatus.loaded);
     });
   });
 
   group("onFilter()", () {
     setUp(() {
-      vm.securities = <Security>[
-        Security(
-          securityNumber: "SEC-001",
-          securityType: Reference(id: 1, name: "Mortgage"),
-        ),
-        Security(
-          securityNumber: "sec-002",
-          securityType: Reference(id: 2, name: "Lien"),
-        ),
-        Security(
-          securityNumber: "X-003",
-          securityType: Reference(id: 3, name: "Pledge"),
-        ),
-      ];
-      vm.securityTypeOptions = <Reference>[
-        Reference(id: 1, name: "Mortgage"),
-        Reference(id: 2, name: "LIEN"),
-        Reference(id: 3, name: "Pledge"),
-      ];
-      vm.originalSecurities = List.from(vm.securities);
+      vm
+        ..securities = <Security>[
+          Security(
+            securityNumber: "SEC-001",
+            securityType: Reference(id: 1, name: "Mortgage"),
+          ),
+          Security(
+            securityNumber: "sec-002",
+            securityType: Reference(id: 2, name: "Lien"),
+          ),
+          Security(
+            securityNumber: "X-003",
+            securityType: Reference(id: 3, name: "Pledge"),
+          ),
+        ]
+        ..securityTypeOptions = <Reference>[
+          Reference(id: 1, name: "Mortgage"),
+          Reference(id: 2, name: "LIEN"),
+          Reference(id: 3, name: "Pledge"),
+        ]
+        ..originalSecurities = List.from(vm.securities);
     });
 
     test("filter by securityNumber (contains, case-insensitive)", () async {

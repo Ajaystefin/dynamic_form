@@ -68,8 +68,9 @@ void main() {
   });
 
   test("applyDraft ignores null values safely", () {
-    vm.creditBrief = "before brief";
-    vm.creditAppraisal = "before appraisal";
+    vm
+      ..creditBrief = "before brief"
+      ..creditAppraisal = "before appraisal";
 
     handler.applyDraft(vm, {
       "creditBrief": null,
@@ -81,8 +82,9 @@ void main() {
   });
 
   test("applyDraft ignores unrelated keys", () {
-    vm.creditBrief = "before brief";
-    vm.creditAppraisal = "before appraisal";
+    vm
+      ..creditBrief = "before brief"
+      ..creditAppraisal = "before appraisal";
 
     handler.applyDraft(vm, {
       "foo": "bar",
@@ -94,8 +96,9 @@ void main() {
   });
 
   test("applyDraft does nothing when draft map is empty", () {
-    vm.creditBrief = "before brief";
-    vm.creditAppraisal = "before appraisal";
+    vm
+      ..creditBrief = "before brief"
+      ..creditAppraisal = "before appraisal";
 
     handler.applyDraft(vm, {});
 

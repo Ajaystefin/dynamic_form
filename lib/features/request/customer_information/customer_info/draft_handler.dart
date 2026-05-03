@@ -86,9 +86,10 @@ class CustomerInfoDraftHandler extends DraftHandler<CustomerInfoViewModel> {
     // --------------------------------------------------
     // Debug logs (keep for verification)
     // --------------------------------------------------
-    logger.i("Selected RIM: $selectedRim");
-    logger.i("Selected custInfoId: $selectedCustInfoId");
-    logger.i("Ownership rows: ${vm.customerOwnerShipInfo?.length}");
-    logger.i("Exception rows: ${vm.customerException?.length}");
+    logger
+      ..i("Selected RIM: $selectedRim")
+      ..i("Selected custInfoId: $selectedCustInfoId")
+      ..i("Ownership rows: ${vm.customerOwnerShipInfo?.length}")
+      ..i("Exception rows: ${vm.customerException?.length}");
   }
 }

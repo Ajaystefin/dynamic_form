@@ -307,7 +307,7 @@ class APIManager {
       final String status =
           (r["status"] as String?) == "CREATED" ? "Success" : "Fail";
 
-      final String? err = (r["errorMessage"] as String?);
+      final String? err = r["errorMessage"] as String?;
 
       if (status == "Fail" && err != null && err.isNotEmpty) {
         fileLines.add("$name - Fail ($err)");

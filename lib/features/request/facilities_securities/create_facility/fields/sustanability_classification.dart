@@ -54,7 +54,7 @@ class SustanabilityClassification extends StatelessWidget {
             ),
           );
         },
-        items: (viewModel.sustanabilityClassifications),
+        items: viewModel.sustanabilityClassifications,
         onSelected: (value) {
           viewModel.getFacility.sustainabilityClassification = value;
         },

@@ -48,15 +48,15 @@ class FacilityProposedByCC extends StatelessWidget {
               viewModel.getFacility.proposedByCcCurrency =
                   selectedValue.first.name;
 
-              viewModel.onCurrencyChanged(
-                selectedValue.first,
-                CurrencyField.proposedBycc,
-              );
-
-              viewModel.getCurrencyRates(
-                selectedValue.first,
-                CurrencyField.proposedBycc,
-              );
+              viewModel
+                ..onCurrencyChanged(
+                  selectedValue.first,
+                  CurrencyField.proposedBycc,
+                )
+                ..getCurrencyRates(
+                  selectedValue.first,
+                  CurrencyField.proposedBycc,
+                );
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {

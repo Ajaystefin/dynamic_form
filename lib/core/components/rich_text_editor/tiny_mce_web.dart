@@ -62,8 +62,7 @@ class TinyMceWidgetState extends State<TinyMceWebWidget> {
   bool _isInitialized = false;
   StreamSubscription<web.MessageEvent>? _messageSubscription;
 
-  late final String iframeId =
-      "flutter-web-iframe-${widget.editorId}-"
+  late final String iframeId = "flutter-web-iframe-${widget.editorId}-"
       "${DateTime.now().millisecondsSinceEpoch}";
 
   @override

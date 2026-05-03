@@ -77,8 +77,8 @@ void main() {
     mockReferenceDataService = MockReferenceDataService();
     mockAlertManager = MockAlertManager();
 
-    viewModel = TestFileAccessViewModel();
-    viewModel.repository = mockRepository;
+    viewModel = TestFileAccessViewModel()
+      ..repository = mockRepository;
 
     ReferenceDataService.overrideInstance(mockReferenceDataService);
     AlertManager.overrideInstance(mockAlertManager);
@@ -385,8 +385,9 @@ void main() {
         "should save successfully with empty "
         "response and not show success toast", () async {
       final selectedRole = Reference(id: 2, name: "User", status: "active");
-      viewModel.selectedRoleType = selectedRole;
-      viewModel.fileAccesses = [FileAccess(name: "Only File")];
+      viewModel
+        ..selectedRoleType = selectedRole
+        ..fileAccesses = [FileAccess(name: "Only File")];
 
       when(
         () => mockRepository.saveFileAttachments(any(), selectedRole),
@@ -404,8 +405,9 @@ void main() {
 
     test("should emit error and show failure toast when save fails", () async {
       final selectedRole = Reference(id: 1, name: "Admin", status: "active");
-      viewModel.selectedRoleType = selectedRole;
-      viewModel.fileAccesses = [FileAccess(name: "File1")];
+      viewModel
+        ..selectedRoleType = selectedRole
+        ..fileAccesses = [FileAccess(name: "File1")];
 
       when(
         () => mockRepository.saveFileAttachments(any(), selectedRole),

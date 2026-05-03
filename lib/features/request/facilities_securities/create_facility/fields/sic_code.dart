@@ -50,10 +50,10 @@ class FacilitySicCode extends StatelessWidget {
         //     ? [viewModel.getFacility.sicCode]
         //     : null,
         validationMessage:
-            (isRequired) ? "common.validation.emptyField".tr() : null,
+            isRequired ? "common.validation.emptyField".tr() : null,
         onSelected: (selectedValue) {
           if (selectedValue.isNotEmpty) {
-            viewModel.getFacility.sicCode = (selectedValue.first);
+            viewModel.getFacility.sicCode = selectedValue.first;
           }
         },
         itemBuilder: (context, item, isDisabled, isSelected) {

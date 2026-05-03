@@ -35,15 +35,17 @@ class AdminRepository {
     AppResponse? response;
     try {
       if (isUpdate) {
-        accessRight.subType = ServerConstants.accessRightUpdate;
-        accessRight.role = role.reference1;
-        accessRight.requestType = requestType.reference4;
-        accessRight.subType = requestType.reference1;
+        accessRight
+          ..subType = ServerConstants.accessRightUpdate
+          ..role = role.reference1
+          ..requestType = requestType.reference4
+          ..subType = requestType.reference1;
       } else {
-        accessRight.subType = ServerConstants.accessRightSave;
-        accessRight.role = role.reference1;
-        accessRight.requestType = requestType.reference4;
-        accessRight.subType = requestType.reference1;
+        accessRight
+          ..subType = ServerConstants.accessRightSave
+          ..role = role.reference1
+          ..requestType = requestType.reference4
+          ..subType = requestType.reference1;
       }
 
       final Map data = BaseRequest.baseRequest(accessRight.toJson());
@@ -141,9 +143,7 @@ class AdminRepository {
     final AppResponse response = await APIManager.instance
         .post(APIEndpoints.saveConfigurableReferenceData, data);
     if (response.status == ResponseStatus.success) {
-      response.message =
-          response.body["baseResponse"]["status"]["statusDescription"];
-      return response.message;
+      return response.body["baseResponse"]["status"]["statusDescription"];
     } else {
       throw response.message;
     }
@@ -220,34 +220,29 @@ class AdminRepository {
 
     final AppResponse response =
         await _apiManager.post(APIEndpoints.getAdminUserDetails, data);
-    User user = User();
-
     try {
-      if (response.status != ResponseStatus.success) return user;
+      if (response.status != ResponseStatus.success) return User();
 
       final responseData = response.body["responseData"];
-      if (responseData == null) return user;
+      if (responseData == null) return User();
 
       final Map<String, dynamic> userData =
           Map<String, dynamic>.from(responseData);
       final List rawRoleList = userData.remove("roleList") ?? [];
 
-      user = User.fromJson(userData);
-
-      user.availableRoles = rawRoleList.map((roleCode) {
-        roleCode = roleCode.trim();
-        final Reference roleReference = roleTypes.firstWhere(
-          (Reference role) => role.reference1?.trim() == roleCode,
-          orElse: Reference.new,
-        );
-        return Role(
-          code: roleCode,
-          name: roleReference.reference2,
-          group: roleReference.reference3,
-        );
-      }).toList();
-
-      return user;
+      return User.fromJson(userData)
+        ..availableRoles = rawRoleList.map((roleCode) {
+          roleCode = roleCode.trim();
+          final Reference roleReference = roleTypes.firstWhere(
+            (Reference role) => role.reference1?.trim() == roleCode,
+            orElse: Reference.new,
+          );
+          return Role(
+            code: roleCode,
+            name: roleReference.reference2,
+            group: roleReference.reference3,
+          );
+        }).toList();
     } catch (e) {
       logger.i(e.toString());
       rethrow;
@@ -326,9 +321,7 @@ class AdminRepository {
     final AppResponse response =
         await _apiManager.post(APIEndpoints.saveFileAttachments, data);
     if (response.status == ResponseStatus.success) {
-      response.message =
-          response.body["baseResponse"]["status"]["statusDescription"];
-      return response.message;
+      return response.body["baseResponse"]["status"]["statusDescription"];
     } else {
       throw response.message;
     }

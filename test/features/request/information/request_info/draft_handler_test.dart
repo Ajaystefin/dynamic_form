@@ -118,20 +118,20 @@ void main() {
     vm = _VM();
     handler = RequestInfoDraftHandler();
 
-    vm.productTypeItems = [matchRef];
-    vm.tpanRequiredItems = [matchRef];
-    vm.shariaApprovalItems = [matchRef];
-    vm.ermApprovalItems = [matchRef];
-    vm.esgItems = [matchRef];
-    vm.pricingCommitteeItems = [matchRef];
-    vm.interimReviewDateRequiredItems = [matchRef];
-    vm.restructuredRescheduledItems = [matchRef];
-    vm.exposureStrategyItems = [matchRef];
-    vm.cancellationReason = [matchRef];
-
-    vm.applicationDetails = ApplicationDetails();
-    vm.comments = [];
-    vm.comment = Comment();
+    vm
+      ..productTypeItems = [matchRef]
+      ..tpanRequiredItems = [matchRef]
+      ..shariaApprovalItems = [matchRef]
+      ..ermApprovalItems = [matchRef]
+      ..esgItems = [matchRef]
+      ..pricingCommitteeItems = [matchRef]
+      ..interimReviewDateRequiredItems = [matchRef]
+      ..restructuredRescheduledItems = [matchRef]
+      ..exposureStrategyItems = [matchRef]
+      ..cancellationReason = [matchRef]
+      ..applicationDetails = ApplicationDetails()
+      ..comments = []
+      ..comment = Comment();
   });
 
   // ══════════════════════════════════════════════════════════════════════════

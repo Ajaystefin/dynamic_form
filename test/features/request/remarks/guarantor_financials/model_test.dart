@@ -93,10 +93,11 @@ void main() {
   setUp(() {
     vm = TestGuarantorFinancialViewModel();
     repo = MockRemarksRepository();
-    vm.repository = repo;
+    vm
+      ..repository = repo
 
-    // Avoid relying on localization in assertions
-    vm.unavailableText = "NA";
+      // Avoid relying on localization in assertions
+      ..unavailableText = "NA";
 
     // Minimal financialRatioType setup to allow populateIncomeStatementRows to
     // create rows.
@@ -301,9 +302,9 @@ void main() {
         ],
         macros: const {},
       );
-      vm.populateIncomeStatementRows(resp);
-
-      vm.addIncomeRowForEntity(entityId);
+      vm
+        ..populateIncomeStatementRows(resp)
+        ..addIncomeRowForEntity(entityId);
       final rows = vm.incomeRowsFor(entityId);
       final uRow = rows.firstWhere((r) => r.id.startsWith("u-"));
 
@@ -535,8 +536,9 @@ void main() {
         (WidgetTester tester) async {
       await _pumpToastApp(tester);
 
-      vm.hasExistingGuarantorDetails = true;
-      vm.updateEntityId("999");
+      vm
+        ..hasExistingGuarantorDetails = true
+        ..updateEntityId("999");
 
       when(() => repo.saveGuarantorFinancialDetails(items: any(named: "items")))
           .thenThrow(Exception("Save failed"));
@@ -980,8 +982,9 @@ void main() {
       await vm.searchEntityForSection(1, isFirstSection: false);
 
       // Force flags to hit save backend
-      vm.hasCreditLensData = true;
-      vm.hasExistingGuarantorDetails = true;
+      vm
+        ..hasCreditLensData = true
+        ..hasExistingGuarantorDetails = true;
       vm.incomeStatementRows
           .add(IncomeStatementAnalysisRow(id: "1", isNew: true));
 
@@ -1002,8 +1005,9 @@ void main() {
     });
 
     test("updatePendingEntityId covers drafting logic", () {
-      vm.updatePendingEntityId(555, "666");
-      vm.updateEntityId("666", sectionEntityId: 555);
+      vm
+        ..updatePendingEntityId(555, "666")
+        ..updateEntityId("666", sectionEntityId: 555);
       // This is just to hit the lines for coverage
       expect(true, isTrue);
     });

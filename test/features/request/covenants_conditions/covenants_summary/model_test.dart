@@ -173,8 +173,7 @@ void main() {
     await TestConfig.setupTestEnvironment();
     await EnvConfig.setEnvironment();
 
-    final storageService = LocalStorageService();
-    storageService.setStorage(
+    LocalStorageService().setStorage(
       HiveStorage(encryptionKey: TestConfig.testEncryptionKeyBytes),
     );
 
@@ -225,8 +224,9 @@ void main() {
     });
 
     test("field assignments are covered", () {
-      vm.request = Request(applicationRefNo: "TEST123");
-      vm.strategyComment = "Test strategy";
+      vm
+        ..request = Request(applicationRefNo: "TEST123")
+        ..strategyComment = "Test strategy";
       expect(vm.request?.applicationRefNo, "TEST123");
       expect(vm.strategyComment, "Test strategy");
     });
@@ -448,8 +448,8 @@ void main() {
 
     test("success in non-FI flow keeps existing comment and no navigation",
         () async {
-      final localVm = buildVm(isFIFlowOverride: false);
-      localVm.comment = Comment(comment: "plain text");
+      final localVm = buildVm(isFIFlowOverride: false)
+        ..comment = Comment(comment: "plain text");
       when(() => mockCommon.saveComment(any())).thenAnswer((_) async => "OK");
 
       await localVm.saveComment();
@@ -468,8 +468,7 @@ void main() {
       final localVm = buildVm(
         isFIFlowOverride: false,
         resolvedPageMode: PageMode.view,
-      );
-      localVm.covenantPageMode = PageMode.view;
+      )..covenantPageMode = PageMode.view;
 
       when(() => mockCommon.saveComment(any())).thenAnswer((_) async => "OK");
 

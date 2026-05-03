@@ -25,16 +25,15 @@ class CmoRemarks extends StatelessWidget {
               initialText: viewModel.security.cmoRemark ?? "",
               disable: viewModel.isApproved || viewModel.isCmoUpdate(),
               // height: 400,
-              editorId:
-                  "security_cmo_remarks_"
+              editorId: "security_cmo_remarks_"
                   '${viewModel.security.securityId ?? 'new'}',
               scrollController: viewModel.scrollController,
             )
           : CustomTextArea(
               initialValue: viewModel.cmoRemark,
-              filled: !(viewModel.isCmoUpdate()),
+              filled: !viewModel.isCmoUpdate(),
               maxLength: 1000,
-              readOnly: !(viewModel.isCmoUpdate()),
+              readOnly: !viewModel.isCmoUpdate(),
               onSaved: (String? value) {
                 viewModel.security.cmoRemark = value;
               },

@@ -13,12 +13,10 @@ void main() {
 
   setUp(() {
     handler = RiskRatingDraftHandler();
-    vm = RiskRatingViewModel();
-
-    // Reference lists for external rating resolution
-    vm.sAndP = [Reference(id: 1)];
-    vm.moodys = [Reference(id: 2)];
-    vm.fitch = [Reference(id: 3)];
+    vm = RiskRatingViewModel()
+      ..sAndP = [Reference(id: 1)]
+      ..moodys = [Reference(id: 2)]
+      ..fitch = [Reference(id: 3)];
   });
 
   Future<void> attachForm(
@@ -93,12 +91,12 @@ void main() {
   });
 
   testWidgets("buildDraftData handles null form state safely", (tester) async {
-    vm.formKey = GlobalKey<FormState>(); // not mounted
-
-    vm.riskRating = RiskRating(
-      internalRatings: [],
-      externalRatings: null,
-    );
+    vm
+      ..formKey = GlobalKey<FormState>() // not mounted
+      ..riskRating = RiskRating(
+        internalRatings: [],
+        externalRatings: null,
+      );
 
     final draft = handler.buildDraftData(vm);
 

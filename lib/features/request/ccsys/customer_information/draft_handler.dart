@@ -43,9 +43,8 @@ class CustomerInformationDraftHandler
         : null;
 
     final emiEst = vm.selectedEmirateEstablishment;
-    vm.customerInformation.emiEst = emiEst != null
-        ? "${emiEst.id}-${emiEst.name}"
-        : null;
+    vm.customerInformation.emiEst =
+        emiEst != null ? "${emiEst.id}-${emiEst.name}" : null;
 
     vm.customerInformation.ccsysCustomerPartnerShareholderList = vm.rows;
 
@@ -179,11 +178,11 @@ class CustomerInformationDraftHandler
       final borrowerId = _int(data["selectedBorroweSubsidiaryId"]);
       final leiId = _int(data["selectedLegalEntityIdentifierId"]);
 
-      vm.selectedBorroweSubsidiary =
-          _mapToUiInstance(vm.yesNoNaItems, borrowerId);
-
-      vm.selectedLegalEntityIdentifier =
-          _mapToUiInstance(vm.yesNoNaItems, leiId);
+      vm
+        ..selectedBorroweSubsidiary =
+            _mapToUiInstance(vm.yesNoNaItems, borrowerId)
+        ..selectedLegalEntityIdentifier =
+            _mapToUiInstance(vm.yesNoNaItems, leiId);
 
       final leiYes =
           vm.selectedLegalEntityIdentifier?.id == ServerConstants.yesRefId;
@@ -201,23 +200,21 @@ class CustomerInformationDraftHandler
       /// ===============================
 
       if (!leiYes) {
-        vm.selectedEmirateLicense = vm.defaultField;
-
-        vm.selectedEmirateEstablishment = vm.defaultField;
-
-        vm.customerInformation.emiLic = vm.defaultField.name;
-
-        vm.customerInformation.emiEst = vm.defaultField.name;
+        vm
+          ..selectedEmirateLicense = vm.defaultField
+          ..selectedEmirateEstablishment = vm.defaultField
+          ..customerInformation.emiLic = vm.defaultField.name
+          ..customerInformation.emiEst = vm.defaultField.name;
       } else {
-        vm.selectedEmirateLicense = _mapEmirateFromCode(
-          vm.ccsysEmirateList,
-          vm.customerInformation.emiLic,
-        );
-
-        vm.selectedEmirateEstablishment = _mapEmirateFromCode(
-          vm.ccsysEmirateList,
-          vm.customerInformation.emiEst,
-        );
+        vm
+          ..selectedEmirateLicense = _mapEmirateFromCode(
+            vm.ccsysEmirateList,
+            vm.customerInformation.emiLic,
+          )
+          ..selectedEmirateEstablishment = _mapEmirateFromCode(
+            vm.ccsysEmirateList,
+            vm.customerInformation.emiEst,
+          );
 
         if (vm.selectedEmirateLicense != null) {
           vm.customerInformation.emiLic = vm.selectedEmirateLicense!.name;
@@ -230,8 +227,9 @@ class CustomerInformationDraftHandler
 
       logger.i("Draft restored successfully");
     } catch (e, st) {
-      logger.e("Draft restore failed: $e");
-      logger.e(st.toString());
+      logger
+        ..e("Draft restore failed: $e")
+        ..e(st.toString());
     }
 
     vm.emit(

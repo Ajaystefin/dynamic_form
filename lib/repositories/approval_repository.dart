@@ -331,9 +331,9 @@ class ApprovalRepository {
     // ${getGroupPositionResponseData?.body["responseData"]}");
     //getGroupPositionResponseData.body['responseData']['proposed_position'];
     final List<Position> presentPosition = [];
-    GroupPosition groupPositionList = GroupPosition();
-    groupPositionList.proposedPosition = proposedPosition;
-    groupPositionList.presentPosition = presentPosition;
+    GroupPosition groupPositionList = GroupPosition()
+      ..proposedPosition = proposedPosition
+      ..presentPosition = presentPosition;
     groups = [];
     if (getGroupPositionResponseData?.body["responseData"].isEmpty) {
       return groupPositionList;
@@ -388,8 +388,8 @@ class ApprovalRepository {
           ),
         );
 
-        groupPositionList = GroupPosition();
-        groupPositionList.proposedPosition = proposedPosition;
+        groupPositionList = GroupPosition()
+          ..proposedPosition = proposedPosition;
         if (!Utils.isGroupApplication()) {
           groupPositionList.presentPosition = presentPosition;
         }
@@ -423,12 +423,12 @@ class ApprovalRepository {
             final userDetails = role["userDetails"] as List<dynamic>;
             users.addAll(
               userDetails.map((e) {
-                final User user = User.fromJson(e);
-                user.currentRole = Role(
-                  bpmRole: role["bpmRoleName"],
-                  roleId: role["roleId"],
-                  name: role["role"],
-                );
+                final User user = User.fromJson(e)
+                  ..currentRole = Role(
+                    bpmRole: role["bpmRoleName"],
+                    roleId: role["roleId"],
+                    name: role["role"],
+                  );
                 return user;
               }).toList(),
             );
@@ -664,13 +664,10 @@ class ApprovalRepository {
       response.message =
           response.body["baseResponse"]?["status"]?["statusDescription"];
 
-      final List<Comment> comments =
-          (response.body["responseData"]?["commentList"] as List<dynamic>?)
-                  ?.map((item) => Comment.fromJson(item))
-                  .toList() ??
-              [];
-
-      return comments;
+      return (response.body["responseData"]?["commentList"] as List<dynamic>?)
+              ?.map((item) => Comment.fromJson(item))
+              .toList() ??
+          [];
     }
 
     throw response.message;
@@ -694,8 +691,7 @@ class ApprovalRepository {
     );
 
     if (response.status == ResponseStatus.success) {
-      response.message = response.body["responseData"].toString();
-      return response.message;
+      return response.body["responseData"].toString();
     }
 
     throw Exception(response.message);
@@ -790,8 +786,7 @@ class ApprovalRepository {
     );
 
     if (response.status == ResponseStatus.success) {
-      response.message = response.body["responseData"].toString();
-      return response.message;
+      return response.body["responseData"].toString();
     }
 
     throw Exception(response.message);

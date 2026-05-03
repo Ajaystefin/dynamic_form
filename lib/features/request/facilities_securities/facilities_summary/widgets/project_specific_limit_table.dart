@@ -79,7 +79,7 @@ class ProjectSpecificLimitTable extends StatelessWidget {
 
     String? headerLimitNoFromGroup;
     final limits = selectedGroup?.facilityLimits ?? const <FacilityDis>[];
-    final headerRows = limits.where((d) => (d.order?.trim() == "0")).toList();
+    final headerRows = limits.where((d) => d.order?.trim() == "0").toList();
 
     for (final h in headerRows) {
       final f = h.facility;
@@ -105,7 +105,7 @@ class ProjectSpecificLimitTable extends StatelessWidget {
           rows: getProjectTableRows(),
         ),
         const Gap(),
-        (hasNonHeaderLimits)
+        hasNonHeaderLimits
             ? CustomRawTable(
                 key: UniqueKey(),
                 autoFitWidth: true,
@@ -194,8 +194,7 @@ class ProjectSpecificLimitTable extends StatelessWidget {
       const SizedBox.shrink(),
     ];
 
-    final List<List<Widget>> tableRows = <List<Widget>>[];
-    tableRows.add(filterRows);
+    final List<List<Widget>> tableRows = <List<Widget>>[filterRows];
 
     final RimSummary? rim =
         (customer.rims?.isNotEmpty ?? false) ? customer.rims!.first : null;
@@ -237,7 +236,7 @@ class ProjectSpecificLimitTable extends StatelessWidget {
           viewModel.matchOrFirstById(viewModel.benchmark, f.index);
 
       final List<Reference> selectedSustainability = (() {
-        final String raw = (f.sustainabilityClassification ?? "");
+        final String raw = f.sustainabilityClassification ?? "";
         if (raw.trim().isEmpty) return <Reference>[];
         final Set<String> ids = raw
             .split(",")
@@ -396,8 +395,9 @@ class ProjectSpecificLimitTable extends StatelessWidget {
               onSelected: (selectedValue) {
                 if (selectedValue.isNotEmpty) {
                   final Reference sel = selectedValue.first;
-                  f.currency = sel.name;
-                  f.isEdited = true;
+                  f
+                    ..currency = sel.name
+                    ..isEdited = true;
                   viewModel.facility.proposedLimitValue =
                       sel; // keep your UI bindin
                   viewModel.updateConvertedTooltipFor(f, rebuild: true);
@@ -423,9 +423,10 @@ class ProjectSpecificLimitTable extends StatelessWidget {
             ],
             onChanged: (String? value) {
               final String raw = (value ?? "").replaceAll(RegExp("[^0-9]"), "");
-              f.proposedLimit = raw.isEmpty ? 0 : int.parse(raw);
-              f.proposedLimitAED = raw.isEmpty ? 0 : int.tryParse(raw);
-              f.isEdited = true;
+              f
+                ..proposedLimit = raw.isEmpty ? 0 : int.parse(raw)
+                ..proposedLimitAED = raw.isEmpty ? 0 : int.tryParse(raw)
+                ..isEdited = true;
               viewModel.updateConvertedTooltipFor(f);
             },
           ),
@@ -462,15 +463,16 @@ class ProjectSpecificLimitTable extends StatelessWidget {
               title: Text(item.name ?? ""),
             );
           },
-          items: (viewModel.sustanabilityClassifications),
+          items: viewModel.sustanabilityClassifications,
           onSelected: (value) {
             final ids = value
                 .map((r) => r.id?.toString())
                 .where((id) => id != null && id.isNotEmpty)
                 .cast<String>()
                 .toList();
-            f.sustainabilityClassification = ids.join(", ");
-            f.isEdited = true;
+            f
+              ..sustainabilityClassification = ids.join(", ")
+              ..isEdited = true;
           },
         ),
 
@@ -489,7 +491,7 @@ class ProjectSpecificLimitTable extends StatelessWidget {
                 ? null
                 : (_) {
                     final noUnit =
-                        (f.tenorUnit == null || f.tenorUnit!.trim().isEmpty);
+                        f.tenorUnit == null || f.tenorUnit!.trim().isEmpty;
                     final noValue = (f.tenorValue == null);
                     return (noUnit || noValue)
                         ? "Tenor (unit & value) is required"
@@ -506,8 +508,9 @@ class ProjectSpecificLimitTable extends StatelessWidget {
               onSelected: (selectedValue) {
                 if (selectedValue.isNotEmpty) {
                   final sel = selectedValue.first;
-                  f.tenorUnit = sel.name;
-                  f.isEdited = true;
+                  f
+                    ..tenorUnit = sel.name
+                    ..isEdited = true;
                   viewModel.facility.proposedLimitValue =
                       sel; // keep UI binding
                 }
@@ -529,9 +532,10 @@ class ProjectSpecificLimitTable extends StatelessWidget {
             keyboardType: TextInputType.number,
             onChanged: (String? value) {
               final match = RegExp(r"\d+").firstMatch(value ?? "");
-              f.tenorValue =
-                  match != null ? int.tryParse(match.group(0)!) : null;
-              f.isEdited = true;
+              f
+                ..tenorValue =
+                    match != null ? int.tryParse(match.group(0)!) : null
+                ..isEdited = true;
             },
           ),
         ),
@@ -551,8 +555,9 @@ class ProjectSpecificLimitTable extends StatelessWidget {
             onSelected: (selectedValue) {
               if (selectedValue.isNotEmpty) {
                 final sel = selectedValue.first;
-                f.index = sel.id?.toString() ?? sel.name ?? "";
-                f.isEdited = true;
+                f
+                  ..index = sel.id?.toString() ?? sel.name ?? ""
+                  ..isEdited = true;
                 viewModel.facility.proposedLimitValue = sel;
               }
             },
@@ -606,8 +611,9 @@ class ProjectSpecificLimitTable extends StatelessWidget {
               onSelected: (selectedValue) {
                 if (selectedValue.isNotEmpty) {
                   final sel = selectedValue.first;
-                  f.marginSign = sel.reference1;
-                  f.isEdited = true;
+                  f
+                    ..marginSign = sel.reference1
+                    ..isEdited = true;
                   viewModel.facility.proposedLimitValue = sel;
                 }
               },
@@ -629,9 +635,10 @@ class ProjectSpecificLimitTable extends StatelessWidget {
             onChanged: (String? value) {
               // extract decimal number from a string: "+ 2.5" -> 2.5
               final match = RegExp(r"[-+]?\d*\.?\d+").firstMatch(value ?? "");
-              f.marginValue =
-                  match != null ? num.tryParse(match.group(0)!) : null;
-              f.isEdited = true;
+              f
+                ..marginValue =
+                    match != null ? num.tryParse(match.group(0)!) : null
+                ..isEdited = true;
             },
           ),
         ),
@@ -755,7 +762,7 @@ class ProjectSpecificLimitTable extends StatelessWidget {
 
     FacilityDis headerDis = FacilityDis();
     final List<FacilityDis> headerRows =
-        limits.where((d) => (d.order?.trim() == "0")).toList();
+        limits.where((d) => d.order?.trim() == "0").toList();
     for (final h in headerRows) {
       final f = h.facility;
       final ld = f?.limitDescription?.toString();
@@ -830,7 +837,7 @@ class ProjectSpecificLimitTable extends StatelessWidget {
       // Existing Limits
       Text(
         (facility?.presentLimit != null)
-            ? _kFmt.format(((facility!.presentLimit!).toInt()))
+            ? _kFmt.format((facility!.presentLimit!).toInt())
             : "",
         style: const TextStyle(color: AppColors.darkBlue),
       ),
@@ -891,7 +898,7 @@ class ProjectSpecificLimitTable extends StatelessWidget {
 
       Text(
         (facility?.presentOutstanding != null)
-            ? _kFmt.format(((facility!.presentOutstanding!).toInt()))
+            ? _kFmt.format((facility!.presentOutstanding!).toInt())
             : "",
         style: const TextStyle(color: AppColors.darkBlue),
       ),

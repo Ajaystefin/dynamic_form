@@ -56,14 +56,14 @@ class OverallTotalTable extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: Text(
-                thousands.format((e.existingLimit ?? 0)),
+                thousands.format(e.existingLimit ?? 0),
                 style: const TextStyle(color: AppColors.primary),
               ),
             ),
             Align(
               alignment: Alignment.centerRight,
               child: Text(
-                thousands.format((e.proposedLimit ?? 0)),
+                thousands.format(e.proposedLimit ?? 0),
                 style: const TextStyle(color: AppColors.primary),
               ),
             ),

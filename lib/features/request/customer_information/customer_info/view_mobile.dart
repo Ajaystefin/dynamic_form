@@ -151,25 +151,25 @@ class ViewMobile extends StatelessWidget {
             const Gap(),
             Align(
               alignment: AlignmentDirectional.topStart,
-              child:                 Builder(
-                  builder: (_) {
-                    // Extract key for line-length compliance
-                    const String custKey =
-                        "customerInformation.customerInformation"
-                        ".customerName";
-                    final String custName =
-                        viewModel.customerInformation?.customerName ?? "";
-                    final String rimNo =
-                        viewModel.customerInformation?.customerRimNo
-                                ?.toString() ??
-                            "";
-                    return CustomSelectableText(
-                      semanticsLabel: "${custKey.tr()} : $custName ",
-                      text: "${custKey.tr()} : $custName ($rimNo)",
-                      style: AppStyle.boldLabel,
-                    );
-                  },
-                ),
+              child: Builder(
+                builder: (_) {
+                  // Extract key for line-length compliance
+                  const String custKey =
+                      "customerInformation.customerInformation"
+                      ".customerName";
+                  final String custName =
+                      viewModel.customerInformation?.customerName ?? "";
+                  final String rimNo = viewModel
+                          .customerInformation?.customerRimNo
+                          ?.toString() ??
+                      "";
+                  return CustomSelectableText(
+                    semanticsLabel: "${custKey.tr()} : $custName ",
+                    text: "${custKey.tr()} : $custName ($rimNo)",
+                    style: AppStyle.boldLabel,
+                  );
+                },
+              ),
             ),
             const Gap(
               size: GapSize.large,

@@ -78,7 +78,7 @@ class RiskRating {
             },
           )
           .toList(),
-      "externalRatingList": (externalRatings)
+      "externalRatingList": externalRatings
           .map(
             (externalRating) => {
               "customerName": externalRating.customerName,

@@ -51,20 +51,17 @@ void main() {
 
       when(() => vm.selectedUserId).thenAnswer((_) => selectedUserId);
       when(() => vm.selectedUserId = any()).thenAnswer((inv) {
-        selectedUserId = inv.positionalArguments[0] as String;
-        return selectedUserId;
+        return selectedUserId = inv.positionalArguments[0] as String;
       });
 
       when(() => vm.selectedStage).thenAnswer((_) => selectedStage);
       when(() => vm.selectedStage = any()).thenAnswer((inv) {
-        selectedStage = inv.positionalArguments[0] as String;
-        return selectedStage;
+        return selectedStage = inv.positionalArguments[0] as String;
       });
 
       when(() => vm.initialText).thenAnswer((_) => currentText);
       when(() => vm.initialText = any()).thenAnswer((inv) {
-        currentText = inv.positionalArguments[0] as String;
-        return currentText;
+        return currentText = inv.positionalArguments[0] as String;
       });
 
       when(() => vm.state).thenReturn(state);

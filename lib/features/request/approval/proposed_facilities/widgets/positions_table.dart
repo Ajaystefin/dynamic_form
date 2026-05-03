@@ -98,7 +98,7 @@ class PositionsTable extends StatelessWidget {
     if (positions == null) return [];
     return List.generate(positions.length, (index) {
       final position = positions[index];
-      final String type = (isProposed) ? "proposed" : "present";
+      final String type = isProposed ? "proposed" : "present";
       final String key = "${position.rimNo}_$type";
       if (viewModel.cleanExposureControllers?[key] == null) {
         viewModel.cleanExposureControllers?[key] =

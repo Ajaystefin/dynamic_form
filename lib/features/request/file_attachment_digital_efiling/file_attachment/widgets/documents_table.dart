@@ -87,17 +87,16 @@ List<List<Widget>> getDocumentsTableRows(
   FileAttachmentViewModel viewModel,
   DocSubTypeData? tableData,
 ) {
-  final List<List<Widget>> widgets = [];
-
-  widgets.add([
-    SingleChildScrollView(
-      child: _buildFileTreeNode(viewModel.fileAccesses[1], level: 0),
-    ),
-    Text("${tableData?.applicationID}"),
-    Text("${tableData?.date}"),
-    Text("${tableData?.subType}"),
-    Text("${tableData?.summary}"),
-    Text("${tableData?.decision}"),
-  ]);
-  return widgets;
+  return [
+    [
+      SingleChildScrollView(
+        child: _buildFileTreeNode(viewModel.fileAccesses[1], level: 0),
+      ),
+      Text("${tableData?.applicationID}"),
+      Text("${tableData?.date}"),
+      Text("${tableData?.subType}"),
+      Text("${tableData?.summary}"),
+      Text("${tableData?.decision}"),
+    ]
+  ];
 }

@@ -305,7 +305,7 @@ CustomButton dialogButtonByKeyword(
 
   return buttons.firstWhere(
     (CustomButton button) =>
-        (button.label).toLowerCase().contains(keyword.toLowerCase()),
+        button.label.toLowerCase().contains(keyword.toLowerCase()),
   );
 }
 
@@ -398,10 +398,10 @@ void main() {
     mockRefSvc = MockReferenceDataService();
     mockCommonRepo = MockCommonRepository();
 
-    vm = FacilitiesWithOtherBanksViewModel();
-    vm.repository = mockRepo;
-    vm.repositoryDataService = mockRefSvc;
-    vm.repositoryCommon = mockCommonRepo;
+    vm = FacilitiesWithOtherBanksViewModel()
+      ..repository = mockRepo
+      ..repositoryDataService = mockRefSvc
+      ..repositoryCommon = mockCommonRepo;
 
     AlertManager.overrideInstance(_SilentAlertManager());
     LocalStorageService().setStorage(MockLocalStorageService());
@@ -644,8 +644,9 @@ void main() {
           currentRole: Role(roleId: 42),
         );
 
-        vm.strategyComment = "Other bank strategy";
-        vm.strategyCommentCBRB = "CBRB strategy";
+        vm
+          ..strategyComment = "Other bank strategy"
+          ..strategyCommentCBRB = "CBRB strategy";
 
         await runOnSaveCommentWithoutPendingTimers(
           tester,
@@ -701,8 +702,9 @@ void main() {
         Globals.request = null;
         Globals.user = null;
 
-        vm.strategyComment = "Other bank strategy";
-        vm.strategyCommentCBRB = "CBRB strategy";
+        vm
+          ..strategyComment = "Other bank strategy"
+          ..strategyCommentCBRB = "CBRB strategy";
 
         await runOnSaveCommentWithoutPendingTimers(
           tester,

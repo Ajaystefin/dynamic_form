@@ -276,8 +276,9 @@ class _DropdownPopupState extends State<_DropdownPopup> {
     for (final item in widget.items) {
       if (item.isHeader) {
         if (matched.isNotEmpty && currentHeader != null) {
-          result.add(currentHeader);
-          result.addAll(matched);
+          result
+            ..add(currentHeader)
+            ..addAll(matched);
         }
         currentHeader = item;
         matched = [];
@@ -294,8 +295,9 @@ class _DropdownPopupState extends State<_DropdownPopup> {
     }
 
     if (matched.isNotEmpty && currentHeader != null) {
-      result.add(currentHeader);
-      result.addAll(matched);
+      result
+        ..add(currentHeader)
+        ..addAll(matched);
     }
 
     return result;

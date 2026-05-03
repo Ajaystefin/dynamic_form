@@ -90,7 +90,7 @@ class Request {
       (Reference value) =>
           value.name == (json["BusinessSegment"] ?? json["businessSegment"]),
       orElse: () =>
-          Reference(name: (json["BusinessSegment"] ?? json["businessSegment"])),
+          Reference(name: json["BusinessSegment"] ?? json["businessSegment"]),
     );
     status = json["status"] is int?
         ? "${json['status'] ?? ""}"
@@ -312,7 +312,8 @@ class Request {
   String? groupName;
   String? ageing;
   int? caDate;
-  int? groupId, groupOwner;
+  int? groupId;
+  int? groupOwner;
   String? applicationRefNo;
   String? requestRefNo;
   String? applicantRim;
@@ -383,7 +384,7 @@ class Request {
   }
 
   BusinessSegment convertToBusinessSegmentEnum(String? businessSegment) {
-    switch ((businessSegment?.toLowerCase().trim()) ?? "") {
+    switch (businessSegment?.toLowerCase().trim() ?? "") {
       case "institutional":
         return BusinessSegment.financialInstitution;
       case "corporate":

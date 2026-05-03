@@ -150,9 +150,9 @@ class TerminationViewModel extends SafeCubit<TerminationState>
 
       getReviewComments = comments
           .where(
-            (cmt) => (cmt.applicationRefNo
+            (cmt) => cmt.applicationRefNo
                     ?.contains(Globals.request?.applicationRefNo ?? "") ??
-                false),
+                false,
           )
           .toList();
 
@@ -303,14 +303,11 @@ class TerminationViewModel extends SafeCubit<TerminationState>
         content: Builder(
           builder: (_) {
             // Extract keys for line-length compliance
-            const String k1 =
-                "requestInformation.terminateWithdrawal"
+            const String k1 = "requestInformation.terminateWithdrawal"
                 ".informationMsgrequest";
-            const String k2 =
-                "requestInformation.terminateWithdrawal"
+            const String k2 = "requestInformation.terminateWithdrawal"
                 ".informationMsg";
-            final String refNo =
-                Globals.request?.applicationRefNo ?? "";
+            final String refNo = Globals.request?.applicationRefNo ?? "";
             return CustomSelectableText(
               text: "${k1.tr()}$refNo${k2.tr()}",
             );

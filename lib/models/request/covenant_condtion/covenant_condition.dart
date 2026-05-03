@@ -95,7 +95,7 @@ class CovenantCondition {
               .map((e) => Facility.fromJson(e))
               .toList()
           : [],
-      facilityIdList: (json["facilityIdList"]),
+      facilityIdList: json["facilityIdList"],
       includeInTerms: json["isIncludedInTermaSheet"],
       targetDate: json["targetDate"],
     );
@@ -191,22 +191,20 @@ class CovenantCondition {
   }
 
   Map<String, dynamic> toDeleteJson(String? appRefNo) {
-    final data = toJson();
-
-    data.remove("covenantConditionNo");
-    data.remove("deleted");
-    data.remove("monitorDate");
-    data.remove("covenantConditionMasterId");
-    data.remove("appRefNum");
-    data["covConMasterId"] = covConMasterId;
-    data["appRefNo"] = appRefNo;
-    data["nextMonitorDate"] = nextMonitorDate;
-    data["isDeleted"] = (isDeleted == true ? 1 : 0);
-    data["isCovenant"] = (isCovenant == true ? 1 : 0);
-    data["mode"] = mode;
-    data["isGeneric"] = (isGeneric == true ? 1 : 0);
-    data["isNew"] = (isNew == true ? 1 : 0);
-    return data;
+    return toJson()
+      ..remove("covenantConditionNo")
+      ..remove("deleted")
+      ..remove("monitorDate")
+      ..remove("covenantConditionMasterId")
+      ..remove("appRefNum")
+      ..["covConMasterId"] = covConMasterId
+      ..["appRefNo"] = appRefNo
+      ..["nextMonitorDate"] = nextMonitorDate
+      ..["isDeleted"] = (isDeleted == true ? 1 : 0)
+      ..["isCovenant"] = (isCovenant == true ? 1 : 0)
+      ..["mode"] = mode
+      ..["isGeneric"] = (isGeneric == true ? 1 : 0)
+      ..["isNew"] = (isNew == true ? 1 : 0);
   }
 
   Map<String, dynamic> toSaveJson() {

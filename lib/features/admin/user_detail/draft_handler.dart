@@ -75,6 +75,8 @@ class UserDetailsDraftHandler extends DraftHandler<UserDetailViewModel> {
 
     final user = vm.userDetails!;
 
+    final roleCodes = (userJson["roleCodes"] as List?)?.cast<String>() ?? [];
+
     //  Restore core model
     user
       ..id = userJson["userId"]
@@ -94,36 +96,30 @@ class UserDetailsDraftHandler extends DraftHandler<UserDetailViewModel> {
       ..accessToVipCust = userJson["accessToVipCust"] ?? false
       ..isIslamic = userJson["isIslamic"] ?? false
       ..active = userJson["isActive"] ?? false
-      ..authenticated = userJson["authenticated"] ?? false;
-
-    //  Restore roles
-    final roleCodes = (userJson["roleCodes"] as List?)?.cast<String>() ?? [];
-    user.availableRoles = roleCodes.map((c) => Role(code: c)).toList();
+      ..authenticated = userJson["authenticated"] ?? false
+      ..availableRoles = roleCodes.map((c) => Role(code: c)).toList();
 
     // SINGLE hydration call
-    vm.hydrateRegionAndSegmentSelections();
-
-    //Restore Islamic dropdown
-    vm.selectedIslamicRelationshipUserValue =
-        vm.islamicRelationshipUserOptions.firstWhere(
-      (ref) =>
-          (ref.name == "requestInformation.requestInformation.yes".tr() &&
-              user.isIslamic == true) ||
-          (ref.name == "requestInformation.requestInformation.no".tr() &&
-              user.isIslamic == false),
-      orElse: () => vm.islamicRelationshipUserOptions.first,
-    );
-
-    //  ONE authoritative emit
-    vm.emit(
-      vm.state.copyWith(
-        approveOnBehalfOf: user.approveOnBehalfOf,
-        approvalAccess: user.approvalAccess,
-        tranApprovalAccess: user.tranApprovalAccess,
-        accessToVipCust: user.accessToVipCust,
-        loaderStatus: LoadingStatus.loaded,
-      ),
-    );
+    vm
+      ..hydrateRegionAndSegmentSelections()
+      ..selectedIslamicRelationshipUserValue =
+          vm.islamicRelationshipUserOptions.firstWhere(
+        (ref) =>
+            (ref.name == "requestInformation.requestInformation.yes".tr() &&
+                user.isIslamic == true) ||
+            (ref.name == "requestInformation.requestInformation.no".tr() &&
+                user.isIslamic == false),
+        orElse: () => vm.islamicRelationshipUserOptions.first,
+      )
+      ..emit(
+        vm.state.copyWith(
+          approveOnBehalfOf: user.approveOnBehalfOf,
+          approvalAccess: user.approvalAccess,
+          tranApprovalAccess: user.tranApprovalAccess,
+          accessToVipCust: user.accessToVipCust,
+          loaderStatus: LoadingStatus.loaded,
+        ),
+      );
 
     logger.i("UserDetails draft restored for user=$draftUserId");
   }

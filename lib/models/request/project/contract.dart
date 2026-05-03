@@ -391,7 +391,7 @@ class Contract {
         .map(
           (ppcItem) => PPC(
             // ppcId: ppcItem.ppcId,
-            ppcNo: ppcItem.ppcNo ?? (ppcItem.ppc?.toString()),
+            ppcNo: ppcItem.ppcNo ?? ppcItem.ppc?.toString(),
             ppcDate: ppcItem.ppcDate,
             grossPpcValue: ppcItem.grossPpcValue ?? ppcItem.grossPPCValue,
             cumulativePpcValue:

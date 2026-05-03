@@ -93,7 +93,7 @@ class FacilitySubTypeTable extends StatelessWidget {
       rowHeight: 50,
       showPagination: true,
       rowsPerPage: 5,
-      rows: List.generate((viewModel.facilitySubTypes).length, (index) {
+      rows: List.generate(viewModel.facilitySubTypes.length, (index) {
         final fmt = NumberFormat("#,###");
         final sub = viewModel.facilitySubTypes[index];
         final int raw = sub.proposedLimit ?? 0;
@@ -453,7 +453,7 @@ class FacilitySubTypeTable extends StatelessWidget {
                   }
                 : null,
             child: Text(
-              ("click here"),
+              "click here",
               style: TextStyle(
                 decoration: TextDecoration.underline,
                 decorationColor:

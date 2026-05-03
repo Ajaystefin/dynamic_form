@@ -438,10 +438,9 @@ class ViewDesktop extends StatelessWidget {
                                       onDeleted: () {
                                         final newList = List<String>.from(
                                           viewModel.appendix.importPartners,
-                                        );
-                                        newList.remove(
-                                          label,
-                                        );
+                                        )..remove(
+                                            label,
+                                          );
                                         viewModel.updateImportPartners(
                                           newList,
                                         ); // <- triggers rebuild
@@ -499,8 +498,7 @@ class ViewDesktop extends StatelessWidget {
                                       onDeleted: () {
                                         final newList = List<String>.from(
                                           viewModel.appendix.exportPartners,
-                                        );
-                                        newList.remove(label);
+                                        )..remove(label);
                                         viewModel.updateExportPartners(newList);
                                       },
                                     );

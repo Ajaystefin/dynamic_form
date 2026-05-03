@@ -68,7 +68,7 @@ class RelationshipUtilizationViewModel
   }
 
   PageMode pageMode = PageMode.na;
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
   // -----------------------------
   // INIT (API load)
   // -----------------------------
@@ -186,8 +186,9 @@ class RelationshipUtilizationViewModel
     // Empty → 0%
     if (clamped.isEmpty) {
       _throughputPctCtrls[index].text = "0";
-      item.clientTurnover = "";
-      item.throughputToCbdPercentage = "0";
+      item
+        ..clientTurnover = ""
+        ..throughputToCbdPercentage = "0";
       emit(state.copyWith(turnOverStatus: LoadingStatus.loaded));
       return;
     }
@@ -197,8 +198,9 @@ class RelationshipUtilizationViewModel
     // Zero or invalid → 0%
     if (client == null || client == Decimal.zero) {
       _throughputPctCtrls[index].text = "0";
-      item.clientTurnover = clamped;
-      item.throughputToCbdPercentage = "0";
+      item
+        ..clientTurnover = clamped
+        ..throughputToCbdPercentage = "0";
       emit(state.copyWith(turnOverStatus: LoadingStatus.loaded));
       return;
     }
@@ -209,8 +211,9 @@ class RelationshipUtilizationViewModel
     // Business rule: client < turnover → 0%
     if (client < turnoverCbd) {
       _throughputPctCtrls[index].text = "0";
-      item.clientTurnover = clamped;
-      item.throughputToCbdPercentage = "0";
+      item
+        ..clientTurnover = clamped
+        ..throughputToCbdPercentage = "0";
 
       //Show the alert only once
       if (!_isShowingTurnoverError) {
@@ -240,8 +243,9 @@ class RelationshipUtilizationViewModel
     final String display = _stripTrailingZeros(percentage.toString());
 
     _throughputPctCtrls[index].text = display;
-    item.clientTurnover = clamped;
-    item.throughputToCbdPercentage = display;
+    item
+      ..clientTurnover = clamped
+      ..throughputToCbdPercentage = display;
 
     emit(state.copyWith(turnOverStatus: LoadingStatus.loaded));
   }

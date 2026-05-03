@@ -120,7 +120,7 @@ class _BorrowersPartOfTheApplicationState
         child: CustomTooltip(
           message: customer.concatCustomerFullName,
           child: Text(
-            (customer.concatCustomerFullName),
+            customer.concatCustomerFullName,
           ),
         ),
       ),

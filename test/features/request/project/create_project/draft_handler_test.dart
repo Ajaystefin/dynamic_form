@@ -30,12 +30,11 @@ void main() {
   setUp(() {
     handler = EditProjectDraftHandler();
 
-    vm = CreateProjectViewModel();
-    // vm.draftFormKey = 'edit-project-draft';
-    vm.isCreateProject = false;
-    vm.project = Project();
-    vm.projectPeriodController = TextEditingController();
-    vm.defectLiabilityEndDateController = TextEditingController();
+    vm = CreateProjectViewModel()
+      ..isCreateProject = false
+      ..project = Project()
+      ..projectPeriodController = TextEditingController()
+      ..defectLiabilityEndDateController = TextEditingController();
   });
 
   // ---------------------------------------------------------------------------

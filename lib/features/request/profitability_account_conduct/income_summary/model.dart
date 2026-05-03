@@ -41,7 +41,7 @@ class IncomeSummaryViewModel extends SafeCubit<IncomeSummaryState>
   IncomeComment? comment;
 
   PageMode pageMode = PageMode.na;
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
 
   // DraftMixin impl
   @override
@@ -79,7 +79,7 @@ class IncomeSummaryViewModel extends SafeCubit<IncomeSummaryState>
       final IncomeSummaryResponseData result =
           await repository.getIncomeSummary();
 
-      incomeSummaryList = (result.incomeSummaryDataList).toList();
+      incomeSummaryList = result.incomeSummaryDataList.toList();
 
       // Pre-fill RM comments
       comment = result.comment;

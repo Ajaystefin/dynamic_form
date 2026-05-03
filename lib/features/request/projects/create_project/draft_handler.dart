@@ -89,10 +89,10 @@ class EditProjectDraftHandler extends DraftHandler<CreateProjectViewModel> {
     // --------------------------------------------------
     // Restore CONTROLLERS
     // --------------------------------------------------
-    vm.syncControllersFromModel();
-
-    vm.emit(
-      vm.state.copyWith(loaderStatus: LoadingStatus.loaded),
-    );
+    vm
+      ..syncControllersFromModel()
+      ..emit(
+        vm.state.copyWith(loaderStatus: LoadingStatus.loaded),
+      );
   }
 }

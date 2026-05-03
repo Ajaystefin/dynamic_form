@@ -70,7 +70,8 @@ class FacilitySecurityTableField extends StatelessWidget {
         proposedAmountAlternateCurrency =
             "${security.proposedSecurityAmtCurrency?.name ?? ""} "
             "${formatter.format(
-                (security.proposedSecurityAmount ?? 0) / 1000,)}";
+          (security.proposedSecurityAmount ?? 0) / 1000,
+        )}";
       } else {
         proposedAmount =
             formatter.format((security.proposedSecurityAmount ?? 0) / 1000);

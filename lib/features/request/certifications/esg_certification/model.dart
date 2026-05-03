@@ -284,7 +284,7 @@ class EsgCertificationViewModel extends SafeCubit<EsgCertificationState>
       final String guidancePartKey = (guidanceRecord.reference3 ?? "").trim();
       if (guidancePartKey.isNotEmpty) {
         final Map<String, List<Reference>> sub =
-            (guidanceBySectionAndPart[secId] ??= <String, List<Reference>>{});
+            guidanceBySectionAndPart[secId] ??= <String, List<Reference>>{};
         (sub[guidancePartKey] ??= <Reference>[]).add(guidanceRecord);
       }
     }

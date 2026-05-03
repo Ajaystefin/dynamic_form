@@ -268,24 +268,25 @@ void main() {
         (tester) async {
       await pumpValidForm(tester, viewModel);
 
-      viewModel.selectedRequestStatus = Reference(name: "In Progress");
-      viewModel.selectedRM = User(id: "RM1");
-      viewModel.selectedUserName = User(id: "U1");
-      viewModel.selectedRoles = [
-        Reference(reference2: "ROLE_A"),
-        Reference(reference2: "ROLE_B"),
-      ];
-      viewModel.selectedSegments = [
-        Reference(name: "SEG1"),
-        Reference(name: "SEG2"),
-      ];
-      viewModel.selectedRegions = [
-        Reference(name: "REG1"),
-        Reference(name: "REG2"),
-      ];
-      viewModel.applicationRefNo = "APP123";
-      viewModel.customerRimNo = "RIM123";
-      viewModel.groupId = "GRP123";
+      viewModel
+        ..selectedRequestStatus = Reference(name: "In Progress")
+        ..selectedRM = User(id: "RM1")
+        ..selectedUserName = User(id: "U1")
+        ..selectedRoles = [
+          Reference(reference2: "ROLE_A"),
+          Reference(reference2: "ROLE_B"),
+        ]
+        ..selectedSegments = [
+          Reference(name: "SEG1"),
+          Reference(name: "SEG2"),
+        ]
+        ..selectedRegions = [
+          Reference(name: "REG1"),
+          Reference(name: "REG2"),
+        ]
+        ..applicationRefNo = "APP123"
+        ..customerRimNo = "RIM123"
+        ..groupId = "GRP123";
 
       final repoResult = [
         Request(applicationRefNo: "APP123", customerName: "John"),
@@ -431,27 +432,27 @@ void main() {
 
   group("reset", () {
     test("onResetButtonPress clears all state", () {
-      viewModel.selectedRM = User(id: "RM1");
-      viewModel.selectedRoles = [Reference(id: 1, name: "Role")];
-      viewModel.selectedFilterTypeData = [Request(customerName: "Type")];
-      viewModel.applicationRefNo = "APP";
-      viewModel.customerRimNo = "RIM";
-      viewModel.groupId = "GRP";
-      viewModel.selectedRegions = [Reference(name: "Region")];
-      viewModel.selectedSegments = [Reference(name: "Segment")];
-      viewModel.workList = [Request(customerName: "A")];
-      viewModel.filteredWorkList = [Request(customerName: "B")];
-      viewModel.selectedSearchCriteria = Reference(name: "Criteria");
-      viewModel.referenceData = {
-        ReferenceDataKeys.advanceRequestType: [
-          Reference(
-            id: ServerConstants.advancedRequestTypeId,
-            name: "Default Status",
-          ),
-        ],
-      };
-
-      viewModel.onResetButtonPress();
+      viewModel
+        ..selectedRM = User(id: "RM1")
+        ..selectedRoles = [Reference(id: 1, name: "Role")]
+        ..selectedFilterTypeData = [Request(customerName: "Type")]
+        ..applicationRefNo = "APP"
+        ..customerRimNo = "RIM"
+        ..groupId = "GRP"
+        ..selectedRegions = [Reference(name: "Region")]
+        ..selectedSegments = [Reference(name: "Segment")]
+        ..workList = [Request(customerName: "A")]
+        ..filteredWorkList = [Request(customerName: "B")]
+        ..selectedSearchCriteria = Reference(name: "Criteria")
+        ..referenceData = {
+          ReferenceDataKeys.advanceRequestType: [
+            Reference(
+              id: ServerConstants.advancedRequestTypeId,
+              name: "Default Status",
+            ),
+          ],
+        }
+        ..onResetButtonPress();
 
       expect(viewModel.selectedRM, isNull);
       expect(viewModel.selectedRoles, isEmpty);
@@ -472,51 +473,51 @@ void main() {
 
   group("onFilter", () {
     test("no filters returns full workList", () {
-      viewModel.workList = [
-        Request(applicationRefNo: "A1", customerName: "John"),
-        Request(applicationRefNo: "A2", customerName: "Jane"),
-      ];
-
-      viewModel.onFilter(value: "", filterType: FilterType.applicantName);
+      (viewModel
+        ..workList = [
+          Request(applicationRefNo: "A1", customerName: "John"),
+          Request(applicationRefNo: "A2", customerName: "Jane"),
+        ])
+          .onFilter(value: "", filterType: FilterType.applicantName);
 
       expect(viewModel.filteredWorkList.length, 2);
       expect(viewModel.state.tableloader, LoadingStatus.loaded);
     });
 
     test("filters by reference number", () {
-      viewModel.workList = [
-        Request(applicationRefNo: "REF123"),
-        Request(applicationRefNo: "ABC999"),
-      ];
-
-      viewModel.onFilter(
-        value: "ref123",
-        filterType: FilterType.referenceNumber,
-      );
+      (viewModel
+        ..workList = [
+          Request(applicationRefNo: "REF123"),
+          Request(applicationRefNo: "ABC999"),
+        ])
+          .onFilter(
+            value: "ref123",
+            filterType: FilterType.referenceNumber,
+          );
 
       expect(viewModel.filteredWorkList.length, 1);
       expect(viewModel.filteredWorkList.first.applicationRefNo, "REF123");
     });
 
     test("filters by applicant rim", () {
-      viewModel.workList = [
-        Request(customerRimNo: 123456),
-        Request(customerRimNo: 999999),
-      ];
-
-      viewModel.onFilter(value: "123", filterType: FilterType.applicantRim);
+      (viewModel
+        ..workList = [
+          Request(customerRimNo: 123456),
+          Request(customerRimNo: 999999),
+        ])
+          .onFilter(value: "123", filterType: FilterType.applicantRim);
 
       expect(viewModel.filteredWorkList.length, 1);
       expect(viewModel.filteredWorkList.first.customerRimNo, 123456);
     });
 
     test("filters by applicant name", () {
-      viewModel.workList = [
-        Request(customerName: "John Snow"),
-        Request(customerName: "Arya Stark"),
-      ];
-
-      viewModel.onFilter(value: "john", filterType: FilterType.applicantName);
+      (viewModel
+        ..workList = [
+          Request(customerName: "John Snow"),
+          Request(customerName: "Arya Stark"),
+        ])
+          .onFilter(value: "john", filterType: FilterType.applicantName);
 
       expect(viewModel.filteredWorkList.length, 1);
       expect(viewModel.filteredWorkList.first.customerName, "John Snow");
@@ -525,19 +526,19 @@ void main() {
     testWidgets("filters by custom request type match", (tester) async {
       await pumpTestApp(tester, const SizedBox.shrink());
 
-      viewModel.customApplicationTypeNames = ["CCSYS", "TYPE_A"];
-      viewModel.workList = [
-        Request(reqRefType: Reference(name: "TYPE_A")),
-        Request(reqRefType: Reference(name: "TYPE_B")),
-      ];
-
-      viewModel.onFilter(
-        value: "",
-        filterType: FilterType.referenceType,
-        selectedTypes: [
+      (viewModel
+        ..customApplicationTypeNames = ["CCSYS", "TYPE_A"]
+        ..workList = [
           Request(reqRefType: Reference(name: "TYPE_A")),
-        ],
-      );
+          Request(reqRefType: Reference(name: "TYPE_B")),
+        ])
+          .onFilter(
+            value: "",
+            filterType: FilterType.referenceType,
+            selectedTypes: [
+              Request(reqRefType: Reference(name: "TYPE_A")),
+            ],
+          );
 
       expect(viewModel.filteredWorkList.length, 1);
       expect(viewModel.filteredWorkList.first.reqRefType?.name, "TYPE_A");
@@ -546,21 +547,21 @@ void main() {
     testWidgets("filters by historical application types", (tester) async {
       await pumpTestApp(tester, const SizedBox.shrink());
 
-      viewModel.customApplicationTypeNames = ["CCSYS", "TYPE_A"];
-      viewModel.workList = [
-        Request(reqRefType: Reference(name: "OLD_TYPE")),
-        Request(reqRefType: Reference(name: "TYPE_A")),
-      ];
-
-      viewModel.onFilter(
-        value: "",
-        filterType: FilterType.referenceType,
-        selectedTypes: [
-          Request(
-            reqRefType: Reference(name: "Historical Application Types"),
-          ),
-        ],
-      );
+      (viewModel
+        ..customApplicationTypeNames = ["CCSYS", "TYPE_A"]
+        ..workList = [
+          Request(reqRefType: Reference(name: "OLD_TYPE")),
+          Request(reqRefType: Reference(name: "TYPE_A")),
+        ])
+          .onFilter(
+            value: "",
+            filterType: FilterType.referenceType,
+            selectedTypes: [
+              Request(
+                reqRefType: Reference(name: "Historical Application Types"),
+              ),
+            ],
+          );
 
       expect(viewModel.filteredWorkList.length, 1);
       expect(viewModel.filteredWorkList.first.reqRefType?.name, "OLD_TYPE");
@@ -569,33 +570,33 @@ void main() {
     testWidgets("combined filters narrow down correctly", (tester) async {
       await pumpTestApp(tester, const SizedBox.shrink());
 
-      viewModel.customApplicationTypeNames = ["CCSYS", "CUSTOM_1"];
-      viewModel.workList = [
-        Request(
-          applicationRefNo: "APP-111",
-          customerRimNo: 1001,
-          customerName: "John Smith",
-          reqRefType: Reference(name: "CUSTOM_1"),
-        ),
-        Request(
-          applicationRefNo: "APP-222",
-          customerRimNo: 2002,
-          customerName: "Jane Doe",
-          reqRefType: Reference(name: "OLD_TYPE"),
-        ),
-      ];
-
-      viewModel.onFilter(
-        value: "APP-111",
-        filterType: FilterType.referenceNumber,
-      );
-      viewModel.onFilter(value: "1001", filterType: FilterType.applicantRim);
-      viewModel.onFilter(value: "John", filterType: FilterType.applicantName);
-      viewModel.onFilter(
-        value: "",
-        filterType: FilterType.referenceType,
-        selectedTypes: [Request(reqRefType: Reference(name: "CUSTOM_1"))],
-      );
+      viewModel
+        ..customApplicationTypeNames = ["CCSYS", "CUSTOM_1"]
+        ..workList = [
+          Request(
+            applicationRefNo: "APP-111",
+            customerRimNo: 1001,
+            customerName: "John Smith",
+            reqRefType: Reference(name: "CUSTOM_1"),
+          ),
+          Request(
+            applicationRefNo: "APP-222",
+            customerRimNo: 2002,
+            customerName: "Jane Doe",
+            reqRefType: Reference(name: "OLD_TYPE"),
+          ),
+        ]
+        ..onFilter(
+          value: "APP-111",
+          filterType: FilterType.referenceNumber,
+        )
+        ..onFilter(value: "1001", filterType: FilterType.applicantRim)
+        ..onFilter(value: "John", filterType: FilterType.applicantName)
+        ..onFilter(
+          value: "",
+          filterType: FilterType.referenceType,
+          selectedTypes: [Request(reqRefType: Reference(name: "CUSTOM_1"))],
+        );
 
       expect(viewModel.filteredWorkList.length, 1);
       expect(viewModel.filteredWorkList.first.customerName, "John Smith");
@@ -604,16 +605,16 @@ void main() {
     testWidgets("non matching selected type removes item", (tester) async {
       await pumpTestApp(tester, const SizedBox.shrink());
 
-      viewModel.customApplicationTypeNames = ["CCSYS", "TYPE_A"];
-      viewModel.workList = [
-        Request(reqRefType: Reference(name: "TYPE_B")),
-      ];
-
-      viewModel.onFilter(
-        value: "",
-        filterType: FilterType.referenceType,
-        selectedTypes: [Request(reqRefType: Reference(name: "TYPE_A"))],
-      );
+      (viewModel
+        ..customApplicationTypeNames = ["CCSYS", "TYPE_A"]
+        ..workList = [
+          Request(reqRefType: Reference(name: "TYPE_B")),
+        ])
+          .onFilter(
+            value: "",
+            filterType: FilterType.referenceType,
+            selectedTypes: [Request(reqRefType: Reference(name: "TYPE_A"))],
+          );
 
       expect(viewModel.filteredWorkList, isEmpty);
     });
@@ -621,17 +622,17 @@ void main() {
 
   group("reference helpers", () {
     test("setRequestStatusValue assigns matching reference", () {
-      viewModel.referenceData = {
-        ReferenceDataKeys.advanceRequestType: [
-          Reference(id: 999, name: "X"),
-          Reference(
-            id: ServerConstants.advancedRequestTypeId,
-            name: "Default",
-          ),
-        ],
-      };
-
-      viewModel.setRequestStatusValue();
+      viewModel
+        ..referenceData = {
+          ReferenceDataKeys.advanceRequestType: [
+            Reference(id: 999, name: "X"),
+            Reference(
+              id: ServerConstants.advancedRequestTypeId,
+              name: "Default",
+            ),
+          ],
+        }
+        ..setRequestStatusValue();
 
       expect(viewModel.selectedRequestStatus, isNotNull);
       expect(
@@ -746,8 +747,9 @@ void main() {
     test(
         "onSearchCriteriaSelected for RM Name calls"
         " getUserList and getFilteredUsersById", () async {
-      spyViewModel.getUserListStub = (_) async {};
-      spyViewModel.getFilteredUsersByIdStub = (_) async {};
+      spyViewModel
+        ..getUserListStub = (_) async {}
+        ..getFilteredUsersByIdStub = (_) async {};
 
       await spyViewModel.onSearchCriteriaSelected(
         Reference(id: ServerConstants.rmNameId, name: "RM Name"),
@@ -802,20 +804,20 @@ void main() {
   group("getFilteredUsersById", () {
     test("RM path keeps only users whose currentRole id matches rmId",
         () async {
-      viewModel.userList = [
-        User(
-          id: "1",
-          name: "RM User",
-          currentRole: Role(id: ServerConstants.rmId),
-        ),
-        User(
-          id: "2",
-          name: "Other User",
-          currentRole: Role(id: 9999),
-        ),
-      ];
-
-      await viewModel.getFilteredUsersById(ServerConstants.rmNameId);
+      await (viewModel
+        ..userList = [
+          User(
+            id: "1",
+            name: "RM User",
+            currentRole: Role(id: ServerConstants.rmId),
+          ),
+          User(
+            id: "2",
+            name: "Other User",
+            currentRole: Role(id: 9999),
+          ),
+        ])
+          .getFilteredUsersById(ServerConstants.rmNameId);
 
       expect(viewModel.userModels.length, 1);
       expect(viewModel.userModels.first.name, "RM User");
@@ -842,13 +844,13 @@ void main() {
         ],
       );
 
-      viewModel.users = [role1, role2];
-      viewModel.selectedRoles = [
-        Reference(id: 101, name: "Role1"),
-        Reference(id: 102, name: "Role2"),
-      ];
-
-      await viewModel.getFilteredUsersById(ServerConstants.pendingWithId);
+      await (viewModel
+        ..users = [role1, role2]
+        ..selectedRoles = [
+          Reference(id: 101, name: "Role1"),
+          Reference(id: 102, name: "Role2"),
+        ])
+          .getFilteredUsersById(ServerConstants.pendingWithId);
 
       expect(viewModel.userModels.length, 3);
       expect(viewModel.userModels[0].currentRole, role1);
@@ -859,9 +861,9 @@ void main() {
     test("Pending With path with no selected roles leaves list empty",
         () async {
       viewModel.userModels = [User(id: "existing", name: "Existing")];
-      viewModel.selectedRoles = [];
-
-      await viewModel.getFilteredUsersById(ServerConstants.pendingWithId);
+      await (viewModel
+        ..selectedRoles = [])
+          .getFilteredUsersById(ServerConstants.pendingWithId);
 
       expect(viewModel.userModels, isEmpty);
       expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
@@ -869,11 +871,11 @@ void main() {
 
     test("catch path emits error when RM filtering hits null currentRole",
         () async {
-      viewModel.userList = [
-        User(id: "1", name: "Broken User", currentRole: null),
-      ];
-
-      await viewModel.getFilteredUsersById(ServerConstants.rmNameId);
+      await (viewModel
+        ..userList = [
+          User(id: "1", name: "Broken User", currentRole: null),
+        ])
+          .getFilteredUsersById(ServerConstants.rmNameId);
 
       expect(viewModel.state.loaderStatus, LoadingStatus.error);
     });
@@ -908,10 +910,10 @@ void main() {
         ],
       );
 
-      viewModel.selectedRoles = [Reference(id: 126, name: "Role126")];
-      viewModel.users = [role];
-
-      viewModel.getMappedUsers();
+      viewModel
+        ..selectedRoles = [Reference(id: 126, name: "Role126")]
+        ..users = [role]
+        ..getMappedUsers();
 
       expect(viewModel.selectedUserName, isNull);
       expect(viewModel.userModels.length, 2);
@@ -920,10 +922,10 @@ void main() {
     });
 
     test("getMappedUsers clears userModels when no selected roles", () {
-      viewModel.userModels = [User(id: "X", name: "Old")];
-      viewModel.selectedRoles = null;
-
-      viewModel.getMappedUsers();
+      viewModel
+        ..userModels = [User(id: "X", name: "Old")]
+        ..selectedRoles = null
+        ..getMappedUsers();
 
       expect(viewModel.selectedUserName, isNull);
       expect(viewModel.userModels, isEmpty);
@@ -931,10 +933,10 @@ void main() {
     });
 
     test("getMappedUsers handles role without users", () {
-      viewModel.selectedRoles = [Reference(id: 999, name: "Missing")];
-      viewModel.users = [Role(roleId: 999, users: null)];
-
-      viewModel.getMappedUsers();
+      viewModel
+        ..selectedRoles = [Reference(id: 999, name: "Missing")]
+        ..users = [Role(roleId: 999, users: null)]
+        ..getMappedUsers();
 
       expect(viewModel.userModels, isEmpty);
       expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
@@ -1048,12 +1050,12 @@ void main() {
 
   group("chip deletion", () {
     test("onRegionChipDeleted removes region", () {
-      viewModel.selectedRegions = [
-        Reference(name: "R1"),
-        Reference(name: "R2"),
-      ];
-
-      viewModel.onRegionChipDeleted(0);
+      viewModel
+        ..selectedRegions = [
+          Reference(name: "R1"),
+          Reference(name: "R2"),
+        ]
+        ..onRegionChipDeleted(0);
 
       expect(viewModel.selectedRegions!.length, 1);
       expect(viewModel.selectedRegions!.first.name, "R2");
@@ -1061,12 +1063,12 @@ void main() {
     });
 
     test("onSegmentChipDeleted removes segment", () {
-      viewModel.selectedSegments = [
-        Reference(name: "S1"),
-        Reference(name: "S2"),
-      ];
-
-      viewModel.onSegmentChipDeleted(1);
+      viewModel
+        ..selectedSegments = [
+          Reference(name: "S1"),
+          Reference(name: "S2"),
+        ]
+        ..onSegmentChipDeleted(1);
 
       expect(viewModel.selectedSegments!.length, 1);
       expect(viewModel.selectedSegments!.first.name, "S1");
@@ -1074,12 +1076,12 @@ void main() {
     });
 
     test("onRoleChipDeleted removes role", () {
-      viewModel.selectedRoles = [
-        Reference(name: "A"),
-        Reference(name: "B"),
-      ];
-
-      viewModel.onRoleChipDeleted(0);
+      viewModel
+        ..selectedRoles = [
+          Reference(name: "A"),
+          Reference(name: "B"),
+        ]
+        ..onRoleChipDeleted(0);
 
       expect(viewModel.selectedRoles!.length, 1);
       expect(viewModel.selectedRoles!.first.name, "B");
@@ -1107,9 +1109,10 @@ void main() {
 
   group("simple property assignments", () {
     test("applicationRefNo / customerRimNo / groupId can be assigned", () {
-      viewModel.applicationRefNo = "APP123";
-      viewModel.customerRimNo = "RIM456";
-      viewModel.groupId = "GRP789";
+      viewModel
+        ..applicationRefNo = "APP123"
+        ..customerRimNo = "RIM456"
+        ..groupId = "GRP789";
 
       expect(viewModel.applicationRefNo, "APP123");
       expect(viewModel.customerRimNo, "RIM456");
@@ -1117,10 +1120,11 @@ void main() {
     });
 
     test("filter properties can be assigned", () {
-      viewModel.reqRefNoFilter = "REF-1";
-      viewModel.applicantRimFilter = "RIM-2";
-      viewModel.applicantNameFilter = "John";
-      viewModel.requestTypeFilter = Reference(name: "Type");
+      viewModel
+        ..reqRefNoFilter = "REF-1"
+        ..applicantRimFilter = "RIM-2"
+        ..applicantNameFilter = "John"
+        ..requestTypeFilter = Reference(name: "Type");
 
       expect(viewModel.reqRefNoFilter, "REF-1");
       expect(viewModel.applicantRimFilter, "RIM-2");
@@ -1142,8 +1146,9 @@ void main() {
         Request(customerName: "Two"),
       ];
 
-      viewModel.workList = list;
-      viewModel.filteredWorkList = list;
+      viewModel
+        ..workList = list
+        ..filteredWorkList = list;
 
       expect(viewModel.workList.length, 2);
       expect(viewModel.filteredWorkList.length, 2);
@@ -1159,8 +1164,9 @@ void main() {
         User(id: "2", name: "U2"),
       ];
 
-      viewModel.users = roles;
-      viewModel.userModels = models;
+      viewModel
+        ..users = roles
+        ..userModels = models;
 
       expect(viewModel.users.length, 2);
       expect(viewModel.userModels.length, 2);
@@ -1170,8 +1176,9 @@ void main() {
       final user1 = User(id: "1", name: "Selected User");
       final user2 = User(id: "2", name: "Selected RM");
 
-      viewModel.selectedUserName = user1;
-      viewModel.selectedRM = user2;
+      viewModel
+        ..selectedUserName = user1
+        ..selectedRM = user2;
 
       expect(viewModel.selectedUserName, user1);
       expect(viewModel.selectedRM, user2);

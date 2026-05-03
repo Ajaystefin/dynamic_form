@@ -56,7 +56,7 @@ class CashflowStatementAnalysis extends StatelessWidget {
               );
             },
             onSelected: (selectedValue) {
-              viewModel.selectedCashFlowHealth = (selectedValue.first);
+              viewModel.selectedCashFlowHealth = selectedValue.first;
             },
             dropdownBuilder: (context, item) => Text(item?.name ?? ""),
             selectedItems: viewModel.selectedCashFlowHealth != null
@@ -117,8 +117,7 @@ class CashflowStatementAnalysis extends StatelessWidget {
             isNew: false,
           );
         },
-      );
-      apiRow.cashFlowItems = ref.name!;
+      )..cashFlowItems = ref.name!;
       return apiRow;
     }).toList();
 
@@ -130,10 +129,7 @@ class CashflowStatementAnalysis extends StatelessWidget {
       final row = allRows[index];
       final itemLabel = row.cashFlowItems;
 
-      final cells = <Widget>[];
-
-      // Cash Flow Item Name
-      cells.add(
+      final cells = <Widget>[
         row.isNew
             ? Center(
                 child: CustomTextField(
@@ -151,7 +147,10 @@ class CashflowStatementAnalysis extends StatelessWidget {
                   rowIndex: index,
                 ),
               ),
-      );
+      ]
+
+          // Cash Flow Item Name
+          ;
 
       // Audited columns
       final List<String> auditedValues = [
@@ -186,43 +185,43 @@ class CashflowStatementAnalysis extends StatelessWidget {
       }
 
       // In-house
-      cells.add(
-        Center(
-          child: row.isNew
-              ? CustomTextField(
-                  initialValue: row.inhouse,
-                  validator: CustomValidator.twoDecimalNumeric,
-                  inputFormatters: [DecimalInputFormatterTwoDigit()], //
-                  onChanged: (v) => row.inhouse = v,
-                )
-              : Text(
-                  viewModel.rowValue(
-                    row.inhouse,
-                    isNew: row.isNew,
-                    rowIndex: index,
+      cells
+        ..add(
+          Center(
+            child: row.isNew
+                ? CustomTextField(
+                    initialValue: row.inhouse,
+                    validator: CustomValidator.twoDecimalNumeric,
+                    inputFormatters: [DecimalInputFormatterTwoDigit()], //
+                    onChanged: (v) => row.inhouse = v,
+                  )
+                : Text(
+                    viewModel.rowValue(
+                      row.inhouse,
+                      isNew: row.isNew,
+                      rowIndex: index,
+                    ),
                   ),
-                ),
-        ),
-      );
-
-      cells.add(
-        Center(
-          child: row.isNew
-              ? CustomTextField(
-                  initialValue: row.estimated,
-                  validator: CustomValidator.twoDecimalNumeric,
-                  inputFormatters: [DecimalInputFormatterTwoDigit()], //
-                  onChanged: (v) => row.estimated = v,
-                )
-              : Text(
-                  viewModel.rowValue(
-                    row.estimated,
-                    isNew: row.isNew,
-                    rowIndex: index,
+          ),
+        )
+        ..add(
+          Center(
+            child: row.isNew
+                ? CustomTextField(
+                    initialValue: row.estimated,
+                    validator: CustomValidator.twoDecimalNumeric,
+                    inputFormatters: [DecimalInputFormatterTwoDigit()], //
+                    onChanged: (v) => row.estimated = v,
+                  )
+                : Text(
+                    viewModel.rowValue(
+                      row.estimated,
+                      isNew: row.isNew,
+                      rowIndex: index,
+                    ),
                   ),
-                ),
-        ),
-      );
+          ),
+        );
 
       if (viewModel.hasActionColumnCashflow) {
         cells.add(

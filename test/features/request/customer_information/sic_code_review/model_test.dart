@@ -111,9 +111,9 @@ void main() {
     LocalStorageService().setStorage(mockLocalStorageService);
     AlertManager.overrideInstance(mockAlertManager);
 
-    viewModel = SicCodeReviewViewModel();
-    viewModel.repository = mockRepository;
-    viewModel.context = mockContext;
+    viewModel = SicCodeReviewViewModel()
+      ..repository = mockRepository
+      ..context = mockContext;
   });
 
   test("getSICcodeReviewData should assign data on success", () async {
@@ -216,9 +216,7 @@ void main() {
 
     ReferenceDataService.overrideInstance(mockReferenceService);
     Globals.request = mockRequest;
-    viewModel.context = mockContext;
-
-    await viewModel.init(mockContext);
+    await (viewModel..context = mockContext).init(mockContext);
 
     // expect(viewModel.customerSICcodeReview?.length, equals(13));
     // expect(viewModel.customerSICcodeReview?.first.customerName,

@@ -114,10 +114,11 @@ Reference get no => Reference(id: 9999, name: "No");
 Reference get na => Reference(id: 7777, name: "NA");
 
 void seed(TestableSelectFacilitiesDialogViewModel vm, List<Facility> facs) {
-  vm.facilities = List<Facility>.from(facs);
-  vm.filteredData = List<Facility>.from(facs);
-  vm.checkboxes = List<bool>.filled(facs.length, false);
-  vm.emit(vm.state.copyWith(loaderStatus: LoadingStatus.loaded));
+  vm
+    ..facilities = List<Facility>.from(facs)
+    ..filteredData = List<Facility>.from(facs)
+    ..checkboxes = List<bool>.filled(facs.length, false)
+    ..emit(vm.state.copyWith(loaderStatus: LoadingStatus.loaded));
 }
 
 // ─────────────────────────────────────────────
@@ -277,8 +278,9 @@ void main() {
     test("limitDescription uses desc fallback when no reference match", () {
       final x = fac(limitNumber: "X", desc: "special keyword", code: null);
       seed(vm, [x]);
-      vm.facilityTypeOptions = [];
-      vm.onFilter(Filter.limitDescription, value: "special");
+      vm
+        ..facilityTypeOptions = []
+        ..onFilter(Filter.limitDescription, value: "special");
       expect(vm.filteredData.length, 1);
       expect(vm.descFilterCtrl, "special");
     });
@@ -291,14 +293,16 @@ void main() {
     });
 
     test("checkbox state survives narrowing", () {
-      vm.updateCheckboxAtIndex(0, true);
-      vm.onFilter(Filter.rimNo, value: "101");
+      vm
+        ..updateCheckboxAtIndex(0, true)
+        ..onFilter(Filter.rimNo, value: "101");
       expect(vm.checkboxes, [true]);
     });
 
     test("select all recalculated after filter", () {
-      vm.toggleSelectAll(true);
-      vm.onFilter(Filter.rimNo, value: "101");
+      vm
+        ..toggleSelectAll(true)
+        ..onFilter(Filter.rimNo, value: "101");
       expect(vm.isSelectAll, true);
     });
 
@@ -316,9 +320,10 @@ void main() {
         limitNumber: "CAP",
         code: ServerConstants.facilityLinkageLimitCaps,
       );
-      vm.facilities = [f1, f2, cap];
-      vm.filteredData = [f1];
-      vm.showAllFacilities();
+      vm
+        ..facilities = [f1, f2, cap]
+        ..filteredData = [f1]
+        ..showAllFacilities();
       expect(vm.filteredData.length, 2);
       expect(
         vm.filteredData.any(
@@ -329,17 +334,19 @@ void main() {
     });
 
     test("safe with empty facilities", () {
-      vm.facilities = [];
-      vm.filteredData = [];
-      vm.showAllFacilities();
+      vm
+        ..facilities = []
+        ..filteredData = []
+        ..showAllFacilities();
       expect(vm.filteredData, isEmpty);
       expect(vm.checkboxes, isEmpty);
     });
 
     test("rebuilds selected mirrors", () {
-      vm.updateCheckboxAtIndex(1, true);
-      vm.filteredData = [f1];
-      vm.showAllFacilities();
+      vm
+        ..updateCheckboxAtIndex(1, true)
+        ..filteredData = [f1]
+        ..showAllFacilities();
       expect(vm.checkboxes.length, vm.filteredData.length);
       expect(vm.selectedFacilities.any((e) => e.limitNumber == "200"), true);
     });
@@ -359,22 +366,25 @@ void main() {
     });
 
     test("NO shows checkbox column and clears selection", () {
-      vm.updateFacilityLinkageOption(yes);
-      vm.updateFacilityLinkageOption(no);
+      vm
+        ..updateFacilityLinkageOption(yes)
+        ..updateFacilityLinkageOption(no);
       expect(vm.showCheckboxColumn, true);
       expect(vm.selectedIds, isEmpty);
       expect(vm.checkboxes.every((e) => !e), true);
     });
 
     test("summary mode always hides checkbox column", () {
-      vm.isFromSecuritySummary = true;
-      vm.updateFacilityLinkageOption(no);
+      vm
+        ..isFromSecuritySummary = true
+        ..updateFacilityLinkageOption(no);
       expect(vm.showCheckboxColumn, false);
     });
 
     test("null option behaves as NO-like path", () {
-      vm.updateFacilityLinkageOption(yes);
-      vm.updateFacilityLinkageOption(null);
+      vm
+        ..updateFacilityLinkageOption(yes)
+        ..updateFacilityLinkageOption(null);
       expect(vm.showCheckboxColumn, true);
       expect(vm.selectedIds, isEmpty);
     });
@@ -390,8 +400,9 @@ void main() {
     });
 
     test("deselect all visible", () {
-      vm.toggleSelectAll(true);
-      vm.toggleSelectAll(false);
+      vm
+        ..toggleSelectAll(true)
+        ..toggleSelectAll(false);
       expect(vm.selectedIds, isEmpty);
       expect(vm.selectedFacilities, isEmpty);
       expect(vm.isSelectAll, false);
@@ -399,22 +410,25 @@ void main() {
     });
 
     test("null treated as false", () {
-      vm.toggleSelectAll(true);
-      vm.toggleSelectAll(null);
+      vm
+        ..toggleSelectAll(true)
+        ..toggleSelectAll(null);
       expect(vm.isSelectAll, false);
     });
 
     test("select all only filtered rows", () {
-      vm.onFilter(Filter.rimNo, value: "101");
-      vm.toggleSelectAll(true);
+      vm
+        ..onFilter(Filter.rimNo, value: "101")
+        ..toggleSelectAll(true);
       expect(vm.selectedIds.length, 1);
       expect(vm.selectedIds.contains("100"), false);
     });
 
     test("deselect filtered rows only, preserve others", () {
-      vm.toggleSelectAll(true);
-      vm.onFilter(Filter.rimNo, value: "101");
-      vm.toggleSelectAll(false);
+      vm
+        ..toggleSelectAll(true)
+        ..onFilter(Filter.rimNo, value: "101")
+        ..toggleSelectAll(false);
       expect(vm.selectedIds.length, 2);
       expect(vm.selectedIds.contains("100"), false);
       expect(vm.selectedIds.contains("200"), false);
@@ -422,8 +436,9 @@ void main() {
     });
 
     test("empty filteredData keeps isSelectAll false", () {
-      vm.filteredData = [];
-      vm.toggleSelectAll(true);
+      vm
+        ..filteredData = []
+        ..toggleSelectAll(true);
       expect(vm.isSelectAll, false);
       expect(vm.checkboxes, isEmpty);
     });
@@ -443,8 +458,9 @@ void main() {
     });
 
     test("deselect row", () {
-      vm.updateCheckboxAtIndex(0, true);
-      vm.updateCheckboxAtIndex(0, false);
+      vm
+        ..updateCheckboxAtIndex(0, true)
+        ..updateCheckboxAtIndex(0, false);
       expect(vm.checkboxes[0], false);
       expect(vm.selectedIds.contains("100"), false);
     });
@@ -475,8 +491,9 @@ void main() {
     });
 
     test("deselect one makes isSelectAll false", () {
-      vm.toggleSelectAll(true);
-      vm.updateCheckboxAtIndex(0, false);
+      vm
+        ..toggleSelectAll(true)
+        ..updateCheckboxAtIndex(0, false);
       expect(vm.isSelectAll, false);
     });
   });
@@ -919,14 +936,15 @@ void main() {
         (tester) async {
       final ctx = await mountedContext(tester);
 
-      vm.isFromLinakage = false;
-      vm.isFromCovenant = false;
-      vm.securityItem = Security();
-      vm.selectedFacilities = [f1, f2];
-      vm.facilityTypeOptions = [
-        Reference(id: 1, name: "LC"),
-        Reference(id: 2, name: "LG"),
-      ];
+      vm
+        ..isFromLinakage = false
+        ..isFromCovenant = false
+        ..securityItem = Security()
+        ..selectedFacilities = [f1, f2]
+        ..facilityTypeOptions = [
+          Reference(id: 1, name: "LC"),
+          Reference(id: 2, name: "LG"),
+        ];
 
       await vm.saveSelectionAndCloseDialog(ctx);
 
@@ -937,11 +955,12 @@ void main() {
     testWidgets("non-linkage + covenant pops map payload", (tester) async {
       final ctx = await mountedContext(tester);
 
-      vm.isFromLinakage = false;
-      vm.isFromCovenant = true;
-      vm.securityItem = Security();
-      vm.selectedAllFailitiesYesNo = yes;
-      vm.selectedFacilities = [f1];
+      vm
+        ..isFromLinakage = false
+        ..isFromCovenant = true
+        ..securityItem = Security()
+        ..selectedAllFailitiesYesNo = yes
+        ..selectedFacilities = [f1];
 
       await vm.saveSelectionAndCloseDialog(ctx);
 
@@ -954,13 +973,13 @@ void main() {
       when(() => mockRepo.saveSecurityFacilityLinkage(any()))
           .thenAnswer((_) async => "success");
 
-      vm.isFromLinakage = true;
-      vm.securityItem = Security()..isCashCollateral = true;
-      vm.selectedAllFailitiesYesNo = no;
-      vm.selectedFacilities = [f1, f2];
-      vm.selectedIds
-        ..clear()
-        ..addAll(["100", "200"]);
+      vm
+        ..isFromLinakage = true
+        ..securityItem = (Security()..isCashCollateral = true)
+        ..selectedAllFailitiesYesNo = no
+        ..selectedFacilities = [f1, f2]
+        ..selectedIds.clear()
+        ..selectedIds.addAll(["100", "200"]);
 
       await vm.saveSelectionAndCloseDialog(ctx);
 
@@ -975,11 +994,12 @@ void main() {
       when(() => mockRepo.saveSecurityFacilityLinkage(any()))
           .thenAnswer((_) async => "success");
 
-      vm.isFromLinakage = true;
-      vm.securityItem = Security()..isCashCollateral = true;
-      vm.selectedAllFailitiesYesNo = yes;
-      vm.selectedFacilities = [f1];
-      vm.selectedIds.add("100");
+      vm
+        ..isFromLinakage = true
+        ..securityItem = (Security()..isCashCollateral = true)
+        ..selectedAllFailitiesYesNo = yes
+        ..selectedFacilities = [f1]
+        ..selectedIds.add("100");
 
       await vm.saveSelectionAndCloseDialog(ctx);
 
@@ -993,11 +1013,12 @@ void main() {
       when(() => mockRepo.saveSecurityFacilityLinkage(any()))
           .thenAnswer((_) async => "success");
 
-      vm.isFromLinakage = true;
-      vm.securityItem = Security()..isCashCollateral = true;
-      vm.selectedAllFailitiesYesNo = yesAlt;
-      vm.selectedFacilities = [];
-      vm.selectedIds.clear();
+      vm
+        ..isFromLinakage = true
+        ..securityItem = (Security()..isCashCollateral = true)
+        ..selectedAllFailitiesYesNo = yesAlt
+        ..selectedFacilities = []
+        ..selectedIds.clear();
 
       await vm.saveSelectionAndCloseDialog(ctx);
 
@@ -1011,14 +1032,15 @@ void main() {
       when(() => mockRepo.saveSecurityFacilityLinkage(any()))
           .thenAnswer((_) async => "success");
 
-      vm.isFromLinakage = true;
-      vm.securityItem = Security()..isCashCollateral = true;
-      vm.selectedAllFailitiesYesNo = no;
-      vm.selectedFacilities = [
-        f1,
-        Facility(rimNo: 999, limitNumber: null),
-      ];
-      vm.selectedIds.add("100");
+      vm
+        ..isFromLinakage = true
+        ..securityItem = (Security()..isCashCollateral = true)
+        ..selectedAllFailitiesYesNo = no
+        ..selectedFacilities = [
+          f1,
+          Facility(rimNo: 999, limitNumber: null),
+        ]
+        ..selectedIds.add("100");
 
       await vm.saveSelectionAndCloseDialog(ctx);
 
@@ -1055,11 +1077,12 @@ void main() {
       when(() => mockRepo.saveSecurityFacilityLinkage(any()))
           .thenThrow(Exception("network"));
 
-      vm.isFromLinakage = true;
-      vm.securityItem = Security()..isCashCollateral = true;
-      vm.selectedAllFailitiesYesNo = no;
-      vm.selectedFacilities = [f1];
-      vm.selectedIds.add("100");
+      vm
+        ..isFromLinakage = true
+        ..securityItem = (Security()..isCashCollateral = true)
+        ..selectedAllFailitiesYesNo = no
+        ..selectedFacilities = [f1]
+        ..selectedIds.add("100");
 
       await vm.saveSelectionAndCloseDialog(ctx);
 

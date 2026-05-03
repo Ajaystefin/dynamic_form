@@ -41,8 +41,7 @@ void main() {
   setUp(() {
     mockAdminRepository = MockAdminRepository();
     mockAlertManager = MockAlertManager();
-    viewModel = RoleRightMappingViewModel();
-    viewModel.repository = mockAdminRepository;
+    viewModel = RoleRightMappingViewModel()..repository = mockAdminRepository;
     AlertManager.overrideInstance(mockAlertManager);
   });
 
@@ -60,8 +59,9 @@ void main() {
         pages: [],
       );
 
-      viewModel.updatedAccessRight = accessRight;
-      viewModel.accessRight = accessRight;
+      viewModel
+        ..updatedAccessRight = accessRight
+        ..accessRight = accessRight;
 
       when(
         () => mockAdminRepository.saveAccessRights(any(), any(), any(), any()),
@@ -207,8 +207,9 @@ void main() {
     final role = Reference(name: "Admin");
     final request = Reference(name: "RequestA");
 
-    viewModel.selectedRole = role;
-    viewModel.selectedRequestType = request;
+    viewModel
+      ..selectedRole = role
+      ..selectedRequestType = request;
 
     when(() => mockAdminRepository.getAccessRights(role, request))
         .thenThrow(Exception("Failed"));
@@ -231,21 +232,24 @@ void main() {
       pages: pages,
     );
 
-    viewModel.accessRight = accessRight;
-    viewModel.removeNullPages();
+    viewModel
+      ..accessRight = accessRight
+      ..removeNullPages();
 
     expect(viewModel.updatedAccessRight, accessRight);
   });
 
   test("removeNullPages handles null accessRight", () {
-    viewModel.accessRight = null;
-    viewModel.removeNullPages();
+    viewModel
+      ..accessRight = null
+      ..removeNullPages();
     expect(viewModel.updatedAccessRight, isNull);
   });
 
   test("isAccessRightUpdated returns false when both are null", () {
-    viewModel.accessRight = null;
-    viewModel.updatedAccessRight = null;
+    viewModel
+      ..accessRight = null
+      ..updatedAccessRight = null;
     expect(viewModel.isAccessRightUpdated(), false);
   });
 
@@ -253,16 +257,17 @@ void main() {
     final role = Reference(name: "Admin");
     final request = Reference(name: "RequestA");
 
-    viewModel.accessRight = AccessRight(
-      role: role.toString(),
-      requestType: request.toString(),
-      pages: [],
-    );
-    viewModel.updatedAccessRight = AccessRight(
-      role: role.toString(),
-      requestType: request.toString(),
-      pages: [model.Page(accessType: AccessType.view)],
-    );
+    viewModel
+      ..accessRight = AccessRight(
+        role: role.toString(),
+        requestType: request.toString(),
+        pages: [],
+      )
+      ..updatedAccessRight = AccessRight(
+        role: role.toString(),
+        requestType: request.toString(),
+        pages: [model.Page(accessType: AccessType.view)],
+      );
 
     expect(viewModel.isAccessRightUpdated(), true);
   });
@@ -272,16 +277,17 @@ void main() {
     final request = Reference(name: "RequestA");
     final pages = [model.Page(accessType: AccessType.view)];
 
-    viewModel.accessRight = AccessRight(
-      role: role.toString(),
-      requestType: request.toString(),
-      pages: pages,
-    );
-    viewModel.updatedAccessRight = AccessRight(
-      role: role.toString(),
-      requestType: request.toString(),
-      pages: pages,
-    );
+    viewModel
+      ..accessRight = AccessRight(
+        role: role.toString(),
+        requestType: request.toString(),
+        pages: pages,
+      )
+      ..updatedAccessRight = AccessRight(
+        role: role.toString(),
+        requestType: request.toString(),
+        pages: pages,
+      );
 
     expect(viewModel.isAccessRightUpdated(), false);
   });
@@ -289,10 +295,11 @@ void main() {
   test("isAccessRightUpdated returns true when role differs", () {
     final request = Reference(name: "RequestA");
 
-    viewModel.accessRight =
-        AccessRight(role: "Admin", requestType: request.toString(), pages: []);
-    viewModel.updatedAccessRight =
-        AccessRight(role: "User", requestType: request.toString(), pages: []);
+    viewModel
+      ..accessRight =
+          AccessRight(role: "Admin", requestType: request.toString(), pages: [])
+      ..updatedAccessRight =
+          AccessRight(role: "User", requestType: request.toString(), pages: []);
 
     expect(viewModel.isAccessRightUpdated(), true);
   });
@@ -300,10 +307,14 @@ void main() {
   test("isAccessRightUpdated returns true when requestType differs", () {
     final role = Reference(name: "Admin");
 
-    viewModel.accessRight =
-        AccessRight(role: role.toString(), requestType: "RequestA", pages: []);
-    viewModel.updatedAccessRight =
-        AccessRight(role: role.toString(), requestType: "RequestB", pages: []);
+    viewModel
+      ..accessRight =
+          AccessRight(role: role.toString(), requestType: "RequestA", pages: [])
+      ..updatedAccessRight = AccessRight(
+        role: role.toString(),
+        requestType: "RequestB",
+        pages: [],
+      );
 
     expect(viewModel.isAccessRightUpdated(), true);
   });

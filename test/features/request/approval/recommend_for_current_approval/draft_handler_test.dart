@@ -29,13 +29,13 @@ void main() {
     Globals.request = Request(applicationRefNo: "APP-001");
 
     // Required for formKey.save()
-    vm.formKey = GlobalKey<FormState>();
-
-    vm.initialText = "Initial comment";
-    vm.reviewCommentId = "123";
-    vm.isCommentVisible = true;
-    vm.canEdit = true;
-    vm.isReadOnly = false;
+    vm
+      ..formKey = GlobalKey<FormState>()
+      ..initialText = "Initial comment"
+      ..reviewCommentId = "123"
+      ..isCommentVisible = true
+      ..canEdit = true
+      ..isReadOnly = false;
   });
 
   tearDown(() {
@@ -106,9 +106,10 @@ void main() {
     });
 
     test("ignores empty or invalid draft values", () {
-      vm.initialText = "Existing";
-      vm.reviewCommentId = "999";
-      vm.isCommentVisible = true;
+      vm
+        ..initialText = "Existing"
+        ..reviewCommentId = "999"
+        ..isCommentVisible = true;
 
       final draft = <String, dynamic>{
         "initialText": "   ",
@@ -123,8 +124,9 @@ void main() {
     });
 
     test("does NOT override computed permissions", () {
-      vm.canEdit = false;
-      vm.isReadOnly = true;
+      vm
+        ..canEdit = false
+        ..isReadOnly = true;
 
       final draft = <String, dynamic>{
         "initialText": "Draft text",

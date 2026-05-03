@@ -37,8 +37,9 @@ class ContractValue extends StatelessWidget {
               selectedItems: selectedItem == null ? null : [selectedItem],
               onSelected: (selectedValue) {
                 if (selectedValue.isNotEmpty) {
-                  viewModel.onCurrencyChanged(selectedValue.first);
-                  viewModel.getCurrencyRates(selectedValue.first);
+                  viewModel
+                    ..onCurrencyChanged(selectedValue.first)
+                    ..getCurrencyRates(selectedValue.first);
                 }
               },
               itemBuilder: (context, item, isDisabled, isSelected) {

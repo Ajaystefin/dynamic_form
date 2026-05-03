@@ -245,23 +245,23 @@ void main() {
   });
 
   test("saveComment handles exception and emits loaded", () async {
-    viewModel.comment = Comment();
     when(() => mockCommonRepository.saveComment(any()))
         .thenThrow(Exception("oops"));
-    await viewModel.saveCommentAndClose();
+    await (viewModel..comment = Comment()).saveCommentAndClose();
     verify(() => mockAlert.showFailureToast(any())).called(1);
     expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
   });
 
   test("saveComment should assign the details to the fields", () async {
-    viewModel.comment = Comment();
-    viewModel.comment = Comment.fromInputData(
-      type: CommentsType.requestForClosure,
-      entityType: EntityIdentifier.requestForClosure,
-      categoryId: 10,
-      reviewCommentId: "2",
-      comment: "strategyComment",
-    );
+    viewModel
+      ..comment = Comment()
+      ..comment = Comment.fromInputData(
+        type: CommentsType.requestForClosure,
+        entityType: EntityIdentifier.requestForClosure,
+        categoryId: 10,
+        reviewCommentId: "2",
+        comment: "strategyComment",
+      );
     const resultMessage = "Saved OK";
     Globals.userAction = [
       {"Accept & Close Application": 10},

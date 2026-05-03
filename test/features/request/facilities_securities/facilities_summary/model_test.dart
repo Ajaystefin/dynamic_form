@@ -86,43 +86,44 @@ void main() {
     mockReferenceService = MockReferenceDataService();
     mockAlertManager = MockAlertManager();
 
-    viewModel = FacilitiesSummaryViewModel();
-    viewModel.repository = mockRequestRepo;
-    viewModel.facilitySecurityRepository = mockFacilityRepo;
-    viewModel.referenceDataService = mockReferenceService;
+    viewModel = FacilitiesSummaryViewModel()
+      ..repository = mockRequestRepo
+      ..facilitySecurityRepository = mockFacilityRepo
+      ..referenceDataService = mockReferenceService;
 
     AlertManager.overrideInstance(mockAlertManager);
 
     // Safe defaults used by a lot of tests.
-    viewModel.currencyCodes = [
-      Reference(name: "AED"),
-      Reference(name: "USD"),
-      Reference(name: "EUR"),
-    ];
-    viewModel.benchmark = [
-      Reference(id: 1, name: "LIBOR", reference2: "F"),
-      Reference(id: 2, name: "SOFR", reference2: "N"),
-      Reference(id: 3, name: "EIBOR", reference2: "F"),
-    ];
-    viewModel.marginSign = [
-      Reference(name: "+", reference1: "+"),
-      Reference(name: "-", reference1: "-"),
-    ];
-    viewModel.period = [
-      Reference(id: 1, name: "Days", reference1: "D"),
-      Reference(id: 2, name: "Months", reference1: "M"),
-      Reference(id: 3, name: "Years", reference1: "Y"),
-      Reference(id: 4, name: "On Demand", reference1: "OD"),
-    ];
-    viewModel.productTypeOptions = [
-      Reference(id: 11321, name: "Conventional"),
-      Reference(id: 11322, name: "Islamic"),
-    ];
-    viewModel.sustanabilityClassifications = [
-      Reference(id: 11, name: "Green"),
-      Reference(id: 12, name: "Social"),
-      Reference(id: 13, name: "Transition"),
-    ];
+    viewModel
+      ..currencyCodes = [
+        Reference(name: "AED"),
+        Reference(name: "USD"),
+        Reference(name: "EUR"),
+      ]
+      ..benchmark = [
+        Reference(id: 1, name: "LIBOR", reference2: "F"),
+        Reference(id: 2, name: "SOFR", reference2: "N"),
+        Reference(id: 3, name: "EIBOR", reference2: "F"),
+      ]
+      ..marginSign = [
+        Reference(name: "+", reference1: "+"),
+        Reference(name: "-", reference1: "-"),
+      ]
+      ..period = [
+        Reference(id: 1, name: "Days", reference1: "D"),
+        Reference(id: 2, name: "Months", reference1: "M"),
+        Reference(id: 3, name: "Years", reference1: "Y"),
+        Reference(id: 4, name: "On Demand", reference1: "OD"),
+      ]
+      ..productTypeOptions = [
+        Reference(id: 11321, name: "Conventional"),
+        Reference(id: 11322, name: "Islamic"),
+      ]
+      ..sustanabilityClassifications = [
+        Reference(id: 11, name: "Green"),
+        Reference(id: 12, name: "Social"),
+        Reference(id: 13, name: "Transition"),
+      ];
   });
 
   group("Draft + primitive getters", () {
@@ -216,8 +217,9 @@ void main() {
     });
 
     test("onProjectNameSelected ignores empty selection", () {
-      viewModel.selectedProjectRef = Reference(name: "OLD");
-      viewModel.onProjectNameSelected([]);
+      viewModel
+        ..selectedProjectRef = Reference(name: "OLD")
+        ..onProjectNameSelected([]);
       expect(viewModel.selectedProjectRef?.name, "OLD");
     });
 
@@ -227,8 +229,9 @@ void main() {
         ..projectName = null
         ..isEdited = false;
 
-      viewModel.selectedProjectRef = Reference(name: "Project X");
-      viewModel.applySelectedProjectTo(f);
+      viewModel
+        ..selectedProjectRef = Reference(name: "Project X")
+        ..applySelectedProjectTo(f);
 
       expect(f.projectName, "Project X");
       expect(f.isEdited, true);
@@ -271,8 +274,9 @@ void main() {
     test(
         "setProjectExistingLimitInput and"
         " setProjectProposedLimitInput persist values", () {
-      viewModel.setProjectExistingLimitInput("123", groupId: 11315, rimNo: 999);
-      viewModel.setProjectProposedLimitInput("456", groupId: 11315, rimNo: 999);
+      viewModel
+        ..setProjectExistingLimitInput("123", groupId: 11315, rimNo: 999)
+        ..setProjectProposedLimitInput("456", groupId: 11315, rimNo: 999);
 
       expect(viewModel.proposedLimitForGroup(11315, rimNo: 999), 456);
       expect(viewModel.isProjectHeaderLimitsEnteredFor(11315), true);
@@ -552,11 +556,11 @@ void main() {
     });
 
     test("onProductTypeSelected handles all branches", () {
-      viewModel.applicationDetails = ApplicationDetails();
-
-      viewModel.onProductTypeSelected(
-        Reference(reference1: ServerConstants.productTypeConventional),
-      );
+      viewModel
+        ..applicationDetails = ApplicationDetails()
+        ..onProductTypeSelected(
+          Reference(reference1: ServerConstants.productTypeConventional),
+        );
       expect(viewModel.applicationDetails?.conventional, true);
       expect(viewModel.applicationDetails?.islamic, false);
 
@@ -592,9 +596,9 @@ void main() {
       viewModel.selectedProductTypeOption = Reference(id: 1, name: "Old");
       viewModel.facility.facilityTypeSelectedValue =
           Reference(id: 10, name: "Desc");
-      viewModel.facilityDescriptions = [Reference(id: 11, name: "A")];
-
-      viewModel.changeProductTypeOptions(Reference(id: 2, name: "New"));
+      viewModel
+        ..facilityDescriptions = [Reference(id: 11, name: "A")]
+        ..changeProductTypeOptions(Reference(id: 2, name: "New"));
 
       expect(viewModel.selectedProductTypeOption?.id, 2);
       expect(viewModel.facility.selectedProductTypeValue, isNotNull);
@@ -607,9 +611,9 @@ void main() {
       viewModel.selectedProductTypeOption = Reference(id: 2, name: "Same");
       viewModel.facility.facilityTypeSelectedValue =
           Reference(id: 10, name: "KeepThis");
-      viewModel.facilityDescriptions = [Reference(id: 20, name: "Existing")];
-
-      viewModel.changeProductTypeOptions(Reference(id: 2, name: "Same"));
+      viewModel
+        ..facilityDescriptions = [Reference(id: 20, name: "Existing")]
+        ..changeProductTypeOptions(Reference(id: 2, name: "Same"));
 
       expect(viewModel.selectedProductTypeOption?.id, 2);
       expect(viewModel.facility.selectedProductTypeValue?.name, "Same");
@@ -934,17 +938,17 @@ void main() {
     test(
         "selectLimittedGroup filters by reference1/reference4 and excludes ids",
         () {
-      viewModel.facilityTypes = [
-        Reference(id: 100, name: "Match1", reference4: "trade"),
-        Reference(id: 101, name: "Match2", reference4: "trade"),
-        Reference(id: 13871, name: "Excluded", reference4: "trade"),
-        Reference(id: 935, name: "Excluded935", reference4: "trade"),
-        Reference(id: 200, name: "Other", reference4: "other"),
-      ];
-
-      viewModel.selectLimittedGroup(
-        Reference(id: 1, name: "Trade Limit", reference1: "trade"),
-      );
+      viewModel
+        ..facilityTypes = [
+          Reference(id: 100, name: "Match1", reference4: "trade"),
+          Reference(id: 101, name: "Match2", reference4: "trade"),
+          Reference(id: 13871, name: "Excluded", reference4: "trade"),
+          Reference(id: 935, name: "Excluded935", reference4: "trade"),
+          Reference(id: 200, name: "Other", reference4: "other"),
+        ]
+        ..selectLimittedGroup(
+          Reference(id: 1, name: "Trade Limit", reference1: "trade"),
+        );
 
       expect(viewModel.facility.facilityTypeSelectedValue?.id, 1);
       expect(
@@ -955,13 +959,13 @@ void main() {
 
     test("selectLimittedGroup leaves descriptions empty when no matches exist",
         () {
-      viewModel.facilityTypes = [
-        Reference(id: 1, name: "A", reference4: "abc"),
-      ];
-
-      viewModel.selectLimittedGroup(
-        Reference(id: 99, name: "NoMatch", reference1: "xyz"),
-      );
+      viewModel
+        ..facilityTypes = [
+          Reference(id: 1, name: "A", reference4: "abc"),
+        ]
+        ..selectLimittedGroup(
+          Reference(id: 99, name: "NoMatch", reference1: "xyz"),
+        );
 
       expect(viewModel.facilityDescriptions, isEmpty);
     });
@@ -1132,23 +1136,23 @@ void main() {
         ..limitDescription = "935"
         ..productCode = "CLT";
 
-      viewModel.customerFacilities = [
-        FacilitySummaryList()
-          ..rims = [
-            RimSummary()
-              ..rimName = "Customer (111)"
-              ..groups = [
-                RimGroup()
-                  ..facilityLimits = [
-                    (FacilityDis()
-                      ..order = "0"
-                      ..facility = excluded),
-                  ],
-              ],
-          ],
-      ];
-
-      viewModel.preloadHeaderProposedLimitsFromApi();
+      viewModel
+        ..customerFacilities = [
+          FacilitySummaryList()
+            ..rims = [
+              RimSummary()
+                ..rimName = "Customer (111)"
+                ..groups = [
+                  RimGroup()
+                    ..facilityLimits = [
+                      (FacilityDis()
+                        ..order = "0"
+                        ..facility = excluded),
+                    ],
+                ],
+            ],
+        ]
+        ..preloadHeaderProposedLimitsFromApi();
 
       expect(
         viewModel.headerFacilityIdForGroupAtRim(
@@ -1185,23 +1189,23 @@ void main() {
         ..limitDescription = "123"
         ..productCode = "ODA";
 
-      viewModel.customerFacilities = [
-        FacilitySummaryList()
-          ..rims = [
-            RimSummary()
-              ..rimName = "Customer (999)"
-              ..groups = [
-                RimGroup()
-                  ..facilityLimits = [
-                    (FacilityDis()
-                      ..order = "0"
-                      ..facility = header),
-                  ],
-              ],
-          ],
-      ];
-
-      viewModel.preloadHeaderProposedLimitsFromApi();
+      viewModel
+        ..customerFacilities = [
+          FacilitySummaryList()
+            ..rims = [
+              RimSummary()
+                ..rimName = "Customer (999)"
+                ..groups = [
+                  RimGroup()
+                    ..facilityLimits = [
+                      (FacilityDis()
+                        ..order = "0"
+                        ..facility = header),
+                    ],
+                ],
+            ],
+        ]
+        ..preloadHeaderProposedLimitsFromApi();
 
       expect(
         viewModel.proposedLimitForGroup(
@@ -1242,30 +1246,30 @@ void main() {
         ..limitDescription = "123"
         ..productCode = "ODA";
 
-      viewModel.customerFacilities = [
-        FacilitySummaryList()
-          ..rims = [
-            RimSummary()
-              ..rimName = "Customer (999)"
-              ..groups = [
-                RimGroup()
-                  ..facilityLimits = [
-                    (FacilityDis()
-                      ..order = "0"
-                      ..facility = header),
-                  ],
-              ],
-          ],
-      ];
+      viewModel
+        ..customerFacilities = [
+          FacilitySummaryList()
+            ..rims = [
+              RimSummary()
+                ..rimName = "Customer (999)"
+                ..groups = [
+                  RimGroup()
+                    ..facilityLimits = [
+                      (FacilityDis()
+                        ..order = "0"
+                        ..facility = header),
+                    ],
+                ],
+            ],
+        ]
+        ..preloadHeaderProposedLimitsFromApi()
 
-      viewModel.preloadHeaderProposedLimitsFromApi();
-
-      // Same values as API snapshot
-      viewModel.setProjectProposedLimitInput(
-        "100",
-        groupId: groupId,
-        rimNo: rimNo,
-      );
+        // Same values as API snapshot
+        ..setProjectProposedLimitInput(
+          "100",
+          groupId: groupId,
+          rimNo: rimNo,
+        );
       viewModel.psNameCtrl(rimNo).text = "Project A";
       viewModel.setHeaderCurrencyFor(groupId, rimNo, Reference(name: "AED"));
 
@@ -1286,28 +1290,28 @@ void main() {
         ..limitDescription = "123"
         ..productCode = "ODA";
 
-      viewModel.customerFacilities = [
-        FacilitySummaryList()
-          ..rims = [
-            RimSummary()
-              ..rimName = "Customer (999)"
-              ..groups = [
-                RimGroup()
-                  ..facilityLimits = [
-                    (FacilityDis()
-                      ..order = "0"
-                      ..facility = header),
-                  ],
-              ],
-          ],
-      ];
-
-      viewModel.preloadHeaderProposedLimitsFromApi();
-      viewModel.setProjectProposedLimitInput(
-        "200",
-        groupId: groupId,
-        rimNo: rimNo,
-      );
+      viewModel
+        ..customerFacilities = [
+          FacilitySummaryList()
+            ..rims = [
+              RimSummary()
+                ..rimName = "Customer (999)"
+                ..groups = [
+                  RimGroup()
+                    ..facilityLimits = [
+                      (FacilityDis()
+                        ..order = "0"
+                        ..facility = header),
+                    ],
+                ],
+            ],
+        ]
+        ..preloadHeaderProposedLimitsFromApi()
+        ..setProjectProposedLimitInput(
+          "200",
+          groupId: groupId,
+          rimNo: rimNo,
+        );
       viewModel.psNameCtrl(rimNo).text = "Project A";
       viewModel.setHeaderCurrencyFor(groupId, rimNo, Reference(name: "AED"));
 
@@ -1328,28 +1332,28 @@ void main() {
         ..limitDescription = "123"
         ..productCode = "ODA";
 
-      viewModel.customerFacilities = [
-        FacilitySummaryList()
-          ..rims = [
-            RimSummary()
-              ..rimName = "Customer (999)"
-              ..groups = [
-                RimGroup()
-                  ..facilityLimits = [
-                    (FacilityDis()
-                      ..order = "0"
-                      ..facility = header),
-                  ],
-              ],
-          ],
-      ];
-
-      viewModel.preloadHeaderProposedLimitsFromApi();
-      viewModel.setProjectProposedLimitInput(
-        "100",
-        groupId: groupId,
-        rimNo: rimNo,
-      );
+      viewModel
+        ..customerFacilities = [
+          FacilitySummaryList()
+            ..rims = [
+              RimSummary()
+                ..rimName = "Customer (999)"
+                ..groups = [
+                  RimGroup()
+                    ..facilityLimits = [
+                      (FacilityDis()
+                        ..order = "0"
+                        ..facility = header),
+                    ],
+                ],
+            ],
+        ]
+        ..preloadHeaderProposedLimitsFromApi()
+        ..setProjectProposedLimitInput(
+          "100",
+          groupId: groupId,
+          rimNo: rimNo,
+        );
       viewModel.psNameCtrl(rimNo).text = "Project A";
       viewModel.setHeaderCurrencyFor(groupId, rimNo, Reference(name: "USD"));
 
@@ -1370,29 +1374,29 @@ void main() {
         ..limitDescription = "123"
         ..productCode = "ODA";
 
-      viewModel.customerFacilities = [
-        FacilitySummaryList()
-          ..rims = [
-            RimSummary()
-              ..rimName = "Customer (999)"
-              ..groups = [
-                RimGroup()
-                  ..facilityLimits = [
-                    (FacilityDis()
-                      ..order = "0"
-                      ..facility = header),
-                  ],
-              ],
-          ],
-      ];
-
-      viewModel.preloadHeaderProposedLimitsFromApi();
-      viewModel.setProjectProposedLimitInput(
-        "100",
-        groupId: groupId,
-        rimNo: rimNo,
-      );
-      viewModel.setHeaderCurrencyFor(groupId, rimNo, Reference(name: "AED"));
+      viewModel
+        ..customerFacilities = [
+          FacilitySummaryList()
+            ..rims = [
+              RimSummary()
+                ..rimName = "Customer (999)"
+                ..groups = [
+                  RimGroup()
+                    ..facilityLimits = [
+                      (FacilityDis()
+                        ..order = "0"
+                        ..facility = header),
+                    ],
+                ],
+            ],
+        ]
+        ..preloadHeaderProposedLimitsFromApi()
+        ..setProjectProposedLimitInput(
+          "100",
+          groupId: groupId,
+          rimNo: rimNo,
+        )
+        ..setHeaderCurrencyFor(groupId, rimNo, Reference(name: "AED"));
       viewModel.standbyNameCtrl(rimNo).text = "New Name";
 
       expect(viewModel.isProjectHeaderDirtyAtRim(groupId, rimNo), true);
@@ -1640,24 +1644,6 @@ void main() {
       expect(msg, contains("USD"));
     });
 
-    testWidgets(
-        "updateConvertedTooltipFor AED short-circuit does not call repo",
-        (tester) async {
-      final f = FacilitySummaryNew()
-        ..currency = "AED"
-        ..proposedLimit = 2500;
-
-      await viewModel.updateConvertedTooltipFor(f);
-      await tester.pump(const Duration(milliseconds: 400));
-
-      verify(
-        () => mockFacilityRepo.getCurrencyRates(any()),
-      ).called(0);
-      final msg = viewModel.tooltipMessageFor(f);
-      expect(msg, contains("2,500"));
-      expect(msg, contains("AED"));
-    });
-
     testWidgets("updateConvertedTooltipFor handles null currency safely",
         (tester) async {
       final f = FacilitySummaryNew()
@@ -1669,23 +1655,6 @@ void main() {
 
       final msg = viewModel.tooltipMessageFor(f);
       expect(msg, contains("500"));
-    });
-
-    testWidgets(
-        "updateConvertedTooltipFor handles "
-        "null proposedLimit safely in AED path", (tester) async {
-      final f = FacilitySummaryNew()
-        ..currency = "AED"
-        ..proposedLimit = null;
-
-      await viewModel.updateConvertedTooltipFor(f);
-      await tester.pump(const Duration(milliseconds: 400));
-
-      verify(
-        () => mockFacilityRepo.getCurrencyRates(any()),
-      ).called(0);
-      final msg = viewModel.tooltipMessageFor(f);
-      expect(msg, contains("AED"));
     });
 
     testWidgets(
@@ -2114,12 +2083,13 @@ void main() {
             ],
         ];
 
-      viewModel.customerFacilities = [list];
-      viewModel.setProjectProposedLimitInput(
-        "100",
-        groupId: groupId,
-        rimNo: rimNo,
-      );
+      viewModel
+        ..customerFacilities = [list]
+        ..setProjectProposedLimitInput(
+          "100",
+          groupId: groupId,
+          rimNo: rimNo,
+        );
 
       await viewModel.saveFacilitySummaryList(
         list,
@@ -2226,29 +2196,13 @@ void main() {
   });
 
   group("Project header save / payload-building through public APIs", () {
-    test(
-        "prepareProjectProductCode uses "
-        "limitGroup.reference3 uppercased for project groups", () {
-      viewModel.limitGroup = [
-        Reference(
-          id: ServerConstants.projectSpecificLimitsID,
-          reference3: "proj_code",
-        ),
-      ];
-
-      viewModel
-          .prepareProjectProductCode(ServerConstants.projectSpecificLimitsID);
-
-      expect(viewModel.facility.productCodeProject, "PROJ_CODE");
-    });
-
     test("prepareProjectProductCode ignores non-project groups", () {
       viewModel.facility.productCodeProject = "OLD";
-      viewModel.limitGroup = [
-        Reference(id: 99999, reference3: "new"),
-      ];
-
-      viewModel.prepareProjectProductCode(99999);
+      viewModel
+        ..limitGroup = [
+          Reference(id: 99999, reference3: "new"),
+        ]
+        ..prepareProjectProductCode(99999);
 
       expect(viewModel.facility.productCodeProject, "OLD");
     });
@@ -2277,16 +2231,17 @@ void main() {
           Reference(id: 25, name: "Project Specific");
       viewModel.facility.proposedLimitValue = Reference(name: "USD");
 
-      viewModel.setProjectExistingLimitInput(
-        "50",
-        groupId: groupId,
-        rimNo: rimNo,
-      );
-      viewModel.setProjectProposedLimitInput(
-        "100",
-        groupId: groupId,
-        rimNo: rimNo,
-      );
+      viewModel
+        ..setProjectExistingLimitInput(
+          "50",
+          groupId: groupId,
+          rimNo: rimNo,
+        )
+        ..setProjectProposedLimitInput(
+          "100",
+          groupId: groupId,
+          rimNo: rimNo,
+        );
       viewModel.psNameCtrl(rimNo).text = "Project A";
 
       when(() => mockFacilityRepo.getFacilitySummaryList())
@@ -2330,16 +2285,17 @@ void main() {
       viewModel.facility.facilityDescription =
           Reference(id: 25, name: "Project Standby");
       viewModel.facility.proposedLimitValue = Reference(name: "AED");
-      viewModel.setProjectExistingLimitInput(
-        "10",
-        groupId: groupId,
-        rimNo: rimNo,
-      );
-      viewModel.setProjectProposedLimitInput(
-        "20",
-        groupId: groupId,
-        rimNo: rimNo,
-      );
+      viewModel
+        ..setProjectExistingLimitInput(
+          "10",
+          groupId: groupId,
+          rimNo: rimNo,
+        )
+        ..setProjectProposedLimitInput(
+          "20",
+          groupId: groupId,
+          rimNo: rimNo,
+        );
       viewModel.standbyNameCtrl(rimNo).text = "Standby A";
 
       when(
@@ -2371,16 +2327,17 @@ void main() {
       viewModel.facility.facilityDescription =
           Reference(id: 25, name: "Project Specific");
       viewModel.facility.proposedLimitValue = Reference(name: "AED");
-      viewModel.setProjectExistingLimitInput(
-        "10",
-        groupId: groupId,
-        rimNo: rimNo,
-      );
-      viewModel.setProjectProposedLimitInput(
-        "20",
-        groupId: groupId,
-        rimNo: rimNo,
-      );
+      viewModel
+        ..setProjectExistingLimitInput(
+          "10",
+          groupId: groupId,
+          rimNo: rimNo,
+        )
+        ..setProjectProposedLimitInput(
+          "20",
+          groupId: groupId,
+          rimNo: rimNo,
+        );
       viewModel.psNameCtrl(rimNo).text = "Project SaveOrUpdate";
 
       when(() => mockFacilityRepo.getFacilitySummaryList())

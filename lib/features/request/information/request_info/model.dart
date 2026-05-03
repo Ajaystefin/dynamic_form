@@ -109,7 +109,7 @@ class RequestInfoViewModel extends SafeCubit<RequestInfoState>
   ValueNotifier<bool> isSaveContinueButtonEnabled = ValueNotifier(true);
 
   bool get canEdit =>
-      (pageMode == PageMode.edit); // && Utils.canEditApplication();
+      pageMode == PageMode.edit; // && Utils.canEditApplication();
 
   PageMode pageMode = PageMode.na;
 
@@ -687,7 +687,7 @@ class RequestInfoViewModel extends SafeCubit<RequestInfoState>
     String? detailsRawValue = "";
 
     if (otherRolesCheck() &&
-        !(Utils.checkApplicationType(ApplicationType.cancellation))) {
+        !Utils.checkApplicationType(ApplicationType.cancellation)) {
       try {
         purposeRawValue = await getValidatedText(
           controller: controllerPurpose,
@@ -1698,7 +1698,7 @@ class RequestInfoViewModel extends SafeCubit<RequestInfoState>
         defaultPresentReviewDate: defaultPresentReviewDate,
         nextReviewDate: isNewRequest
             ? defaultNextReviewDate
-            : (isReconsideration)
+            : isReconsideration
                 ? defaultNextReviewDate
                 : details?.nextReviewDate,
       ),
@@ -1767,17 +1767,13 @@ class RequestInfoViewModel extends SafeCubit<RequestInfoState>
           content: Builder(
             builder: (_) {
               // Extract keys for line-length compliance
-              const String infoKey =
-                  "requestInformation.requestInformation"
+              const String infoKey = "requestInformation.requestInformation"
                   ".informationMsg";
-              const String cancelKey =
-                  "requestInformation.requestInformation"
+              const String cancelKey = "requestInformation.requestInformation"
                   ".informationCancellationMsg";
               final String ref = appRefNo ?? "";
               return CustomSelectableText(
-                text: isNew
-                    ? "${infoKey.tr()}$ref"
-                    : "${cancelKey.tr()}$ref",
+                text: isNew ? "${infoKey.tr()}$ref" : "${cancelKey.tr()}$ref",
               );
             },
           ),

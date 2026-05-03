@@ -64,8 +64,8 @@ void main() {
     AlertManager.overrideInstance(alert);
     await EnvConfig.setEnvironment();
 
-    viewModel = GuarantorsExposureViewModel();
-    viewModel.repository = repo;
+    viewModel = GuarantorsExposureViewModel()
+      ..repository = repo;
 
     // ---- CRITICAL: Stub ALL repository calls ----
     when(() => repo.getGuarantorExposure()).thenAnswer((_) async => []);

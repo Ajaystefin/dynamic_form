@@ -80,8 +80,7 @@ void main() {
     mockCommonRepo = MockCommonRepository();
     viewModel = PresentRequestViewModel(
       comments: <dynamic>[],
-    );
-    viewModel.repository = MockRequestRepository();
+    )..repository = MockRequestRepository();
     mockAlertManager = MockAlertManager();
 
     mockFormState = MockFormState();
@@ -133,11 +132,9 @@ void main() {
   group("PresentRequestViewModel Tests", () {
     // test('Initial loader status is loading', () {
     //   viewModel.init(null);
-    //   expect(viewModel.state.loaderStatus, LoadingStatus.loading);
-    // });
     test(
-        "getApplicationStrategyDetails() sets"
-        " strategyComment and loaderStatus to loaded", () async {
+        "getApplicationStrategyDetails() sets strategyComment and loaderStatus "
+        "to loaded", () async {
       final commentList = [
         Comment(
           categoryId: ServerConstants.presentRequestCategoryID,
@@ -149,9 +146,8 @@ void main() {
       when(() => mockCommonRepo.getApplicationStrategyDetails(any(), any()))
           .thenAnswer((_) async => commentList);
 
-      viewModel.repositoryCommon = mockCommonRepo;
-
-      await viewModel.getApplicationStrategyDetails();
+      await (viewModel..repositoryCommon = mockCommonRepo)
+          .getApplicationStrategyDetails();
 
       expect(viewModel.comments?.first.strategyComment, "Strategy A");
       expect(viewModel.state.loaderStatus, LoadingStatus.loading);
@@ -159,10 +155,11 @@ void main() {
     testWidgets(
         "onSaveButtonPressed() saves comment and sets isButtonLoading to false",
         (WidgetTester tester) async {
-      viewModel.pageMode = PageMode.edit;
-      viewModel.comment = Comment();
-      viewModel.comments = [Comment(strategyComment: "Test strategy")];
-      viewModel.repositoryCommon = mockCommonRepo;
+      viewModel
+        ..pageMode = PageMode.edit
+        ..comment = Comment()
+        ..comments = [Comment(strategyComment: "Test strategy")]
+        ..repositoryCommon = mockCommonRepo;
       AlertManager.overrideInstance(mockAlertManager);
       when(
         () => mockCommonRepo.saveApplicationStrategyDetails(
@@ -172,7 +169,6 @@ void main() {
         ),
       ).thenAnswer((_) async => "Saved");
 
-      // Create a form with a GlobalKey and attach it to the widget tree
       final formKey = GlobalKey<FormState>();
       viewModel.formKey = formKey;
 
@@ -194,7 +190,6 @@ void main() {
         ),
       );
 
-      // Tap the button to trigger the save
       await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle();
 
@@ -204,11 +199,12 @@ void main() {
         "onSaveButtonPressed() "
         "handles exception "
         "and sets loaderStatus to error", () async {
-      viewModel.pageMode = PageMode.edit;
-      viewModel.formKey = GlobalKey<FormState>();
-      viewModel.comment = Comment();
-      viewModel.comments = [Comment(strategyComment: "Test strategy")];
-      viewModel.repositoryCommon = mockCommonRepo;
+      viewModel
+        ..pageMode = PageMode.edit
+        ..formKey = GlobalKey<FormState>()
+        ..comment = Comment()
+        ..comments = [Comment(strategyComment: "Test strategy")]
+        ..repositoryCommon = mockCommonRepo;
       AlertManager.overrideInstance(mockAlertManager);
       when(
         () => mockCommonRepo.saveApplicationStrategyDetails(
@@ -229,9 +225,10 @@ void main() {
     // });
 
     test("onSaveButtonPressed saves comment when editable", () async {
-      viewModel.pageMode = PageMode.edit;
-      viewModel.comment = Comment();
-      viewModel.comments = [Comment(strategyComment: "Saved Comment")];
+      viewModel
+        ..pageMode = PageMode.edit
+        ..comment = Comment()
+        ..comments = [Comment(strategyComment: "Saved Comment")];
 
       const mockSaveResult = "Success";
       AlertManager.overrideInstance(mockAlertManager);
@@ -251,9 +248,10 @@ void main() {
     });
 
     test("onSaveButtonPressed handles error gracefully", () async {
-      viewModel.pageMode = PageMode.edit;
-      viewModel.comment = Comment();
-      viewModel.comments = [Comment(strategyComment: "Saved Comment")];
+      viewModel
+        ..pageMode = PageMode.edit
+        ..comment = Comment()
+        ..comments = [Comment(strategyComment: "Saved Comment")];
       AlertManager.overrideInstance(mockAlertManager);
       when(
         () => mockCommonRepo.saveApplicationStrategyDetails(
@@ -274,9 +272,10 @@ void main() {
       try {
         registerFallbackValue(Comment());
 
-        viewModel.pageMode = PageMode.edit;
-        viewModel.comment = Comment();
-        viewModel.comments = [Comment(strategyComment: "Saved Comment")];
+        viewModel
+          ..pageMode = PageMode.edit
+          ..comment = Comment()
+          ..comments = [Comment(strategyComment: "Saved Comment")];
 
         const mockSaveResult = "Success";
 

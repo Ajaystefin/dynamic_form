@@ -236,10 +236,9 @@ class RequestRepository {
         final latestCommentJson = commentList.first;
         debugPrint("Latest comment JSON: $latestCommentJson");
 
-        final latestComment = Comment.fromJson(latestCommentJson);
-
         // - Manually map 'comment' to 'strategyComment' for UI use
-        latestComment.strategyComment = latestCommentJson["comment"];
+        final latestComment = Comment.fromJson(latestCommentJson)
+          ..strategyComment = latestCommentJson["comment"];
 
         debugPrint("Parsed Comment: ${latestComment.strategyComment}");
         return latestComment;
@@ -267,10 +266,8 @@ class RequestRepository {
         await _apiManager.post(APIEndpoints.updateTerminatedStatus, data);
 
     if (response.status == ResponseStatus.success) {
-      final statusDescription =
-          response.body?["baseResponse"]?["status"]?["statusDescription"];
-      response.message = statusDescription ?? "No status description found";
-      return response.message;
+      return response.body?["baseResponse"]?["status"]?["statusDescription"] ??
+          "No status description found";
     } else {
       throw response.message;
     }
@@ -350,8 +347,7 @@ class RequestRepository {
     );
 
     if (response.status == ResponseStatus.success) {
-      response.message = response.body["responseData"]["message"];
-      return response.message;
+      return response.body["responseData"]["message"];
     } else {
       throw response.message;
     }
@@ -369,9 +365,7 @@ class RequestRepository {
     final AppResponse response =
         await _apiManager.post(APIEndpoints.saveConditions, data);
     if (response.status == ResponseStatus.success) {
-      response.message =
-          response.body["baseResponse"]["status"]["statusDescription"];
-      return response.message;
+      return response.body["baseResponse"]["status"]["statusDescription"];
     } else {
       throw response.message;
     }
@@ -437,7 +431,6 @@ class RequestRepository {
     required List<Country> countries,
     Security? selectedSecurity,
   }) async {
-    Security? security;
 
     final String? rimStr = selectedSecurity?.securityProvidedRim;
 
@@ -447,7 +440,7 @@ class RequestRepository {
 
     //  send groupId only for "create" flow (no securityId yet)
     final bool isCreate =
-        (selectedSecurity == null || selectedSecurity.securityId == null);
+        selectedSecurity == null || selectedSecurity.securityId == null;
     final int? groupIdToSend = isCreate ? Globals.request?.groupId : null;
 
     final Map data = BaseRequest.baseRequest({
@@ -482,20 +475,15 @@ class RequestRepository {
       } catch (e) {
         throw "Error fetching reference data: $e";
       }
-      security = Security.fromJson(
+      return Security.fromJson(
         response.body["responseData"],
         emirates: emirates,
         statuses: statuses,
         countries: countries,
-      );
-
-      // Parse and flatten additionalDetails for dynamic form prefill
-      security.dynamicFormDocument =
+      )..dynamicFormDocument =
           FacilitySecurityRepository.parseAndFlattenAdditionalDetails(
         response.body["responseData"]["additionalDetails"],
       );
-
-      return security;
     } else {
       throw response.message;
     }
@@ -535,8 +523,7 @@ class RequestRepository {
       data,
     );
     if (response.status == ResponseStatus.success) {
-      response.message = response.body["responseData"]["message"];
-      return response.message;
+      return response.body["responseData"]["message"];
     } else {
       throw response.message;
     }
@@ -610,8 +597,7 @@ class RequestRepository {
     final AppResponse response =
         await _apiManager.post(APIEndpoints.saveFacilityWithOtherBank, data);
     if (response.status == ResponseStatus.success) {
-      response.message = response.body["responseData"]["message"];
-      return response.message;
+      return response.body["responseData"]["message"];
     } else {
       throw response.message;
     }

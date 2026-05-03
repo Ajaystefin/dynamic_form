@@ -80,13 +80,10 @@ class CommonRepository {
       response.message =
           response.body["baseResponse"]?["status"]?["statusDescription"];
 
-      final List<Comment> comments =
-          (response.body["responseData"]?["commentList"] as List<dynamic>?)
-                  ?.map((item) => Comment.fromJson(item))
-                  .toList() ??
-              [];
-
-      return comments;
+      return (response.body["responseData"]?["commentList"] as List<dynamic>?)
+              ?.map((item) => Comment.fromJson(item))
+              .toList() ??
+          [];
     }
 
     throw response.message;
@@ -113,8 +110,7 @@ class CommonRepository {
     );
 
     if (response.status == ResponseStatus.success) {
-      response.message = response.body["responseData"].toString();
-      return response.message;
+      return response.body["responseData"].toString();
     }
 
     throw response.message;
@@ -150,7 +146,7 @@ class CommonRepository {
     int? rimNo,
   }) async {
     if (comment == null) {
-      return ("comment is null");
+      return "comment is null";
     }
 
     final Map<String, dynamic> data = BaseRequest.baseRequest({

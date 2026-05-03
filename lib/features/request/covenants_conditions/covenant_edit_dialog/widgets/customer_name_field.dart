@@ -26,7 +26,7 @@ class CustomerNameField extends StatelessWidget {
     final String tooltipText = selected.isEmpty
         ? ""
         : selected
-            .map((c) => (c.concatCustomerFullName).trim())
+            .map((c) => c.concatCustomerFullName.trim())
             .where((s) => s.isNotEmpty)
             .join(", ");
 

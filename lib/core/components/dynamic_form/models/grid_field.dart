@@ -8,7 +8,7 @@ class DynamicGridField {
   factory DynamicGridField.fromJson(Map<String, dynamic> json) {
     return DynamicGridField(
       columnTitle: json["columnTitle"] ?? "",
-      dynamicField: DynamicField.fromJson((json["control"])),
+      dynamicField: DynamicField.fromJson(json["control"]),
     );
   }
   final String? columnTitle;

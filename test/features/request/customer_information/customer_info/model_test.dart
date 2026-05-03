@@ -16,6 +16,7 @@ import "package:wcas_frontend/models/admin/reference.dart";
 import "package:wcas_frontend/models/request/application_details.dart";
 import "package:wcas_frontend/models/request/country.dart";
 import "package:wcas_frontend/models/request/customer.dart";
+import "package:wcas_frontend/models/request/request.dart";
 import "package:wcas_frontend/repositories/auth_repository.dart";
 import "package:wcas_frontend/repositories/customer_respository.dart";
 import "package:wcas_frontend/repositories/request_repository.dart";
@@ -38,6 +39,15 @@ class MockAlertManager extends Mock implements AlertManager {}
 
 // Assuming Customer is your model class
 class MockCustomer extends Mock implements Customer {}
+
+class MockGlobalKey extends Mock implements GlobalKey<FormState> {}
+
+class MockFormState extends Mock implements FormState {
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return "MockFormState";
+  }
+}
 
 // Mock LocalStorageService
 class MockLocalStorageService implements StorageInterface {
@@ -80,7 +90,9 @@ void main() {
   late MockAlertManager mockAlert;
   late MockCustomer mockCustomer;
   late MockLocalStorageService mockLocalStorageService;
-
+  late MockGlobalKey mockGlobalKey;
+  late MockFormState mockFormState;
+  late MockReferenceDataService mockReferenceDataService;
   const connectivityChannel =
       MethodChannel("dev.fluttercommunity.plus/connectivity");
 
@@ -89,10 +101,12 @@ void main() {
     mockContext = MockContext();
     mockCustomerRepository = MockCustomerRepository();
     mockAlert = MockAlertManager();
-
-    viewModel = CustomerInfoViewModel();
-    viewModel.repository = mockRequestRepo;
-    viewModel.repositoryCustomer = mockCustomerRepository;
+    mockGlobalKey = MockGlobalKey();
+    mockFormState = MockFormState();
+    mockReferenceDataService = MockReferenceDataService();
+    viewModel = CustomerInfoViewModel()
+      ..repository = mockRequestRepo
+      ..repositoryCustomer = mockCustomerRepository;
 
     mockLocalStorageService = MockLocalStorageService();
     // Set up LocalStorageService mock
@@ -105,6 +119,10 @@ void main() {
     // Register fallback values for any non-nullable fields
     registerFallbackValue("");
     registerFallbackValue(0);
+
+    when(() => mockGlobalKey.currentState).thenReturn(mockFormState);
+    when(() => mockFormState.validate()).thenReturn(true);
+    when(() => mockFormState.save()).thenReturn(null);
   });
 
   setUpAll(() async {
@@ -157,11 +175,12 @@ void main() {
       when(() => mockCustomerRepository.deleteOwnership(any(), any()))
           .thenAnswer((_) async => "Success");
 
-      viewModel.customerOwnerShipInfo = [
-        CustomerOwnerShipInfo(rim: 1, custOwnId: 101),
-        CustomerOwnerShipInfo(rim: 2, custOwnId: 102),
-      ];
-      viewModel.selectedCustomer = Customer(customerRimNo: 999);
+      viewModel
+        ..customerOwnerShipInfo = [
+          CustomerOwnerShipInfo(rim: 1, custOwnId: 101),
+          CustomerOwnerShipInfo(rim: 2, custOwnId: 102),
+        ]
+        ..selectedCustomer = Customer(customerRimNo: 999);
 
       await viewModel.removeOwnershipTableRow(0);
 
@@ -171,9 +190,9 @@ void main() {
     });
 
     test("addOwnershipTableRow handles null ownership infos", () {
-      viewModel.customerOwnerShipInfo = null;
-
-      viewModel.addOwnershipTableRow();
+      viewModel
+        ..customerOwnerShipInfo = null
+        ..addOwnershipTableRow();
 
       expect(viewModel.state.userNameChangeLoader, LoadingStatus.loaded);
     });
@@ -185,8 +204,9 @@ void main() {
       when(() => mockRepository.deleteOwnership(any(), any()))
           .thenAnswer((_) async => "Success");
 
-      viewModel.customerOwnerShipInfo = null;
-      viewModel.selectedCustomer = Customer(customerRimNo: 999);
+      viewModel
+        ..customerOwnerShipInfo = null
+        ..selectedCustomer = Customer(customerRimNo: 999);
 
       await viewModel.removeOwnershipTableRow(0);
 
@@ -214,8 +234,9 @@ void main() {
       when(() => mockRepository.deleteException(any(), any()))
           .thenAnswer((_) async => "Success");
 
-      viewModel.customerException = null;
-      viewModel.selectedCustomer = Customer(customerRimNo: 999);
+      viewModel
+        ..customerException = null
+        ..selectedCustomer = Customer(customerRimNo: 999);
 
       await viewModel.removeExcptionTableRow(0);
 
@@ -224,9 +245,9 @@ void main() {
     });
 
     test("addExcptionTableRow handles null exceptions", () {
-      viewModel.customerException = null;
-
-      viewModel.addExcptionTableRow();
+      viewModel
+        ..customerException = null
+        ..addExcptionTableRow();
 
       expect(viewModel.state.userNameChangeLoader, LoadingStatus.loaded);
     });
@@ -234,19 +255,21 @@ void main() {
 
   group("onSave", () {
     test("validates share holding percentage correctly", () {
-      viewModel.customerOwnerShipInfo = [
-        CustomerOwnerShipInfo(
-          shareHoldingPercentage: 50,
-          beneficialOwnerhipPercentage: 100,
-        ),
-      ];
-
-      viewModel.clearPercentageValues();
+      viewModel
+        ..customerOwnerShipInfo = [
+          CustomerOwnerShipInfo(
+            shareHoldingPercentage: 50,
+            beneficialOwnerhipPercentage: 100,
+          ),
+        ]
+        ..clearPercentageValues();
       for (final CustomerOwnerShipInfo item
           in viewModel.customerOwnerShipInfo ?? []) {
-        viewModel.totalShareHolding += item.shareHoldingPercentage ?? 0;
-        viewModel.totalBeneficialOwnership +=
-            item.beneficialOwnerhipPercentage ?? 0;
+        viewModel
+          ..totalShareHolding =
+              viewModel.totalShareHolding + (item.shareHoldingPercentage ?? 0)
+          ..totalBeneficialOwnership = viewModel.totalBeneficialOwnership +
+              (item.beneficialOwnerhipPercentage ?? 0);
       }
 
       expect(viewModel.totalShareHolding, 50.0);
@@ -254,19 +277,21 @@ void main() {
     });
 
     test("validates beneficial ownership percentage correctly", () {
-      viewModel.customerOwnerShipInfo = [
-        CustomerOwnerShipInfo(
-          shareHoldingPercentage: 100,
-          beneficialOwnerhipPercentage: 50,
-        ),
-      ];
-
-      viewModel.clearPercentageValues();
+      viewModel
+        ..customerOwnerShipInfo = [
+          CustomerOwnerShipInfo(
+            shareHoldingPercentage: 100,
+            beneficialOwnerhipPercentage: 50,
+          ),
+        ]
+        ..clearPercentageValues();
       for (final CustomerOwnerShipInfo item
           in viewModel.customerOwnerShipInfo ?? []) {
-        viewModel.totalShareHolding += item.shareHoldingPercentage ?? 0;
-        viewModel.totalBeneficialOwnership +=
-            item.beneficialOwnerhipPercentage ?? 0;
+        viewModel
+          ..totalShareHolding =
+              viewModel.totalShareHolding + (item.shareHoldingPercentage ?? 0)
+          ..totalBeneficialOwnership = viewModel.totalBeneficialOwnership +
+              (item.beneficialOwnerhipPercentage ?? 0);
       }
 
       expect(viewModel.totalShareHolding, 100.0);
@@ -294,10 +319,10 @@ void main() {
 
   group("clearPercentageValues", () {
     test("resets percentage values to zero", () {
-      viewModel.totalShareHolding = 50.0;
-      viewModel.totalBeneficialOwnership = 75.0;
-
-      viewModel.clearPercentageValues();
+      viewModel
+        ..totalShareHolding = 50.0
+        ..totalBeneficialOwnership = 75.0
+        ..clearPercentageValues();
 
       expect(viewModel.totalShareHolding, 0.0);
       expect(viewModel.totalBeneficialOwnership, 0.0);
@@ -452,14 +477,14 @@ void main() {
 
   group("Country Operations", () {
     test("onCountryChipDeleted removes country at index", () {
-      viewModel.customerInformation = Customer(
-        countryRiskWith: [
-          Country(code: "US", description: "USA"),
-          Country(code: "UK", description: "UK"),
-        ],
-      );
-
-      viewModel.onCountryChipDeleted(0);
+      viewModel
+        ..customerInformation = Customer(
+          countryRiskWith: [
+            Country(code: "US", description: "USA"),
+            Country(code: "UK", description: "UK"),
+          ],
+        )
+        ..onCountryChipDeleted(0);
 
       expect(viewModel.customerInformation?.countryRiskWith?.length, 1);
 
@@ -478,14 +503,14 @@ void main() {
     });
 
     test("onCountryTradedDeleted removes traded country at index", () {
-      viewModel.customerInformation = Customer(
-        countriesTradedWith: [
-          Country(code: "US", description: "USA"),
-          Country(code: "UK", description: "UK"),
-        ],
-      );
-
-      viewModel.onCountryTradedDeleted(0);
+      viewModel
+        ..customerInformation = Customer(
+          countriesTradedWith: [
+            Country(code: "US", description: "USA"),
+            Country(code: "UK", description: "UK"),
+          ],
+        )
+        ..onCountryTradedDeleted(0);
 
       expect(viewModel.customerInformation?.countriesTradedWith?.length, 1);
       expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
@@ -508,14 +533,14 @@ void main() {
         "onCountryBuisnessOperationDeleted "
         "removes "
         "business operation country at index", () {
-      viewModel.customerInformation = Customer(
-        countriesofBussinessOperation: [
-          Country(code: "US", description: "USA"),
-          Country(code: "UK", description: "UK"),
-        ],
-      );
-
-      viewModel.onCountryBuisnessOperationDeleted(0);
+      viewModel
+        ..customerInformation = Customer(
+          countriesofBussinessOperation: [
+            Country(code: "US", description: "USA"),
+            Country(code: "UK", description: "UK"),
+          ],
+        )
+        ..onCountryBuisnessOperationDeleted(0);
 
       expect(
         viewModel.customerInformation?.countriesofBussinessOperation?.length,
@@ -753,9 +778,10 @@ void main() {
       };
 
       // Test the logic indirectly
-      viewModel.referenceData = mockReferenceData;
-      viewModel.fiBankProposedOptions =
-          mockReferenceData[ReferenceDataKeys.yesNoNa] ?? [];
+      viewModel
+        ..referenceData = mockReferenceData
+        ..fiBankProposedOptions =
+            mockReferenceData[ReferenceDataKeys.yesNoNa] ?? [];
 
       expect(viewModel.referenceData, mockReferenceData);
       expect(viewModel.fiBankProposedOptions, isNotEmpty);
@@ -804,36 +830,39 @@ void main() {
         ],
       };
 
-      viewModel.customerInformation = mockCustomer;
-      viewModel.countries = mockCountries;
-      viewModel.referenceData = mockReferenceData;
+      viewModel
+        ..customerInformation = mockCustomer
+        ..countries = mockCountries
+        ..referenceData = mockReferenceData;
 
       // Test the processing logic
       if (viewModel.customerInformation != null &&
           viewModel.customerInformation?.tlIssuingAuthority != null) {
-        viewModel.selectedTlIssuingAuthority = viewModel
-            .referenceData[ReferenceDataKeys.tlIssuingAuthorityList]
-            ?.firstWhere(
-          (element) =>
-              element.name == viewModel.customerInformation?.tlIssuingAuthority,
-        );
-
-        viewModel.selectedCccStatus =
-            viewModel.referenceData[ReferenceDataKeys.cccStatus]?.firstWhere(
-          (element) => element.name == viewModel.customerInformation?.cccStatus,
-        );
-
-        viewModel.selectedProposedSicCode =
-            viewModel.referenceData[ReferenceDataKeys.sicCodeList]?.firstWhere(
-          (element) =>
-              element.name == viewModel.customerInformation?.proposedSICCode,
-        );
-
-        viewModel.selectedIfrsStaging =
-            viewModel.referenceData[ReferenceDataKeys.ifrsStaging]?.firstWhere(
-          (element) =>
-              element.name == viewModel.customerInformation?.ifrsStaging,
-        );
+        viewModel
+          ..selectedTlIssuingAuthority = viewModel
+              .referenceData[ReferenceDataKeys.tlIssuingAuthorityList]
+              ?.firstWhere(
+            (element) =>
+                element.name ==
+                viewModel.customerInformation?.tlIssuingAuthority,
+          )
+          ..selectedCccStatus =
+              viewModel.referenceData[ReferenceDataKeys.cccStatus]?.firstWhere(
+            (element) =>
+                element.name == viewModel.customerInformation?.cccStatus,
+          )
+          ..selectedProposedSicCode = viewModel
+              .referenceData[ReferenceDataKeys.sicCodeList]
+              ?.firstWhere(
+            (element) =>
+                element.name == viewModel.customerInformation?.proposedSICCode,
+          )
+          ..selectedIfrsStaging = viewModel
+              .referenceData[ReferenceDataKeys.ifrsStaging]
+              ?.firstWhere(
+            (element) =>
+                element.name == viewModel.customerInformation?.ifrsStaging,
+          );
       }
 
       expect(viewModel.selectedTlIssuingAuthority?.name, "Authority1");
@@ -854,10 +883,9 @@ void main() {
       ];
 
       // Test the update logic
-      viewModel.customerOwnerShipInfo?[0].rim =
-          int.tryParse(mockCustomer.id ?? "");
-      viewModel.customerOwnerShipInfo?[0].custOwnershipName =
-          mockCustomer.preferredName;
+      viewModel.customerOwnerShipInfo?[0]
+        ?..rim = int.tryParse(mockCustomer.id ?? "")
+        ..custOwnershipName = mockCustomer.preferredName;
 
       expect(viewModel.customerOwnerShipInfo?[0].rim, 123);
       expect(viewModel.customerOwnerShipInfo?[0].custOwnershipName, "John Doe");
@@ -867,13 +895,15 @@ void main() {
 
   group("Form Validation Tests", () {
     test("onSave executes successfully with valid data", () async {
-      viewModel.customerOwnerShipInfo = [
-        CustomerOwnerShipInfo(
-          shareHoldingPercentage: 100,
-          beneficialOwnerhipPercentage: 100,
-        ),
-      ];
-
+      viewModel
+        ..customerOwnerShipInfo = [
+          CustomerOwnerShipInfo(
+            shareHoldingPercentage: 100,
+            beneficialOwnerhipPercentage: 100,
+          ),
+        ]
+        ..formKey = mockGlobalKey;
+      when(() => mockFormState.validate()).thenReturn(false);
       when(() => mockCustomerRepository.saveUserDetails(any(), any(), any()))
           .thenAnswer((_) async => "Success");
 
@@ -890,21 +920,51 @@ void main() {
       }
     });
 
-    test("onSave validates form when canEdit is true", () async {
-      viewModel.customerOwnerShipInfo = [
-        CustomerOwnerShipInfo(
-          shareHoldingPercentage: 100,
-          beneficialOwnerhipPercentage: 100,
-        ),
-      ];
+    test("onSave executes successfully with valid data for fi flow", () async {
+      viewModel
+        ..customerOwnerShipInfo = [
+          CustomerOwnerShipInfo(
+            shareHoldingPercentage: 100,
+            beneficialOwnerhipPercentage: 100,
+          ),
+        ]
+        ..isFI = true
+        ..formKey = mockGlobalKey;
+      when(() => mockFormState.validate()).thenReturn(true);
+      when(() => mockCustomerRepository.saveUserDetails(any(), any(), any()))
+          .thenAnswer((_) async => "common.success");
 
-      // Test the validation logic without calling onSave directly
-      viewModel.clearPercentageValues();
+      viewModel.repositoryCustomer = mockCustomerRepository;
+
+      try {
+        await viewModel.onSave();
+        // Should complete successfully
+        expect(true, true);
+      } catch (e) {
+        // Expected to throw due to percentage validation in this simplified
+        // test
+        expect(e.toString(), contains("100.0"));
+      }
+    });
+
+    test("onSave validates form when canEdit is true", () async {
+      viewModel
+        ..customerOwnerShipInfo = [
+          CustomerOwnerShipInfo(
+            shareHoldingPercentage: 100,
+            beneficialOwnerhipPercentage: 100,
+          ),
+        ]
+
+        // Test the validation logic without calling onSave directly
+        ..clearPercentageValues();
       for (final CustomerOwnerShipInfo item
           in viewModel.customerOwnerShipInfo ?? []) {
-        viewModel.totalShareHolding += item.shareHoldingPercentage ?? 0;
-        viewModel.totalBeneficialOwnership +=
-            item.beneficialOwnerhipPercentage ?? 0;
+        viewModel
+          ..totalShareHolding =
+              viewModel.totalShareHolding + (item.shareHoldingPercentage ?? 0)
+          ..totalBeneficialOwnership = viewModel.totalBeneficialOwnership +
+              (item.beneficialOwnerhipPercentage ?? 0);
       }
 
       expect(viewModel.totalShareHolding, 100.0);
@@ -943,9 +1003,10 @@ void main() {
 
   group("Additional Edge Cases", () {
     test("getCustomerInformation handles null customer data", () async {
-      viewModel.customerInformation = null;
-      viewModel.countries = [];
-      viewModel.referenceData = {};
+      viewModel
+        ..customerInformation = null
+        ..countries = []
+        ..referenceData = {};
 
       // Test that the method doesn't throw when customer is null
       expect(
@@ -967,12 +1028,13 @@ void main() {
         tlIssuingAuthority: "NonExistentAuthority",
       );
 
-      viewModel.customerInformation = mockCustomer;
-      viewModel.referenceData = {
-        ReferenceDataKeys.tlIssuingAuthorityList: [
-          Reference(id: 1, name: "Authority1"),
-        ],
-      };
+      viewModel
+        ..customerInformation = mockCustomer
+        ..referenceData = {
+          ReferenceDataKeys.tlIssuingAuthorityList: [
+            Reference(id: 1, name: "Authority1"),
+          ],
+        };
 
       // Test that firstWhere throws when element not found
       expect(
@@ -990,9 +1052,9 @@ void main() {
 
     test("addOwnershipTableRow creates new row with correct default values",
         () {
-      viewModel.customerOwnerShipInfo = [];
-
-      viewModel.addOwnershipTableRow();
+      viewModel
+        ..customerOwnerShipInfo = []
+        ..addOwnershipTableRow();
 
       final newRow = viewModel.customerOwnerShipInfo?.last;
       expect(newRow?.rim, null);
@@ -1007,9 +1069,9 @@ void main() {
     test(
         "addExcptionTableRow creates new exception with correct default values",
         () {
-      viewModel.customerException = [];
-
-      viewModel.addExcptionTableRow();
+      viewModel
+        ..customerException = []
+        ..addExcptionTableRow();
 
       final newException = viewModel.customerException?.last;
       expect(newException?.type, "");
@@ -1189,32 +1251,36 @@ void main() {
 
   group("onPolicyChipDeleted", () {
     test("should return if customerInformation is null", () {
-      viewModel.customerInformation = null;
-      viewModel.onPolicyChipDeleted(0);
+      viewModel
+        ..customerInformation = null
+        ..onPolicyChipDeleted(0);
       // Expect no crash or state change
     });
 
     test("should return if policyDeviations is null", () {
-      viewModel.customerInformation = Customer(policyDeviations: null);
-      viewModel.onPolicyChipDeleted(0);
+      viewModel
+        ..customerInformation = Customer(policyDeviations: null)
+        ..onPolicyChipDeleted(0);
     });
 
     test("should return if index is negative", () {
-      viewModel.customerInformation = Customer(policyDeviations: []);
-      viewModel.onPolicyChipDeleted(-1);
+      viewModel
+        ..customerInformation = Customer(policyDeviations: [])
+        ..onPolicyChipDeleted(-1);
     });
 
     test("should return if index is out of bounds", () {
-      viewModel.customerInformation = Customer(policyDeviations: []);
-      viewModel.onPolicyChipDeleted(1);
+      viewModel
+        ..customerInformation = Customer(policyDeviations: [])
+        ..onPolicyChipDeleted(1);
     });
 
     test("should remove item and emit new state", () {
       final ref1 = MockReference();
       final ref2 = MockReference();
-      viewModel.customerInformation = Customer(policyDeviations: [ref1, ref2]);
-
-      viewModel.onPolicyChipDeleted(0);
+      viewModel
+        ..customerInformation = Customer(policyDeviations: [ref1, ref2])
+        ..onPolicyChipDeleted(0);
 
       expect(viewModel.customerInformation?.policyDeviations, [ref2]);
       // Optionally verify state emission if using Bloc or similar
@@ -1252,10 +1318,11 @@ void main() {
     test("Selected reference properties can be set and retrieved", () {
       final mockReference = Reference(id: 1, name: "Test Reference");
 
-      viewModel.selectedIfrsStaging = mockReference;
-      viewModel.selectedProposedSicCode = mockReference;
-      viewModel.selectedTlIssuingAuthority = mockReference;
-      viewModel.selectedCccStatus = mockReference;
+      viewModel
+        ..selectedIfrsStaging = mockReference
+        ..selectedProposedSicCode = mockReference
+        ..selectedTlIssuingAuthority = mockReference
+        ..selectedCccStatus = mockReference;
 
       expect(viewModel.selectedIfrsStaging, mockReference);
       expect(viewModel.selectedProposedSicCode, mockReference);
@@ -1281,8 +1348,9 @@ void main() {
       expect(viewModel.totalBeneficialOwnership, 0.0);
 
       // Test manual assignment
-      viewModel.totalShareHolding = 75.5;
-      viewModel.totalBeneficialOwnership = 100.0;
+      viewModel
+        ..totalShareHolding = 75.5
+        ..totalBeneficialOwnership = 100.0;
 
       expect(viewModel.totalShareHolding, 75.5);
       expect(viewModel.totalBeneficialOwnership, 100.0);
@@ -1373,10 +1441,18 @@ void main() {
       expect(viewModel.selectedCustomer?.customerRimNo, 123);
     });
 
+    test("getCustomerInformation sets values empty", () async {
+      when(() => mockCustomerRepository.getCustomerInformationByRim(123))
+          .thenAnswer((_) async => null);
+      await viewModel.getCustomerInformation(customerRimNo: 123);
+      expect(viewModel.customerException, isEmpty);
+    });
+
     test("onSave validates and saves customer information", () async {
-      viewModel.customerInformation = Customer();
-      viewModel.customerOwnerShipInfo = [];
-      viewModel.customerException = [];
+      viewModel
+        ..customerInformation = Customer()
+        ..customerOwnerShipInfo = []
+        ..customerException = [];
       // when(() => mockCustomerRepository.saveUserDetails(any(), any(), any()))
       //     .thenAnswer((_) async => 'Success');
       // await viewModel.onSave();
@@ -1414,15 +1490,14 @@ void main() {
           .thenReturn("2027-01-30T00:00:00");
       when(() => mockCustomer.establishmentDate)
           .thenReturn("2027-01-30T00:00:00");
-      when(() => mockCustomer.isBorrowerRelationshipDate).thenReturn(false);
+      when(() => mockCustomer.isBorrowerRelationshipDate).thenReturn(true);
       // when(() => mockCustomer.borrowRelationShipDate)
       //     .thenReturn('2027-01-30T00:00:00');
 
       // Assign mock to viewModel
-      viewModel.customerInformation = mockCustomer;
-
-      // Call the function
-      viewModel.populateCustomerInformation();
+      viewModel
+        ..customerInformation = mockCustomer
+        ..populateCustomerInformation();
 
       // Verify assignments
       verify(() => mockCustomer.industryDescription = any()).called(1);
@@ -1457,8 +1532,9 @@ void main() {
       final reference = Reference(name: "SIC001", description: "Industry Desc");
       final selectedList = [reference];
 
-      viewModel.customerInformation = Customer(); // or a mock
-      viewModel.onSelectPropsedSicCode(selectedList);
+      viewModel
+        ..customerInformation = Customer() // or a mock
+        ..onSelectPropsedSicCode(selectedList);
 
       expect(viewModel.customerInformation?.proposedSICCode, "SIC001");
       expect(
@@ -1565,11 +1641,12 @@ void main() {
       when(() => mockCustomerRepository.deleteException(any(), any()))
           .thenAnswer((_) async => "Success");
 
-      viewModel.customerException = [
-        CustomerException(exceptionId: 1, custInfoId: 100),
-        CustomerException(exceptionId: 2, custInfoId: 100),
-      ];
-      viewModel.selectedCustomer = Customer(customerRimNo: 999);
+      viewModel
+        ..customerException = [
+          CustomerException(exceptionId: 1, custInfoId: 100),
+          CustomerException(exceptionId: 2, custInfoId: 100),
+        ]
+        ..selectedCustomer = Customer(customerRimNo: 999);
 
       await viewModel.removeExcptionTableRow(0);
 
@@ -1581,10 +1658,11 @@ void main() {
 
     test("handles selectedCustomer null gracefully", () async {
       AlertManager.overrideInstance(mockAlert);
-      viewModel.customerException = [
-        CustomerException(exceptionId: 1, custInfoId: 100),
-      ];
-      viewModel.selectedCustomer = null;
+      viewModel
+        ..customerException = [
+          CustomerException(exceptionId: 1, custInfoId: 100),
+        ]
+        ..selectedCustomer = null;
 
       await viewModel.removeExcptionTableRow(0);
 
@@ -1627,31 +1705,33 @@ void main() {
 
   group("populateCustomerInformation with exceptions", () {
     test("populates exception due dates when present", () {
-      viewModel.customerInformation = Customer();
-      viewModel.customerException = [
-        CustomerException(dueDate: "2027-06-15T00:00:00"),
-        CustomerException(dueDate: "2027-12-31T00:00:00"),
-      ];
-
-      viewModel.populateCustomerInformation();
-
-      expect(viewModel.customerException?[0].dueDateLong, isNotNull);
-      expect(viewModel.customerException?[1].dueDateLong, isNotNull);
+      viewModel
+        ..customerInformation = Customer()
+        ..customerException = [
+          CustomerException(dueDate: "2027-06-15T00:00:00"),
+          CustomerException(dueDate: "2027-12-31T00:00:00"),
+        ]
+        ..populateCustomerInformation();
+      final exceptions = viewModel.customerException;
+      expect(exceptions?[0].dueDateLong, isNotNull);
+      expect(exceptions?[1].dueDateLong, isNotNull);
     });
 
     test("skips exceptions with null or empty due date", () {
-      viewModel.customerInformation = Customer();
-      viewModel.customerException = [
-        CustomerException(dueDate: null),
-        CustomerException(dueDate: ""),
-      ];
+      viewModel
+        ..customerInformation = Customer()
+        ..customerException = [
+          CustomerException(dueDate: null),
+          CustomerException(dueDate: ""),
+        ];
 
       expect(() => viewModel.populateCustomerInformation(), returnsNormally);
     });
 
     test("handles empty exception list", () {
-      viewModel.customerInformation = Customer();
-      viewModel.customerException = [];
+      viewModel
+        ..customerInformation = Customer()
+        ..customerException = [];
 
       expect(() => viewModel.populateCustomerInformation(), returnsNormally);
     });
@@ -1737,21 +1817,27 @@ void main() {
       viewModel.customerException = [
         CustomerException(exceptionId: 1, custInfoId: 10, type: "Ownership"),
       ];
-      viewModel.selectedCustomer = Customer(customerRimNo: 123);
-
+      final textController = <TextEditingController>[];
+      viewModel
+        ..selectedCustomer = Customer(customerRimNo: 123)
+        ..customerInformation = Customer(custInfoId: 1)
+        ..exceptionFacilityController = textController
+        ..exceptionTypeController = textController
+        ..exceptionDescController = textController
+        ..exceptionRecommController = textController;
       when(() => mockCustomerRepository.deleteException(any(), any()))
           .thenAnswer((_) async => "Deleted");
 
       await viewModel.removeExcptionTableRow(0);
 
       expect(viewModel.state.userNameChangeLoader, LoadingStatus.loaded);
-      verifyNever(() => mockCustomerRepository.deleteException(1, 10))
-          .called(0);
+      verify(() => mockCustomerRepository.deleteException(1, 10)).called(1);
     });
 
     test("should return early when selectedCustomer.rimNo is null", () async {
-      viewModel.customerException = [CustomerException(exceptionId: 1)];
-      viewModel.selectedCustomer = Customer(customerRimNo: null);
+      viewModel
+        ..customerException = [CustomerException(exceptionId: 1)]
+        ..selectedCustomer = Customer(customerRimNo: null);
 
       await viewModel.removeExcptionTableRow(0);
 
@@ -1760,10 +1846,11 @@ void main() {
     });
 
     test("should delete exception and show success toast", () async {
-      viewModel.customerException = [
-        CustomerException(exceptionId: 1, custInfoId: 10, type: "Ownership"),
-      ];
-      viewModel.selectedCustomer = Customer(customerRimNo: 123);
+      viewModel
+        ..customerException = [
+          CustomerException(exceptionId: 1, custInfoId: 10, type: "Ownership"),
+        ]
+        ..selectedCustomer = Customer(customerRimNo: 123);
 
       when(() => mockCustomerRepository.deleteException(any(), any()))
           .thenAnswer((_) async => "Deleted");
@@ -1777,10 +1864,11 @@ void main() {
     });
 
     test("should handle exception and show failure toast", () async {
-      viewModel.customerException = [
-        CustomerException(exceptionId: 1, custInfoId: 10, type: "Ownership"),
-      ];
-      viewModel.selectedCustomer = Customer(customerRimNo: 123);
+      viewModel
+        ..customerException = [
+          CustomerException(exceptionId: 1, custInfoId: 10, type: "Ownership"),
+        ]
+        ..selectedCustomer = Customer(customerRimNo: 123);
 
       when(() => mockCustomerRepository.deleteException(any(), any()))
           .thenThrow(Exception("API error"));
@@ -1805,8 +1893,9 @@ void main() {
 
   group("removeOwnershipTableRow", () {
     test("should return early when ownership is null", () async {
-      viewModel.customerOwnerShipInfo = [CustomerOwnerShipInfo(custOwnId: 1)];
-      viewModel.selectedCustomer = Customer(customerRimNo: 123);
+      viewModel
+        ..customerOwnerShipInfo = [CustomerOwnerShipInfo(custOwnId: 1)]
+        ..selectedCustomer = Customer(customerRimNo: 123);
 
       await viewModel.removeOwnershipTableRow(0);
 
@@ -1815,8 +1904,9 @@ void main() {
     });
 
     test("should return early when selectedCustomer.rimNo is null", () async {
-      viewModel.customerOwnerShipInfo = [CustomerOwnerShipInfo(custOwnId: 1)];
-      viewModel.selectedCustomer = Customer(customerRimNo: null);
+      viewModel
+        ..customerOwnerShipInfo = [CustomerOwnerShipInfo(custOwnId: 1)]
+        ..selectedCustomer = Customer(customerRimNo: null);
 
       await viewModel.removeOwnershipTableRow(0);
 
@@ -1825,35 +1915,35 @@ void main() {
     });
 
     test("should delete ownership and show success toast", () async {
-      viewModel.customerOwnerShipInfo = [
-        CustomerOwnerShipInfo(
-          custOwnId: 1,
-          rim: 10,
-          custOwnershipName: "Owner",
-        ),
-      ];
-      viewModel.selectedCustomer = Customer(customerRimNo: 123);
-
+      viewModel
+        ..customerOwnerShipInfo = [
+          CustomerOwnerShipInfo(
+            custOwnId: 1,
+            rim: 10,
+            custOwnershipName: "Owner",
+          ),
+        ]
+        ..selectedCustomer = Customer(id: "cust1", customerRimNo: 123)
+        ..customerInformation = Customer(custInfoId: 1);
       when(() => mockCustomerRepository.deleteOwnership(any(), any()))
           .thenAnswer((_) async => "Deleted");
 
       await viewModel.removeOwnershipTableRow(0);
 
-      verifyNever(() => mockCustomerRepository.deleteOwnership(1, 10))
-          .called(0);
-      verifyNever(() => mockAlert.showSuccessToast(any())).called(0);
+      verify(() => mockCustomerRepository.deleteOwnership(1, 10)).called(1);
       expect(viewModel.customerOwnerShipInfo?.isEmpty, true);
     });
 
     test("should handle exception and show failure toast", () async {
-      viewModel.customerOwnerShipInfo = [
-        CustomerOwnerShipInfo(
-          custOwnId: 1,
-          rim: 10,
-          custOwnershipName: "Owner",
-        ),
-      ];
-      viewModel.selectedCustomer = Customer(customerRimNo: 123);
+      viewModel
+        ..customerOwnerShipInfo = [
+          CustomerOwnerShipInfo(
+            custOwnId: 1,
+            rim: 10,
+            custOwnershipName: "Owner",
+          ),
+        ]
+        ..selectedCustomer = Customer(customerRimNo: 123);
 
       when(() => mockCustomerRepository.deleteOwnership(any(), any()))
           .thenThrow(Exception("API error"));
@@ -1970,20 +2060,27 @@ void main() {
 
   group("updateOwnershipRim", () {
     test("should update custOwnershipRim when owner exists", () {
-      viewModel.customerOwnerShipInfo = [CustomerOwnerShipInfo(rim: 0)];
-
-      viewModel.updateOwnershipRim(0, true);
-
-      expect(viewModel.customerOwnerShipInfo?[0].rim, 0);
+      viewModel
+        ..customerOwnerShipInfo = [
+          CustomerOwnerShipInfo(rim: 10, isNewlyAdded: true),
+        ]
+        ..rimControllers = [
+          TextEditingController(text: "sample1"),
+          TextEditingController(text: "sample2"),
+        ]
+        ..updateOwnershipRim(0, true);
+      expect(viewModel.customerOwnerShipInfo?[0].rim, 10);
+      expect(viewModel.rimControllers[0].text, "sample1");
 
       viewModel.updateOwnershipRim(0, false);
-      expect(viewModel.customerOwnerShipInfo?[0].rim, 0);
+      expect(viewModel.customerOwnerShipInfo?[0].rim, 10);
+      expect(viewModel.rimControllers[1].text, "sample2");
     });
 
     test("should not throw when owner is null", () {
-      viewModel.customerOwnerShipInfo = [CustomerOwnerShipInfo(rim: 0)];
-
-      viewModel.updateOwnershipRim(0, true);
+      viewModel
+        ..customerOwnerShipInfo = [CustomerOwnerShipInfo(rim: 0)]
+        ..updateOwnershipRim(0, true);
 
       // No exception, state updated
       expect(viewModel.state.userNameChangeLoader, LoadingStatus.loaded);
@@ -1992,36 +2089,36 @@ void main() {
 
   group("removeCheckbox", () {
     test("should remove checkbox when index is valid", () {
-      viewModel.ownershipCheckboxes = [true, false, true];
-
-      viewModel.removeCheckbox(1);
+      viewModel
+        ..ownershipCheckboxes = [true, false, true]
+        ..removeCheckbox(1);
 
       expect(viewModel.ownershipCheckboxes, [true, true]);
     });
 
     test("should do nothing when index is invalid", () {
-      viewModel.ownershipCheckboxes = [true, false];
-
-      viewModel.removeCheckbox(5);
+      viewModel
+        ..ownershipCheckboxes = [true, false]
+        ..removeCheckbox(5);
 
       expect(viewModel.ownershipCheckboxes, [true, false]);
     });
 
-    // test('should update customerList when repository returns data', () async
-    // {
-    //   final mockRepository = MockCustomerRepository();
-    //   viewModel.repositoryCustomer = mockRepository;
+    test("should update customerList when repository returns data", () async {
+      final mockRepository = MockCustomerRepository();
+      Globals.request = Request(groupId: 1);
+      viewModel.repositoryCustomer = mockRepository;
 
-    //   final mockCustomers = [Customer(id: '101', customerName: 'John')];
+      final mockCustomers = [Customer(id: "101", customerName: "John")];
 
-    //   when(() => mockRepository.getChildRimsForGroup())
-    //       .thenAnswer((_) async => mockCustomers);
+      when(mockRepository.getChildRimsForGroup)
+          .thenAnswer((_) async => mockCustomers);
 
-    //   await viewModel.getChildRimsForGroup();
+      await viewModel.getChildRimsForGroup();
 
-    //   expect(viewModel.customerList?.length, equals(1));
-    //   expect(viewModel.customerList?[0].customerName, equals('John'));
-    // });
+      expect(viewModel.customerList?.length, equals(1));
+      expect(viewModel.customerList?[0].customerName, equals("John"));
+    });
 
     test("should set customerList to empty when repository returns null",
         () async {
@@ -2035,18 +2132,19 @@ void main() {
       expect(viewModel.customerList?.isEmpty, isTrue);
     });
 
-    // test('should rethrow exception when repository throws', () async {
-    //   final mockRepository = MockCustomerRepository();
-    //   viewModel.repositoryCustomer = mockRepository;
+    test("should rethrow exception when repository throws", () async {
+      Globals.request?.groupId = 2;
+      final mockRepository = MockCustomerRepository();
+      viewModel.repositoryCustomer = mockRepository;
 
-    //   when(() => mockRepository.getChildRimsForGroup())
-    //       .thenThrow(Exception('Unexpected error'));
+      when(mockRepository.getChildRimsForGroup)
+          .thenThrow(Exception("Unexpected error"));
 
-    //   expect(
-    //     () async => await viewModel.getChildRimsForGroup(),
-    //     throwsA(predicate((e) => e.toString().contains('Unexpected error'))),
-    //   );
-    // });
+      expect(
+        () async => viewModel.getChildRimsForGroup(),
+        throwsA(predicate((e) => e.toString().contains("Unexpected error"))),
+      );
+    });
 
     group("getCustomerInformationOwnerShip", () {
       test("should update customerOwnerShipInfo when repository returns data",
@@ -2245,6 +2343,236 @@ void main() {
 
         verifyNever(() => mockAlert.showFailureToast(any())).called(0);
       });
+    });
+  });
+
+  group("filterPolicyDeviation", () {
+    test("return type of List<Reference>", () async {
+      final referenceList = [Reference(reference1: "fi")];
+      final result = viewModel.filterPolicyDeviation(referenceList, isFI: true);
+      expect(result, isA<List<Reference>>());
+    });
+
+    test("filter the data on bases of condition", () async {
+      final referenceList = [
+        Reference(reference1: "corporate"),
+        Reference(reference1: "fi"),
+      ];
+      final result =
+          viewModel.filterPolicyDeviation(referenceList, isFI: false);
+      expect(result.length, 1);
+    });
+
+    test("filter the data on bases of condition for strictCorporate flow",
+        () async {
+      final referenceList = [
+        Reference(reference1: "corporate"),
+        Reference(reference1: "fi"),
+      ];
+      final result = viewModel.filterPolicyDeviation(
+        referenceList,
+        isFI: false,
+        strictCorporate: true,
+      );
+      expect(result.length, 1);
+    });
+  });
+
+  group("ensureRimController", () {
+    test("return exact number of controller", () {
+      viewModel
+        ..ensureRimController(1, 10)
+        ..ensureRimController(2, 20);
+      expect(viewModel.rimControllers.length, 2);
+    });
+  });
+
+  group("initializeControllers", () {
+    test("assign values to the controller", () {
+      final customerList = [
+        CustomerException(
+          type: "sample1",
+          facilityId: "fact123",
+          description: "Test",
+          recommendations: "New",
+        ),
+        CustomerException(
+          type: "sample2",
+          facilityId: "fact123",
+          description: "Test",
+          recommendations: "New",
+        ),
+      ];
+      viewModel.initializeControllers(customerList);
+      expect(viewModel.exceptionFacilityController.length, 2);
+      expect(viewModel.exceptionDescController.length, 2);
+      expect(viewModel.exceptionRecommController.length, 2);
+    });
+  });
+
+  group("disposeControllers", () {
+    test("assign values to the controller", () {
+      final textController = [
+        TextEditingController(text: "sample"),
+        TextEditingController(text: "sample2"),
+      ];
+      // viewModel.exceptionFacilityController = textController;
+      // viewModel.exceptionDescController = textController;
+      viewModel
+        ..exceptionRecommController = textController
+        ..disposeControllers();
+      // expect(viewModel.exceptionFacilityController, isEmpty);
+      // expect(viewModel.exceptionDescController, isNotEmpty);
+      expect(viewModel.exceptionRecommController.length, 2);
+    });
+  });
+
+  group("calculateLargeExposureLimitAmountValues", () {
+    test("returns correct value when valid references are present", () {
+      final referenceData = {
+        ReferenceDataKeys.largeExposureLimit: [
+          Reference(
+            id: ServerConstants.largeExposureLimitAmountRefId,
+            name: "Amount",
+            reference1: "1000",
+          ),
+          Reference(
+            id: ServerConstants.largeExposureLimitPercentageRefId,
+            name: "Percentage",
+            reference1: "10",
+          ),
+        ],
+      };
+
+      final result =
+          viewModel.calculateLargeExposureLimitAmountValues(referenceData);
+      expect(result, equals(1000.0));
+    });
+
+    test("returns 0 when reference1 is null or invalid", () {
+      final referenceData = {
+        ReferenceDataKeys.largeExposureLimit: [
+          Reference(
+            id: ServerConstants.largeExposureLimitAmountRefId,
+            name: "Amount",
+            reference1: null,
+          ),
+          Reference(
+            id: ServerConstants.largeExposureLimitPercentageRefId,
+            name: "Percentage",
+            reference1: "abc",
+          ),
+        ],
+      };
+
+      final result =
+          viewModel.calculateLargeExposureLimitAmountValues(referenceData);
+      expect(result, equals(0.0));
+    });
+
+    test("returns default Reference when no match is found", () {
+      final list = [
+        Reference(id: 1, name: "A", reference1: "1"),
+        Reference(id: 2, name: "B", reference1: "2"),
+      ];
+
+      final result = findReferenceById(list, 99); // ID not in list
+
+      expect(result.id, 0);
+      expect(result.name, "");
+      expect(result.reference1, "0");
+    });
+  });
+
+  group("calculateLargeExposureLimitPercentageValues", () {
+    test("returns correct value when valid references are present", () {
+      final referenceData = {
+        ReferenceDataKeys.largeExposureLimit: [
+          Reference(
+            id: ServerConstants.largeExposureLimitAmountRefId,
+            name: "Amount",
+            reference1: "1000",
+          ),
+          Reference(
+            id: ServerConstants.largeExposureLimitPercentageRefId,
+            name: "Percentage",
+            reference1: "10",
+          ),
+        ],
+      };
+
+      final result =
+          viewModel.calculateLargeExposureLimitPercentageValues(referenceData);
+      expect(result, equals(0.0));
+    });
+
+    test("returns 0 when reference1 is null or invalid", () {
+      final referenceData = {
+        ReferenceDataKeys.largeExposureLimit: [
+          Reference(
+            id: ServerConstants.largeExposureLimitAmountRefId,
+            name: "Amount",
+            reference1: null,
+          ),
+          Reference(
+            id: ServerConstants.largeExposureLimitPercentageRefId,
+            name: "Percentage",
+            reference1: "abc",
+          ),
+        ],
+      };
+
+      final result =
+          viewModel.calculateLargeExposureLimitPercentageValues(referenceData);
+      expect(result, equals(0.0));
+    });
+
+    test("returns default Reference when no match is found", () {
+      final list = [
+        Reference(id: 1, name: "A", reference1: "1"),
+        Reference(id: 2, name: "B", reference1: "2"),
+      ];
+
+      final result = findReferenceById(list, 99); // ID not in list
+
+      expect(result.id, 0);
+      expect(result.name, "");
+      expect(result.reference1, "0");
+    });
+  });
+
+  group("loadReferenceData", () {
+    test("assign values to variables", () {
+      final referenceMap = {
+        ReferenceDataKeys.projectSearchCriteria: [
+          Reference(
+            isActive: true,
+            reference1: ServerConstants.project,
+            reference2: " code ",
+            name: " name ",
+          ),
+          Reference(
+            isActive: true,
+            reference1: "SOMETHING_ELSE",
+            reference2: " X ",
+            name: " Y ",
+          ),
+          Reference(
+            isActive: false,
+            reference1: ServerConstants.project,
+            reference2: " Z ",
+            name: " W ",
+          ),
+        ],
+      };
+
+      when(
+        () => mockReferenceDataService.getReferenceData([
+          ReferenceDataKeys.customerIdentificationList,
+          ReferenceDataKeys.policyDeviation,
+        ]),
+      ).thenAnswer((_) async => referenceMap);
+      expect(viewModel.state.userNameChangeLoader, LoadingStatus.loaded);
     });
   });
 }

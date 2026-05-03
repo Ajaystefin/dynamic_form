@@ -27,27 +27,27 @@ void main() {
 
     test("buildDraftData serializes state to JSON", () {
       // Arrange
-      viewModel.hasCreditLensData = true;
-
-      viewModel.incomeStatements = [
-        Statement(
-          id: 1,
-          date: DateTime.parse("2023-01-01"),
-          periods: 12,
-          statementConsts: [],
-        ),
-      ];
+      viewModel
+        ..hasCreditLensData = true
+        ..incomeStatements = [
+          Statement(
+            id: 1,
+            date: DateTime.parse("2023-01-01"),
+            periods: 12,
+            statementConsts: [],
+          ),
+        ];
 
       viewModel.descTextController.setText("Description 1");
       viewModel.incomeStatementController.setText("Income Desc");
       viewModel.cashflowController.setText("Cashflow Desc");
       viewModel.balanceSheetcontroller.setText("Balance Sheet Desc");
 
-      viewModel.selectedIncomeHealth = Reference(id: 1, name: "Good");
-      viewModel.selectedCashFlowHealth = Reference(id: 2, name: "Average");
-      viewModel.selectedBalanceSheetHealth = Reference(id: 3, name: "Poor");
-
-      viewModel.longName = "Test Company";
+      viewModel
+        ..selectedIncomeHealth = Reference(id: 1, name: "Good")
+        ..selectedCashFlowHealth = Reference(id: 2, name: "Average")
+        ..selectedBalanceSheetHealth = Reference(id: 3, name: "Poor")
+        ..longName = "Test Company";
 
       viewModel.incomeStatementRows.addAll([
         IncomeStatementAnalysisRow(
@@ -140,9 +140,10 @@ void main() {
       };
 
       // Set up reference lists in viewModel so _healthRefById works
-      viewModel.incomeHealth = [Reference(id: 10, name: "Income OK")];
-      viewModel.cashflowHealth = [Reference(id: 20, name: "Cashflow OK")];
-      viewModel.balanceHealth = [Reference(id: 30, name: "Balance OK")];
+      viewModel
+        ..incomeHealth = [Reference(id: 10, name: "Income OK")]
+        ..cashflowHealth = [Reference(id: 20, name: "Cashflow OK")]
+        ..balanceHealth = [Reference(id: 30, name: "Balance OK")];
 
       // Act
       handler.applyDraft(viewModel, draftJson);

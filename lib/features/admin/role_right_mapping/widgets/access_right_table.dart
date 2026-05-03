@@ -67,8 +67,9 @@ class AccessRightTableField extends StatelessWidget {
                     if (page == null) return;
 
                     if (page.accessType != selectedValue.first) {
-                      page.accessType = selectedValue.first;
-                      page.isUpdated = true;
+                      page
+                        ..accessType = selectedValue.first
+                        ..isUpdated = true;
 
                       // Add only if not already in updatedPages
                       // if (!viewModel.updatedPages!.contains(page)) {

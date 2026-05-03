@@ -12,13 +12,13 @@ class RarocInformation {
   RarocInformation.fromJson(Map<String, dynamic> json) {
     customerRim = json["customerRim"];
     customerName = json["customerName"];
-    existingRealizedRarocPercent = (json["existingRealizedRarocPercent"] ?? "");
+    existingRealizedRarocPercent = json["existingRealizedRarocPercent"] ?? "";
     existingLastApprovedRarocPercent =
-        (json["existingLastApprovedRarocPercent"] ?? "");
+        json["existingLastApprovedRarocPercent"] ?? "";
     proposedRarocPercentProposedByCoverage =
-        (json["proposedRarocPercentProposedByCoverage"] ?? "");
+        json["proposedRarocPercentProposedByCoverage"] ?? "";
     proposedFinalRarocPercentExAnteRaroc =
-        (json["proposedFinalRarocPercentExAnteRaroc"] ?? "");
+        json["proposedFinalRarocPercentExAnteRaroc"] ?? "";
     comments = json["comments"];
   }
   String? customerRim;

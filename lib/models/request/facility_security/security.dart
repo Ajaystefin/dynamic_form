@@ -91,7 +91,7 @@ class Security {
         parseBool(json["isSecurityProvidedCBDCustomer"]);
 
     return Security(
-      isSecurityExpiryOpenEnded: parseBool((json["isSecurityOpenEnded"])),
+      isSecurityExpiryOpenEnded: parseBool(json["isSecurityOpenEnded"]),
       cmoRemark: json["cmoRemark"],
       remarks: json["remarks"],
       remarksFi: json["remarksFi"],
@@ -281,8 +281,8 @@ class Security {
     if (Utils.checkBusinessSegment(BusinessSegment.financialInstitution)) {
       data["remarksFi"] = remarks;
       data["coRemarksFi"] = cmoRemark;
-      data["securityCodeFi"] = (securityType
-          ?.name); // Other Security Type Description manually entered by user
+      data["securityCodeFi"] = securityType
+          ?.name; // Other Security Type Description manually entered by user
     } else {
       data["remarks"] = remarks;
       data["cmoRemark"] = cmoRemark;
@@ -294,7 +294,7 @@ class Security {
     data["aedProposedSecurity"] = aedProposedSecurity;
 
     data["securityCode"] =
-        (securityType?.reference3 ?? securityCode ?? ""); //--
+        securityType?.reference3 ?? securityCode ?? ""; //--
     data["additionalDetails"] = json.encode(dynamicFormDocument);
     data["otherNonPanelEvaluator"] =
         dynamicFormDocument?["enterNonpanelValuatorName"];

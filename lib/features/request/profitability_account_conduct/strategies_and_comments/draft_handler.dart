@@ -89,10 +89,11 @@ class StrategiesAndCommentsDraftHandler
 
       // IMPORTANT:
       // Let initialTextOnceFor() serve draft text again on next widget build.
-      vm.resetSeedForDraftCategories(parsedText.keys);
+      vm
+        ..resetSeedForDraftCategories(parsedText.keys)
 
-      // If any editors are already mounted, update them immediately.
-      vm.applyDraftTextToMountedEditors(parsedText);
+        // If any editors are already mounted, update them immediately.
+        ..applyDraftTextToMountedEditors(parsedText);
     }
 
     vm.emit(vm.state.copyWith());

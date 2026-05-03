@@ -132,7 +132,7 @@ class WorklistTable extends StatelessWidget {
                 child: _rowFields((request.createdDate ?? "").toString()),
               ),
               CustomTooltip(
-                message: (request.pendingWith ?? ""),
+                message: request.pendingWith ?? "",
                 child: _rowFields(request.pendingWith ?? ""),
               ),
               TextButton(

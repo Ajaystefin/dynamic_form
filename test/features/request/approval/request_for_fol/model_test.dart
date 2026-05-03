@@ -807,39 +807,37 @@ void main() {
     });
 
     test("returns empty when stage not selected for doc roles", () async {
-      viewModel.selectedStage = "";
-
-      final result = await viewModel.submitApplication(
-        FOLTypeAction.sendToDocumentation,
-      );
+      final result = await (viewModel..selectedStage = "")
+          .submitApplication(FOLTypeAction.sendToDocumentation);
 
       expect(result, isEmpty);
     });
 
     test("check validation for RFT option for DC role", () async {
-      viewModel.selectedStage = "FOL stage";
-      viewModel.initialText = "Sample";
-      viewModel.isOptionsVisible = true;
-      viewModel.selectedUserId = "user1:DM";
-
-      viewModel.sendDocumentList = [
-        User(
-          id: "user1",
-          currentRole: Role(roleId: 10, bpmRole: "DM"),
-        ),
-      ];
+      viewModel
+        ..selectedStage = "FOL stage"
+        ..initialText = "Sample"
+        ..isOptionsVisible = true
+        ..selectedUserId = "user1:DM"
+        ..sendDocumentList = [
+          User(
+            id: "user1",
+            currentRole: Role(roleId: 10, bpmRole: "DM"),
+          ),
+        ];
 
       Globals.user?.currentRole?.code = "DC";
 
       await viewModel.submitApplication(FOLTypeAction.sendToDocumentation);
       verify(() => mockAlert.showFailureToast(any())).called(1);
 
-      viewModel.selectedOpt = "No";
-      await viewModel.submitApplication(FOLTypeAction.sendToDocumentation);
+      await (viewModel..selectedOpt = "No")
+          .submitApplication(FOLTypeAction.sendToDocumentation);
       verify(() => mockAlert.showFailureToast(any())).called(1);
 
-      viewModel.additionalComment = "Sample";
-      viewModel.selectedOpt = "No";
+      viewModel
+        ..additionalComment = "Sample"
+        ..selectedOpt = "No";
       when(
         () => mockApprovalRepo.saveReviewComments(any()),
       ).thenAnswer((_) async => "Success");
@@ -873,25 +871,23 @@ void main() {
 
     test("returns empty when userId is empty and action requires user",
         () async {
-      viewModel.selectedUserId = "";
-
-      final result = await viewModel.submitApplication(
-        FOLTypeAction.sendToDocumentation,
-      );
+      final result = await (viewModel..selectedUserId = "")
+          .submitApplication(FOLTypeAction.sendToDocumentation);
 
       expect(result, isEmpty);
     });
 
     test("check validation for stage selection documentation role", () async {
-      viewModel.selectedStage = "";
-      viewModel.initialText = "Sample";
-      viewModel.selectedUserId = "user1:DM";
-      viewModel.sendDocumentList = [
-        User(
-          id: "user1",
-          currentRole: Role(roleId: 10, bpmRole: "DM"),
-        ),
-      ];
+      viewModel
+        ..selectedStage = ""
+        ..initialText = "Sample"
+        ..selectedUserId = "user1:DM"
+        ..sendDocumentList = [
+          User(
+            id: "user1",
+            currentRole: Role(roleId: 10, bpmRole: "DM"),
+          ),
+        ];
       Globals.user?.currentRole?.code = "DC";
       Globals.user?.currentRole?.userRole = UserRole.documentationChecker;
       final result =
@@ -901,15 +897,16 @@ void main() {
     });
 
     test("check validation for user selection", () async {
-      viewModel.selectedStage = "FOL stage";
-      viewModel.initialText = "Sample";
-      viewModel.selectedUserId = "";
-      viewModel.sendDocumentList = [
-        User(
-          id: "user1",
-          currentRole: Role(roleId: 10, bpmRole: "DM"),
-        ),
-      ];
+      viewModel
+        ..selectedStage = "FOL stage"
+        ..initialText = "Sample"
+        ..selectedUserId = ""
+        ..sendDocumentList = [
+          User(
+            id: "user1",
+            currentRole: Role(roleId: 10, bpmRole: "DM"),
+          ),
+        ];
       Globals.user?.currentRole?.code = "DC";
       Globals.user?.currentRole?.userRole = UserRole.documentationChecker;
       final result =
@@ -919,15 +916,16 @@ void main() {
     });
 
     test("returns confirmation description on successful submit", () async {
-      viewModel.selectedStage = "FOL stage";
-      viewModel.initialText = "Sample";
-      viewModel.selectedUserId = "user1:DM";
-      viewModel.sendRoRmUserList = [
-        User(
-          id: "user1",
-          currentRole: Role(roleId: 10, bpmRole: "DM"),
-        ),
-      ];
+      viewModel
+        ..selectedStage = "FOL stage"
+        ..initialText = "Sample"
+        ..selectedUserId = "user1:DM"
+        ..sendRoRmUserList = [
+          User(
+            id: "user1",
+            currentRole: Role(roleId: 10, bpmRole: "DM"),
+          ),
+        ];
       Globals.user?.currentRole?.code = "DC";
       Globals.user?.currentRole?.userRole = UserRole.documentationChecker;
       Globals.request?.applicationRefNo = "App123";
@@ -965,9 +963,10 @@ void main() {
 
     test("returns empty description when submission fails", () async {
       // bypass validations
-      viewModel.selectedStage = "FOL stage";
-      viewModel.initialText = "Sample";
-      viewModel.selectedUserId = "user1:DM";
+      viewModel
+        ..selectedStage = "FOL stage"
+        ..initialText = "Sample"
+        ..selectedUserId = "user1:DM";
       when(
         () => mockApprovalRepo.submitApplication(
           any(),
@@ -995,9 +994,10 @@ void main() {
 
     test("returns empty list on exception", () async {
       // bypass validations
-      viewModel.selectedStage = "FOL stage";
-      viewModel.initialText = "Sample";
-      viewModel.selectedUserId = "user1:DM";
+      viewModel
+        ..selectedStage = "FOL stage"
+        ..initialText = "Sample"
+        ..selectedUserId = "user1:DM";
       when(
         () => mockApprovalRepo.submitApplication(
           any(),
@@ -1015,9 +1015,10 @@ void main() {
 
     test("returns confirmation description on documentation completed",
         () async {
-      viewModel.selectedStage = "FOL stage";
-      viewModel.initialText = "Sample";
-      viewModel.selectedUserId = "user1:DM";
+      viewModel
+        ..selectedStage = "FOL stage"
+        ..initialText = "Sample"
+        ..selectedUserId = "user1:DM";
       Globals.user?.currentRole?.code = "DC";
       Globals.user?.currentRole?.userRole = UserRole.documentationChecker;
       Globals.request?.applicationRefNo = "App123";
@@ -1103,39 +1104,36 @@ void main() {
 
   group("checkCurrentStatus", () {
     test("return correct values for the currect state", () async {
-      viewModel.activityName = "Send to CCU Checker";
-      bool status = false;
-      status = viewModel.checkCurrentStatus([FOLTypeAction.draftFolGenerated]);
-      expect(status, false);
+      final status1 = (viewModel..activityName = "Send to CCU Checker")
+          .checkCurrentStatus([FOLTypeAction.draftFolGenerated]);
+      expect(status1, false);
 
-      viewModel.onOptChanged("No");
-      status = viewModel.checkCurrentStatus([FOLTypeAction.sendToCCUChecker]);
-      expect(status, true);
+      final status2 = (viewModel..onOptChanged("No"))
+          .checkCurrentStatus([FOLTypeAction.sendToCCUChecker]);
+      expect(status2, true);
     });
 
     test("return correct values from the list of states", () async {
-      viewModel.activityName = "Send to CCU Checker";
-      bool status = false;
-      status = viewModel.checkCurrentStatus([
+      final status1 = (viewModel..activityName = "Send to CCU Checker")
+          .checkCurrentStatus([
         FOLTypeAction.draftFolGenerated,
         FOLTypeAction.sendToDocumentationChecker,
         FOLTypeAction.documentationCompleted,
       ]);
-      expect(status, false);
+      expect(status1, false);
 
       viewModel.onOptChanged("No");
-      status = viewModel.checkCurrentStatus([
+      final status2 = viewModel.checkCurrentStatus([
         FOLTypeAction.sendToCCUChecker,
         FOLTypeAction.executedDocsUnderReview,
         FOLTypeAction.initiateFinalFOL,
       ]);
-      expect(status, true);
+      expect(status2, true);
     });
 
     test("return false for the empty set", () async {
-      viewModel.activityName = "Send to CCU Checker";
-      bool status = false;
-      status = viewModel.checkCurrentStatus([]);
+      final status = (viewModel..activityName = "Send to CCU Checker")
+          .checkCurrentStatus([]);
       expect(status, false);
     });
   });

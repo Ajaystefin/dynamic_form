@@ -32,10 +32,11 @@ class EsgCertificationDraftHandler
   void applyDraft(EsgCertificationViewModel vm, Map<String, dynamic> data) {
     // vm.sffRequired = data['sffRequired'] as bool? ?? vm.sffRequired;
     // vm.sllRequired = data['sllRequired'] as bool? ?? vm.sllRequired;
-    vm.isAdverseMedia = data["isAdverseMedia"] as bool? ?? vm.isAdverseMedia;
-    vm.adverseMediaSummary =
-        data["adverseMediaSummary"] as String? ?? vm.adverseMediaSummary;
-    vm.isExcluded = data["isExcluded"] as String? ?? vm.isExcluded;
+    vm
+      ..isAdverseMedia = data["isAdverseMedia"] as bool? ?? vm.isAdverseMedia
+      ..adverseMediaSummary =
+          data["adverseMediaSummary"] as String? ?? vm.adverseMediaSummary
+      ..isExcluded = data["isExcluded"] as String? ?? vm.isExcluded;
 
     if (data["excludedStatus"] != null) {
       vm.excludedStatus =

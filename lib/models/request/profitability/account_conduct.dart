@@ -75,13 +75,13 @@ class AccountConductDto {
     return AccountConductDto(
       rimNo: _toInt(json["rimNo"]),
       custName: json["custName"] as String?,
-      passDueOrExcesses: (json["pastDueOrExcesses"]).toString(),
-      chequeReturns: (json["chequeReturns"]).toString(),
-      turnoverInAcc: (json["turnoverInAcc"]).toString(),
-      odHardcore: (json["odHardcore"]).toString(),
-      unusualTransactions: (json["unusualTransactions"]).toString(),
+      passDueOrExcesses: json["pastDueOrExcesses"].toString(),
+      chequeReturns: json["chequeReturns"].toString(),
+      turnoverInAcc: json["turnoverInAcc"].toString(),
+      odHardcore: json["odHardcore"].toString(),
+      unusualTransactions: json["unusualTransactions"].toString(),
       transparencyDisclosureLevels:
-          (json["transparencyDisclosureLevels"]).toString(),
+          json["transparencyDisclosureLevels"].toString(),
       accountConductDetailsList:
           (json["accountConductDetailsList"] as List? ?? [])
               .map(

@@ -97,15 +97,15 @@ class ViewDesktop extends StatelessWidget {
                                 builder: (context) {
                                   // Resolve customer name from
                                   // local info or request
-                                  final String displayName =
-                                      viewModel.customerInformation
-                                              .customerName ??
-                                          Globals.request?.customerName ??
-                                          "";
+                                  final String displayName = viewModel
+                                          .customerInformation.customerName ??
+                                      Globals.request?.customerName ??
+                                      "";
                                   // Extract translation key to local var
                                   final String custLabel =
-                                    "ccsys.customerInformation"
-                                        ".customerName".tr();
+                                      "ccsys.customerInformation"
+                                              ".customerName"
+                                          .tr();
                                   return SelectableText(
                                     "$custLabel : $displayName",
                                     style: const TextStyle(

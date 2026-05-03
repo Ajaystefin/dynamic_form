@@ -21,8 +21,7 @@ class CustomerName extends StatelessWidget {
           // Build display text: "Customer Name (RIM)"
           final String name = request.customerName ?? "";
           final String rim = request.customerRimNo?.toString() ?? "";
-          final String rimPart =
-              rim.isNotEmpty ? " ($rim)" : "";
+          final String rimPart = rim.isNotEmpty ? " ($rim)" : "";
           return "$name$rimPart";
         }(),
         style: const TextStyle(color: AppColors.black),

@@ -17,8 +17,8 @@ void main() {
 
   setUp(() {
     mockRepository = MockAdminRepository();
-    viewModel = ManageReferenceViewModel();
-    viewModel.repository = mockRepository;
+    viewModel = ManageReferenceViewModel()
+      ..repository = mockRepository;
   });
 
   test("initial state should be loading", () {
@@ -183,10 +183,10 @@ void main() {
 
   group("ManageReferenceViewModel", () {
     test("getColumnNames replaces reference labels correctly", () {
-      final viewModel = ManageReferenceViewModel();
-      viewModel.selectedReferenceType = ReferenceType(
-        columnsInformation: "Custom1;Custom2;Custom3",
-      );
+      final viewModel = ManageReferenceViewModel()
+        ..selectedReferenceType = ReferenceType(
+          columnsInformation: "Custom1;Custom2;Custom3",
+        );
 
       final columnNames = viewModel.getColumnNames();
 
@@ -196,8 +196,8 @@ void main() {
     });
 
     test("getColumnNames returns default when no columnsInformation", () {
-      final viewModel = ManageReferenceViewModel();
-      viewModel.selectedReferenceType = ReferenceType(columnsInformation: null);
+      final viewModel = ManageReferenceViewModel()
+        ..selectedReferenceType = ReferenceType(columnsInformation: null);
 
       final columnNames = viewModel.getColumnNames();
 

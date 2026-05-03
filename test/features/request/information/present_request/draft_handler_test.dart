@@ -13,11 +13,9 @@ void main() {
       List<Comment>? comments,
     }) {
       // Pass comments into constructor so the internal VM matches the test
-      final vm = PresentRequestViewModel(comments: comments ?? []);
-
-      // Apply overrides
-      vm.comment = comment ?? Comment();
-      vm.comments = comments ?? [];
+      final vm = PresentRequestViewModel(comments: comments ?? [])
+        ..comment = comment ?? Comment()
+        ..comments = comments ?? [];
 
       return vm;
     }

@@ -28,9 +28,10 @@ void main() {
     test("multiple setText calls work correctly", () {
       expect(
         () {
-          controller.setText("First");
-          controller.setText("Second");
-          controller.setText("Third");
+          controller
+            ..setText("First")
+            ..setText("Second")
+            ..setText("Third");
         },
         returnsNormally,
       );

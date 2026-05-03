@@ -38,8 +38,8 @@ void main() {
     mockAlertManager = MockAlertManager();
     mockGoRouter = MockGoRouter();
 
-    viewModel = LoginViewModel();
-    viewModel.repository = mockAuthRepository;
+    viewModel = LoginViewModel()
+      ..repository = mockAuthRepository;
 
     AlertManager.overrideInstance(mockAlertManager);
     router = mockGoRouter;
@@ -57,8 +57,9 @@ void main() {
     });
 
     test("Toggle password visibility twice", () {
-      viewModel.isPasswordVisible = false;
-      viewModel.togglePasswordVisibility();
+      viewModel
+        ..isPasswordVisible = false
+        ..togglePasswordVisibility();
       expect(viewModel.isPasswordVisible, true);
       viewModel.togglePasswordVisibility();
       expect(viewModel.isPasswordVisible, false);
@@ -84,8 +85,9 @@ void main() {
         availableRoles: [Role(roleId: 1)],
       );
 
-      viewModel.username = username;
-      viewModel.password = password;
+      viewModel
+        ..username = username
+        ..password = password;
 
       await viewModel.onSubmitPressed();
 
@@ -108,8 +110,9 @@ void main() {
         availableRoles: [Role(roleId: 1), Role(roleId: 2)],
       );
 
-      viewModel.username = username;
-      viewModel.password = password;
+      viewModel
+        ..username = username
+        ..password = password;
 
       await viewModel.onSubmitPressed();
 
@@ -132,8 +135,9 @@ void main() {
         availableRoles: [],
       );
 
-      viewModel.username = username;
-      viewModel.password = password;
+      viewModel
+        ..username = username
+        ..password = password;
 
       await viewModel.onSubmitPressed();
 
@@ -143,9 +147,9 @@ void main() {
 
     test("refresh method resets user and router", () {
       Globals.user = User(name: "Test User");
-      viewModel.hasNoRoles = true;
-
-      viewModel.refresh();
+      viewModel
+        ..hasNoRoles = true
+        ..refresh();
 
       expect(Globals.user, isNull);
       expect(viewModel.hasNoRoles, false);
@@ -161,8 +165,9 @@ void main() {
         () => mockAuthRepository.login(username: username, password: password),
       ).thenThrow(Exception("Failed to load"));
 
-      viewModel.username = username;
-      viewModel.password = password;
+      viewModel
+        ..username = username
+        ..password = password;
 
       await viewModel.onSubmitPressed();
 
@@ -170,8 +175,9 @@ void main() {
     });
 
     test("Submit with empty username and password", () async {
-      viewModel.username = "";
-      viewModel.password = "";
+      viewModel
+        ..username = ""
+        ..password = "";
 
       await viewModel.onSubmitPressed();
 
@@ -179,8 +185,9 @@ void main() {
     });
 
     test("Whitespace-only username and password", () async {
-      viewModel.username = "   ";
-      viewModel.password = "   ";
+      viewModel
+        ..username = "   "
+        ..password = "   ";
 
       await viewModel.onSubmitPressed();
 

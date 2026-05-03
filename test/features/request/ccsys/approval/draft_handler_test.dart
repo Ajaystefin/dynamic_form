@@ -51,8 +51,7 @@ void main() {
 
       when(() => vm.comment).thenAnswer((_) => comment);
       when(() => vm.comment = any()).thenAnswer((invocation) {
-        comment = invocation.positionalArguments[0] as Comment?;
-        return comment;
+        return comment = invocation.positionalArguments[0] as Comment?;
       });
 
       when(() => vm.state).thenReturn(state);

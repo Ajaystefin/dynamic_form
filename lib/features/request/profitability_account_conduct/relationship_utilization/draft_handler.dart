@@ -66,16 +66,14 @@ class RelationshipUtilizationDraftHandler
       final row = Map<String, dynamic>.from(rawRow);
       final item = vm.relationshipUtilizationData[i];
 
-      item.clientTurnover = vm.clean(row["clientTurnover"]);
-
-      // Restore only if draft has a value; otherwise keep API value
       final restoredTurnover = vm.clean(row["turnoverInCbdCua"]);
-      if (restoredTurnover.isNotEmpty) {
-        item.turnoverInCbdCua = restoredTurnover;
-      }
 
-      item.throughputToCbdPercentage =
-          vm.clean(row["throughputToCbdPercentage"]);
+      item
+        ..clientTurnover = vm.clean(row["clientTurnover"])
+        ..throughputToCbdPercentage = vm.clean(row["throughputToCbdPercentage"])
+        ..turnoverInCbdCua = restoredTurnover.isNotEmpty
+            ? restoredTurnover
+            : item.turnoverInCbdCua;
     }
 
     // Rebuild controllers from restored model values

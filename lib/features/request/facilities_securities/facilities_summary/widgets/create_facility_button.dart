@@ -208,7 +208,7 @@ class AddFacilitySubLimitBox extends StatelessWidget {
                                       headerMissing) {
                                     AlertManager().showFailureToast(
                                       "facilities.facilitySummary"
-                                      ".proposedMandatory"
+                                              ".proposedMandatory"
                                           .tr(),
                                     );
                                     return;

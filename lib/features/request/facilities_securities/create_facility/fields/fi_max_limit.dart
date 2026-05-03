@@ -40,15 +40,15 @@ class FiExcessMaxLimit extends StatelessWidget {
                   selectedValue.first;
 
               //  Toggle visibility + sync currency
-              viewModel.onCurrencyChanged(
-                selectedValue.first,
-                CurrencyField.excessOverMaxLimitAllowanceProposedByFi,
-              );
-
-              viewModel.getCurrencyRates(
-                selectedValue.first,
-                CurrencyField.excessOverMaxLimitAllowanceProposedByFi,
-              );
+              viewModel
+                ..onCurrencyChanged(
+                  selectedValue.first,
+                  CurrencyField.excessOverMaxLimitAllowanceProposedByFi,
+                )
+                ..getCurrencyRates(
+                  selectedValue.first,
+                  CurrencyField.excessOverMaxLimitAllowanceProposedByFi,
+                );
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {

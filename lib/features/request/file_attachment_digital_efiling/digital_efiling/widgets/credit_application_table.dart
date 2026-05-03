@@ -71,7 +71,7 @@ List<RowModel>? getDocumentsTableRows(
           widget: [
             SingleChildScrollView(
               child: SizedBox(
-                height: (((doc.data?.files?.length ?? 1) * 45) + 50),
+                height: ((doc.data?.files?.length ?? 1) * 45) + 50,
                 child: Column(
                   children: [
                     Expanded(
@@ -120,7 +120,7 @@ Widget _buildFileAccordian(
   List<FileDetails> files,
   DocSubTypeData? docData,
 ) {
-  final ExpansibleController expansionController = ExpansibleController();
+  final ExpansionTileController expansionController = ExpansionTileController();
 
   return CustomAccordion(
     title: "common.files".tr(),

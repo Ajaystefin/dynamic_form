@@ -73,8 +73,7 @@ void main() {
     mockReference = MockReferenceDataService();
     mockAlert = MockAlertManager();
 
-    viewModel = ClosedRequestsViewModel();
-    viewModel.repository = mockRepository;
+    viewModel = ClosedRequestsViewModel()..repository = mockRepository;
 
     mockLocalStorage = MockLocalStorageService();
     LocalStorageService().setStorage(mockLocalStorage);
@@ -114,12 +113,10 @@ void main() {
       when(() => mockReference.getReferenceData(any()))
           .thenAnswer((_) async => referenceMap);
 
-      final result = await mockReference.getReferenceData([
+      viewModel.referenceData = await mockReference.getReferenceData([
         ReferenceDataKeys.applicationType,
         ReferenceDataKeys.transactionType,
       ]);
-
-      viewModel.referenceData = result;
 
       expect(viewModel.referenceData, referenceMap);
     });
@@ -173,11 +170,12 @@ void main() {
 
     test("onFilter filters by applicant name (case-sensitive to match impl)",
         () async {
-      viewModel.closedRequests = [
-        Request(customerName: "Alice"),
-        Request(customerName: "Bob"),
-      ];
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(customerName: "Alice"),
+              Request(customerName: "Bob"),
+            ])
+          .onFilter(
         value: "Alice",
         filterType: FilterType.applicantName,
       );
@@ -186,12 +184,12 @@ void main() {
 
     test("onFilter applicant name exact-case (no trim) for current impl",
         () async {
-      viewModel.closedRequests = [
-        Request(customerName: "Alice Smith"),
-        Request(customerName: "Bob"),
-      ];
-      // Use exact-case and no leading/trailing spaces to match your current logic
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(customerName: "Alice Smith"),
+              Request(customerName: "Bob"),
+            ])
+          .onFilter(
         value: "Alice",
         filterType: FilterType.applicantName,
       );
@@ -199,11 +197,12 @@ void main() {
     });
 
     test("onFilter filters by reference number", () async {
-      viewModel.closedRequests = [
-        Request(applicationRefNo: "REF123"),
-        Request(applicationRefNo: "REF456"),
-      ];
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(applicationRefNo: "REF123"),
+              Request(applicationRefNo: "REF456"),
+            ])
+          .onFilter(
         value: "REF123",
         filterType: FilterType.referenceNumber,
       );
@@ -211,12 +210,12 @@ void main() {
     });
 
     test("onFilter reference number partial match (case-sensitive)", () async {
-      viewModel.closedRequests = [
-        Request(applicationRefNo: "ABC-123"),
-        Request(applicationRefNo: "XYZ-789"),
-      ];
-      // If your impl uses case-sensitive contains, match the case
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(applicationRefNo: "ABC-123"),
+              Request(applicationRefNo: "XYZ-789"),
+            ])
+          .onFilter(
         value: "ABC",
         filterType: FilterType.referenceNumber,
       );
@@ -224,11 +223,12 @@ void main() {
     });
 
     test("onFilter filters by applicant RIM (exact numeric)", () async {
-      viewModel.closedRequests = [
-        Request(customerRimNo: 50),
-        Request(customerRimNo: 51),
-      ];
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(customerRimNo: 50),
+              Request(customerRimNo: 51),
+            ])
+          .onFilter(
         value: "50",
         filterType: FilterType.applicantRim,
       );
@@ -236,11 +236,12 @@ void main() {
     });
 
     test("onFilter applicant RIM no match returns 0", () async {
-      viewModel.closedRequests = [
-        Request(customerRimNo: 1),
-        Request(customerRimNo: 2),
-      ];
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(customerRimNo: 1),
+              Request(customerRimNo: 2),
+            ])
+          .onFilter(
         value: "999",
         filterType: FilterType.applicantRim,
       );
@@ -248,11 +249,12 @@ void main() {
     });
 
     test("onFilter empty value resets for applicant name", () async {
-      viewModel.closedRequests = [
-        Request(customerName: "A"),
-        Request(customerName: "B"),
-      ];
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(customerName: "A"),
+              Request(customerName: "B"),
+            ])
+          .onFilter(
         value: "",
         filterType: FilterType.applicantName,
       );
@@ -263,12 +265,12 @@ void main() {
         "onFilter reference type single selection + reset"
         " (selectedTypes: List<Request>)", () async {
       final loan = Reference(name: "Loan");
-      viewModel.closedRequests = [
-        Request(applicationType: loan),
-        Request(applicationType: Reference(name: "Credit")),
-      ];
-
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(applicationType: loan),
+              Request(applicationType: Reference(name: "Credit")),
+            ])
+          .onFilter(
         value: "",
         selectedTypes: <Request>[
           Request(applicationType: loan),
@@ -288,13 +290,13 @@ void main() {
     test("onFilter reference type multiple selections", () async {
       final loan = Reference(name: "Loan");
       final credit = Reference(name: "Credit");
-      viewModel.closedRequests = [
-        Request(applicationType: loan),
-        Request(applicationType: credit),
-        Request(applicationType: Reference(name: "Other")),
-      ];
-
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(applicationType: loan),
+              Request(applicationType: credit),
+              Request(applicationType: Reference(name: "Other")),
+            ])
+          .onFilter(
         value: "",
         selectedTypes: <Request>[
           Request(applicationType: loan),
@@ -307,29 +309,28 @@ void main() {
     });
 
     test("onFilter can be chained across different filter types", () async {
-      viewModel.closedRequests = [
-        Request(
-          customerName: "Alice",
-          applicationRefNo: "A-1",
-          customerRimNo: 10,
-          applicationType: Reference(name: "Loan"),
-        ),
-        Request(
-          customerName: "Bob",
-          applicationRefNo: "B-2",
-          customerRimNo: 20,
-          applicationType: Reference(name: "Credit"),
-        ),
-        Request(
-          customerName: "Carol",
-          applicationRefNo: "C-3",
-          customerRimNo: 30,
-          applicationType: Reference(name: "Loan"),
-        ),
-      ];
-
-      // 1) Filter by name
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(
+                customerName: "Alice",
+                applicationRefNo: "A-1",
+                customerRimNo: 10,
+                applicationType: Reference(name: "Loan"),
+              ),
+              Request(
+                customerName: "Bob",
+                applicationRefNo: "B-2",
+                customerRimNo: 20,
+                applicationType: Reference(name: "Credit"),
+              ),
+              Request(
+                customerName: "Carol",
+                applicationRefNo: "C-3",
+                customerRimNo: 30,
+                applicationType: Reference(name: "Loan"),
+              ),
+            ])
+          .onFilter(
         value: "A",
         filterType: FilterType.applicantName,
       );
@@ -388,20 +389,22 @@ void main() {
 
     test("onFilter applicant name value empty resets list to closedRequests",
         () async {
-      viewModel.closedRequests = [
-        Request(customerName: "Alice"),
-        Request(customerName: "Bob"),
-      ];
-      await viewModel.onFilter(value: "", filterType: FilterType.applicantName);
+      await (viewModel
+            ..closedRequests = [
+              Request(customerName: "Alice"),
+              Request(customerName: "Bob"),
+            ])
+          .onFilter(value: "", filterType: FilterType.applicantName);
       expect(viewModel.closedRequestFilteredData.length, 2);
     });
 
     test("onFilter handles null customerName safely", () async {
-      viewModel.closedRequests = [
-        Request(customerName: null),
-        Request(customerName: "Bob"),
-      ];
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(customerName: null),
+              Request(customerName: "Bob"),
+            ])
+          .onFilter(
         value: "Bob",
         filterType: FilterType.applicantName,
       );
@@ -409,11 +412,12 @@ void main() {
     });
 
     test("onFilter reference number with empty value resets", () async {
-      viewModel.closedRequests = [
-        Request(applicationRefNo: "X1"),
-        Request(applicationRefNo: "X2"),
-      ];
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(applicationRefNo: "X1"),
+              Request(applicationRefNo: "X2"),
+            ])
+          .onFilter(
         value: "",
         filterType: FilterType.referenceNumber,
       );
@@ -421,11 +425,12 @@ void main() {
     });
 
     test("onFilter handles null applicationRefNo safely", () async {
-      viewModel.closedRequests = [
-        Request(applicationRefNo: null),
-        Request(applicationRefNo: "ABC-1"),
-      ];
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(applicationRefNo: null),
+              Request(applicationRefNo: "ABC-1"),
+            ])
+          .onFilter(
         value: "ABC",
         filterType: FilterType.referenceNumber,
       );
@@ -436,12 +441,12 @@ void main() {
     test(
         "onFilter applicant RIM empty string resets, "
         "non-numeric yields zero results (no crash)", () async {
-      viewModel.closedRequests = [
-        Request(customerRimNo: 100),
-        Request(customerRimNo: 101),
-      ];
-      // Reset behavior
-      await viewModel.onFilter(value: "", filterType: FilterType.applicantRim);
+      await (viewModel
+            ..closedRequests = [
+              Request(customerRimNo: 100),
+              Request(customerRimNo: 101),
+            ])
+          .onFilter(value: "", filterType: FilterType.applicantRim);
       expect(viewModel.closedRequestFilteredData.length, 2);
 
       // Non-numeric (if your impl tries parse) – expect either 0 or ignore; we
@@ -460,12 +465,12 @@ void main() {
       final loan = Reference(name: "Loan");
       final credit = Reference(name: "Credit");
 
-      viewModel.closedRequests = [
-        Request(applicationType: loan),
-        Request(applicationType: credit),
-      ];
-
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(applicationType: loan),
+              Request(applicationType: credit),
+            ])
+          .onFilter(
         value: "",
         selectedTypes: null, // null should be treated as reset/no filter
         filterType: FilterType.referenceType,
@@ -484,12 +489,12 @@ void main() {
         () async {
       final loan = Reference(name: "Loan");
 
-      viewModel.closedRequests = [
-        Request(applicationType: null),
-        Request(applicationType: loan),
-      ];
-
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(applicationType: null),
+              Request(applicationType: loan),
+            ])
+          .onFilter(
         value: "",
         selectedTypes: <Request>[
           Request(applicationType: loan),
@@ -504,12 +509,12 @@ void main() {
         "onFilter reference type: duplicate selected "
         "types still returns unique matches", () async {
       final loan = Reference(name: "Loan");
-      viewModel.closedRequests = [
-        Request(applicationType: loan),
-        Request(applicationType: loan),
-      ];
-
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(applicationType: loan),
+              Request(applicationType: loan),
+            ])
+          .onFilter(
         value: "",
         selectedTypes: <Request>[
           Request(applicationType: loan),
@@ -551,11 +556,12 @@ void main() {
     });
 
     test("Idempotent onFilter calls produce stable results", () async {
-      viewModel.closedRequests = [
-        Request(customerName: "Alice"),
-        Request(customerName: "Alicia"),
-      ];
-      await viewModel.onFilter(
+      await (viewModel
+            ..closedRequests = [
+              Request(customerName: "Alice"),
+              Request(customerName: "Alicia"),
+            ])
+          .onFilter(
         value: "Ali",
         filterType: FilterType.applicantName,
       );
@@ -581,10 +587,7 @@ void main() {
               i % 2 == 0 ? Reference(name: "Loan") : Reference(name: "Credit"),
         ),
       );
-      viewModel.closedRequests = items;
-
-      // Filter name with exact case (matches current impl assumptions)
-      await viewModel.onFilter(
+      await (viewModel..closedRequests = items).onFilter(
         value: "HIT-",
         filterType: FilterType.applicantName,
       );
@@ -601,9 +604,8 @@ void main() {
     late MockDashboardRepository mockRepository;
 
     setUp(() {
-      viewModel = ClosedRequestsViewModel();
       mockRepository = MockDashboardRepository();
-      viewModel.repository = mockRepository;
+      viewModel = ClosedRequestsViewModel()..repository = mockRepository;
     });
 
     test(
@@ -783,27 +785,27 @@ void main() {
     late ClosedRequestsViewModel viewModel;
 
     setUp(() {
-      viewModel = ClosedRequestsViewModel();
-      viewModel.closedRequests = [
-        Request(
-          customerName: "Alice",
-          customerRimNo: 100,
-          applicationRefNo: "REF-1",
-          applicationType: Reference(name: "Loan"),
-          requestType: Reference(name: "Loan"),
-          requestStatus: Reference(name: "Approved"),
-          requestedBy: "Manager1",
-        ),
-        Request(
-          customerName: "Bob",
-          customerRimNo: 200,
-          applicationRefNo: "REF-2",
-          applicationType: Reference(name: "Credit"),
-          requestType: Reference(name: "Credit"),
-          requestStatus: Reference(name: "Rejected"),
-          requestedBy: "Manager2",
-        ),
-      ];
+      viewModel = ClosedRequestsViewModel()
+        ..closedRequests = [
+          Request(
+            customerName: "Alice",
+            customerRimNo: 100,
+            applicationRefNo: "REF-1",
+            applicationType: Reference(name: "Loan"),
+            requestType: Reference(name: "Loan"),
+            requestStatus: Reference(name: "Approved"),
+            requestedBy: "Manager1",
+          ),
+          Request(
+            customerName: "Bob",
+            customerRimNo: 200,
+            applicationRefNo: "REF-2",
+            applicationType: Reference(name: "Credit"),
+            requestType: Reference(name: "Credit"),
+            requestStatus: Reference(name: "Rejected"),
+            requestedBy: "Manager2",
+          ),
+        ];
     });
 
     test(
@@ -976,8 +978,7 @@ void main() {
     late ClosedRequestsViewModel viewModel;
 
     setUp(() {
-      viewModel = ClosedRequestsViewModel();
-      viewModel.worklistData = [
+      viewModel = ClosedRequestsViewModel()..worklistData = [
         Request(
           customerName: "Alice",
           customerRimNo: 101,

@@ -94,8 +94,7 @@ void main() {
     AlertManager.overrideInstance(mockAlertManager);
     LocalStorageService().setStorage(mockLocalStorageService);
 
-    viewModel = RelationshipUtilizationViewModel();
-    viewModel.repository = mockRepo;
+    viewModel = RelationshipUtilizationViewModel()..repository = mockRepo;
 
     // Connectivity mock
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -192,14 +191,7 @@ void main() {
   });
 
   group("RelationshipUtilizationViewModel.setClientTurnover", () {
-    late RelationshipUtilizationViewModel viewModel;
-
-    setUp(() {
-      viewModel = RelationshipUtilizationViewModel();
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(clientTurnover: "100.0"),
-      ];
-    });
+    setUp(() {});
   });
 
   group("saveRelationUtilData (simple)", () {
@@ -297,14 +289,15 @@ void main() {
     });
 
     test("after initalize(): returns proper controllers", () {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "123",
-          turnoverInCbdCua: "12",
-          throughputToCbdPercentage: "9.76",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "123",
+            turnoverInCbdCua: "12",
+            throughputToCbdPercentage: "9.76",
+          ),
+        ]
+        ..initalize();
 
       final c0 = viewModel.clientCtrlAt(0);
       final c1 = viewModel.cbdCtrlAt(0);
@@ -318,14 +311,15 @@ void main() {
 
   group("initalize() + recalc (through listener path)", () {
     test("empty -> 0%", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "",
-          turnoverInCbdCua: "10",
-          throughputToCbdPercentage: "",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "",
+            turnoverInCbdCua: "10",
+            throughputToCbdPercentage: "",
+          ),
+        ]
+        ..initalize();
 
       // Trigger listener by editing text
       viewModel.clientCtrlAt(0).text = "";
@@ -340,19 +334,20 @@ void main() {
     });
 
     test("zero/invalid -> 0%", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "0",
-          turnoverInCbdCua: "10",
-          throughputToCbdPercentage: "",
-        ),
-        RelationshipUtilization(
-          clientTurnover: "abc", // invalid; clamp -> ''
-          turnoverInCbdCua: "10",
-          throughputToCbdPercentage: "",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "0",
+            turnoverInCbdCua: "10",
+            throughputToCbdPercentage: "",
+          ),
+          RelationshipUtilization(
+            clientTurnover: "abc", // invalid; clamp -> ''
+            turnoverInCbdCua: "10",
+            throughputToCbdPercentage: "",
+          ),
+        ]
+        ..initalize();
 
       // "0" => Decimal.zero => 0
       viewModel.clientCtrlAt(0).text = "0";
@@ -366,14 +361,15 @@ void main() {
     });
 
     test("client < turnoverCbd -> 0%", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "10",
-          turnoverInCbdCua: "20",
-          throughputToCbdPercentage: "",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "10",
+            turnoverInCbdCua: "20",
+            throughputToCbdPercentage: "",
+          ),
+        ]
+        ..initalize();
 
       viewModel.clientCtrlAt(0).text = "10";
       await Future<void>.delayed(const Duration(milliseconds: 10));
@@ -381,14 +377,15 @@ void main() {
     });
 
     test("valid calc with decimal path (ensures dot present)", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "8",
-          turnoverInCbdCua: "1",
-          throughputToCbdPercentage: "",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "8",
+            turnoverInCbdCua: "1",
+            throughputToCbdPercentage: "",
+          ),
+        ]
+        ..initalize();
 
       // (1/8)*100 = 12.5 -> has a dot, so _stripTrailingZeros() code path runs
       viewModel.clientCtrlAt(0).text = "8";
@@ -402,14 +399,15 @@ void main() {
     });
 
     test("clamps to 15 int + 6 frac and rewrites controller", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "",
-          turnoverInCbdCua: "1",
-          throughputToCbdPercentage: "",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "",
+            turnoverInCbdCua: "1",
+            throughputToCbdPercentage: "",
+          ),
+        ]
+        ..initalize();
 
       // Enter more than 15+6; includes commas/spaces to validate clean-up
       viewModel.clientCtrlAt(0).text = "1,234,567,890,123,456.1234567";
@@ -425,14 +423,15 @@ void main() {
 
   group("recalcPercentage(index) wrapper", () {
     test("emits state when called", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "100",
-          turnoverInCbdCua: "25",
-          throughputToCbdPercentage: "",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "100",
+            turnoverInCbdCua: "25",
+            throughputToCbdPercentage: "",
+          ),
+        ]
+        ..initalize();
 
       viewModel.clientCtrlAt(0).text = "100";
 
@@ -452,27 +451,28 @@ void main() {
     });
 
     test("out-of-range index returns safely", () {
-      viewModel.relationshipUtilizationData = [];
-      // Should not throw
-      viewModel.recalcPercentage(99);
+      viewModel
+        ..relationshipUtilizationData = []
+        ..recalcPercentage(99);
     });
   });
 
   group("syncControllersToModel()", () {
     test("copies controllers into model", () {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "1",
-          turnoverInCbdCua: "2",
-          throughputToCbdPercentage: "3",
-        ),
-        RelationshipUtilization(
-          clientTurnover: "4",
-          turnoverInCbdCua: "5",
-          throughputToCbdPercentage: "6",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "1",
+            turnoverInCbdCua: "2",
+            throughputToCbdPercentage: "3",
+          ),
+          RelationshipUtilization(
+            clientTurnover: "4",
+            turnoverInCbdCua: "5",
+            throughputToCbdPercentage: "6",
+          ),
+        ]
+        ..initalize();
 
       viewModel.clientCtrlAt(0).text = "10";
       viewModel.cbdCtrlAt(0).text = "20";
@@ -502,14 +502,15 @@ void main() {
 
   group("saveRelationUtilData()", () {
     test("success: posts and shows success toast", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "100",
-          turnoverInCbdCua: "50",
-          throughputToCbdPercentage: "50",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "100",
+            turnoverInCbdCua: "50",
+            throughputToCbdPercentage: "50",
+          ),
+        ]
+        ..initalize();
 
       when(() => mockRepo.postRelationshipUtilizationData(any()))
           .thenAnswer((_) async => "OK");
@@ -522,14 +523,15 @@ void main() {
     });
 
     test("failure: shows failure toast and sets error state", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "100",
-          turnoverInCbdCua: "50",
-          throughputToCbdPercentage: "50",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "100",
+            turnoverInCbdCua: "50",
+            throughputToCbdPercentage: "50",
+          ),
+        ]
+        ..initalize();
 
       when(() => mockRepo.postRelationshipUtilizationData(any()))
           .thenThrow(Exception("boom"));
@@ -552,28 +554,30 @@ void main() {
     test("_stripTrailingZeros() pathway exercised via decimal result with dot",
         () async {
       // ensures code path where `str.contains('.')` is true executes
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "8",
-          turnoverInCbdCua: "1",
-          throughputToCbdPercentage: "",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "8",
+            turnoverInCbdCua: "1",
+            throughputToCbdPercentage: "",
+          ),
+        ]
+        ..initalize();
       viewModel.clientCtrlAt(0).text = "8";
       await Future<void>.delayed(const Duration(milliseconds: 10));
       expect(viewModel.pctCtrlAt(0).text, ""); // "12.5"
     });
 
     test("_clampTo15_6() exercised via overlong input", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "",
-          turnoverInCbdCua: "0",
-          throughputToCbdPercentage: "",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "",
+            turnoverInCbdCua: "0",
+            throughputToCbdPercentage: "",
+          ),
+        ]
+        ..initalize();
 
       viewModel.clientCtrlAt(0).text = "1234567890123456.1234567";
       await Future<void>.delayed(const Duration(milliseconds: 10));
@@ -608,16 +612,15 @@ void main() {
   group("initalize() + recalc (listener path)", () {
     test("builds controllers and wires listeners; empty -> 0", () async {
       // Arrange
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "", // empty at first
-          turnoverInCbdCua: "10",
-          throughputToCbdPercentage: "",
-        ),
-      ];
-
-      // Act
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "", // empty at first
+            turnoverInCbdCua: "10",
+            throughputToCbdPercentage: "",
+          ),
+        ]
+        ..initalize();
 
       // Assert controllers created
       expect(viewModel.clientCtrlAt(0).text, "");
@@ -636,25 +639,25 @@ void main() {
     });
 
     test("zero -> 0; client < turnover -> 0; valid -> correct %", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "0",
-          turnoverInCbdCua: "50",
-          throughputToCbdPercentage: "",
-        ),
-        RelationshipUtilization(
-          clientTurnover: "10",
-          turnoverInCbdCua: "20",
-          throughputToCbdPercentage: "",
-        ),
-        RelationshipUtilization(
-          clientTurnover: "200",
-          turnoverInCbdCua: "50",
-          throughputToCbdPercentage: "",
-        ),
-      ];
-
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "0",
+            turnoverInCbdCua: "50",
+            throughputToCbdPercentage: "",
+          ),
+          RelationshipUtilization(
+            clientTurnover: "10",
+            turnoverInCbdCua: "20",
+            throughputToCbdPercentage: "",
+          ),
+          RelationshipUtilization(
+            clientTurnover: "200",
+            turnoverInCbdCua: "50",
+            throughputToCbdPercentage: "",
+          ),
+        ]
+        ..initalize();
 
       // 0 -> 0
       viewModel.clientCtrlAt(0).text = "0";
@@ -673,14 +676,15 @@ void main() {
     });
 
     test("clamps to 15 + 6 and writes back to controller", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "",
-          turnoverInCbdCua: "1",
-          throughputToCbdPercentage: "",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "",
+            turnoverInCbdCua: "1",
+            throughputToCbdPercentage: "",
+          ),
+        ]
+        ..initalize();
 
       // 16 integer digits and 7 decimals -> should clamp
       viewModel.clientCtrlAt(0).text = "1234567890123456.1234567";
@@ -699,14 +703,15 @@ void main() {
 
   group("recalcPercentage(index) (public wrapper)", () {
     test("emits state when recalculated", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "100",
-          turnoverInCbdCua: "25",
-          throughputToCbdPercentage: "",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "100",
+            turnoverInCbdCua: "25",
+            throughputToCbdPercentage: "",
+          ),
+        ]
+        ..initalize();
 
       // set a value and call wrapper
       viewModel.clientCtrlAt(0).text = "100";
@@ -727,37 +732,35 @@ void main() {
     });
 
     test("out of range index does not throw", () {
-      viewModel.relationshipUtilizationData = [];
-      // Should simply return
-      viewModel.recalcPercentage(999);
+      viewModel
+        ..relationshipUtilizationData = []
+        ..recalcPercentage(999);
     });
   });
 
   group("syncControllersToModel()", () {
     test("copies controllers text into model", () {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "1",
-          turnoverInCbdCua: "2",
-          throughputToCbdPercentage: "3",
-        ),
-        RelationshipUtilization(
-          clientTurnover: "4",
-          turnoverInCbdCua: "5",
-          throughputToCbdPercentage: "6",
-        ),
-      ];
-      viewModel.initalize();
-
-      viewModel.clientCtrlAt(0).text = "10";
-      viewModel.cbdCtrlAt(0).text = "20";
-      viewModel.pctCtrlAt(0).text = "30";
-
-      viewModel.clientCtrlAt(1).text = "40";
-      viewModel.cbdCtrlAt(1).text = "50";
-      viewModel.pctCtrlAt(1).text = "60";
-
-      viewModel.syncControllersToModel();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "1",
+            turnoverInCbdCua: "2",
+            throughputToCbdPercentage: "3",
+          ),
+          RelationshipUtilization(
+            clientTurnover: "4",
+            turnoverInCbdCua: "5",
+            throughputToCbdPercentage: "6",
+          ),
+        ]
+        ..initalize()
+        ..clientCtrlAt(0).text = "10"
+        ..cbdCtrlAt(0).text = "20"
+        ..pctCtrlAt(0).text = "30"
+        ..clientCtrlAt(1).text = "40"
+        ..cbdCtrlAt(1).text = "50"
+        ..pctCtrlAt(1).text = "60"
+        ..syncControllersToModel();
 
       expect(viewModel.relationshipUtilizationData[0].clientTurnover, "10");
       expect(viewModel.relationshipUtilizationData[0].turnoverInCbdCua, "20");
@@ -777,14 +780,15 @@ void main() {
 
   group("saveRelationUtilData()", () {
     test("success path posts and shows success toast", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "100",
-          turnoverInCbdCua: "50",
-          throughputToCbdPercentage: "50",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "100",
+            turnoverInCbdCua: "50",
+            throughputToCbdPercentage: "50",
+          ),
+        ]
+        ..initalize();
 
       when(() => mockRepo.postRelationshipUtilizationData(any()))
           .thenAnswer((_) async => "OK");
@@ -800,14 +804,15 @@ void main() {
     });
 
     test("failure path shows failure toast and sets error state", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "100",
-          turnoverInCbdCua: "50",
-          throughputToCbdPercentage: "50",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "100",
+            turnoverInCbdCua: "50",
+            throughputToCbdPercentage: "50",
+          ),
+        ]
+        ..initalize();
 
       when(() => mockRepo.postRelationshipUtilizationData(any()))
           .thenThrow(Exception("boom"));
@@ -823,14 +828,15 @@ void main() {
 
   group("disposeControllers()", () {
     test("is idempotent and safe", () {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "1",
-          turnoverInCbdCua: "2",
-          throughputToCbdPercentage: "3",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "1",
+            turnoverInCbdCua: "2",
+            throughputToCbdPercentage: "3",
+          ),
+        ]
+        ..initalize();
     });
   });
 
@@ -844,14 +850,15 @@ void main() {
 
     test("_stripTrailingZeros() is exercised via percentage calc", () async {
       // We can force a percentage with trailing zeros: (1/2)*100 = 50
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "2",
-          turnoverInCbdCua: "1",
-          throughputToCbdPercentage: "",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "2",
+            turnoverInCbdCua: "1",
+            throughputToCbdPercentage: "",
+          ),
+        ]
+        ..initalize();
 
       // Set input and force compute
       viewModel.clientCtrlAt(0).text = "2";
@@ -861,14 +868,15 @@ void main() {
     });
 
     test("_clampTo15_6() is exercised via recalc (over-long input)", () async {
-      viewModel.relationshipUtilizationData = [
-        RelationshipUtilization(
-          clientTurnover: "",
-          turnoverInCbdCua: "0",
-          throughputToCbdPercentage: "",
-        ),
-      ];
-      viewModel.initalize();
+      viewModel
+        ..relationshipUtilizationData = [
+          RelationshipUtilization(
+            clientTurnover: "",
+            turnoverInCbdCua: "0",
+            throughputToCbdPercentage: "",
+          ),
+        ]
+        ..initalize();
 
       viewModel.clientCtrlAt(0).text = "1,234,567,890,123,456.1234567";
       await Future<void>.delayed(const Duration(milliseconds: 10));

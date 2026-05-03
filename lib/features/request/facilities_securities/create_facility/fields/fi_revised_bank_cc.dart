@@ -50,15 +50,16 @@ class FiRevisedBankByCC extends StatelessWidget {
           onSelected: (selectedValue) {
             if (selectedValue.isNotEmpty) {
               viewModel.getFacility.proposedByCcCurrency =
-                  (selectedValue.first.name);
-              viewModel.onCurrencyChanged(
-                selectedValue.first,
-                CurrencyField.revisedBankLimitRecommendedByCredit,
-              );
-              viewModel.getCurrencyRates(
-                selectedValue.first,
-                CurrencyField.revisedBankLimitRecommendedByCredit,
-              );
+                  selectedValue.first.name;
+              viewModel
+                ..onCurrencyChanged(
+                  selectedValue.first,
+                  CurrencyField.revisedBankLimitRecommendedByCredit,
+                )
+                ..getCurrencyRates(
+                  selectedValue.first,
+                  CurrencyField.revisedBankLimitRecommendedByCredit,
+                );
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {

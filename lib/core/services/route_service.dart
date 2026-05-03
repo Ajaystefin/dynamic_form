@@ -121,7 +121,7 @@ GoRouter router = GoRouter(
     SessionCubit.instance.startSession();
     return null;
   },
-  errorBuilder: ((context, state) => const NotFoundView()),
+  errorBuilder: (context, state) => const NotFoundView(),
   routes: [
     GoRoute(
       name: "/debug",

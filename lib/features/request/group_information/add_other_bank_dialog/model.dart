@@ -302,7 +302,7 @@ class AddOtherBankDialogViewModel extends SafeCubit<AddOtherBankDialogState> {
         orElse: () => Reference(id: 0, name: null),
       );
       // Prefer authoritative options name, then ref.name, then fallback
-      return (match.name ?? ref.name ?? fallback);
+      return match.name ?? ref.name ?? fallback;
     }
     return ref.name ?? fallback;
   }

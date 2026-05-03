@@ -17,9 +17,9 @@ void main() {
       " returns JSON with updated strategyComment",
       (tester) async {
         // Arrange
-        final vm = RelationshipProfitabilityDetailedViewModel();
-        vm.strategyComment = "initial";
-        vm.strategyCommentController.text = "initial";
+        final vm = RelationshipProfitabilityDetailedViewModel()
+          ..strategyComment = "initial"
+          ..strategyCommentController.text = "initial";
 
         final host = _TestHostWidget(
           vm: vm,
@@ -68,9 +68,9 @@ void main() {
     test("buildDraftData() returns current strategyComment when already set",
         () {
       // Arrange
-      final vm = RelationshipProfitabilityDetailedViewModel();
-      vm.strategyComment = "already in vm";
-      vm.strategyCommentController.text = "already in vm";
+      final vm = RelationshipProfitabilityDetailedViewModel()
+        ..strategyComment = "already in vm"
+        ..strategyCommentController.text = "already in vm";
 
       // Act
       final draft = handler.buildDraftData(vm);
@@ -86,9 +86,9 @@ void main() {
 
     test("applyDraft() restores strategyComment when present", () {
       // Arrange
-      final vm = RelationshipProfitabilityDetailedViewModel();
-      vm.strategyComment = "existing";
-      vm.strategyCommentController.text = "existing";
+      final vm = RelationshipProfitabilityDetailedViewModel()
+        ..strategyComment = "existing"
+        ..strategyCommentController.text = "existing";
 
       final data = <String, dynamic>{
         "strategyComment": "restored from draft",
@@ -108,9 +108,9 @@ void main() {
 
     test("applyDraft() keeps existing strategyComment when key is missing", () {
       // Arrange
-      final vm = RelationshipProfitabilityDetailedViewModel();
-      vm.strategyComment = "existing";
-      vm.strategyCommentController.text = "existing";
+      final vm = RelationshipProfitabilityDetailedViewModel()
+        ..strategyComment = "existing"
+        ..strategyCommentController.text = "existing";
 
       // Act
       handler.applyDraft(vm, <String, dynamic>{});
@@ -122,9 +122,9 @@ void main() {
 
     test("applyDraft() keeps existing strategyComment when value is null", () {
       // Arrange
-      final vm = RelationshipProfitabilityDetailedViewModel();
-      vm.strategyComment = "existing";
-      vm.strategyCommentController.text = "existing";
+      final vm = RelationshipProfitabilityDetailedViewModel()
+        ..strategyComment = "existing"
+        ..strategyCommentController.text = "existing";
 
       // Act
       handler.applyDraft(vm, <String, dynamic>{
@@ -138,9 +138,9 @@ void main() {
 
     test("applyDraft() allows empty string when explicitly provided", () {
       // Arrange
-      final vm = RelationshipProfitabilityDetailedViewModel();
-      vm.strategyComment = "existing";
-      vm.strategyCommentController.text = "existing";
+      final vm = RelationshipProfitabilityDetailedViewModel()
+        ..strategyComment = "existing"
+        ..strategyCommentController.text = "existing";
 
       // Act
       handler.applyDraft(vm, <String, dynamic>{

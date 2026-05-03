@@ -29,15 +29,14 @@ void main() {
   setUp(() {
     handler = EditContractDraftHandler();
 
-    vm = EditContractViewModel();
-    //vm.draftFormKey = 'edit-contract';
-    vm.contract = Contract();
-    vm.startDateController = TextEditingController();
-    vm.completionDateController = TextEditingController();
-    vm.contractorCommentsController = TextEditingController();
-    vm.borrowerRole = [];
-    vm.ppc = [];
-    vm.commentInputs = [];
+    vm = EditContractViewModel()
+      ..contract = Contract()
+      ..startDateController = TextEditingController()
+      ..completionDateController = TextEditingController()
+      ..contractorCommentsController = TextEditingController()
+      ..borrowerRole = []
+      ..ppc = []
+      ..commentInputs = [];
   });
 
   // ---------------------------------------------------------------------------
@@ -61,11 +60,11 @@ void main() {
       ..contractId = "1"
       ..projectId = "10";
 
-    vm.startDateController.text = "01/01/2024";
-    vm.completionDateController.text = "31/12/2024";
-
-    vm.ppc = [PPC(ppcId: 1)];
-    vm.commentInputs = ["Comment"];
+    vm
+      ..startDateController.text = "01/01/2024"
+      ..completionDateController.text = "31/12/2024"
+      ..ppc = [PPC(ppcId: 1)]
+      ..commentInputs = ["Comment"];
 
     final draft = handler.buildDraftData(vm);
     final json = draft["editContract"];

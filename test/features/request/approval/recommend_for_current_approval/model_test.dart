@@ -183,7 +183,6 @@ void main() {
     final comments = [
       Comment(categoryId: 20, strategyComment: "Other"),
     ];
-    viewModel.comments = comments;
     Globals.user = User(currentRole: Role(code: "CA"));
     when(
       () => mockApprovalRepository.getApplicationStrategyDetails(
@@ -200,7 +199,7 @@ void main() {
     when(() => mockApprovalRepository.fetchReference())
         .thenAnswer((_) async => {});
 
-    await viewModel.init(MockBuildContext());
+    await (viewModel..comments = comments).init(MockBuildContext());
     await viewModel.close();
 
     expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
@@ -212,9 +211,10 @@ void main() {
       Comment(categoryId: 20, strategyComment: "Other"),
     ];
 
-    viewModel.isRiskRatingInit = true;
-    viewModel.isReadOnly = false;
-    viewModel.comments = comments;
+    viewModel
+      ..isRiskRatingInit = true
+      ..isReadOnly = false
+      ..comments = comments;
 
     Globals.user = User(currentRole: Role(code: "CA"));
 
@@ -299,14 +299,14 @@ void main() {
 
     test(" with exception shows in error state", () async {
       when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
-      viewModel.initialText = "Sample";
       when(
         () => mockApprovalRepository.saveApplicationStrategyDetails(
           10,
           [],
         ),
       ).thenThrow(Exception("Error"));
-      await viewModel.onSavePress(context: MockBuildContext());
+      await (viewModel..initialText = "Sample")
+          .onSavePress(context: MockBuildContext());
 
       verify(() => mockAlertManager.showFailureToast(any())).called(1);
       expect(viewModel.state.loaderStatus, LoadingStatus.error);
@@ -314,14 +314,14 @@ void main() {
 
     test(" with isContinue=true does not call toasts without form", () async {
       when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
-      viewModel.initialText = "Sample";
       when(
         () => mockApprovalRepository.saveApplicationStrategyDetails(
           10,
           [],
         ),
       ).thenAnswer((_) async => "Success");
-      await viewModel.onSavePress(isContinue: true, context: fakeContext);
+      await (viewModel..initialText = "Sample")
+          .onSavePress(isContinue: true, context: fakeContext);
 
       verifyNever(() => mockAlertManager.showFailureToast(""));
     });

@@ -190,10 +190,11 @@ void main() {
 
   group("onSavePress()", () {
     testWidgets("throws failure toast when text is empty", (tester) async {
-      viewModel.rims = [
-        Customer(customerRimNo: 10, customerName: "Sample1"),
-      ];
-      viewModel.rimController[10] = MockUnifiedEditorController();
+      viewModel
+        ..rims = [
+          Customer(customerRimNo: 10, customerName: "Sample1"),
+        ]
+        ..rimController[10] = MockUnifiedEditorController();
       viewModel.rimController[10]?.setText("");
       when(() => mockController.getText()).thenAnswer((_) async => "");
       await viewModel.onSavePress(context: fakeContext);
@@ -233,16 +234,17 @@ void main() {
 
     testWidgets("show success toast after bypassing validation",
         (tester) async {
-      viewModel.rims = [
-        Customer(customerRimNo: 10, firstName: "Sample1"),
-        Customer(customerRimNo: 20, firstName: "Sample2"),
-      ];
-      viewModel.rimController = {
-        10: MockUnifiedEditorController(),
-        20: MockUnifiedEditorController(),
-      };
-      viewModel.rimController[10]?.setText("Comment1");
-      viewModel.rimController[20]?.setText("Comment2");
+      viewModel
+        ..rims = [
+          Customer(customerRimNo: 10, firstName: "Sample1"),
+          Customer(customerRimNo: 20, firstName: "Sample2"),
+        ]
+        ..rimController = {
+          10: MockUnifiedEditorController(),
+          20: MockUnifiedEditorController(),
+        }
+        ..rimController[10]?.setText("Comment1")
+        ..rimController[20]?.setText("Comment2");
       when(() => mockController.getText()).thenAnswer((_) async => "Comments");
       when(
         () => mockApprovalRepository.saveApplicationStrategyDetails(
@@ -267,11 +269,12 @@ void main() {
           rimNo: 20,
         ),
       ];
-      viewModel.comments = comments;
-      viewModel.rimController = {
-        10: MockUnifiedEditorController(),
-        20: MockUnifiedEditorController(),
-      };
+      viewModel
+        ..comments = comments
+        ..rimController = {
+          10: MockUnifiedEditorController(),
+          20: MockUnifiedEditorController(),
+        };
       when(
         () => mockApprovalRepository.getApplicationStrategyDetails(
           CommentsType.creditAppraisal,

@@ -36,15 +36,16 @@ class FiCounterPartyAssets extends StatelessWidget {
           onSelected: (selectedValue) {
             if (selectedValue.isNotEmpty) {
               viewModel.getFacility.counterpartyTotalAssets2PercentCurrency =
-                  (selectedValue.first);
-              viewModel.onCurrencyChanged(
-                selectedValue.first,
-                CurrencyField.counterpartyTotalAssets2Percent,
-              );
-              viewModel.getCurrencyRates(
-                selectedValue.first,
-                CurrencyField.counterpartyTotalAssets2Percent,
-              );
+                  selectedValue.first;
+              viewModel
+                ..onCurrencyChanged(
+                  selectedValue.first,
+                  CurrencyField.counterpartyTotalAssets2Percent,
+                )
+                ..getCurrencyRates(
+                  selectedValue.first,
+                  CurrencyField.counterpartyTotalAssets2Percent,
+                );
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {

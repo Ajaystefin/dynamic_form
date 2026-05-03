@@ -102,26 +102,22 @@ class RelationshipProfitabilitySummaryDraftHandler
         final Map<String, dynamic> real =
             _asStringDynamicMap(row["realizedLastYear"]);
 
-        final RelationshipProfitability modelRow = profitabilityRows[i];
-
-        modelRow.projectedNext12Months ??= ProfitabilityData();
-        modelRow.realizedLastYear ??= ProfitabilityData();
-
-        modelRow.comments = _stringValue(row["comments"]);
-
-        modelRow.projectedNext12Months!
-          ..nii = _stringValue(proj["nii"])
-          ..nfi = _stringValue(proj["nfi"])
-          ..expectedNetIncome = _stringValue(proj["expectedNetIncome"])
-          ..avgCasa = _stringValue(proj["avgCasa"])
-          ..rwa = _stringValue(proj["rwa"]);
-
-        modelRow.realizedLastYear!
-          ..nii = _stringValue(real["nii"])
-          ..nfi = _stringValue(real["nfi"])
-          ..expectedNetIncome = _stringValue(real["expectedNetIncome"])
-          ..avgCasa = _stringValue(real["avgCasa"])
-          ..rwa = _stringValue(real["rwa"]);
+        profitabilityRows[i]
+          ..projectedNext12Months ??= ProfitabilityData()
+          ..realizedLastYear ??= ProfitabilityData()
+          ..comments = _stringValue(row["comments"])
+          ..projectedNext12Months!.nii = _stringValue(proj["nii"])
+          ..projectedNext12Months!.nfi = _stringValue(proj["nfi"])
+          ..projectedNext12Months!.expectedNetIncome =
+              _stringValue(proj["expectedNetIncome"])
+          ..projectedNext12Months!.avgCasa = _stringValue(proj["avgCasa"])
+          ..projectedNext12Months!.rwa = _stringValue(proj["rwa"])
+          ..realizedLastYear!.nii = _stringValue(real["nii"])
+          ..realizedLastYear!.nfi = _stringValue(real["nfi"])
+          ..realizedLastYear!.expectedNetIncome =
+              _stringValue(real["expectedNetIncome"])
+          ..realizedLastYear!.avgCasa = _stringValue(real["avgCasa"])
+          ..realizedLastYear!.rwa = _stringValue(real["rwa"]);
 
         vm.getTextController("proj_nii_$i").text = _stringValue(proj["nii"]);
         vm.getTextController("proj_nfi_$i").text = _stringValue(proj["nfi"]);
@@ -191,8 +187,9 @@ class RelationshipProfitabilitySummaryDraftHandler
       }
     }
 
-    vm.computeTotalProfitability();
-    vm.emit(vm.state.copyWith());
+    vm
+      ..computeTotalProfitability()
+      ..emit(vm.state.copyWith());
   }
 
   String _ctrlTextAt(List<dynamic>? ctrls, int index) {

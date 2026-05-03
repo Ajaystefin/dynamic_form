@@ -35,7 +35,7 @@ class PromissoryNote extends StatelessWidget {
 
     return LabelWidget(
       label: "facilities.createFacility.promissoryNote".tr(),
-      isRequired: (!viewModel.isFIFlow),
+      isRequired: !viewModel.isFIFlow,
       child: CustomRadioButton<Reference>(
         options: viewModel.promissoryNoteOptions,
         selectedValue: selected,

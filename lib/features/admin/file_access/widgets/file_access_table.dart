@@ -31,7 +31,7 @@ class FileAccessTableField extends StatelessWidget {
             rowMinHeight: 0,
             rowHeight: 0,
             columns: [
-              TableColumn(label: Text(("admin.fileAccess.fileName".tr()))),
+              TableColumn(label: Text("admin.fileAccess.fileName".tr())),
               TableColumn(label: Text("admin.fileAccess.right".tr())),
             ],
             rows: const [],
@@ -105,8 +105,9 @@ class FileAccessTableField extends StatelessWidget {
               ? [AccessType.values.firstWhere((e) => e == file.access)]
               : [],
           onSelected: (selectedValue) {
-            file.access = selectedValue.first;
-            file.isUpdated = true;
+            file
+              ..access = selectedValue.first
+              ..isUpdated = true;
             // viewModel.updatedFileAccess.add(file);
           },
         ),

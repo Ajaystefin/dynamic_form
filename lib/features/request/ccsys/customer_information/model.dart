@@ -69,7 +69,8 @@ class CustomerInformationViewModel extends SafeCubit<CustomerInformationState>
 
   Reference? selectedBorroweSubsidiary;
   Reference? selectedLegalEntityIdentifier;
-  Reference? selectedEmirateLicense, selectedEmirateEstablishment;
+  Reference? selectedEmirateLicense;
+  Reference? selectedEmirateEstablishment;
 
   Reference defaultField = Reference(id: 0, name: "NA");
 
@@ -93,7 +94,7 @@ class CustomerInformationViewModel extends SafeCubit<CustomerInformationState>
   PageMode pageMode = PageMode.na;
 
   void initRightsAndMode(Request request) {
-    final bool rights = (request.ccsysCanEditReadOnly ?? true);
+    final bool rights = request.ccsysCanEditReadOnly ?? true;
     pageMode =
         AuthRepository.getPageMode(RightConstants.ccsysCustomerInformation);
     if (!rights) {
@@ -1027,8 +1028,8 @@ class PartnerShareholderControllers {
   void attach(PartnerShareholder m) {
     // set initial text
     name.text = m.partnerShareholderInEnglish ?? "";
-    sharePercent.text = (m.shareholdingPartnershipPercentage?.toString() ?? "");
-    netWorth.text = (m.networthPartnerShareholderAed?.toString() ?? "");
+    sharePercent.text = m.shareholdingPartnershipPercentage?.toString() ?? "";
+    netWorth.text = m.networthPartnerShareholderAed?.toString() ?? "";
     emiratesId.text = m.emiratesIdPartnerShareholder ?? "";
     passport.text = m.passportNumberPartnerShareholder ?? "";
     tradeLicense.text = m.tradeLicenseNumberPartnerShareholder ?? "";

@@ -183,7 +183,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
   PageMode? pageMode;
 
   bool get canEdit =>
-      (pageMode == PageMode.edit); //&& Utils.canEditApplication();
+      pageMode == PageMode.edit; //&& Utils.canEditApplication();
   bool _allocationWarningShown = false;
 
   /// Determines whether the Purpose dropdown should be enabled.
@@ -223,8 +223,8 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
   /// - This does NOT mutate the model, only affects dropdown display
   List<Reference>? get projectNameSelectedForUi {
     final bool suppressGeneral =
-        (limitGroup == ServerConstants.projectStandByLimitID ||
-            limitGroup == ServerConstants.projectSpecificLimitsID);
+        limitGroup == ServerConstants.projectStandByLimitID ||
+            limitGroup == ServerConstants.projectSpecificLimitsID;
 
     if (isProjectFinanceNo) {
       if (getFacility.projectName != null) {
@@ -351,9 +351,9 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
   }
 
   bool isAnnualReview =
-      (Utils.checkApplicationType(ApplicationType.annualReview) ||
+      Utils.checkApplicationType(ApplicationType.annualReview) ||
           (Globals.applicationDetails?.appTypeReferenceId ==
-              ServerConstants.annualReview));
+              ServerConstants.annualReview);
 
   // Find the "Yes"/"No" Reference from your options by name
   Reference _pfRefByName(String name) {
@@ -381,8 +381,8 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     }
     final List<String> base = commitmentAccountNumberItems
         .where((s) => s.trim().toUpperCase() != _newAccLabel)
-        .toList();
-    base.add(_newAccLabel);
+        .toList()
+      ..add(_newAccLabel);
     return base;
   }
 
@@ -676,7 +676,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
         final String sel =
             (getFacility.projectName!.name ?? "").trim().toLowerCase();
         final bool exists = projectNames
-            .any((r) => ((r.name ?? "").trim().toLowerCase() == sel));
+            .any((r) => (r.name ?? "").trim().toLowerCase() == sel);
         if (!exists) projectNames.insert(0, getFacility.projectName!);
       }
       applyInitialCurrencyVisibility();
@@ -958,7 +958,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     try {
       if (Utils.isGroupApplication()) {
         limitCapsCustomerList =
-            (await CustomerRepository.instance.getChildRimsForGroup() ?? []);
+            await CustomerRepository.instance.getChildRimsForGroup() ?? [];
       }
     } catch (e) {
       rethrow;
@@ -1290,12 +1290,12 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
                 ? borrowersMap[idx]
                 : Reference(id: rim, name: rim.toString());
 
-            ref.name ??= rim.toString();
-            ref.description = amount.toString();
-
-            if (subLimitNo?.isNotEmpty == true) {
-              ref.reference1 = subLimitNo;
-            }
+            ref
+              ..name ??= rim.toString()
+              ..description = amount.toString()
+              ..reference1 = (subLimitNo?.isNotEmpty == true
+                  ? subLimitNo
+                  : ref.reference1);
 
             final int selIdx = borrowersByRimInTable.indexWhere(
               (r) => (r.id?.toString() ?? "") == rim.toString(),
@@ -1307,8 +1307,8 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
             }
           }
 
-          final bool isSharedYes = (facilityDetail.isNotEmpty &&
-              (facilityDetail.first.isSharedLimit ?? false));
+          final bool isSharedYes = facilityDetail.isNotEmpty &&
+              (facilityDetail.first.isSharedLimit ?? false);
           if (borrowersByRimInTable.isEmpty && isSharedYes) {
             final int? rimFromDetails = facilityDetail.first.rimNo;
             if (rimFromDetails != null) {
@@ -1405,10 +1405,10 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     final int idx = borrowersMap.indexWhere(
       (r) => (r.id?.toString() ?? "") == rim.toString(),
     );
-    final Reference fallback = (idx >= 0)
+    final Reference fallback = ((idx >= 0)
         ? borrowersMap[idx]
-        : Reference(id: rim, name: rim.toString());
-    fallback.name ??= rim.toString();
+        : Reference(id: rim, name: rim.toString()))
+      ..name ??= rim.toString();
     return [fallback];
   }
 
@@ -1488,7 +1488,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     getFacility.controllingLimitNumber =
         (cln?.isNotEmpty ?? false) ? cln : null;
 
-    if ((cln?.isNotEmpty ?? false)) {
+    if (cln?.isNotEmpty ?? false) {
       final bool exists = controllingLimitNumbers.any(
         (r) => (r.name ?? "").trim() == cln,
       );
@@ -1501,9 +1501,9 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     final num? past = match.pastDues;
     if ((currency?.isNotEmpty ?? false) || past != null) {
       final Reference ref = getFacility.pastDues ?? Reference();
-      ref.name = ServerConstants
-          .aedCurrency; //  currency ?? ref.name; //  direct currency field is used for proposedLimit not PastDues
-      ref.description = past?.toString() ?? ref.description; // amount as string
+      ref
+        ..name = ServerConstants.aedCurrency
+        ..description = past?.toString() ?? ref.description;
       getFacility.pastDues = ref;
     }
     final num? outstandingAmount = match.outstandingAmount;
@@ -1511,11 +1511,11 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     if ((currency?.isNotEmpty ?? false) || outstandingAmount != null) {
       final Reference ref =
           getFacility.presentOutstandingCCValue ?? Reference();
-      if ((currency?.isNotEmpty ?? false)) {
+      if (currency?.isNotEmpty ?? false) {
         ref.name = currency; // e.g., "AED"
       }
       getFacility.presentOutstandingCCValue = ref;
-      getFacility.presentOutstandingAmount = (outstandingAmount?.toInt() ?? 0);
+      getFacility.presentOutstandingAmount = outstandingAmount?.toInt() ?? 0;
     }
 
     final num? limitAmount = match.limitAmount;
@@ -1541,7 +1541,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     getFacility.controllingLimitNumber =
         (cln?.isNotEmpty ?? false) ? cln : null;
 
-    if ((cln?.isNotEmpty ?? false)) {
+    if (cln?.isNotEmpty ?? false) {
       final bool exists = controllingLimitNumbers.any(
         (r) => (r.name ?? "").trim() == cln,
       );
@@ -1679,7 +1679,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
   Future<void> getBorrowersMap() async {
     try {
       final BorrowersMap map = await repository.getBorrowersMap();
-      borrowersMap = (map.responseData).map((s) => Reference(name: s)).toList();
+      borrowersMap = map.responseData.map((s) => Reference(name: s)).toList();
       if (borrowersByRimInTable.isNotEmpty) {
         final Set<String> names =
             borrowersMap.map((r) => (r.name ?? "").trim()).toSet();
@@ -2087,7 +2087,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
 
     // 6. Revised Bank Limit Proposed By FI
     processCurrencyCovertedFieldField(
-      apiAmount: (getFacility.proposedLimit)?.toDouble(),
+      apiAmount: getFacility.proposedLimit?.toDouble(),
       apiCurrency: getFacility.proposedLimitValue ??
           Reference(name: getFacility.currency),
       assignAmount: (v) => getFacility.proposedLimit = v.toInt(),
@@ -2100,7 +2100,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
 
     // 7. Revised Bank Limit Recommended By Credit
     processCurrencyCovertedFieldField(
-      apiAmount: (getFacility.proposedByCc),
+      apiAmount: getFacility.proposedByCc,
       apiCurrency: Reference(name: getFacility.proposedByCcCurrency),
       assignAmount: (v) => getFacility.proposedByCc,
       assignCurrency: (c) => getFacility.proposedByCcCurrency = c.name,
@@ -2143,7 +2143,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
 
     //10 ProposedBy CC
     processCurrencyCovertedFieldField(
-      apiAmount: (getFacility.proposedByCc),
+      apiAmount: getFacility.proposedByCc,
       apiCurrency: Reference(name: getFacility.proposedByCcCurrency),
       assignAmount: (v) => getFacility.proposedByCc,
       assignCurrency: (c) => getFacility.proposedByCcCurrency = c.name,
@@ -2508,8 +2508,8 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
         ),
       );
 
-      if ((getFacility.limitGroup == ServerConstants.projectSpecificLimitsID ||
-          getFacility.limitGroup == ServerConstants.projectStandByLimitID)) {
+      if (getFacility.limitGroup == ServerConstants.projectSpecificLimitsID ||
+          getFacility.limitGroup == ServerConstants.projectStandByLimitID) {
         contractingConditionsStandard =
             await repository.getFacilityConditionsList(
           FacilityConditionsFilter(
@@ -2664,9 +2664,9 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
 
       final String aedCode = aed.name ?? ServerConstants.aedCurrency;
       facilityDetails.currency ??= aedCode;
-      selectedCurrencyCode = (facilityDetails.currency
+      selectedCurrencyCode = facilityDetails.currency
           // ?? security.proposedSecurityAmtCurrency?.name
-          )
+          
           ?.toUpperCase();
 
       final bool isAed = selectedCurrencyCode == ServerConstants.aedCurrency;
@@ -2739,7 +2739,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       }
       final Set<int> existing = await _existingLimitCapTypesForCurrentRim();
       final int capTypeAboutToSave =
-          _numOr(facilityDetails.limitCapType, (limitCapType ?? 14492)).toInt();
+          _numOr(facilityDetails.limitCapType, limitCapType ?? 14492).toInt();
       if (existing.contains(capTypeAboutToSave)) {
         AlertManager().showFailureToast(
           "This Limit Cap Type already exists for this RIM.",
@@ -2766,7 +2766,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       );
       // --- switch to existing flow and hydrate details immediately ---
       showCreateFacilityForm = false;
-      getFacility.facilityId = (resp.facilityDetails!.facilityId! as int);
+      getFacility.facilityId = resp.facilityDetails!.facilityId! as int;
       existingFacilityId = getFacility.facilityId; // <--- add this
       getFacility.limitNumber =
           resp.facilityDetails?.limitNo ?? getFacility.limitNumber;
@@ -2874,7 +2874,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       appRefNo: appRef,
       proposedLimitAED: proposedLimitAed,
       limitDescription: limitDesc,
-      limitCategory: (limitCategory)?.trim().toUpperCase(), //"reference2": "N",
+      limitCategory: limitCategory?.trim().toUpperCase(), //"reference2": "N",
       presentOutstanding: presentOutstanding,
       currency: currency,
       isSharedLimit: _yesNoToBool(getFacility.sharedLimit, false),
@@ -2910,7 +2910,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       // Hard block duplicates before validations
       final Set<int> existing = await _existingLimitCapTypesForCurrentRim();
       final int capTypeAboutToSave =
-          _numOr(facilityDetails.limitCapType, (limitCapType ?? 14492)).toInt();
+          _numOr(facilityDetails.limitCapType, limitCapType ?? 14492).toInt();
       if (existing.contains(capTypeAboutToSave)) {
         AlertManager().showFailureToast(
           "This Limit Cap Type already exists for this RIM.",
@@ -2936,7 +2936,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
 
       if (isGroupCapRequired) {
         final bool isCreate = showCreateFacilityForm; // your existing flag
-        final bool userFieldEmpty = (proposedCapEdited)
+        final bool userFieldEmpty = proposedCapEdited
             ? ((proposedCapRaw ?? "").trim().isEmpty)
             // untouched in CREATE = empty, untouched in UPDATE = allowed
             : isCreate;
@@ -2956,7 +2956,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
         }
 
         // Keep existing rule, but compare against the right cap:
-        final int capForCheck = (proposedCapEdited)
+        final int capForCheck = proposedCapEdited
             ? (int.tryParse(proposedCapRaw!) ?? 0)
             : (effectiveCap ?? 0);
         final bool hasViolation = borrowersByRimInTable.any((ref) {
@@ -3005,7 +3005,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       );
       // --- switch to existing flow and hydrate details immediately ---
       showCreateFacilityForm = false;
-      getFacility.facilityId = (resp.facilityDetails!.facilityId! as int);
+      getFacility.facilityId = resp.facilityDetails!.facilityId! as int;
       existingFacilityId = getFacility.facilityId; // <--- add this
       getFacility.limitNumber =
           resp.facilityDetails?.limitNo ?? getFacility.limitNumber;
@@ -3171,7 +3171,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       showCreateFacilityForm = false;
       // collect any sub-limit ids
       lastCreatedSubFacilityIds = _extractSubFacilityIdsFromResponse(resp);
-      getFacility.facilityId = (resp.facilityDetails!.facilityId! as int);
+      getFacility.facilityId = resp.facilityDetails!.facilityId! as int;
       existingFacilityId = getFacility.facilityId; // <--- add this
       getFacility.limitNumber =
           resp.facilityDetails?.limitNo ?? getFacility.limitNumber;
@@ -3224,13 +3224,13 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     final String code = (mandatoryFeeTableRows ?? "").trim().toUpperCase();
 
     final bool hasPeriod =
-        (getFacility.limitAvailabilityPeriod?.trim().isNotEmpty ?? false);
+        getFacility.limitAvailabilityPeriod?.trim().isNotEmpty ?? false;
     final String? limitAvailIso = hasPeriod
         ? null
         : getFacility.limitAvailabilityDate?.toUtc().toIso8601String();
 
     final bool shouldSendGeneralProject = isProjectFinanceNo &&
-        !((getFacility.projectName?.name ?? "").trim().isNotEmpty) &&
+        !(getFacility.projectName?.name ?? "").trim().isNotEmpty &&
         projectNameSelectedForUi != null &&
         projectNameSelectedForUi!.isNotEmpty;
 
@@ -3320,11 +3320,11 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
           ? null
           : num.tryParse(getFacility.facilityId?.toString() ?? ""),
       limitNo: showCreateFacilityForm ? null : (facilityDetail.first.limitNo),
-      limitCategory: (limitCategory)?.trim().toUpperCase(),
+      limitCategory: limitCategory?.trim().toUpperCase(),
       isCommitted: _yesNoToBool(getFacility.committedValues, false),
-      commitmentAccountNumber: (getFacility.commitmentAccountNumber?.name ??
+      commitmentAccountNumber: getFacility.commitmentAccountNumber?.name ??
           getFacility.commitmentAccountNumber?.id?.toString() ??
-          "NEW"),
+          "NEW",
       rimNo: _numOr(getFacility.rimNo, selectedRim!),
       groupId: _numOr(Globals.request?.groupId, 0).toInt(),
       appRefNo: _strOr(Globals.request?.applicationRefNo, ""),
@@ -3835,7 +3835,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
   }
 
-  void changeWaivedOffContractingStandardConditionSelect(
+  void selectWaivedOffContractingStandardCondition(
     int index,
     bool value,
   ) {
@@ -3945,10 +3945,10 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
   }
 
   void ensureDefaultCountryOfRiskIfEmpty() {
-    final bool hasApi = (getFacility.countryOfRisk != null &&
-        getFacility.countryOfRisk!.trim().isNotEmpty);
+    final bool hasApi = getFacility.countryOfRisk != null &&
+        getFacility.countryOfRisk!.trim().isNotEmpty;
     final bool hasSelected =
-        (getFacility.selectedCountry?.description?.trim().isNotEmpty ?? false);
+        getFacility.selectedCountry?.description?.trim().isNotEmpty ?? false;
 
     // If something is already set, just enforce the UAE rule and exit
     if (hasApi || hasSelected) {
@@ -4007,7 +4007,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
         // Match the Reference from `period` by name; fall back to a loose ref
         // if not found
         final Reference match = period.firstWhere(
-          (r) => ((r.name ?? "").trim().toLowerCase() == unit.toLowerCase()),
+          (r) => (r.name ?? "").trim().toLowerCase() == unit.toLowerCase(),
           orElse: () => Reference(name: unit),
         );
         getFacility.tenorUnit = match;
@@ -4018,14 +4018,14 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     }
 
     if (facilityDetail.isNotEmpty) {
-      final String limitNo = (facilityDetail.first.limitNo).trim();
+      final String limitNo = facilityDetail.first.limitNo.trim();
       if (limitNo.isNotEmpty) {
         getFacility.limitNumber = limitNo;
       }
 
 // --- Sustainability Classification hydration (Existing facility) ---
       if (sustanabilityClassifications.isNotEmpty) {
-        final String raw = (facilityDetail.first.sustainabilityClassification)
+        final String raw = facilityDetail.first.sustainabilityClassification
             .toString()
             .trim();
 
@@ -4070,7 +4070,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       }
 
       final String can = facilityDetail.first.commitmentAccountNumber.trim();
-      if ((can.isNotEmpty)) {
+      if (can.isNotEmpty) {
         getFacility.commitmentAccountNumber = Reference(name: can);
         if (can == _newAccLabel) {
           presentOutStandingReadOnly = false;
@@ -4083,7 +4083,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
           facilityDetail.first.limitAvailabilityPeriod;
       final DateTime? apiLimitDate = facilityDetail.first.limitAvailabilityDate;
 
-      if ((apiLimitPeriod.trim().isNotEmpty)) {
+      if (apiLimitPeriod.trim().isNotEmpty) {
         // Prefer period: set period, clear date
         getFacility.limitAvailabilityPeriod = apiLimitPeriod.trim();
         getFacility.limitAvailabilityDate = null;
@@ -4099,7 +4099,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
 
     if (facilityDetail.isNotEmpty) {
       final String cln = facilityDetail.first.controllingLimitNo.trim();
-      if ((cln.isNotEmpty)) {
+      if (cln.isNotEmpty) {
         getFacility.controllingLimitNumber = cln;
         parentControlliingNumber = cln;
         final bool exists = controllingLimitNumbers.any(
@@ -4141,11 +4141,10 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
           .aedCurrency; // facilityDetail.first.currency; // TODO direct currency field is used for proposedLimit not PastDues
       final int? past = facilityDetail.first.pastDues;
 
-      if ((curr).isNotEmpty || past != null) {
-        final Reference ref = getFacility.pastDues ?? Reference();
-        ref.name = curr;
-        ref.description = past?.toString();
-        getFacility.pastDues = ref;
+      if (curr.isNotEmpty || past != null) {
+        getFacility.pastDues = (getFacility.pastDues ?? Reference())
+          ..name = curr
+          ..description = past?.toString();
       }
     }
 
@@ -4180,7 +4179,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     }
     // NEW: parse accountType CSV/string into multi-select list
     if (facilityDetail.isNotEmpty) {
-      final String raw = (facilityDetail.first.accountType).trim();
+      final String raw = facilityDetail.first.accountType.trim();
       if (raw.isNotEmpty) {
         final Set<String> ids = raw
             .split(",")
@@ -4314,8 +4313,8 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       if (apiProjectName.isNotEmpty) {
         if (projectNames.isNotEmpty) {
           final Reference match = projectNames.firstWhere(
-            (r) => ((r.name ?? "").trim().toLowerCase() ==
-                apiProjectName.toLowerCase()),
+            (r) => (r.name ?? "").trim().toLowerCase() ==
+                apiProjectName.toLowerCase(),
             orElse: () => Reference(name: apiProjectName),
           );
           getFacility.projectName = match;
@@ -4781,7 +4780,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       if (!(sub.subTypeSelected ?? false)) continue;
 
       final bool isOverriddenRow =
-          (overrideRowIndex != null && overrideRowIndex == rowIndex);
+          overrideRowIndex != null && overrideRowIndex == rowIndex;
 
       final int localAmount = isOverriddenRow
           ? (overrideLocalValue ?? (sub.proposedLimit ?? 0))

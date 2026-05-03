@@ -20,7 +20,7 @@ class ProductType extends StatelessWidget {
       child: Align(
         alignment: Alignment.centerLeft,
         child: CustomRadioButton<Reference?>(
-          isEnabled: (hasOptions && (viewModel.isProductTyopeEnabled ?? false)),
+          isEnabled: hasOptions && (viewModel.isProductTyopeEnabled ?? false),
           options: viewModel.productTypeOptions,
           // Bind to VM (fallback only if not set yet)
           selectedValue: hasOptions

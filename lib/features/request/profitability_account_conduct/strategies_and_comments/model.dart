@@ -63,7 +63,7 @@ class StrategiesAndCommentsViewModel
   // ---------------------------------------------------------------------------
 
   PageMode pageMode = PageMode.na;
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
 
   // New name: initialize()
   Future<void> initialize(context) async {
@@ -174,7 +174,7 @@ class StrategiesAndCommentsViewModel
     return {
       for (final Map<String, dynamic> category in categories)
         category["id"] as int:
-            (commentsByCategoryId[category["id"] as int]?.strategyComment) ??
+            commentsByCategoryId[category["id"] as int]?.strategyComment ??
                 "",
     };
   }
@@ -344,7 +344,7 @@ class StrategiesAndCommentsViewModel
 
         final categoryType = resolveCategoryTypeLabel(
           categoryId,
-          existing: (category["type"] as String?),
+          existing: category["type"] as String?,
         );
 
         payloadItems.add({
@@ -499,7 +499,7 @@ class StrategiesAndCommentsViewModel
     commentCategories = categories;
     lastSavedPlainByCategoryId
       ..clear()
-      ..addAll(serverPlainTextById.map((k, v) => MapEntry(k, (v).trim())));
+      ..addAll(serverPlainTextById.map((k, v) => MapEntry(k, v.trim())));
     existingCommentRecordIdsByCategoryId
       ..clear()
       ..addAll(serverRecordIdsByCategoryId);

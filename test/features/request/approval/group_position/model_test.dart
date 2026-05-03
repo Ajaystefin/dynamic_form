@@ -308,8 +308,9 @@ void main() {
     test(
       "assign values to the variables for non proposed",
       () async {
-        viewModel.updateExposureField(1, "10", "200", false);
-        viewModel.updateExposureField(2, "0", "700", false);
+        viewModel
+          ..updateExposureField(1, "10", "200", false)
+          ..updateExposureField(2, "0", "700", false);
         expect(viewModel.groupedExposure.length, 2);
       },
     );
@@ -317,8 +318,9 @@ void main() {
     test(
       "assign values to the variables for proposed",
       () async {
-        viewModel.updateExposureField(1, "10", "500", true);
-        viewModel.updateExposureField(2, "0", "1000", true);
+        viewModel
+          ..updateExposureField(1, "10", "500", true)
+          ..updateExposureField(2, "0", "1000", true);
         expect(viewModel.groupedExposure.length, 2);
       },
     );

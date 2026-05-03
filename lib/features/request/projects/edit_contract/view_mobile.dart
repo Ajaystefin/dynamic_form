@@ -178,10 +178,11 @@ class ViewMobile extends StatelessWidget {
                     AddItemButton(
                       onTap: () {
                         // 1) Add the row
-                        viewModel.onAddRowPressed();
-                        // 2) Enable edit mode so new row shows as editable with
-                        // delete icon
-                        viewModel.enablePpcEditMode();
+                        viewModel
+                          ..onAddRowPressed()
+                          // 2) Enable edit mode so new row shows as editable
+                          // with delete icon
+                          ..enablePpcEditMode();
                       },
                       isLeftSided: true,
                       child: Text(

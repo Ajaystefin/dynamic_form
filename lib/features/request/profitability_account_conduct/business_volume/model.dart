@@ -31,7 +31,7 @@ class BusinessVolumeViewModel extends SafeCubit<BusinessVolumeState>
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   PageMode pageMode = PageMode.na;
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
 
   // ---------------------------------------------------------------------------
   // DraftMixin implementation
@@ -128,15 +128,15 @@ class BusinessVolumeViewModel extends SafeCubit<BusinessVolumeState>
   /// to save comment data
   Future<void> saveComments() async {
     try {
-      final Comment commentData = Comment(comment: comments);
-      commentData.commentId = "2";
-      commentData.applicationRefNo = Globals.request?.applicationRefNo;
-      commentData.draft = false;
-      commentData.userId = Globals.user?.id;
-      commentData.userRole = Globals.user?.currentRole?.roleId;
-      commentData.reviewCommentId = "345";
-      commentData.type = CommentsType.accountStats;
-      commentData.entityType = EntityIdentifier.accountStats;
+      final Comment commentData = Comment(comment: comments)
+        ..commentId = "2"
+        ..applicationRefNo = Globals.request?.applicationRefNo
+        ..draft = false
+        ..userId = Globals.user?.id
+        ..userRole = Globals.user?.currentRole?.roleId
+        ..reviewCommentId = "345"
+        ..type = CommentsType.accountStats
+        ..entityType = EntityIdentifier.accountStats;
       final String response =
           await CommonRepository.instance.saveComment(commentData);
       AlertManager().showSuccessToast(response);

@@ -17,12 +17,12 @@ class FiTenor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isRequired = (ServerConstants.generalTradeGroup ==
+    final bool isRequired = ServerConstants.generalTradeGroup ==
             viewModel.getFacility.limitGroup ||
         ServerConstants.dcmGroup == viewModel.getFacility.limitGroup ||
         ServerConstants.bilateralLoanGroup ==
             viewModel.getFacility.limitGroup ||
-        ServerConstants.sovergianGroup == viewModel.getFacility.limitGroup);
+        ServerConstants.sovergianGroup == viewModel.getFacility.limitGroup;
     return LabelWidget(
       label: "facilities.createFacility.tenor".tr(),
       isRequired: isRequired,
@@ -37,7 +37,7 @@ class FiTenor extends StatelessWidget {
               : [viewModel.period.first],
           onSelected: (selectedValue) {
             if (selectedValue.isNotEmpty) {
-              viewModel.getFacility.tenorUnit = (selectedValue.first);
+              viewModel.getFacility.tenorUnit = selectedValue.first;
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {

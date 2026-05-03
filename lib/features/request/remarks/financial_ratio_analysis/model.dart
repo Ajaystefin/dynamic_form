@@ -197,7 +197,7 @@ class FinancialRatioAnalysisViewModel
     try {
       if (Utils.isGroupApplication()) {
         customerList =
-            (await CustomerRepository.instance.getChildRimsForGroup() ?? []);
+            await CustomerRepository.instance.getChildRimsForGroup() ?? [];
         if ((customerList ?? []).isNotEmpty) {
           selectedCustomer = customerList?.first;
         } else {
@@ -319,7 +319,7 @@ class FinancialRatioAnalysisViewModel
         if (incomeCat.financialsValues.isNotEmpty) {
           final Map<String, List<FinancialValue>> byKey = {};
           for (final rowFieldValue in incomeCat.financialsValues) {
-            final String codeRaw = (rowFieldValue.financialRatioType)
+            final String codeRaw = rowFieldValue.financialRatioType
                 .trim(); // "101", "74", "", "null"
             final String labelRaw = (rowFieldValue.userAddedRatioType ?? "")
                 .trim(); // e.g., "incomesuser"
@@ -343,7 +343,7 @@ class FinancialRatioAnalysisViewModel
         if (cashflowCat.financialsValues.isNotEmpty) {
           final Map<String, List<FinancialValue>> byKey = {};
           for (final v in cashflowCat.financialsValues) {
-            final String codeRaw = (v.financialRatioType).trim();
+            final String codeRaw = v.financialRatioType.trim();
             final String labelRaw = (v.userAddedRatioType ?? "").trim();
             final bool isUserAdded =
                 codeRaw.isEmpty || codeRaw.toLowerCase() == "null"; // NEW
@@ -366,7 +366,7 @@ class FinancialRatioAnalysisViewModel
         if (balanceCat.financialsValues.isNotEmpty) {
           final Map<String, List<FinancialValue>> byKey = {};
           for (final v in balanceCat.financialsValues) {
-            final String codeRaw = (v.financialRatioType).trim();
+            final String codeRaw = v.financialRatioType.trim();
             final String labelRaw = (v.userAddedRatioType ?? "").trim();
             final bool isUserAdded =
                 codeRaw.isEmpty || codeRaw.toLowerCase() == "null"; //  NEW
@@ -593,8 +593,7 @@ class FinancialRatioAnalysisViewModel
           estimated: "",
           isNew: false,
         ),
-      );
-      apiRow.balanceSheet = ref.name ?? "";
+      )..balanceSheet = ref.name ?? "";
       final String key = ref.reference2 ?? "";
       final List<MacroItem> items =
           (key.isNotEmpty) ? (resp.macros[key] ?? const []) : const [];
@@ -618,11 +617,12 @@ class FinancialRatioAnalysisViewModel
           } // 5th column
         }
       } else {
-        apiRow.audited1 = unavailableText;
-        apiRow.audited2 = unavailableText;
-        apiRow.audited3 = unavailableText;
-        apiRow.inhouse = unavailableText;
-        apiRow.estimated = unavailableText;
+        apiRow
+          ..audited1 = unavailableText
+          ..audited2 = unavailableText
+          ..audited3 = unavailableText
+          ..inhouse = unavailableText
+          ..estimated = unavailableText;
       }
       return apiRow;
     }).toList();
@@ -657,9 +657,7 @@ class FinancialRatioAnalysisViewModel
           estimated: "",
           isNew: false,
         ),
-      );
-
-      apiRow.cashFlowItems = ref.name ?? "";
+      )..cashFlowItems = ref.name ?? "";
 
       final String key = ref.reference2 ?? "";
       final List<MacroItem> items =
@@ -684,11 +682,12 @@ class FinancialRatioAnalysisViewModel
           }
         }
       } else {
-        apiRow.audited1 = unavailableText;
-        apiRow.audited2 = unavailableText;
-        apiRow.audited3 = unavailableText;
-        apiRow.inhouse = unavailableText;
-        apiRow.estimated = unavailableText;
+        apiRow
+          ..audited1 = unavailableText
+          ..audited2 = unavailableText
+          ..audited3 = unavailableText
+          ..inhouse = unavailableText
+          ..estimated = unavailableText;
       }
       return apiRow;
     }).toList();
@@ -757,8 +756,8 @@ class FinancialRatioAnalysisViewModel
     // Sort oldest → newest by (year, months)
     final List<FinancialValue> perYear = latestPerYear.values.toList()
       ..sort((a, b) {
-        final int am = monthsFromPeriod(a.period),
-            bm = monthsFromPeriod(b.period);
+        final int am = monthsFromPeriod(a.period);
+        final int bm = monthsFromPeriod(b.period);
         if (a.financialYear != b.financialYear) {
           return a.financialYear.compareTo(b.financialYear);
         }
@@ -1442,7 +1441,7 @@ class FinancialRatioAnalysisViewModel
   // Income: already present — keep it, but ensure it removes just that row
   Future<void> deleteUserAddedIncomeRow(IncomeStatementAnalysisRow row) async {
     try {
-      final bool isUnsaved = (row.id).startsWith("u-");
+      final bool isUnsaved = row.id.startsWith("u-");
 
       if (!isUnsaved) {
         repository ??= RemarksRepository.instance;
@@ -1466,7 +1465,7 @@ class FinancialRatioAnalysisViewModel
   // Cashflow: NEW
   Future<void> deleteUserAddedCashflowRow(CashFlowSheetAnalysisRow row) async {
     try {
-      final bool isUnsaved = (row.id).startsWith("u-");
+      final bool isUnsaved = row.id.startsWith("u-");
       if (!isUnsaved) {
         repository ??= RemarksRepository.instance;
         final int rimNo = selectedCustomer?.customerRimNo ?? 0;
@@ -1489,7 +1488,7 @@ class FinancialRatioAnalysisViewModel
   // Balance: NEW
   Future<void> deleteUserAddedBalanceRow(BalanceSheetAnalysisRow row) async {
     try {
-      final bool isUnsaved = (row.id).startsWith("u-");
+      final bool isUnsaved = row.id.startsWith("u-");
       if (!isUnsaved) {
         repository ??= RemarksRepository.instance;
         final int rimNo = selectedCustomer?.customerRimNo ?? 0;

@@ -14,13 +14,15 @@ class AppAssets {
 }
 
 void testAppAssets() {
-  AppAssets.imagesPath;
-  AppAssets.logo;
-  AppAssets.logoDark;
-  AppAssets.error;
-  AppAssets.configPath;
-  AppAssets.devEnvConfig;
-  AppAssets.sitEnvConfig;
-  AppAssets.uatEnvConfig;
-  AppAssets.prodEnvConfig;
+  [
+    AppAssets.imagesPath,
+    AppAssets.logo,
+    AppAssets.logoDark,
+    AppAssets.error,
+    AppAssets.configPath,
+    AppAssets.devEnvConfig,
+    AppAssets.sitEnvConfig,
+    AppAssets.uatEnvConfig,
+    AppAssets.prodEnvConfig,
+  ];
 }

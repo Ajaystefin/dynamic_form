@@ -27,10 +27,8 @@ Option? syncSelectedOptionFromDocument({
   required DynamicField fieldData,
   required int index,
 }) {
-  Option? selectedOption;
   if (document == null) {
-    selectedOption = null;
-    return selectedOption;
+    return null;
   }
 
   // final storedKey = document['${fieldData.key}@$index'];
@@ -48,14 +46,12 @@ Option? syncSelectedOptionFromDocument({
   }
 
   try {
-    selectedOption = fieldData.optionList!.firstWhere(
+    return fieldData.optionList!.firstWhere(
       (option) => option.key == storedKey.toString(),
       orElse: () => throw StateError("Not found"),
     );
-    return selectedOption;
   } catch (e) {
-    selectedOption = null;
-    return selectedOption;
+    return null;
   }
   // } else {
   //   // If storedKey is null, clear the selection

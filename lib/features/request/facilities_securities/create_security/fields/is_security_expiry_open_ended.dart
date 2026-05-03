@@ -25,7 +25,7 @@ class IsSecurityExpiryOpenEnded extends StatelessWidget {
         isEnabled: !viewModel.isCmoUpdate(),
         options: viewModel.yesAndNo ?? [],
         selectedValue: (viewModel.security.isSecurityExpiryOpenEnded ?? false)
-            ? (viewModel.yesAndNo?.first)
+            ? viewModel.yesAndNo?.first
             : viewModel.yesAndNo?.last,
         onChanged: (value) {
           viewModel.changeSecurityExpiryOpenEndedValue(value);

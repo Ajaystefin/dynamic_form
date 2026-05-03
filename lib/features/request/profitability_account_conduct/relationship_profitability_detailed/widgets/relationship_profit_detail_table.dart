@@ -36,21 +36,21 @@ class RelationshipProfitDetailTable extends StatelessWidget {
         "endIndex": 1,
         "labelKey": "profitabilityAccountConduct."
             "relationshipProfitabilityDetailed.last12Month",
-        "width": (127.5).w,
+        "width": 127.5.w,
       },
       {
         "startIndex": 2,
         "endIndex": 3,
         "labelKey": "profitabilityAccountConduct."
             "relationshipProfitabilityDetailed.next12Month",
-        "width": (250.0).w,
+        "width": 250.0.w,
       },
       {
         "startIndex": 4,
         "endIndex": 5,
         "labelKey": "profitabilityAccountConduct."
             "relationshipProfitabilityDetailed.next12To24Month",
-        "width": (250.0).w,
+        "width": 250.0.w,
       },
     ];
 
@@ -67,37 +67,37 @@ class RelationshipProfitDetailTable extends StatelessWidget {
   List<TableColumn> _buildColumns() {
     final columnData = [
       {
-        "width": (127.5).w,
+        "width": 127.5.w,
         "isStacked": false,
         "labelKey": "profitabilityAccountConduct."
             "relationshipProfitabilityDetailed.natureOfBusiness",
       },
       {
-        "width": (127.5).w,
+        "width": 127.5.w,
         "isStacked": true,
         "labelKey": "profitabilityAccountConduct."
             "relationshipProfitabilityDetailed.amount",
       },
       {
-        "width": (125.0).w,
+        "width": 125.0.w,
         "isStacked": true,
         "labelKey": "profitabilityAccountConduct."
             "relationshipProfitabilityDetailed.amount",
       },
       {
-        "width": (125.0).w,
+        "width": 125.0.w,
         "isStacked": true,
         "labelKey": "profitabilityAccountConduct."
             "relationshipProfitabilityDetailed.profitabilityPer",
       },
       {
-        "width": (125.0).w,
+        "width": 125.0.w,
         "isStacked": true,
         "labelKey": "profitabilityAccountConduct."
             "relationshipProfitabilityDetailed.amount",
       },
       {
-        "width": (125.0).w,
+        "width": 125.0.w,
         "isStacked": true,
         "labelKey": "profitabilityAccountConduct."
             "relationshipProfitabilityDetailed.profitabilityPer",

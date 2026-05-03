@@ -132,8 +132,8 @@ class AppendixDraftHandler extends DraftHandler<AppendixViewModel> {
       vm.appendix.threats = threats.map((e) => e.toString()).toList();
     }
 
-    vm.markDraftApplied();
-
-    vm.emit(vm.state.copyWith());
+    vm
+      ..markDraftApplied()
+      ..emit(vm.state.copyWith());
   }
 }

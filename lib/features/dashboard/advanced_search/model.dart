@@ -349,15 +349,13 @@ class AdvancedSearchViewModel extends SafeCubit<AdvancedSearchState> {
   /// - INQUSR (Inquiry User)
   /// - LMT (Limited User)
   List<Reference>? getRoleList() {
-    List<Reference>? roleData = referenceData[ReferenceDataKeys.roleType];
-    roleData = roleData
+    return referenceData[ReferenceDataKeys.roleType]
         ?.where(
-          (element) => ((element.id != ServerConstants.admId) &&
+          (element) => (element.id != ServerConstants.admId) &&
               (element.id != ServerConstants.inqusrId) &&
-              (element.id != ServerConstants.lmtId)),
+              (element.id != ServerConstants.lmtId),
         )
         .toList();
-    return roleData;
   }
 
   /// Returns a list of users who are assigned the Role Manager (RM) role.

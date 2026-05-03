@@ -76,7 +76,7 @@ class _DynamicFormFieldState extends State<DynamicFormField> {
   }
 
   Widget formWidget() {
-    final fieldKey = (widget.field.key).trim();
+    final fieldKey = widget.field.key.trim();
     debugPrint('Key: ${fieldKey.isEmpty ? "<empty>" : fieldKey} '
         "→ Type: ${widget.field.controlType}");
 

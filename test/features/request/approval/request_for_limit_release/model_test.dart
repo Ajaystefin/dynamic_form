@@ -110,9 +110,9 @@ void main() {
       ),
     ).thenAnswer((_) async => null);
 
-    viewModel = RequestForLimitReleaseViewModel();
-    viewModel.repository = mockRequestRepository;
-    viewModel.approvalRepository = mockApprovalRepository;
+    viewModel = RequestForLimitReleaseViewModel()
+      ..repository = mockRequestRepository
+      ..approvalRepository = mockApprovalRepository;
   });
 
   tearDown(() {
@@ -148,6 +148,7 @@ void main() {
     final comments = [
       Comment(categoryId: 20, strategyComment: "Other"),
     ];
+    viewModel.comments = comments;
 
     Globals.user = User(
       currentRole: Role(bpmRole: "RM"),
@@ -618,11 +619,8 @@ void main() {
 
   group("submitApplication()", () {
     test("returns empty when initialText is empty", () async {
-      viewModel.initialText = "";
-
-      final result = await viewModel.submitApplication(
-        FOLTypeAction.sendToDocumentation,
-      );
+      final result = await (viewModel..initialText = "")
+          .submitApplication(FOLTypeAction.sendToDocumentation);
 
       expect(result, isEmpty);
       verifyNever(
@@ -635,30 +633,25 @@ void main() {
     });
 
     test("returns empty when stage not selected for doc roles", () async {
-      viewModel.selectedStage = "";
-
-      final result = await viewModel.submitApplication(
-        FOLTypeAction.sendToDocumentation,
-      );
+      final result = await (viewModel..selectedStage = "")
+          .submitApplication(FOLTypeAction.sendToDocumentation);
 
       expect(result, isEmpty);
     });
 
     test("returns empty when userId is empty and action requires user",
         () async {
-      viewModel.selectedUserId = "";
-
-      final result = await viewModel.submitApplication(
-        FOLTypeAction.sendToDocumentation,
-      );
+      final result = await (viewModel..selectedUserId = "")
+          .submitApplication(FOLTypeAction.sendToDocumentation);
 
       expect(result, isEmpty);
     });
 
     test("check validation for stage selection CCU roles", () async {
-      viewModel.selectedStage = "";
-      viewModel.initialText = "Sample";
-      viewModel.selectedUserId = "user1:DM";
+      viewModel
+        ..selectedStage = ""
+        ..initialText = "Sample"
+        ..selectedUserId = "user1:DM";
       Globals.user?.currentRole?.code = "DC";
       Globals.user?.currentRole?.userRole = UserRole.ccuChecker;
       final result =
@@ -668,9 +661,10 @@ void main() {
     });
 
     test("check validation for user selection", () async {
-      viewModel.selectedStage = "FOL stage";
-      viewModel.initialText = "Sample";
-      viewModel.selectedUserId = "";
+      viewModel
+        ..selectedStage = "FOL stage"
+        ..initialText = "Sample"
+        ..selectedUserId = "";
       Globals.user?.currentRole?.code = "DC";
       Globals.user?.currentRole?.userRole = UserRole.documentationChecker;
       final result =
@@ -680,10 +674,11 @@ void main() {
     });
 
     test("returns confirmation description on successful submit", () async {
-      viewModel.selectedStage = "FOL stage";
-      viewModel.initialText = "Sample";
-      viewModel.selectedUserId = "user1:DM";
-      viewModel.returnCcuMakerList = [
+      viewModel
+        ..selectedStage = "FOL stage"
+        ..initialText = "Sample"
+        ..selectedUserId = "user1:DM"
+        ..returnCcuMakerList = [
         User(id: "user1", currentRole: Role(bpmRole: "DM")),
       ];
       Globals.user?.currentRole?.code = "DC";
@@ -723,10 +718,11 @@ void main() {
 
     test("returns confirmation description on documentation completed",
         () async {
-      viewModel.selectedStage = "FOL stage";
-      viewModel.initialText = "Sample";
-      viewModel.selectedUserId = "user1:DM";
-      viewModel.returnCcuMakerList = [
+      viewModel
+        ..selectedStage = "FOL stage"
+        ..initialText = "Sample"
+        ..selectedUserId = "user1:DM"
+        ..returnCcuMakerList = [
         User(id: "user1", currentRole: Role(bpmRole: "DM")),
       ];
       Globals.user?.currentRole?.code = "DC";
@@ -769,9 +765,10 @@ void main() {
 
     test("returns empty description when submission fails", () async {
       // bypass validations
-      viewModel.selectedStage = "FOL stage";
-      viewModel.initialText = "Sample";
-      viewModel.selectedUserId = "user1:DM";
+      viewModel
+        ..selectedStage = "FOL stage"
+        ..initialText = "Sample"
+        ..selectedUserId = "user1:DM";
       when(
         () => mockApprovalRepository.submitApplication(
           any(),
@@ -792,9 +789,10 @@ void main() {
 
     test("returns empty list on exception", () async {
       // bypass validations
-      viewModel.selectedStage = "FOL stage";
-      viewModel.initialText = "Sample";
-      viewModel.selectedUserId = "user1:DM";
+      viewModel
+        ..selectedStage = "FOL stage"
+        ..initialText = "Sample"
+        ..selectedUserId = "user1:DM";
       when(
         () => mockApprovalRepository.submitApplication(
           any(),

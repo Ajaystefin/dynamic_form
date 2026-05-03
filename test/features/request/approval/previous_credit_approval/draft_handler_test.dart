@@ -82,8 +82,9 @@ void main() {
   });
 
   test("buildDraftData works when form is not mounted", () {
-    vm.initialText = "text";
-    vm.reviewCommentId = "RID";
+    vm
+      ..initialText = "text"
+      ..reviewCommentId = "RID";
 
     final draft = handler.buildDraftData(vm);
 
@@ -126,8 +127,9 @@ void main() {
   });
 
   test("applyDraft ignores missing keys safely", () {
-    vm.initialText = "before";
-    vm.reviewCommentId = "RID";
+    vm
+      ..initialText = "before"
+      ..reviewCommentId = "RID";
 
     handler.applyDraft(vm, {});
 
@@ -136,8 +138,9 @@ void main() {
   });
 
   test("applyDraft handles null values safely", () {
-    vm.initialText = "before";
-    vm.reviewCommentId = "RID";
+    vm
+      ..initialText = "before"
+      ..reviewCommentId = "RID";
 
     handler.applyDraft(vm, {
       "initialText": null,
@@ -149,8 +152,9 @@ void main() {
   });
 
   test("applyDraft does not throw on invalid payload", () {
-    vm.initialText = "before";
-    vm.reviewCommentId = "RID";
+    vm
+      ..initialText = "before"
+      ..reviewCommentId = "RID";
 
     expect(
       () => handler.applyDraft(vm, {

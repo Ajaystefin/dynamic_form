@@ -73,8 +73,9 @@ void main() {
   });
 
   test("applyDraft ignores null values safely", () {
-    vm.initialText = "before";
-    vm.canSubmit = true;
+    vm
+      ..initialText = "before"
+      ..canSubmit = true;
 
     handler.applyDraft(vm, {
       "strategyComment": null,
@@ -86,8 +87,9 @@ void main() {
   });
 
   test("applyDraft ignores unrelated keys", () {
-    vm.initialText = "before";
-    vm.canSubmit = false;
+    vm
+      ..initialText = "before"
+      ..canSubmit = false;
 
     handler.applyDraft(vm, {
       "foo": "bar",

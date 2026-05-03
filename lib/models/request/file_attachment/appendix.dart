@@ -54,10 +54,10 @@ class Appendix {
       countryName: json["countryName"] as String?,
       rating: json["rating"] as String?,
       // Backend may send numeric. UI text fields expect Strings.
-      populationText: (json["populationText"]?.toString() ??
+      populationText: json["populationText"]?.toString() ??
           json["population"]?.toString() ??
-          ""),
-      gdpText: (json["gdpText"]?.toString() ?? json["gdp"]?.toString() ?? ""),
+          "",
+      gdpText: json["gdpText"]?.toString() ?? json["gdp"]?.toString() ?? "",
       importPartners: readList(json["importPartners"]),
       exportPartners: readList(json["exportPartners"]),
       strengths: readList(json["strengths"]),

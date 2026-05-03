@@ -76,12 +76,6 @@ class _DynamicFormTextFieldState extends State<DynamicFormTextField> {
                 // Use controller's text as the source of truth
                 final actualValue = _controller.text;
 
-                // ignore: avoid_print
-                print("=== Validation Debug for ${widget.fieldData.key} ===");
-                logger.f('Controller text: "$actualValue"');
-                logger.f('FormField value: "$value"');
-                logger.f("Required: ${widget.fieldData.isRequired}");
-
                 // First check if field is required and empty
                 if (actualValue.isEmpty) {
                   logger.f("Validation FAILED: Field is empty");

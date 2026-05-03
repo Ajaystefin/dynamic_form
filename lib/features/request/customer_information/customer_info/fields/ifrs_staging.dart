@@ -34,7 +34,7 @@ class IfrsStaging extends StatelessWidget {
         },
         onSelected: (selectedValue) {
           viewModel.customerInformation?.ifrsStaging = selectedValue[0].name;
-          viewModel.selectedIfrsStaging = (selectedValue.first);
+          viewModel.selectedIfrsStaging = selectedValue.first;
         },
         dropdownBuilder: (context, item) =>
             dropdownBuilderWidget(text: item?.name, showToolTip: false),

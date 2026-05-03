@@ -211,9 +211,7 @@ void main() {
       repositoryOverride: mockRepo,
       customerRepositoryFactory: () => mockCustomerRepo,
       goToNextRoute: () {},
-    );
-
-    viewModel.repository = mockRepo;
+    )..repository = mockRepo;
 
     // override singleton dependencies
     CommonRepository.debugReplaceInstance = mockCommonRepo;
@@ -359,14 +357,16 @@ void main() {
     });
 
     test(
-        "isProposedbyCreditEditables returns false when role is unavailable/default",
+        "isProposedbyCreditEditables returns false "
+        "when role is unavailable/default",
         () {
       expect(viewModel.isProposedbyCreditEditables(), false);
     });
 
     test("checkViewAccess keeps isViewOnly unchanged by default safe path", () {
-      viewModel.isViewOnly = true;
-      viewModel.checkViewAccess();
+      viewModel
+        ..isViewOnly = true
+        ..checkViewAccess();
       expect(viewModel.isViewOnly, isA<bool>());
     });
 
@@ -552,15 +552,15 @@ void main() {
     });
 
     test("removeExternalTableRow removes item for normal existing row", () {
-      viewModel.riskRating = RiskRating(
-        externalRatings: [
-          ExternalRating(customerRimNo: 123),
-          ExternalRating(customerRimNo: 456),
-        ],
-        internalRatings: [],
-      );
-
-      viewModel.removeExternalTableRow(0);
+      viewModel
+        ..riskRating = RiskRating(
+          externalRatings: [
+            ExternalRating(customerRimNo: 123),
+            ExternalRating(customerRimNo: 456),
+          ],
+          internalRatings: [],
+        )
+        ..removeExternalTableRow(0);
 
       expect(viewModel.riskRating.externalRatings?.length, 1);
       expect(viewModel.riskRating.externalRatings?.first.customerRimNo, 456);
@@ -584,30 +584,30 @@ void main() {
     });
 
     test("removeExternalTableRow also marks placeholder row as deleted", () {
-      viewModel.riskRating = RiskRating(
-        externalRatings: [
-          ExternalRating(customerRimNo: -1, isDeleted: false),
-        ],
-        internalRatings: [],
-      );
-
-      viewModel.removeExternalTableRow(0);
+      viewModel
+        ..riskRating = RiskRating(
+          externalRatings: [
+            ExternalRating(customerRimNo: -1, isDeleted: false),
+          ],
+          internalRatings: [],
+        )
+        ..removeExternalTableRow(0);
 
       expect(viewModel.riskRating.externalRatings, isEmpty);
       expect(viewModel.state.externalTableStatus, isNull);
     });
 
     test("removeExternalTableRow at last index marks it deleted", () {
-      viewModel.riskRating = RiskRating(
-        externalRatings: [
-          ExternalRating(customerRimNo: 100),
-          ExternalRating(customerRimNo: 200),
-          ExternalRating(customerRimNo: 300),
-        ],
-        internalRatings: [],
-      );
-
-      viewModel.removeExternalTableRow(1);
+      viewModel
+        ..riskRating = RiskRating(
+          externalRatings: [
+            ExternalRating(customerRimNo: 100),
+            ExternalRating(customerRimNo: 200),
+            ExternalRating(customerRimNo: 300),
+          ],
+          internalRatings: [],
+        )
+        ..removeExternalTableRow(1);
 
       expect(viewModel.riskRating.externalRatings![1].isDeleted, false);
       expect(viewModel.state.externalTableStatus, isNull);
@@ -846,22 +846,22 @@ void main() {
     test(
         "removeInternalTableRow marks row deleted "
         "and removes rimWithNoEntity entry", () {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(
-            customerRiskRatingId: 1,
-            customerRimNo: 123,
-            isDeletable: true,
-            rimWithNoEntity: true,
-            isDeleted: false,
-          ),
-        ],
-        externalRatings: [],
-      );
-      viewModel.rimWithNoEntity = [123];
-      viewModel.isCreditLensAvailable = false;
-
-      viewModel.removeInternalTableRow(1);
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRiskRatingId: 1,
+              customerRimNo: 123,
+              isDeletable: true,
+              rimWithNoEntity: true,
+              isDeleted: false,
+            ),
+          ],
+          externalRatings: [],
+        )
+        ..rimWithNoEntity = [123]
+        ..isCreditLensAvailable = false
+        ..removeInternalTableRow(1);
 
       expect(viewModel.riskRating.internalRatings, isEmpty);
       expect(viewModel.rimWithNoEntity, isEmpty);
@@ -872,26 +872,26 @@ void main() {
     test(
         "removeInternalTableRow keeps isCreditLensAvailable "
         "unchanged when another active deletable row exists", () {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(
-            customerRiskRatingId: 1,
-            customerRimNo: 123,
-            isDeletable: true,
-            isDeleted: false,
-          ),
-          InternalRating(
-            customerRiskRatingId: 2,
-            customerRimNo: 456,
-            isDeletable: true,
-            isDeleted: false,
-          ),
-        ],
-        externalRatings: [],
-      );
-      viewModel.isCreditLensAvailable = false;
-
-      viewModel.removeInternalTableRow(1);
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRiskRatingId: 1,
+              customerRimNo: 123,
+              isDeletable: true,
+              isDeleted: false,
+            ),
+            InternalRating(
+              customerRiskRatingId: 2,
+              customerRimNo: 456,
+              isDeletable: true,
+              isDeleted: false,
+            ),
+          ],
+          externalRatings: [],
+        )
+        ..isCreditLensAvailable = false
+        ..removeInternalTableRow(1);
 
       expect(viewModel.riskRating.internalRatings, isNotEmpty);
       expect(viewModel.isCreditLensAvailable, false);
@@ -901,20 +901,20 @@ void main() {
     test(
         "removeInternalTableRow resets CL availability "
         "when there are no active deletable rows left", () {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(
-            customerRiskRatingId: 10,
-            customerRimNo: 999,
-            isDeletable: true,
-            isDeleted: false,
-          ),
-        ],
-        externalRatings: [],
-      );
-      viewModel.isCreditLensAvailable = false;
-
-      viewModel.removeInternalTableRow(10);
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRiskRatingId: 10,
+              customerRimNo: 999,
+              isDeletable: true,
+              isDeleted: false,
+            ),
+          ],
+          externalRatings: [],
+        )
+        ..isCreditLensAvailable = false
+        ..removeInternalTableRow(10);
 
       expect(viewModel.riskRating.internalRatings, isEmpty);
       expect(viewModel.isCreditLensAvailable, false);
@@ -938,22 +938,22 @@ void main() {
     test(
         "removeInternalTableRow with rimWithNoEntity "
         "false does not modify rimWithNoEntity list", () {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(
-            customerRiskRatingId: 5,
-            customerRimNo: 321,
-            isDeletable: true,
-            rimWithNoEntity: false,
-            isDeleted: false,
-          ),
-        ],
-        externalRatings: [],
-      );
-      viewModel.rimWithNoEntity = [999];
-      viewModel.isCreditLensAvailable = false;
-
-      viewModel.removeInternalTableRow(5);
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRiskRatingId: 5,
+              customerRimNo: 321,
+              isDeletable: true,
+              rimWithNoEntity: false,
+              isDeleted: false,
+            ),
+          ],
+          externalRatings: [],
+        )
+        ..rimWithNoEntity = [999]
+        ..isCreditLensAvailable = false
+        ..removeInternalTableRow(5);
 
       expect(viewModel.rimWithNoEntity, [999]);
       expect(viewModel.riskRating.internalRatings, isEmpty);
@@ -962,22 +962,22 @@ void main() {
     test(
         "removeInternalTableRow with null customerRimNo in rimWithNoEntity row",
         () {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(
-            customerRiskRatingId: 7,
-            customerRimNo: null,
-            isDeletable: true,
-            rimWithNoEntity: true,
-            isDeleted: false,
-          ),
-        ],
-        externalRatings: [],
-      );
-      viewModel.rimWithNoEntity = [null];
-      viewModel.isCreditLensAvailable = false;
-
-      viewModel.removeInternalTableRow(7);
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRiskRatingId: 7,
+              customerRimNo: null,
+              isDeletable: true,
+              rimWithNoEntity: true,
+              isDeleted: false,
+            ),
+          ],
+          externalRatings: [],
+        )
+        ..rimWithNoEntity = [null]
+        ..isCreditLensAvailable = false
+        ..removeInternalTableRow(7);
 
       expect(viewModel.riskRating.internalRatings, isEmpty);
       expect(viewModel.isCreditLensAvailable, false);
@@ -986,26 +986,26 @@ void main() {
     test(
         "removeInternalTableRow with non-deletable "
         "remaining rows resets CL availability", () {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(
-            customerRiskRatingId: 1,
-            customerRimNo: 100,
-            isDeletable: true,
-            isDeleted: false,
-          ),
-          InternalRating(
-            customerRiskRatingId: 2,
-            customerRimNo: 200,
-            isDeletable: false, // not deletable
-            isDeleted: false,
-          ),
-        ],
-        externalRatings: [],
-      );
-      viewModel.isCreditLensAvailable = false;
-
-      viewModel.removeInternalTableRow(1);
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRiskRatingId: 1,
+              customerRimNo: 100,
+              isDeletable: true,
+              isDeleted: false,
+            ),
+            InternalRating(
+              customerRiskRatingId: 2,
+              customerRimNo: 200,
+              isDeletable: false, // not deletable
+              isDeleted: false,
+            ),
+          ],
+          externalRatings: [],
+        )
+        ..isCreditLensAvailable = false
+        ..removeInternalTableRow(1);
 
       expect(viewModel.riskRating.internalRatings[0].isDeleted, false);
       expect(viewModel.isCreditLensAvailable, false);
@@ -1125,7 +1125,8 @@ void main() {
     });
 
     test(
-        "hasDuplicatePairs returns false for mixed parseable/non-parseable unique pairs",
+        "hasDuplicatePairs returns false for mixed "
+        "parseable/non-parseable unique pairs",
         () {
       final raw = {
         "abc": "1 0",
@@ -1202,13 +1203,18 @@ void main() {
         "null entity exists and credit lens is available", (tester) async {
       await pumpToastificationApp(tester);
 
-      viewModel.isCreditLensAvailable = true;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: null, isDeleted: false),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isCreditLensAvailable = true
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRimNo: 123,
+              entityId: null,
+              isDeleted: false,
+            ),
+          ],
+          externalRatings: [],
+        );
 
       final result = viewModel.isInternalDuplicateonSave();
 
@@ -1220,13 +1226,18 @@ void main() {
     test(
         "isInternalDuplicateonSave returns false when null "
         "entity exists and credit lens is unavailable", () {
-      viewModel.isCreditLensAvailable = false;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: null, isDeleted: false),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRimNo: 123,
+              entityId: null,
+              isDeleted: false,
+            ),
+          ],
+          externalRatings: [],
+        );
 
       final result = viewModel.isInternalDuplicateonSave();
 
@@ -1235,14 +1246,15 @@ void main() {
 
     test("isInternalDuplicateonSave returns false for unique valid entries",
         () {
-      viewModel.isCreditLensAvailable = true;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: 1, isDeleted: false),
-          InternalRating(customerRimNo: 456, entityId: 2, isDeleted: false),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isCreditLensAvailable = true
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 123, entityId: 1, isDeleted: false),
+            InternalRating(customerRimNo: 456, entityId: 2, isDeleted: false),
+          ],
+          externalRatings: [],
+        );
 
       final result = viewModel.isInternalDuplicateonSave();
 
@@ -1252,13 +1264,14 @@ void main() {
     test(
         "isInternalDuplicateonSave ignores deleted items for null entity check",
         () {
-      viewModel.isCreditLensAvailable = true;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: null, isDeleted: true),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isCreditLensAvailable = true
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 123, entityId: null, isDeleted: true),
+          ],
+          externalRatings: [],
+        );
 
       final result = viewModel.isInternalDuplicateonSave();
 
@@ -1267,11 +1280,12 @@ void main() {
 
     test("isInternalDuplicateonSave returns false with empty internalRatings",
         () {
-      viewModel.isCreditLensAvailable = true;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [],
-        externalRatings: [],
-      );
+      viewModel
+        ..isCreditLensAvailable = true
+        ..riskRating = RiskRating(
+          internalRatings: [],
+          externalRatings: [],
+        );
 
       final result = viewModel.isInternalDuplicateonSave();
 
@@ -1281,14 +1295,15 @@ void main() {
     test(
         "isInternalDuplicateonSave returns false with "
         "CL unavailable and all entities present", () {
-      viewModel.isCreditLensAvailable = false;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: 1, isDeleted: false),
-          InternalRating(customerRimNo: 456, entityId: 2, isDeleted: false),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 123, entityId: 1, isDeleted: false),
+            InternalRating(customerRimNo: 456, entityId: 2, isDeleted: false),
+          ],
+          externalRatings: [],
+        );
 
       final result = viewModel.isInternalDuplicateonSave();
 
@@ -1666,13 +1681,14 @@ void main() {
   // updateRatingsFromCL / refresh
   group("updateRatingsFromCL / refresh", () {
     test("updateRatingsFromCL updates internal ratings list cache", () async {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: 1),
-        ],
-        externalRatings: [],
-      );
-      viewModel.updatedRiskRating = [];
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 123, entityId: 1),
+          ],
+          externalRatings: [],
+        )
+        ..updatedRiskRating = [];
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: 123, entityId: 1),
@@ -1687,14 +1703,15 @@ void main() {
     });
 
     test("updateRatingsFromCL aggregates multiple rows", () async {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: 1),
-          InternalRating(customerRimNo: 456, entityId: 2),
-        ],
-        externalRatings: [],
-      );
-      viewModel.updatedRiskRating = [];
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 123, entityId: 1),
+            InternalRating(customerRimNo: 456, entityId: 2),
+          ],
+          externalRatings: [],
+        )
+        ..updatedRiskRating = [];
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: 123, entityId: 1),
@@ -1714,14 +1731,15 @@ void main() {
     });
 
     test("updateRatingsFromCL verifies both rows were requested", () async {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 1, entityId: 11),
-          InternalRating(customerRimNo: 2, entityId: 22),
-        ],
-        externalRatings: [],
-      );
-      viewModel.updatedRiskRating = [];
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 1, entityId: 11),
+            InternalRating(customerRimNo: 2, entityId: 22),
+          ],
+          externalRatings: [],
+        )
+        ..updatedRiskRating = [];
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: 1, entityId: 11),
@@ -1740,13 +1758,14 @@ void main() {
 
     test("updateRatingsFromCL passes null entityId when existing entityId is 0",
         () async {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: 0),
-        ],
-        externalRatings: [],
-      );
-      viewModel.updatedRiskRating = [];
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 123, entityId: 0),
+          ],
+          externalRatings: [],
+        )
+        ..updatedRiskRating = [];
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: 123, entityId: null),
@@ -1764,13 +1783,14 @@ void main() {
     test(
         "updateRatingsFromCL executes non-empty "
         "updatedRiskRating inner loop with null entityId", () async {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: null),
-        ],
-        externalRatings: [],
-      );
-      viewModel.updatedRiskRating = [];
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 123, entityId: null),
+          ],
+          externalRatings: [],
+        )
+        ..updatedRiskRating = [];
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: 123, entityId: null),
@@ -1789,13 +1809,14 @@ void main() {
 
     test("updateRatingsFromCL sets isCreditLensAvailable false when CL is down",
         () async {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: 1),
-        ],
-        externalRatings: [],
-      );
-      viewModel.updatedRiskRating = [];
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 123, entityId: 1),
+          ],
+          externalRatings: [],
+        )
+        ..updatedRiskRating = [];
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: 123, entityId: 1),
@@ -1812,14 +1833,15 @@ void main() {
     test(
         "updateRatingsFromCL handles repository "
         "error and still emits loaded state", () async {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: 1),
-        ],
-        externalRatings: [],
-      );
-      viewModel.updatedRiskRating = [];
-      viewModel.isCreditLensAvailable = true;
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 123, entityId: 1),
+          ],
+          externalRatings: [],
+        )
+        ..updatedRiskRating = []
+        ..isCreditLensAvailable = true;
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: 123, entityId: 1),
@@ -1833,11 +1855,12 @@ void main() {
 
     test("updateRatingsFromCL with empty internal ratings still ends loaded",
         () async {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [],
-        externalRatings: [],
-      );
-      viewModel.updatedRiskRating = [];
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [],
+          externalRatings: [],
+        )
+        ..updatedRiskRating = [];
 
       await viewModel.updateRatingsFromCL();
 
@@ -1846,13 +1869,14 @@ void main() {
     });
 
     test("onRefreshPressed emits final loaded state", () async {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 321, entityId: 7),
-        ],
-        externalRatings: [],
-      );
-      viewModel.updatedRiskRating = [];
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 321, entityId: 7),
+          ],
+          externalRatings: [],
+        )
+        ..updatedRiskRating = [];
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: 321, entityId: 7),
@@ -1870,13 +1894,14 @@ void main() {
     test(
         "onRefreshPressed still ends loaded when "
         "underlying refresh throws internally", () async {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 999, entityId: 99),
-        ],
-        externalRatings: [],
-      );
-      viewModel.updatedRiskRating = [];
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 999, entityId: 99),
+          ],
+          externalRatings: [],
+        )
+        ..updatedRiskRating = [];
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: 999, entityId: 99),
@@ -1891,14 +1916,15 @@ void main() {
     test(
         "updateRatingsFromCL sets "
         "isCreditLensAvailable true after CL comes back", () async {
-      viewModel.isCreditLensAvailable = false;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 200, entityId: 3),
-        ],
-        externalRatings: [],
-      );
-      viewModel.updatedRiskRating = [];
+      viewModel
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 200, entityId: 3),
+          ],
+          externalRatings: [],
+        )
+        ..updatedRiskRating = [];
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: 200, entityId: 3),
@@ -1913,14 +1939,15 @@ void main() {
 
     test("updateRatingsFromCL stops early when first row has CL down",
         () async {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 1, entityId: 1),
-          InternalRating(customerRimNo: 2, entityId: 2),
-        ],
-        externalRatings: [],
-      );
-      viewModel.updatedRiskRating = [];
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 1, entityId: 1),
+            InternalRating(customerRimNo: 2, entityId: 2),
+          ],
+          externalRatings: [],
+        )
+        ..updatedRiskRating = [];
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: 1, entityId: 1),
@@ -1938,13 +1965,14 @@ void main() {
 
     test("updateRatingsFromCL matching entityId branch updates rating in loop",
         () async {
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 500, entityId: 50),
-        ],
-        externalRatings: [],
-      );
-      viewModel.updatedRiskRating = [];
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 500, entityId: 50),
+          ],
+          externalRatings: [],
+        )
+        ..updatedRiskRating = [];
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: 500, entityId: 50),
@@ -1965,13 +1993,14 @@ void main() {
         "duplicate rim-entity is detected", (tester) async {
       await pumpToastificationApp(tester);
 
-      viewModel.isCreditLensAvailable = true;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: 1),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isCreditLensAvailable = true
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 123, entityId: 1),
+          ],
+          externalRatings: [],
+        );
 
       await viewModel.onSelectedEntities(rim: 123, entity: 1);
 
@@ -1988,13 +2017,14 @@ void main() {
     test(
         "onSelectedEntities sets entity and "
         "returns when credit lens is unavailable", () async {
-      viewModel.isCreditLensAvailable = false;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: null),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 123, entityId: null),
+          ],
+          externalRatings: [],
+        );
 
       await viewModel.onSelectedEntities(
         rim: 123,
@@ -2014,13 +2044,14 @@ void main() {
     test(
         "onSelectedEntities with CL unavailable but "
         "null index continues to repository lookup", () async {
-      viewModel.isCreditLensAvailable = false;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 321),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 321),
+          ],
+          externalRatings: [],
+        );
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: 321, entityId: 8),
@@ -2208,11 +2239,12 @@ void main() {
         "searchEntity mode and clears searchedRim path", (tester) async {
       await pumpToastificationApp(tester);
 
-      viewModel.riskRating = RiskRating(
-        internalRatings: [],
-        externalRatings: [],
-      );
-      viewModel.rimWithNoEntity = [123];
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [],
+          externalRatings: [],
+        )
+        ..rimWithNoEntity = [123];
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: null, entityId: 9),
@@ -2237,17 +2269,18 @@ void main() {
         (tester) async {
       await pumpToastificationApp(tester);
 
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(
-            customerRimNo: 123,
-            searchedRim: 123,
-            entityId: null,
-          ),
-        ],
-        externalRatings: [],
-      );
-      viewModel.rimWithNoEntity = [123];
+      viewModel
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRimNo: 123,
+              searchedRim: 123,
+              entityId: null,
+            ),
+          ],
+          externalRatings: [],
+        )
+        ..rimWithNoEntity = [123];
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: null, entityId: 20),
@@ -2347,13 +2380,14 @@ void main() {
     test(
         "onSelectedEntities CL down sets isCreditLensAvailable "
         "to true when subsequent call is up", () async {
-      viewModel.isCreditLensAvailable = false;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 300),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 300),
+          ],
+          externalRatings: [],
+        );
 
       when(
         () => mockRepo.getUpdatedRatingDetails(rimNo: 300, entityId: 30),
@@ -2593,13 +2627,18 @@ void main() {
         "entity exists and credit lens is available", (tester) async {
       await pumpToastificationApp(tester);
 
-      viewModel.isCreditLensAvailable = true;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: null, isDeleted: false),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isCreditLensAvailable = true
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRimNo: 123,
+              entityId: null,
+              isDeleted: false,
+            ),
+          ],
+          externalRatings: [],
+        );
 
       await viewModel.onSavePressed();
 
@@ -2615,11 +2654,12 @@ void main() {
     test(
         "onSavePressed code path without valid "
         "form still keeps structure intact", () async {
-      viewModel.isCreditLensAvailable = false;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [],
-        externalRatings: [],
-      );
+      viewModel
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [],
+          externalRatings: [],
+        );
 
       await viewModel.onSavePressed();
 
@@ -2628,13 +2668,18 @@ void main() {
 
     test("onSavePressed with invalid form and no duplicates does not save",
         () async {
-      viewModel.isCreditLensAvailable = false;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: null, isDeleted: false),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRimNo: 123,
+              entityId: null,
+              isDeleted: false,
+            ),
+          ],
+          externalRatings: [],
+        );
 
       await viewModel.onSavePressed();
 
@@ -2650,20 +2695,20 @@ void main() {
         (tester) async {
       await pumpToastificationApp(tester);
       Globals.user = User(currentRole: Role(userRole: UserRole.creditAnalyst));
-      final vm = ProposedEditableRiskRatingViewModel();
-      vm.repository = mockRepo;
-      vm.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(
-            customerRimNo: 123,
-            entityId: 1,
-            proposedByCredit: "20",
-          ),
-        ],
-        externalRatings: [],
-      );
-      vm.isCreditLensAvailable = true;
-      vm.amendPagemode = PageMode.edit;
+      final vm = ProposedEditableRiskRatingViewModel()
+        ..repository = mockRepo
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRimNo: 123,
+              entityId: 1,
+              proposedByCredit: "20",
+            ),
+          ],
+          externalRatings: [],
+        )
+        ..isCreditLensAvailable = true
+        ..amendPagemode = PageMode.edit;
       await vm.onSavePressed();
 
       verify(
@@ -2680,19 +2725,19 @@ void main() {
         "still catches repository exception", (tester) async {
       await pumpToastificationApp(tester);
       Globals.user = User(currentRole: Role(userRole: UserRole.creditAnalyst));
-      final vm = ProposedEditableRiskRatingViewModel();
-      vm.repository = mockRepo;
-      vm.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(
-            customerRimNo: 123,
-            entityId: 1,
-            proposedByCredit: "20",
-          ),
-        ],
-        externalRatings: [],
-      );
-      vm.amendPagemode = PageMode.edit;
+      final vm = ProposedEditableRiskRatingViewModel()
+        ..repository = mockRepo
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRimNo: 123,
+              entityId: 1,
+              proposedByCredit: "20",
+            ),
+          ],
+          externalRatings: [],
+        )
+        ..amendPagemode = PageMode.edit;
       when(
         () => mockRepo.saveRatings(
           customerRating: any(named: "customerRating"),
@@ -2715,15 +2760,15 @@ void main() {
         (tester) async {
       await pumpToastificationApp(tester);
 
-      final vm = NonEditableRiskRatingViewModel();
-      vm.repository = mockRepo;
-      vm.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: 1),
-        ],
-        externalRatings: [],
-      );
-      vm.isCreditLensAvailable = true;
+      final vm = NonEditableRiskRatingViewModel()
+        ..repository = mockRepo
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 123, entityId: 1),
+          ],
+          externalRatings: [],
+        )
+        ..isCreditLensAvailable = true;
 
       await vm.onSavePressed(isReadOnly: true);
 
@@ -2737,20 +2782,25 @@ void main() {
     });
 
     testWidgets(
-        "onSavePressed FI flow returns early when invalid ext/internal rim exists",
+        "onSavePressed FI flow returns early "
+        "when invalid ext/internal rim exists",
         (tester) async {
-      final vm = NonEditableRiskRatingViewModel();
-      vm.repository = mockRepo;
-      vm.isFiFlow = true;
-      vm.isCreditLensAvailable = false;
-      vm.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: null, entityId: null, isDeleted: false),
-        ],
-        externalRatings: [
-          ExternalRating(customerRimNo: -1),
-        ],
-      );
+      final vm = NonEditableRiskRatingViewModel()
+        ..repository = mockRepo
+        ..isFiFlow = true
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRimNo: null,
+              entityId: null,
+              isDeleted: false,
+            ),
+          ],
+          externalRatings: [
+            ExternalRating(customerRimNo: -1),
+          ],
+        );
 
       await pumpFormApp(tester, vm.formKey);
 
@@ -2768,16 +2818,16 @@ void main() {
     testWidgets(
         "onSavePressed non-FI validated form "
         "returns early for invalid external rim", (tester) async {
-      final vm = NonEditableRiskRatingViewModel();
-      vm.repository = mockRepo;
-      vm.isFiFlow = false;
-      vm.isCreditLensAvailable = false;
-      vm.riskRating = RiskRating(
-        internalRatings: [],
-        externalRatings: [
-          ExternalRating(customerRimNo: -1),
-        ],
-      );
+      final vm = NonEditableRiskRatingViewModel()
+        ..repository = mockRepo
+        ..isFiFlow = false
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [],
+          externalRatings: [
+            ExternalRating(customerRimNo: -1),
+          ],
+        );
 
       await pumpFormApp(tester, vm.formKey);
 
@@ -2797,14 +2847,14 @@ void main() {
         "isReadOnly false runs both branches", (tester) async {
       await pumpToastificationApp(tester);
 
-      final vm = ProposedEditableRiskRatingViewModel();
-      vm.repository = mockRepo;
-      vm.isFiFlow = false;
-      vm.isCreditLensAvailable = false;
-      vm.riskRating = RiskRating(
-        internalRatings: [],
-        externalRatings: [],
-      );
+      final vm = ProposedEditableRiskRatingViewModel()
+        ..repository = mockRepo
+        ..isFiFlow = false
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [],
+          externalRatings: [],
+        );
 
       await vm.onSavePressed(isReadOnly: false);
 
@@ -2821,16 +2871,17 @@ void main() {
         (tester) async {
       await pumpFormApp(tester, viewModel.formKey);
 
-      viewModel.isFiFlow = false;
-      viewModel.isCreditLensAvailable = false;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: 1, isDeleted: false),
-        ],
-        externalRatings: [
-          ExternalRating(customerRimNo: 456),
-        ],
-      );
+      viewModel
+        ..isFiFlow = false
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 123, entityId: 1, isDeleted: false),
+          ],
+          externalRatings: [
+            ExternalRating(customerRimNo: 456),
+          ],
+        );
       viewModel.riskRating.comments = "Test save comment";
 
       await viewModel.onSavePressed();
@@ -2855,24 +2906,24 @@ void main() {
       when(externalEditor.getText)
           .thenAnswer((_) async => "<p>External FI Comment</p>");
 
-      viewModel.internalRatingControler = internalEditor;
-      viewModel.externalRatingControler = externalEditor;
-
-      viewModel.isFiFlow = true;
-      viewModel.isCreditLensAvailable = false;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(
-            customerRimNo: 111,
-            entityId: null,
-            isDeleted: false,
-            proposedByCredit: "10",
-          ),
-        ],
-        externalRatings: [
-          ExternalRating(customerRimNo: 222),
-        ],
-      );
+      viewModel
+        ..internalRatingControler = internalEditor
+        ..externalRatingControler = externalEditor
+        ..isFiFlow = true
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(
+              customerRimNo: 111,
+              entityId: null,
+              isDeleted: false,
+              proposedByCredit: "10",
+            ),
+          ],
+          externalRatings: [
+            ExternalRating(customerRimNo: 222),
+          ],
+        );
 
       await viewModel.onSavePressed();
 
@@ -2889,14 +2940,15 @@ void main() {
         (tester) async {
       await pumpFormApp(tester, viewModel.formKey);
 
-      viewModel.isFiFlow = false;
-      viewModel.isCreditLensAvailable = false;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: 123, entityId: 1, isDeleted: false),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isFiFlow = false
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: 123, entityId: 1, isDeleted: false),
+          ],
+          externalRatings: [],
+        );
       viewModel.riskRating.comments = "Test";
 
       when(() => mockCommonRepo.saveComment(any()))
@@ -2947,13 +2999,14 @@ void main() {
             mockCustomerRepo.searchUserDetailsForCL(any(), any(), any(), any()),
       ).thenAnswer((_) async => fakeCustomer);
 
-      viewModel.isFiFlow = true;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: null, customerRiskRatingId: 1),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isFiFlow = true
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: null, customerRiskRatingId: 1),
+          ],
+          externalRatings: [],
+        );
 
       await viewModel.searchByRim(0, "999");
 
@@ -2977,14 +3030,15 @@ void main() {
             mockCustomerRepo.searchUserDetailsForCL(any(), any(), any(), any()),
       ).thenAnswer((_) async => fakeCustomer);
 
-      viewModel.isFiFlow = false;
-      viewModel.isCreditLensAvailable = false;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: null, customerRiskRatingId: 1),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isFiFlow = false
+        ..isCreditLensAvailable = false
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: null, customerRiskRatingId: 1),
+          ],
+          externalRatings: [],
+        );
 
       await viewModel.searchByRim(0, "500");
 
@@ -3020,14 +3074,15 @@ void main() {
         () => mockCustomerRepo.getCustomerInformationByRim(any()),
       ).thenAnswer((_) async => Customer(id: "600"));
 
-      viewModel.isFiFlow = false;
-      viewModel.isCreditLensAvailable = true;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: null, customerRiskRatingId: 1),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isFiFlow = false
+        ..isCreditLensAvailable = true
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: null, customerRiskRatingId: 1),
+          ],
+          externalRatings: [],
+        );
 
       await viewModel.searchByRim(0, "600");
 
@@ -3061,14 +3116,15 @@ void main() {
         (_) async => [UpdatedRating(rimNo: 700, entityId: 1, isClDown: true)],
       );
 
-      viewModel.isFiFlow = false;
-      viewModel.isCreditLensAvailable = true;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: null, customerRiskRatingId: 1),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isFiFlow = false
+        ..isCreditLensAvailable = true
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: null, customerRiskRatingId: 1),
+          ],
+          externalRatings: [],
+        );
 
       await viewModel.searchByRim(0, "700");
 
@@ -3137,14 +3193,15 @@ void main() {
         ],
       );
 
-      viewModel.isFiFlow = false;
-      viewModel.isCreditLensAvailable = true;
-      viewModel.riskRating = RiskRating(
-        internalRatings: [
-          InternalRating(customerRimNo: null, customerRiskRatingId: 1),
-        ],
-        externalRatings: [],
-      );
+      viewModel
+        ..isFiFlow = false
+        ..isCreditLensAvailable = true
+        ..riskRating = RiskRating(
+          internalRatings: [
+            InternalRating(customerRimNo: null, customerRiskRatingId: 1),
+          ],
+          externalRatings: [],
+        );
 
       await viewModel.searchByRim(0, "902");
 

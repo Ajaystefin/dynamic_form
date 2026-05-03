@@ -35,7 +35,7 @@ class CollateralDepandant extends StatelessWidget {
 
     return LabelWidget(
       label: "facilities.createFacility.collateralDependant".tr(),
-      isRequired: (!viewModel.isFIFlow),
+      isRequired: !viewModel.isFIFlow,
       child: CustomRadioButton<Reference>(
         itemBuilder: (context, item, isSelected, isEnabled) =>
             Text(item.name ?? ""),

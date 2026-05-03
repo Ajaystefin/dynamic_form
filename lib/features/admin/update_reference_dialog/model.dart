@@ -38,13 +38,13 @@ class UpdateReferenceDialogViewModel
 
   ReferenceType? selectedReferenceType;
 
-  List<TextInputFormatter> nameFormatters = [],
-      descriptionFormatters = [],
-      reference1Formatters = [],
-      reference2Formatters = [],
-      reference3Formatters = [],
-      reference4Formatters = [],
-      reference5Formatters = [];
+  List<TextInputFormatter> nameFormatters = [];
+  List<TextInputFormatter> descriptionFormatters = [];
+  List<TextInputFormatter> reference1Formatters = [];
+  List<TextInputFormatter> reference2Formatters = [];
+  List<TextInputFormatter> reference3Formatters = [];
+  List<TextInputFormatter> reference4Formatters = [];
+  List<TextInputFormatter> reference5Formatters = [];
   List<String>? statusListValue;
   List<String> statusList = [
     Status.active.name.capitalizeFirstLetter(),
@@ -175,7 +175,7 @@ class UpdateReferenceDialogViewModel
   /// the dialog.
   Future<void> onSaveButtonClick(BuildContext context) async {
     try {
-      if (!(formKey.currentState!.validate())) {
+      if (!formKey.currentState!.validate()) {
         emit(state.copyWith(saveButtonStatus: LoadingStatus.loaded));
       } else {
         formKey.currentState?.save();
@@ -326,7 +326,12 @@ class UpdateReferenceDialogViewModel
     }
 
     // Convert JSON-escaped backslashes \\ -> \  (important for \s, \d, etc.)
-    s = s.replaceAll(r"\", "");
+    // s = s.replaceAll(r"\", ""); // not able to enter char except 's'
+
+    // Instead using this approach
+    if (s.contains(r"\")) {
+      return fallback;
+    }
 
     // If it still ends up empty, use fallback
     if (s.trim().isEmpty) return fallback;

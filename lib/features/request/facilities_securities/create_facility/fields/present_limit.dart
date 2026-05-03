@@ -54,15 +54,16 @@ class PresentLimit extends StatelessWidget {
               : (hasCountryCodes ? [viewModel.currencyCodes.first] : []),
           onSelected: (selectedValue) {
             if (selectedValue.isNotEmpty) {
-              viewModel.getFacility.presentLimitValue = (selectedValue.first);
-              viewModel.onCurrencyChanged(
-                selectedValue.first,
-                CurrencyField.presentLimit,
-              );
-              viewModel.getCurrencyRates(
-                selectedValue.first,
-                CurrencyField.presentLimit,
-              );
+              viewModel.getFacility.presentLimitValue = selectedValue.first;
+              viewModel
+                ..onCurrencyChanged(
+                  selectedValue.first,
+                  CurrencyField.presentLimit,
+                )
+                ..getCurrencyRates(
+                  selectedValue.first,
+                  CurrencyField.presentLimit,
+                );
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {

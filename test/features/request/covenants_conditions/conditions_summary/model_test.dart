@@ -81,18 +81,14 @@ void main() {
         HiveStorage(encryptionKey: TestConfig.testEncryptionKeyBytes);
     storageService.setStorage(testHiveStorage);
 
-    viewModel = ConditionsSummaryViewModel(
-        //formKey: GlobalKey<FormState>(),
-        //comments: <dynamic>[], // or <CommentModel>[]
-        );
-
-    viewModel.repository = mockConditionRepo;
-    viewModel.commonRepo = mockCommonRepo;
-    viewModel.requestRepo = mockRequestRepo;
+    mockReferenceDataService = MockReferenceDataService();
+    viewModel = ConditionsSummaryViewModel()
+      ..repository = mockConditionRepo
+      ..commonRepo = mockCommonRepo
+      ..requestRepo = mockRequestRepo
+      ..referenceDataService = mockReferenceDataService;
     registerFallbackValue(Comment(comment: "Test Comment"));
     AlertManager.overrideInstance(mockAlertManager);
-    mockReferenceDataService = MockReferenceDataService();
-    viewModel.referenceDataService = mockReferenceDataService;
   });
 
   tearDownAll(() {
@@ -223,13 +219,14 @@ void main() {
     });
 
     test("should handle strategy comment assignment", () {
-      viewModel.strategyComment = "Test strategy comment";
-      expect(viewModel.strategyComment, "Test strategy comment");
+      expect(
+        (viewModel..strategyComment = "Test strategy comment").strategyComment,
+        "Test strategy comment",
+      );
     });
 
     test("should handle isCovenant assignment", () {
-      viewModel.isCovenant = 1;
-      expect(viewModel.isCovenant, 1);
+      expect((viewModel..isCovenant = 1).isCovenant, 1);
     });
 
     test("should handle condition list modifications", () {
@@ -242,13 +239,11 @@ void main() {
 
   group("pageMode & canEdit", () {
     test("canEdit is true when pageMode is edit", () {
-      viewModel.pageMode = PageMode.edit;
-      expect(viewModel.canEdit, isTrue);
+      expect((viewModel..pageMode = PageMode.edit).canEdit, isTrue);
     });
 
     test("canEdit is false when pageMode is not edit", () {
-      viewModel.pageMode = PageMode.na;
-      expect(viewModel.canEdit, isFalse);
+      expect((viewModel..pageMode = PageMode.na).canEdit, isFalse);
     });
   });
 

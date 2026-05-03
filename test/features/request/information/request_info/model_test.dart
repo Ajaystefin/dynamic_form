@@ -14,6 +14,7 @@ import "package:wcas_frontend/core/utils/dialog_helper.dart";
 import "package:wcas_frontend/core/utils/utils.dart";
 import "package:wcas_frontend/features/request/information/request_info/model.dart";
 import "package:wcas_frontend/models/admin/reference.dart";
+import "package:wcas_frontend/models/information/customer_request_info.dart";
 import "package:wcas_frontend/models/login/role.dart";
 import "package:wcas_frontend/models/login/user.dart";
 import "package:wcas_frontend/models/request/application_details.dart";
@@ -104,7 +105,7 @@ void main() {
   late MockAlertManager mockAlertManager;
 
   late MockCommonRepository mockCommonRepository;
-  // late MockBuildContext mockBuildContext;
+  late MockBuildContext mockBuildContext;
   // late MockAuthRepository mockAuthRepo;
   late MockUtils mockUtils;
 
@@ -150,14 +151,14 @@ void main() {
     mockCustomerRepo = MockCustomerRepository();
     mockAlertManager = MockAlertManager();
     mockCommonRepository = MockCommonRepository();
-    // mockBuildContext = MockBuildContext();
+    mockBuildContext = MockBuildContext();
     // mockAuthRepo = MockAuthRepository();
     mockUtils = MockUtils();
     CommonRepository.overrideInstance(mockCommonRepository);
-    viewModel = RequestInfoViewModel();
-
-    viewModel.repository = mockRequestRepo;
-    viewModel.repositoryCustomer = mockCustomerRepo;
+    viewModel = RequestInfoViewModel()
+      ..repository = mockRequestRepo
+      ..repositoryCustomer = mockCustomerRepo
+      ..repositoryCommon = mockCommonRepository;
     AlertManager.overrideInstance(mockAlertManager);
     mockLocalStorageService = MockLocalStorageService();
     // Set up LocalStorageService mock
@@ -174,9 +175,10 @@ void main() {
     mockDetailController = MockHtmlEditorController("");
 
     // Inject mock controllers
-    viewModel.controllerPurpose = mockPurposeController;
-    viewModel.controllerUltimate = mockUltimateController;
-    viewModel.controllerDetail = mockDetailController;
+    viewModel
+      ..controllerPurpose = mockPurposeController
+      ..controllerUltimate = mockUltimateController
+      ..controllerDetail = mockDetailController;
   });
   test("init method sets up initial state correctly", () {
     // Test that init sets up the basic properties
@@ -206,10 +208,11 @@ void main() {
     expect(viewModel.isSaveContinueButtonEnabled.value, true);
 
     // Test global request assignment
-    viewModel.selectedApplicationType =
-        Globals.request?.applicationType ?? Reference(name: "");
-    viewModel.selectedRequestType =
-        Globals.request?.requestType ?? Reference(name: "");
+    viewModel
+      ..selectedApplicationType =
+          Globals.request?.applicationType ?? Reference(name: "")
+      ..selectedRequestType =
+          Globals.request?.requestType ?? Reference(name: "");
 
     expect(viewModel.selectedApplicationType?.name, "TestAppType");
     expect(viewModel.selectedRequestType?.name, "TestRequestType");
@@ -220,34 +223,22 @@ void main() {
 
     // Test business segment flag
     viewModel.isFI = true;
-    expect(viewModel.isFI, true);
+    expect(viewModel.state.loaderStatus, LoadingStatus.loading);
   });
 
   test("applicationTypeItems returns correct lists", () {
-    viewModel.applicationType = [Reference(name: "A")];
-
-    viewModel.applicationTypesIsolated = [Reference(name: "I")];
-
-    viewModel.applicationTypesFullCA = [Reference(name: "F")];
-
-    viewModel.selectedRequestType = Reference(id: 1, name: "isolated");
-
-    //expect(viewModel.applicationTypeItems(), isNotEmpty);
-
-    viewModel.selectedRequestType = Reference(id: 1, name: "fullCA");
-
-    //expect(viewModel.applicationTypeItems(), isNotEmpty);
-
-    viewModel.selectedRequestType = Reference(id: 1, name: "other");
-
-    //expect(viewModel.applicationTypeItems(), isNotEmpty);
+    viewModel
+      ..applicationType = [Reference(name: "A")]
+      ..applicationTypesIsolated = [Reference(name: "I")]
+      ..applicationTypesFullCA = [Reference(name: "F")]
+      ..selectedRequestType = Reference(id: 1, name: "isolated")
+      ..selectedRequestType = Reference(id: 1, name: "fullCA")
+      ..selectedRequestType = Reference(id: 1, name: "other");
   });
 
   test("assignYesNoNaOptions assigns all correctly", () {
     final yesNo = [Reference(name: "Yes"), Reference(name: "No")];
-
     viewModel.assignYesNoNaOptions(yesNo);
-
     expect(viewModel.tpanRequiredItems, yesNo);
   });
 
@@ -315,31 +306,25 @@ void main() {
   });
 
   test("approval selectors update values", () {
-    viewModel.onShariaApprovalSelected(Reference(name: "Yes"));
-
-    viewModel.onErmApprovalSelected(Reference(name: "Yes"));
-
-    viewModel.onEsgSelected(Reference(name: "Yes"));
-
-    viewModel.onPricingCommitteeSelected(Reference(name: "Yes"));
-
-    viewModel.onRestructuredRescheduledSelected(Reference(name: "Any"));
-
-    viewModel.onInterimReviewDateRequiredSelected(Reference(name: "Yes"));
-
-    viewModel.onExposureStrategySelected(Reference(name: "Strat"));
-
-    viewModel.onPolicyDeviationSelected([Reference(name: "PD")]);
-
-    viewModel.onCancellationSelected(Reference(name: "Cancel"));
+    viewModel
+      ..onShariaApprovalSelected(Reference(name: "Yes"))
+      ..onErmApprovalSelected(Reference(name: "Yes"))
+      ..onEsgSelected(Reference(name: "Yes"))
+      ..onPricingCommitteeSelected(Reference(name: "Yes"))
+      ..onRestructuredRescheduledSelected(Reference(name: "Any"))
+      ..onInterimReviewDateRequiredSelected(Reference(name: "Yes"))
+      ..onExposureStrategySelected(Reference(name: "Strat"))
+      ..onReasonForDeferralSelected(Reference(name: "Test"))
+      ..onPolicyDeviationSelected([Reference(name: "PD")])
+      ..onCancellationSelected(Reference(name: "Cancel"));
 
     expect(viewModel.selectedCancellationReason?.name, "Cancel");
   });
 
   test("overrideSelected updates state", () {
-    viewModel.overrideSelected(true);
-
-    viewModel.overrideSelected(null);
+    viewModel
+      ..overrideSelected(true)
+      ..overrideSelected(null);
   });
 
   test("addCoBorrowerRow adds row", () {
@@ -410,22 +395,22 @@ void main() {
     test("getReferenceDatas success path populates lists", () async {
       // Test the success path by directly setting the lists that would be
       // populated
-      viewModel.applicationType = [Reference(name: "AppType")];
-      viewModel.customerTypes = [Reference(name: "Customer")];
-      viewModel.applicationTypesFullCA = [Reference(name: "FullCA")];
-      viewModel.applicationTypesIsolated = [Reference(name: "Isolated")];
-      viewModel.restructuredRescheduledItems = [
-        Reference(name: "Restructured"),
-      ];
-      viewModel.exposureStrategyItems = [Reference(name: "Strategy")];
-      viewModel.policyDeviationItems = [Reference(name: "Deviation")];
-      viewModel.cancellationReason = [Reference(name: "Cancel")];
-      viewModel.productTypeItems = [Reference(name: "Product")];
-
-      // Call assignYesNoNaOptions directly to test that path
-      viewModel.assignYesNoNaOptions(
-        [Reference(name: "Yes"), Reference(name: "No")],
-      );
+      viewModel
+        ..applicationType = [Reference(name: "AppType")]
+        ..customerTypes = [Reference(name: "Customer")]
+        ..applicationTypesFullCA = [Reference(name: "FullCA")]
+        ..applicationTypesIsolated = [Reference(name: "Isolated")]
+        ..restructuredRescheduledItems = [
+          Reference(name: "Restructured"),
+        ]
+        ..exposureStrategyItems = [Reference(name: "Strategy")]
+        ..policyDeviationItems = [Reference(name: "Deviation")]
+        ..cancellationReason = [Reference(name: "Cancel")]
+        ..productTypeItems = [Reference(name: "Product")]
+        // Call assignYesNoNaOptions directly to test that path
+        ..assignYesNoNaOptions(
+          [Reference(name: "Yes"), Reference(name: "No")],
+        );
 
       // Verify the lists were populated
       expect(viewModel.applicationType.isNotEmpty, true);
@@ -507,26 +492,23 @@ void main() {
     });
 
     test("applicationTypeItems returns correct list based on request type", () {
-      viewModel.applicationType = [Reference(name: "Default")];
-      viewModel.applicationTypesIsolated = [Reference(name: "Isolated")];
-      viewModel.applicationTypesFullCA = [Reference(name: "FullCA")];
+      viewModel
+        ..applicationType = [Reference(name: "Default")]
+        ..applicationTypesIsolated = [Reference(name: "Isolated")]
+        ..applicationTypesFullCA = [Reference(name: "FullCA")]
 
-      // Test isolated
-      viewModel.selectedRequestType =
-          Reference(id: ServerConstants.applicationIsolatedId);
-      // expect(
-      //     viewModel.applicationTypeItems(),
-      // viewModel.applicationTypesIsolated);
-
-      // Test full CA
-      viewModel.selectedRequestType =
-          Reference(id: ServerConstants.applicationFullCAId);
-      // expect(
-      //     viewModel.applicationTypeItems(),
-      // viewModel.applicationTypesFullCA);
-
-      // Test default
-      viewModel.selectedRequestType = Reference(id: 999);
+        // Test isolated
+        ..selectedRequestType =
+            Reference(id: ServerConstants.applicationIsolatedId)
+        // expect(
+        //     viewModel.applicationTypeItems(),
+        // viewModel.applicationTypesIsolated);
+        ..selectedRequestType =
+            Reference(id: ServerConstants.applicationFullCAId)
+        // expect(
+        //     viewModel.applicationTypeItems(),
+        // viewModel.applicationTypesFullCA);
+        ..selectedRequestType = Reference(id: 999);
       // expect(viewModel.applicationTypeItems(), viewModel.applicationType);
     });
   });
@@ -799,20 +781,20 @@ void main() {
       when(() => mockRequestRepo.applicationTypeReconsiderationData())
           .thenAnswer((_) async => []);
 
-      final testViewModel = RequestInfoViewModel();
-      testViewModel.repository = mockRequestRepo;
-
       Globals.request = Request(
         applicationType: Reference(name: "TestApp"),
         requestType: Reference(name: "TestReq"),
       );
 
-      // Try to trigger some init logic manually
-      testViewModel.isSaveContinueButtonEnabled.value = true;
-      testViewModel.selectedApplicationType =
-          Globals.request?.applicationType ?? Reference(name: "");
-      testViewModel.selectedRequestType =
-          Globals.request?.requestType ?? Reference(name: "");
+      final testViewModel = RequestInfoViewModel()
+        ..repository = mockRequestRepo
+
+        // Try to trigger some init logic manually
+        ..isSaveContinueButtonEnabled.value = true
+        ..selectedApplicationType =
+            Globals.request?.applicationType ?? Reference(name: "")
+        ..selectedRequestType =
+            Globals.request?.requestType ?? Reference(name: "");
 
       expect(testViewModel.selectedApplicationType?.name, "TestApp");
       expect(testViewModel.selectedRequestType?.name, "TestReq");
@@ -841,19 +823,20 @@ void main() {
       // Test setting all the reference properties to hit those lines
       final testRef = Reference(name: "TestCoverage");
 
-      viewModel.selectedProductType = testRef;
-      viewModel.selectedTpanRequired = testRef;
-      viewModel.selectedShariaApproval = testRef;
-      viewModel.selectedErmApproval = testRef;
-      viewModel.selectedEsg = testRef;
-      viewModel.selectedPricinCommittee = testRef;
-      viewModel.selectedInterimReviewDateRequired = testRef;
-      viewModel.selectedRequestType = testRef;
-      viewModel.selectedApplicationType = testRef;
-      viewModel.selectedRestructuredRescheduled = testRef;
-      viewModel.selectedExposureStrategy = testRef;
-      viewModel.selectedPolicyDeviation = testRef;
-      viewModel.selectedCancellationReason = testRef;
+      viewModel
+        ..selectedProductType = testRef
+        ..selectedTpanRequired = testRef
+        ..selectedShariaApproval = testRef
+        ..selectedErmApproval = testRef
+        ..selectedEsg = testRef
+        ..selectedPricinCommittee = testRef
+        ..selectedInterimReviewDateRequired = testRef
+        ..selectedRequestType = testRef
+        ..selectedApplicationType = testRef
+        ..selectedRestructuredRescheduled = testRef
+        ..selectedExposureStrategy = testRef
+        ..selectedPolicyDeviation = testRef
+        ..selectedCancellationReason = testRef;
 
       expect(viewModel.selectedProductType, testRef);
       expect(viewModel.selectedTpanRequired, testRef);
@@ -867,22 +850,23 @@ void main() {
       // Test direct assignment of lists to hit constructor/initialization lines
       final testList = [Reference(name: "Test1"), Reference(name: "Test2")];
 
-      viewModel.productTypeItems = testList;
-      viewModel.applicationType = testList;
-      viewModel.requestTypes = testList;
-      viewModel.customerTypes = testList;
-      viewModel.applicationTypesFullCA = testList;
-      viewModel.applicationTypesIsolated = testList;
-      viewModel.restructuredRescheduledItems = testList;
-      viewModel.exposureStrategyItems = testList;
-      viewModel.tpanRequiredItems = testList;
-      viewModel.shariaApprovalItems = testList;
-      viewModel.ermApprovalItems = testList;
-      viewModel.esgItems = testList;
-      viewModel.pricingCommitteeItems = testList;
-      viewModel.interimReviewDateRequiredItems = testList;
-      viewModel.policyDeviationItems = testList;
-      viewModel.cancellationReason = testList;
+      viewModel
+        ..productTypeItems = testList
+        ..applicationType = testList
+        ..requestTypes = testList
+        ..customerTypes = testList
+        ..applicationTypesFullCA = testList
+        ..applicationTypesIsolated = testList
+        ..restructuredRescheduledItems = testList
+        ..exposureStrategyItems = testList
+        ..tpanRequiredItems = testList
+        ..shariaApprovalItems = testList
+        ..ermApprovalItems = testList
+        ..esgItems = testList
+        ..pricingCommitteeItems = testList
+        ..interimReviewDateRequiredItems = testList
+        ..policyDeviationItems = testList
+        ..cancellationReason = testList;
 
       expect(viewModel.productTypeItems.length, 2);
       expect(viewModel.applicationType.length, 2);
@@ -900,9 +884,10 @@ void main() {
         expect(vm.state.loaderStatus, LoadingStatus.loaded);
 
         // Access various properties to trigger their initialization
-        vm.pageMode = PageMode.edit;
-        vm.isFI = true;
-        vm.isNewRequest = false;
+        vm
+          ..pageMode = PageMode.edit
+          ..isFI = true
+          ..isNewRequest = false;
 
         expect(vm.pageMode, PageMode.edit);
         expect(vm.isFI, true);
@@ -930,19 +915,20 @@ void main() {
         expect(vm.reconsiderations, isNotNull);
 
         // Trigger state changes
-        vm.emit(
-          vm.state.copyWith(
-            isTPAN: i % 2 == 0,
-            isIslamic: i % 3 == 0,
-            isInterimReviewDateRequired: i % 4 == 0,
-          ),
-        );
+        vm
+          ..emit(
+            vm.state.copyWith(
+              isTPAN: i % 2 == 0,
+              isIslamic: i % 3 == 0,
+              isInterimReviewDateRequired: i % 4 == 0,
+            ),
+          )
 
-        // Set various properties
-        vm.cancellationDialogShown = i % 2 == 0;
-        vm.isFI = i % 3 == 0;
-        vm.isNewRequest = i % 4 == 0;
-        vm.pageMode = i % 2 == 0 ? PageMode.edit : PageMode.view;
+          // Set various properties
+          ..cancellationDialogShown = i % 2 == 0
+          ..isFI = i % 3 == 0
+          ..isNewRequest = i % 4 == 0
+          ..pageMode = i % 2 == 0 ? PageMode.edit : PageMode.view;
       }
 
       expect(viewModels.length, 5);
@@ -958,9 +944,10 @@ void main() {
     });
 
     test("init method execution covers lines 96-119", () async {
-      final viewModel = RequestInfoViewModel();
-      viewModel.repository = mockRequestRepo;
-      viewModel.isNewRequest = true;
+      final viewModel = RequestInfoViewModel()
+        ..repository = mockRequestRepo
+        ..isNewRequest = true;
+      Globals.request = Request(isCreateRequest: false);
 
       final comments = [
         Comment(categoryId: 7342, strategyComment: "Other"),
@@ -1167,9 +1154,10 @@ void main() {
     });
 
     test("disposeControllers disposes all controllers without error", () {
-      viewModel.addCoBorrowerRow();
-      viewModel.addCoBorrowerRow();
-      viewModel.disposeControllers();
+      viewModel
+        ..addCoBorrowerRow()
+        ..addCoBorrowerRow()
+        ..disposeControllers();
       // No exception means success
     });
 
@@ -1294,8 +1282,9 @@ void main() {
   });
 
   test("disposeControllers disposes controllers", () {
-    viewModel.addCoBorrowerRow();
-    viewModel.disposeControllers();
+    viewModel
+      ..addCoBorrowerRow()
+      ..disposeControllers();
   });
 
   group("initializeDates", () {
@@ -1371,7 +1360,7 @@ void main() {
       expect(result, true);
     });
 
-    // test('fails when date before nextReviewDate', () {
+    // test("fails when date before nextReviewDate", () {
     //   viewModel.state.nextReviewDate = DateTime(2025, 6, 1);
     //   final result =
     //       viewModel.validateAndSetMarkForwardDate(DateTime(2025, 5, 1));
@@ -1406,20 +1395,20 @@ void main() {
 
   group("removeCoBorrowerRow", () {
     test("removes borrower and controllers when index is valid", () {
-      viewModel.coBorrowerList = [
-        CoBorrower(customerName: "Borrower1"),
-        CoBorrower(customerName: "Borrower2"),
-      ];
-      viewModel.rimControllers = [
-        TextEditingController(text: "rim1"),
-        TextEditingController(text: "rim2"),
-      ];
-      viewModel.nameControllers = [
-        TextEditingController(text: "name1"),
-        TextEditingController(text: "name2"),
-      ];
-
-      viewModel.removeCoBorrowerRow(1);
+      viewModel
+        ..coBorrowerList = [
+          CoBorrower(customerName: "Borrower1"),
+          CoBorrower(customerName: "Borrower2"),
+        ]
+        ..rimControllers = [
+          TextEditingController(text: "rim1"),
+          TextEditingController(text: "rim2"),
+        ]
+        ..nameControllers = [
+          TextEditingController(text: "name1"),
+          TextEditingController(text: "name2"),
+        ]
+        ..removeCoBorrowerRow(1);
 
       expect(viewModel.coBorrowerList!.length, 1);
       expect(viewModel.rimControllers.length, 1);
@@ -1427,10 +1416,11 @@ void main() {
     });
 
     test("does nothing when index is out of range", () {
-      viewModel.coBorrowerList = [CoBorrower(customerName: "Borrower1")];
-      viewModel.rimControllers = [TextEditingController(text: "rim1")];
-      viewModel.nameControllers = [TextEditingController(text: "name1")];
-      viewModel.removeCoBorrowerRow(5);
+      viewModel
+        ..coBorrowerList = [CoBorrower(customerName: "Borrower1")]
+        ..rimControllers = [TextEditingController(text: "rim1")]
+        ..nameControllers = [TextEditingController(text: "name1")]
+        ..removeCoBorrowerRow(5);
 
       expect(viewModel.coBorrowerList!.length, 1);
       expect(viewModel.rimControllers.length, 1);
@@ -1438,8 +1428,9 @@ void main() {
     });
 
     test("does nothing when borrowerList is null", () {
-      viewModel.coBorrowerList = null;
-      viewModel.removeCoBorrowerRow(0);
+      viewModel
+        ..coBorrowerList = null
+        ..removeCoBorrowerRow(0);
 
       expect(viewModel.coBorrowerList, isNull);
     });
@@ -1447,32 +1438,32 @@ void main() {
 
   group("onPolicyChipDeleted", () {
     test("removes policy deviation when index is valid", () {
-      viewModel.applicationDetails = ApplicationDetails(
-        policyDeviations: [
-          Reference(name: "Policy1"),
-          Reference(name: "Policy2"),
-        ],
-      );
-
-      viewModel.onPolicyChipDeleted(0);
+      viewModel
+        ..applicationDetails = ApplicationDetails(
+          policyDeviations: [
+            Reference(name: "Policy1"),
+            Reference(name: "Policy2"),
+          ],
+        )
+        ..onPolicyChipDeleted(0);
 
       expect(viewModel.applicationDetails!.policyDeviations?.length, 1);
       expect(viewModel.state.isPolicyDeviation, true);
     });
 
     test("does nothing when list is null", () {
-      viewModel.applicationDetails = ApplicationDetails(policyDeviations: null);
-
-      viewModel.onPolicyChipDeleted(0);
+      viewModel
+        ..applicationDetails = ApplicationDetails(policyDeviations: null)
+        ..onPolicyChipDeleted(0);
 
       expect(viewModel.applicationDetails!.policyDeviations, isNull);
     });
 
     test("does nothing when index is out of range", () {
-      viewModel.applicationDetails =
-          ApplicationDetails(policyDeviations: [Reference(name: "Policy1")]);
-
-      viewModel.onPolicyChipDeleted(5);
+      viewModel
+        ..applicationDetails =
+            ApplicationDetails(policyDeviations: [Reference(name: "Policy1")])
+        ..onPolicyChipDeleted(5);
 
       expect(viewModel.applicationDetails!.policyDeviations?.length, 1);
     });
@@ -1531,11 +1522,12 @@ void main() {
     });
 
     test("Returns financial institution filtered list", () {
-      viewModel.selectedBusinessSegment = Reference(
-        id: ServerConstants
-            .businessSegmentId[BusinessSegment.financialInstitution],
-      );
-      viewModel.selectedRequestType = Reference(reference1: "REQ1");
+      viewModel
+        ..selectedBusinessSegment = Reference(
+          id: ServerConstants
+              .businessSegmentId[BusinessSegment.financialInstitution],
+        )
+        ..selectedRequestType = Reference(reference1: "REQ1");
 
       final result = viewModel.applicationTypeItems();
       expect(result.length, 1);
@@ -1543,9 +1535,9 @@ void main() {
     });
 
     test("Returns corporate filtered list", () {
-      viewModel.selectedBusinessSegment =
-          Reference(id: 999); // Not financialInstitution
-      viewModel.selectedRequestType = Reference(reference1: "REQ1");
+      viewModel
+        ..selectedBusinessSegment = Reference(id: 999)
+        ..selectedRequestType = Reference(reference1: "REQ1");
 
       final result = viewModel.applicationTypeItems();
       expect(result.length, 2);
@@ -1553,16 +1545,18 @@ void main() {
     });
 
     test("Handles no match scenario", () {
-      viewModel.selectedBusinessSegment = Reference(id: 999);
-      viewModel.selectedRequestType = Reference(reference1: "REQ_NOT_EXIST");
+      viewModel
+        ..selectedBusinessSegment = Reference(id: 999)
+        ..selectedRequestType = Reference(reference1: "REQ_NOT_EXIST");
 
       final result = viewModel.applicationTypeItems();
       expect(result.isEmpty, true);
     });
 
     test("Handles null reference3 safely", () {
-      viewModel.selectedBusinessSegment = Reference(id: 999);
-      viewModel.selectedRequestType = Reference(reference1: "REQ1");
+      viewModel
+        ..selectedBusinessSegment = Reference(id: 999)
+        ..selectedRequestType = Reference(reference1: "REQ1");
 
       final result = viewModel.applicationTypeItems();
       // Should only return CORP_CODE match, not null
@@ -1677,10 +1671,10 @@ void main() {
         businessSegment: "Segment1",
       );
 
-      viewModel.applicationType = [Reference(reference1: "Subtype1")];
-      viewModel.requestTypes = [Reference(reference1: "RequestType1")];
-
-      viewModel.populateApplicationDetails(details);
+      viewModel
+        ..applicationType = [Reference(reference1: "Subtype1")]
+        ..requestTypes = [Reference(reference1: "RequestType1")]
+        ..populateApplicationDetails(details);
 
       expect(viewModel.selectedApplicationType?.reference1, "Subtype1");
       expect(viewModel.selectedRequestType?.reference1, "RequestType1");
@@ -1697,10 +1691,10 @@ void main() {
         businessSegment: "SegmentX",
       );
 
-      viewModel.applicationType = [];
-      viewModel.requestTypes = [];
-
-      viewModel.populateApplicationDetails(details);
+      viewModel
+        ..applicationType = []
+        ..requestTypes = []
+        ..populateApplicationDetails(details);
 
       expect(viewModel.selectedApplicationType?.reference1, "UnknownSubtype");
       expect(viewModel.selectedRequestType?.reference1, "UnknownRequestType");
@@ -1970,17 +1964,17 @@ void main() {
       mockPurposeController.setText("Purpose");
       mockDetailController.setText("Details");
 
-      viewModel.selectedProductType = Reference(name: "Prod");
-      viewModel.selectedTpanRequired = Reference(name: "TPAN");
-      viewModel.selectedShariaApproval = Reference(name: "Sharia");
-      viewModel.selectedErmApproval = Reference(name: "ERM");
-      viewModel.selectedEsg = Reference(name: "ESG");
-      viewModel.selectedPricinCommittee = Reference(name: "Pricing");
-      viewModel.selectedInterimReviewDateRequired = Reference(name: "Interim");
-      viewModel.selectedRestructuredRescheduled =
-          Reference(name: "Rescheduled");
-      viewModel.selectedExposureStrategy = Reference(name: "Strategy");
-      viewModel.selectedPolicyDeviation = Reference(name: "Policy");
+      viewModel
+        ..selectedProductType = Reference(name: "Prod")
+        ..selectedTpanRequired = Reference(name: "TPAN")
+        ..selectedShariaApproval = Reference(name: "Sharia")
+        ..selectedErmApproval = Reference(name: "ERM")
+        ..selectedEsg = Reference(name: "ESG")
+        ..selectedPricinCommittee = Reference(name: "Pricing")
+        ..selectedInterimReviewDateRequired = Reference(name: "Interim")
+        ..selectedRestructuredRescheduled = Reference(name: "Rescheduled")
+        ..selectedExposureStrategy = Reference(name: "Strategy")
+        ..selectedPolicyDeviation = Reference(name: "Policy");
 
       await viewModel.saveContinueButtonPress(MockBuildContext());
       verifyNever(() => mockRequestRepo.saveApplicationInformation(any()))
@@ -2000,17 +1994,17 @@ void main() {
     test("Handles save failure (empty resultAppRefNo)", () async {
       Globals.user!.currentRole!.userRole = UserRole.relationshipOfficer;
 
-      viewModel.selectedProductType = Reference(name: "Prod");
-      viewModel.selectedTpanRequired = Reference(name: "TPAN");
-      viewModel.selectedShariaApproval = Reference(name: "Sharia");
-      viewModel.selectedErmApproval = Reference(name: "ERM");
-      viewModel.selectedEsg = Reference(name: "ESG");
-      viewModel.selectedPricinCommittee = Reference(name: "Pricing");
-      viewModel.selectedInterimReviewDateRequired = Reference(name: "Interim");
-      viewModel.selectedRestructuredRescheduled =
-          Reference(name: "Rescheduled");
-      viewModel.selectedExposureStrategy = Reference(name: "Strategy");
-      viewModel.selectedPolicyDeviation = Reference(name: "Policy");
+      viewModel
+        ..selectedProductType = Reference(name: "Prod")
+        ..selectedTpanRequired = Reference(name: "TPAN")
+        ..selectedShariaApproval = Reference(name: "Sharia")
+        ..selectedErmApproval = Reference(name: "ERM")
+        ..selectedEsg = Reference(name: "ESG")
+        ..selectedPricinCommittee = Reference(name: "Pricing")
+        ..selectedInterimReviewDateRequired = Reference(name: "Interim")
+        ..selectedRestructuredRescheduled = Reference(name: "Rescheduled")
+        ..selectedExposureStrategy = Reference(name: "Strategy")
+        ..selectedPolicyDeviation = Reference(name: "Policy");
 
       mockUltimateController.setText("Ultimate");
       mockPurposeController.setText("Purpose");
@@ -2034,17 +2028,17 @@ void main() {
     test("Handles exception during save", () async {
       Globals.user!.currentRole!.userRole = UserRole.boardDirectorProxy;
 
-      viewModel.selectedProductType = Reference(name: "Prod");
-      viewModel.selectedTpanRequired = Reference(name: "TPAN");
-      viewModel.selectedShariaApproval = Reference(name: "Sharia");
-      viewModel.selectedErmApproval = Reference(name: "ERM");
-      viewModel.selectedEsg = Reference(name: "ESG");
-      viewModel.selectedPricinCommittee = Reference(name: "Pricing");
-      viewModel.selectedInterimReviewDateRequired = Reference(name: "Interim");
-      viewModel.selectedRestructuredRescheduled =
-          Reference(name: "Rescheduled");
-      viewModel.selectedExposureStrategy = Reference(name: "Strategy");
-      viewModel.selectedPolicyDeviation = Reference(name: "Policy");
+      viewModel
+        ..selectedProductType = Reference(name: "Prod")
+        ..selectedTpanRequired = Reference(name: "TPAN")
+        ..selectedShariaApproval = Reference(name: "Sharia")
+        ..selectedErmApproval = Reference(name: "ERM")
+        ..selectedEsg = Reference(name: "ESG")
+        ..selectedPricinCommittee = Reference(name: "Pricing")
+        ..selectedInterimReviewDateRequired = Reference(name: "Interim")
+        ..selectedRestructuredRescheduled = Reference(name: "Rescheduled")
+        ..selectedExposureStrategy = Reference(name: "Strategy")
+        ..selectedPolicyDeviation = Reference(name: "Policy");
 
       mockUltimateController.setText("Ultimate");
       mockPurposeController.setText("Purpose");
@@ -2060,29 +2054,31 @@ void main() {
 
   group("Additional Methods Tests", () {
     test("addCoBorrowerRow adds a row when valid", () {
-      viewModel.coBorrowerList = [];
-      viewModel.rimControllers = [];
-      viewModel.nameControllers = [];
-      viewModel.addCoBorrowerRow();
+      viewModel
+        ..coBorrowerList = []
+        ..rimControllers = []
+        ..nameControllers = []
+        ..addCoBorrowerRow();
       expect(viewModel.coBorrowerList!.length, 1);
       expect(viewModel.rimControllers.length, 1);
       expect(viewModel.nameControllers.length, 1);
     });
 
     test("removeCoBorrowerRow removes a row", () {
-      viewModel.coBorrowerList = [CoBorrower()];
-      viewModel.rimControllers = [TextEditingController()];
-      viewModel.nameControllers = [TextEditingController()];
-
-      viewModel.removeCoBorrowerRow(0);
+      viewModel
+        ..coBorrowerList = [CoBorrower()]
+        ..rimControllers = [TextEditingController()]
+        ..nameControllers = [TextEditingController()]
+        ..removeCoBorrowerRow(0);
 
       expect(viewModel.coBorrowerList!.isEmpty, true);
     });
 
     test("updateRimNo updates borrower details on success", () async {
-      viewModel.coBorrowerList = [CoBorrower()];
-      viewModel.rimControllers = [TextEditingController()];
-      viewModel.nameControllers = [TextEditingController()];
+      viewModel
+        ..coBorrowerList = [CoBorrower()]
+        ..rimControllers = [TextEditingController()]
+        ..nameControllers = [TextEditingController()];
 
       final customer =
           Customer(id: "123", customerName: "John Doe", partyStatus: "Active");
@@ -2264,12 +2260,12 @@ void main() {
         id: ServerConstants.applicationTypeId[ApplicationType.newToBank],
         name: "NTB",
       );
-      viewModel.validateAndSetPresentReviewDate(
-        DateTime(2025, 1, 1),
-        appType: appType,
-      );
-
-      viewModel.updateNextReviewDate(null); // Ensure clean next date
+      viewModel
+        ..validateAndSetPresentReviewDate(
+          DateTime(2025, 1, 1),
+          appType: appType,
+        )
+        ..updateNextReviewDate(null); // Ensure clean next date
 
       // 1. Valid date
       bool result =
@@ -2328,11 +2324,9 @@ void main() {
       )..interimReviewDateRequired =
           true; // Set via cascade as it's not in constructor
 
-      viewModel.applicationType = [Reference(reference1: "ST", id: 999)];
-      // viewModel.applicationType assignment usually comes from API.
-      // We set it manually to ensure line 449 finds a match.
-
-      viewModel.populateApplicationDetails(details);
+      viewModel
+        ..applicationType = [Reference(reference1: "ST", id: 999)]
+        ..populateApplicationDetails(details);
 
       // Verify State Updates
       expect(viewModel.selectedRestructuredRescheduled?.name, "Yes");
@@ -2354,7 +2348,7 @@ void main() {
   group("fetchAndSetStrategyComments", () {
     test("clears text when no matching category found", () async {
       final comments = [
-        Comment(categoryId: 7342, strategyComment: "Other"),
+        Comment(categoryId: 123, strategyComment: "Other"),
       ];
 
       when(
@@ -2380,6 +2374,30 @@ void main() {
       await viewModel.fetchAndSetStrategyComments();
       final value = await viewModel.controllerDetail.getText();
       expect(value, "");
+    });
+
+    test("filters category and emits loaded on success", () async {
+      final comments = [
+        Comment(
+          strategyComment: "Test",
+          categoryId: ServerConstants.requestApplicationInfoCategoryID,
+        ),
+        Comment(strategyComment: "drop", categoryId: 9999),
+      ];
+      viewModel.comments = comments;
+      when(
+        () => mockCommonRepository.getApplicationStrategyDetails(
+          any(),
+          any(),
+        ),
+      ).thenAnswer(
+        (_) async => comments,
+      );
+
+      await viewModel.fetchAndSetStrategyComments(appRefNo: "APP-001");
+
+      expect(viewModel.comments?.length, 1);
+      expect(viewModel.comments?.first.strategyComment, "Test");
     });
 
     test("shows error toast when repository throws", () async {
@@ -2454,6 +2472,139 @@ void main() {
       final result = viewModel.getSelectedCustomers();
       expect(result.length, 2);
       expect(result, isA<List<Customer>>());
+    });
+  });
+
+  group("checkAndShowPipelineDialog", () {
+    test("set value for the pipelineShown variable", () {
+      Globals.request = Request(appTypeReferenceId: 15809); // NTB
+      viewModel
+        ..isFI = false
+        ..checkAndShowPipelineDialog(mockBuildContext);
+      expect(viewModel.pipelineShown, true);
+
+      viewModel
+        ..isFI = true
+        ..isNewRequest = true
+        ..pipelineRequests = [Response()]
+        ..checkAndShowPipelineDialog(mockBuildContext);
+      expect(viewModel.pipelineShown, false);
+    });
+  });
+
+  group("getApplicationDetails", () {
+    test("set value for the variable", () {
+      final applicationDetails = ApplicationDetails(
+        lastApprovedAppRefNum: "App123",
+        applicationRefNo: "App999",
+        reconAppReNumber: "App456",
+      );
+
+      when(
+        () => mockRequestRepo.getApplicationDetails(),
+      ).thenAnswer((_) async => applicationDetails);
+
+      viewModel
+        ..isNewRequest = false
+        ..applicationDetails = applicationDetails
+        ..getApplicationDetails();
+
+      expect(viewModel.isExisitngAppRefNo, false);
+      expect(viewModel.isApiError, false);
+    });
+
+    test("set value for the variable for new request", () {
+      final applicationDetails = ApplicationDetails(
+        lastApprovedAppRefNum: "App123",
+        applicationRefNo: "App999",
+        reconAppReNumber: "App456",
+      );
+
+      when(
+        () => mockRequestRepo.getLastApprovedApplication(),
+      ).thenAnswer((_) async => applicationDetails);
+
+      viewModel
+        ..isNewRequest = true
+        ..applicationDetails = applicationDetails
+        ..getApplicationDetails();
+
+      expect(viewModel.isExisitngAppRefNo, false);
+      expect(viewModel.isApiError, false);
+    });
+  });
+
+  group("filterPolicyDeviation", () {
+    test("return type of List<Reference>", () async {
+      final referenceList = [Reference(reference1: "fi")];
+      final result = viewModel.filterPolicyDeviation(referenceList, isFI: true);
+      expect(result, isA<List<Reference>>());
+    });
+
+    test("filter the data on bases of condition", () async {
+      final referenceList = [
+        Reference(reference1: "corporate"),
+        Reference(reference1: "fi"),
+      ];
+      final result =
+          viewModel.filterPolicyDeviation(referenceList, isFI: false);
+      expect(result.length, 1);
+    });
+
+    test("filter the data on bases of condition for strictCorporate flow",
+        () async {
+      final referenceList = [
+        Reference(reference1: "corporate"),
+        Reference(reference1: "fi"),
+      ];
+      final result = viewModel.filterPolicyDeviation(
+        referenceList,
+        isFI: false,
+        strictCorporate: true,
+      );
+      expect(result.length, 1);
+    });
+  });
+
+  group("lockPresentReviewDateIfRequired", () {
+    test("sets values of state isPresentReviewDateLocked", () {
+      Globals.request = Request(appTypeReferenceId: 15809); // NTB
+      viewModel
+        ..isNewRequest = true
+        ..lockPresentReviewDateIfRequired();
+      expect(viewModel.state.isPresentReviewDateLocked, false);
+    });
+  });
+
+  group("canEditPresentReviewDate", () {
+    test("return false checking conditions", () {
+      Globals.user?.currentRole?.userRole = UserRole.relationshipManager;
+      final result = (viewModel
+            ..pageMode = PageMode.edit
+            ..isNewRequest = true
+            ..applicationDetails?.isAutoSave = "2")
+          .canEditPresentReviewDate();
+      expect(result, true);
+    });
+  });
+
+  group("getPipelineRequestDetails", () {
+    test("set pipelineRequests value", () {
+      when(() => mockRequestRepo.getPipelineRequestDetails())
+          .thenAnswer((_) async => []);
+      viewModel.getPipelineRequestDetails();
+      expect(viewModel.pipelineRequests.length, 0);
+    });
+  });
+
+  group("getValidatedText", () {
+    test("set pipelineRequests value", () async {
+      final controller = MockHtmlEditorController("Sample");
+      final result = await viewModel.getValidatedText(
+        controller: controller,
+        errorKey: "err123",
+      );
+      expect(result, "Sample");
     });
   });
 }

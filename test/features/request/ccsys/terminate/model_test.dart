@@ -170,8 +170,8 @@ void main() {
     RequestRepository.overrideInstance(mockRequestRepository);
     CommonRepository.overrideInstance(mockCommonRepository);
     mockContext = MockContext();
-    viewModel = MockCcsysCreateRequestViewModel();
-    viewModel.repository = mockRequestRepository;
+    viewModel = MockCcsysCreateRequestViewModel()
+      ..repository = mockRequestRepository;
 
     when(
       () => mockDraftRepository.deleteDraft(
@@ -238,8 +238,9 @@ void main() {
         "requestInformation.terminateWithdrawal.requiredFeild".tr(),
       ),
     );
-    viewModel.canEdit = true;
-    viewModel.onTerminateButtonPressed(mockContext);
+    viewModel
+      ..canEdit = true
+      ..onTerminateButtonPressed(mockContext);
     verify(
       () => mockAlertManager.showFailureToast(
         "requestInformation.terminateWithdrawal.requiredFeild".tr(),

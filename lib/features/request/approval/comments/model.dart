@@ -1,4 +1,5 @@
 import "dart:async";
+
 import "package:easy_localization/easy_localization.dart";
 import "package:flutter/material.dart";
 import "package:wcas_frontend/core/components/dropdown/model.dart";
@@ -21,12 +22,10 @@ import "package:wcas_frontend/features/request/approval/utils/approval_utils.dar
 import "package:wcas_frontend/features/request/ccsys/approval/model.dart";
 import "package:wcas_frontend/models/admin/page.dart";
 import "package:wcas_frontend/models/admin/reference.dart";
-import "package:wcas_frontend/models/admin/reference_type.dart";
 import "package:wcas_frontend/models/login/role.dart";
 import "package:wcas_frontend/models/login/user.dart";
 import "package:wcas_frontend/models/request/application_details.dart";
 import "package:wcas_frontend/models/request/comment.dart";
-import "package:wcas_frontend/repositories/admin_repository.dart";
 import "package:wcas_frontend/repositories/approval_repository.dart";
 import "package:wcas_frontend/repositories/common_repository.dart";
 import "package:wcas_frontend/repositories/request_repository.dart";
@@ -45,7 +44,6 @@ class CommentsViewModel extends SafeCubit<CommentsState>
   int? rowsPerPage = 5;
   late UnifiedEditorController controller = UnifiedEditorController();
   final ScrollController scrollController = ScrollController();
-  late AdminRepository adminRepository;
   List<Comment> comments = [];
   Comment? comment;
   List<User> users = [];
@@ -59,7 +57,6 @@ class CommentsViewModel extends SafeCubit<CommentsState>
   String? returnOptSelected = "";
   bool isReadOnly = Utils.checkIfAppReadOnly();
   List<Reference> references = [];
-  List<ReferenceType> allReferences = [];
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   List<Role> assigned = [];
   String selectedUserId = ""; // for recommend
@@ -405,10 +402,8 @@ class CommentsViewModel extends SafeCubit<CommentsState>
     logger.i("initialising CommentsViewModel");
     repository = RequestRepository.instance;
     approvalRepository = ApprovalRepository.instance;
-    adminRepository = AdminRepository.instance;
     try {
       emit(state.copyWith(loaderStatus: LoadingStatus.loading));
-      allReferences = await adminRepository.getReferenceTypes();
       await repository.getApplicationDetails();
       await approvalRepository.fetchReference();
       final bool status = Globals.checkCurrentStatus(requestStatus);
@@ -448,12 +443,13 @@ class CommentsViewModel extends SafeCubit<CommentsState>
       // Extract for line-length compliance
       final bool notOolBuh = !(isOneOffLimit &&
           businessUnitHead.contains(
-              Globals.user?.currentRole?.roleId,));
+            Globals.user?.currentRole?.roleId,
+          ));
       debugPrint(
         "isInitByCCOOD "
         "${buttonVisibilityStatus[ApprovalFields.recommend]!.call()} "
         "$notOolBuh "
-        "${(isRiskRatingInit && isInitByCCOOD)}",
+        "${isRiskRatingInit && isInitByCCOOD}",
       );
       isOneOffLimit = Globals.checkAppSubStatus(
             ServerConstants.applicationSubType[ApplicationSubType.cashMargin] ??
@@ -468,9 +464,7 @@ class CommentsViewModel extends SafeCubit<CommentsState>
       if (Globals.checkCurrentStatus([RequestStatus.pendingForApproval]) ||
           isOneOffLimit ||
           segmentHeadList.contains(Globals.user?.currentRole?.roleId)) {
-        approveUserMap = await getApprovalUserListByGroup(
-          ReferenceDataKeys.approvalsOnBeHelafOf,
-        );
+        approveUserMap = await getApprovalUserListByGroup();
       }
       approvalDelegationList = await getApprovalDelegationList(
         ReferenceDataKeys.approvalDelegationList,
@@ -545,18 +539,15 @@ class CommentsViewModel extends SafeCubit<CommentsState>
     return {};
   }
 
-  Future<Map<String, List<User>>> getApprovalUserListByGroup(
-    String type,
-  ) async {
+  Future<Map<String, List<User>>> getApprovalUserListByGroup() async {
     try {
       const String cfo = "CFO";
       const String cfoBpm = "Chief Financial Officer-WCAS";
-      final ReferenceType selectedValue = ReferenceType(name: type);
-      references = await adminRepository.getReferenceData(selectedValue);
+      references = Globals.approvalReferences;
       final Reference selectedReference = references.firstWhereOrNull(
-            (ref) => (ref.name ==
+            (ref) => ref.name ==
                 ServerConstants
-                    .userRoleCode[Globals.user?.currentRole?.userRole]),
+                    .userRoleCode[Globals.user?.currentRole?.userRole],
           ) ??
           Reference();
       List<String> referenceList = [];
@@ -588,17 +579,19 @@ class CommentsViewModel extends SafeCubit<CommentsState>
       if (roles.isNotEmpty) {
         approveUserList = await approvalRepository.getUsersByRoles([roles]);
         if (isRiskRatingInit) {
-          approveUserList.removeWhere((user) {
-            if (user.currentRole != null && user.currentRole?.bpmRole != null) {
-              return user.currentRole?.bpmRole == cfoBpm;
-            }
-            return false;
-          }); // show CFO heading only if app is RR
-          approveUserList.add(
-            User(
-              currentRole: Role(bpmRole: cfoBpm, name: cfo),
-            ),
-          ); // show role only
+          approveUserList
+            ..removeWhere((user) {
+              if (user.currentRole != null &&
+                  user.currentRole?.bpmRole != null) {
+                return user.currentRole?.bpmRole == cfoBpm;
+              }
+              return false;
+            }) // show CFO heading only if app is RR
+            ..add(
+              User(
+                currentRole: Role(bpmRole: cfoBpm, name: cfo),
+              ),
+            ); // show role only
         }
         return getUsersByRole(approveUserList);
       }
@@ -855,9 +848,7 @@ class CommentsViewModel extends SafeCubit<CommentsState>
       return errorDescription;
     } else if (response.body["baseResponse"] != null &&
         response.body["baseResponse"]["status"]["errorCode"] == "422") {
-      errorDescription =
-          response.body["baseResponse"]["status"]["errorDescription"];
-      return errorDescription;
+      return response.body["baseResponse"]["status"]["errorDescription"];
     }
     return errorDescription;
   }

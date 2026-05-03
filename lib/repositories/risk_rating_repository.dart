@@ -25,7 +25,7 @@ class RiskRatingRepository {
     if (response.status == ResponseStatus.success) {
       response.message =
           response.body["baseResponse"]["status"]["statusDescription"];
-      return (RiskRating.fromJson(response.body["responseData"]));
+      return RiskRating.fromJson(response.body["responseData"]);
     } else {
       throw response.message;
     }
@@ -100,9 +100,7 @@ class RiskRatingRepository {
         await _apiManager.post(APIEndpoints.saveRatingDetailsUpdated, data);
 
     if (response.status == ResponseStatus.success) {
-      response.message =
-          response.body["baseResponse"]["status"]["statusDescription"];
-      return response.message;
+      return response.body["baseResponse"]["status"]["statusDescription"];
     } else {
       throw response.message;
     }

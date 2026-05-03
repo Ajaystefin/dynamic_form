@@ -303,8 +303,7 @@ class FileAttachmentRepository {
   }
 
   Future<void> downloadFileAttachment(Document document) async {
-    final String fileName =
-        "Company-${document.companyRim}_"
+    final String fileName = "Company-${document.companyRim}_"
         "${document.date?.year}_${document.files!.first.name}";
     final Map data = BaseRequest.baseRequest({
       "appRefNo": Globals.request!.applicationRefNo,
@@ -457,9 +456,7 @@ class FileAttachmentRepository {
         await _apiManager.post(APIEndpoints.linkToApplication, data);
     if (response.status == ResponseStatus.success &&
         response.body["responseData"]["failedCount"] == 0) {
-      response.message =
-          response.body["baseResponse"]["status"]["statusDescription"];
-      return response.message;
+      return response.body["baseResponse"]["status"]["statusDescription"];
     } else {
       response.message =
           response.body["responseData"]["failed"].first["reason"];
@@ -513,9 +510,8 @@ class FileAttachmentRepository {
       final statusCode =
           response.body?["baseResponse"]?["status"]?["statusCode"];
       if (statusCode == "200" || statusCode == "201") {
-        response.message = _apiManager
+        return _apiManager
             .buildDigitalUploadSuccessMessage(response.body?["responseData"]);
-        return response.message;
       } else {
         throw _apiManager
                 .extractFailedMessage(response.body?["responseData"]) ??
@@ -571,9 +567,7 @@ class FileAttachmentRepository {
 
     // Step 4: Handle response
     if (response.status == ResponseStatus.success) {
-      response.message = _apiManager.buildUploadSuccessMessage(response.body);
-      // response.body["baseResponse"]["status"]["statusDescription"];
-      return response.message;
+      return _apiManager.buildUploadSuccessMessage(response.body);
     } else {
       throw response.message;
     }

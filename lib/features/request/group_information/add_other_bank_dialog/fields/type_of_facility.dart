@@ -62,7 +62,7 @@ class TypeOfFacility extends StatelessWidget {
             data: items,
             controller: contrlr,
             key: ValueKey(
-              (viewModel.currentFacilityItems.facilityWith?.length) ?? 0,
+              viewModel.currentFacilityItems.facilityWith?.length ?? 0,
             ),
             itemBuilder: (index) {
               final ref = items[index];
@@ -109,7 +109,7 @@ class TypeOfFacility extends StatelessWidget {
         })(),
 
         //CRITICAL FIX: compare logical equality by id
-        compareFn: (a, b) => (a.id == b.id),
+        compareFn: (a, b) => a.id == b.id,
 
         // keep other props from your component as-is...
       ),

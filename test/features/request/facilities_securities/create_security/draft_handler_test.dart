@@ -26,9 +26,10 @@ void main() {
           Country(code: "AE", description: "United Arab Emirates");
       viewModel.security.securityExpireDate = DateTime(2025, 12, 31);
 
-      viewModel.dynamicFormDocument = {"testKey": "testValue"};
-      viewModel.isEntityProvider = true;
-      viewModel.proposedSecurityAmountController.text = "1000.50";
+      viewModel
+        ..dynamicFormDocument = {"testKey": "testValue"}
+        ..isEntityProvider = true
+        ..proposedSecurityAmountController.text = "1000.50";
 
       // Act
       final draftData = handler.buildDraftData(viewModel);

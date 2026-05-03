@@ -441,16 +441,17 @@ class DashboardRepository {
             final int? selectedRoleId = role["roleId"];
             final String? selectedRoleName = role["bpmRoleName"];
             for (final user in role["userDetails"]) {
-              final User currentUser = User.fromJson(
-                user,
-                selectedRole: selectedRole,
-                selectedRoleId: selectedRoleId,
-                selectedRoleName: selectedRoleName,
+              users.add(
+                User.fromJson(
+                  user,
+                  selectedRole: selectedRole,
+                  selectedRoleId: selectedRoleId,
+                  selectedRoleName: selectedRoleName,
+                )
+                  ..selectedRole = selectedRole
+                  ..selectedRoleId = selectedRoleId
+                  ..selectedRoleName = selectedRoleName,
               );
-              currentUser.selectedRole = selectedRole;
-              currentUser.selectedRoleId = selectedRoleId;
-              currentUser.selectedRoleName = selectedRoleName;
-              users.add(currentUser);
             }
           }
           return users;
@@ -805,10 +806,11 @@ class DashboardRepository {
               Reference(reference1: applicationDetails.requestType?.reference1),
         );
 
-        applicationDetails.applicationType = selectedApplicationType;
-        applicationDetails.requestType = selectedRequestType;
-        applicationDetails.requestSubType = request.requestSubType;
-        applicationDetails.customerType = request.customerType;
+        applicationDetails
+          ..applicationType = selectedApplicationType
+          ..requestType = selectedRequestType
+          ..requestSubType = request.requestSubType
+          ..customerType = request.customerType;
 
         if (applicationDetails.groupOwner == null) {
           final customers = applicationDetails.customers;
@@ -1001,7 +1003,7 @@ class DashboardRepository {
       final String lStatus = (first?.status ?? "").trim().toLowerCase();
 
       final String bpmRole = (validateUser.bpmRole ?? "").trim();
-      final String userId = (validateUser.userId ?? "0");
+      final String userId = validateUser.userId ?? "0";
 
       final bool matches = assignedToRole == bpmRole &&
           assignedTo == userId.toString() &&

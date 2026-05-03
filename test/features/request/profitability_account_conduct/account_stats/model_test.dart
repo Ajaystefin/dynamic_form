@@ -68,8 +68,8 @@ void main() {
     mockAlertManager = MockAlertManager();
 
     // SUT
-    viewModel = AccountStatsViewModel();
-    viewModel.repository = mockProfitabilityRepository;
+    viewModel = AccountStatsViewModel()
+      ..repository = mockProfitabilityRepository;
 
     // Globals / singletons
     AlertManager.overrideInstance(mockAlertManager);

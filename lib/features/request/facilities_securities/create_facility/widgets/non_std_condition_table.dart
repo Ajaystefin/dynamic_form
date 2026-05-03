@@ -48,7 +48,7 @@ class NonStdConditionTable extends StatelessWidget {
           columns: columns,
           autoFitWidth: true,
           rowHeight: 80,
-          rows: List.generate((viewModel.nonStandardCondition).length, (index) {
+          rows: List.generate(viewModel.nonStandardCondition.length, (index) {
             return [
               viewModel.nonStandardCondition[index].isAmended ?? false
                   ? CustomTextField(
@@ -64,9 +64,8 @@ class NonStdConditionTable extends StatelessWidget {
                               .replaceAll("]", ""),
                       onChanged: (String? value) {
                         // Keep non-empty; empty string required by DB
-                        viewModel
-                            .nonStandardCondition[index]
-                            .description = value ?? " ";
+                        viewModel.nonStandardCondition[index].description =
+                            value ?? " ";
                       },
                     )
                   : Text(

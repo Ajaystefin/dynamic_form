@@ -178,12 +178,10 @@ void main() {
     ReferenceDataService.overrideInstance(mockReferenceService);
     AlertManager.overrideInstance(mockAlertManager);
 
-    viewModel = CreateSecurityViewModel();
-
-    // Manually set repositories on viewModel
-    viewModel.repository = mockRequestRepository;
-    viewModel.securityRepository = mockSecurityRepository;
-    viewModel.customerRepository = mockCustomerRepository;
+    viewModel = CreateSecurityViewModel()
+      ..repository = mockRequestRepository
+      ..securityRepository = mockSecurityRepository
+      ..customerRepository = mockCustomerRepository;
 
     // Register fallback values
     registerFallbackValue(<String>[]);
@@ -416,11 +414,12 @@ void main() {
     test(
         "changeSecurityProviderCbdCustomerValue should set"
         " flag to false when value is first", () async {
-      viewModel.security = Security();
-      viewModel.yesAndNo = [
-        Reference(id: 1, name: "Yes"),
-        Reference(id: 2, name: "No"),
-      ];
+      viewModel
+        ..security = Security()
+        ..yesAndNo = [
+          Reference(id: 1, name: "Yes"),
+          Reference(id: 2, name: "No"),
+        ];
       final value = Reference(id: 1, name: "Yes");
 
       viewModel.changeSecurityProviderCbdCustomerValue(value);
@@ -432,13 +431,13 @@ void main() {
 
     test("changeSecurityExpiryOpenEndedValue should set true for first value",
         () async {
-      viewModel.security = Security();
-      viewModel.yesAndNo = [
-        Reference(id: 1, name: "Yes"),
-        Reference(id: 2, name: "No"),
-      ];
-
-      viewModel.changeSecurityExpiryOpenEndedValue(viewModel.yesAndNo?.first);
+      viewModel
+        ..security = Security()
+        ..yesAndNo = [
+          Reference(id: 1, name: "Yes"),
+          Reference(id: 2, name: "No"),
+        ]
+        ..changeSecurityExpiryOpenEndedValue(viewModel.yesAndNo?.first);
 
       await Future.delayed(const Duration(milliseconds: 10));
 
@@ -448,13 +447,13 @@ void main() {
 
     test("changeSecurityExpiryOpenEndedValue should set false for other value",
         () async {
-      viewModel.security = Security();
-      viewModel.yesAndNo = [
-        Reference(id: 1, name: "Yes"),
-        Reference(id: 2, name: "No"),
-      ];
-
-      viewModel.changeSecurityExpiryOpenEndedValue(Reference(id: 2));
+      viewModel
+        ..security = Security()
+        ..yesAndNo = [
+          Reference(id: 1, name: "Yes"),
+          Reference(id: 2, name: "No"),
+        ]
+        ..changeSecurityExpiryOpenEndedValue(Reference(id: 2));
 
       await Future.delayed(const Duration(milliseconds: 10));
 
@@ -464,12 +463,13 @@ void main() {
 
   group("CreateSecurityViewModel security group selection", () {
     test("securityGroupSelected should filter security types", () async {
-      viewModel.security = Security();
-      viewModel.securityReferenceData = [
-        Reference(id: 1, name: "Type A", reference4: "Group1"),
-        Reference(id: 2, name: "Type B", reference4: "Group1"),
-        Reference(id: 3, name: "Type C", reference4: "Group2"),
-      ];
+      viewModel
+        ..security = Security()
+        ..securityReferenceData = [
+          Reference(id: 1, name: "Type A", reference4: "Group1"),
+          Reference(id: 2, name: "Type B", reference4: "Group1"),
+          Reference(id: 3, name: "Type C", reference4: "Group2"),
+        ];
 
       final selectedGroup = Reference(id: 1, reference4: "Group1");
 
@@ -822,16 +822,16 @@ void main() {
 
     group("CreateSecurityViewModel loadDatasForDynamicForm", () {
       test("maps currencyCodes and economicZones to Globals option lists", () {
-        viewModel.currencyCodes = [
-          Reference(id: 1, name: "USD"),
-          Reference(id: 2, name: "AED"),
-        ];
-        viewModel.economicZones = [
-          Reference(id: 10, name: "Zone A"),
-          Reference(id: 11, name: "Zone B"),
-        ];
-
-        viewModel.loadDatasForDynamicForm();
+        viewModel
+          ..currencyCodes = [
+            Reference(id: 1, name: "USD"),
+            Reference(id: 2, name: "AED"),
+          ]
+          ..economicZones = [
+            Reference(id: 10, name: "Zone A"),
+            Reference(id: 11, name: "Zone B"),
+          ]
+          ..loadDatasForDynamicForm();
 
         expect(
           Globals.dynamicFormCurrencyCodes?.map((o) => o.key).toList(),
@@ -930,9 +930,9 @@ void main() {
           code: "${ServerConstants.uaeCountryCode}  ",
           description: "UAE",
         );
-        viewModel.security = Security();
-
-        viewModel.onSelectCountryofSecurity(uaeCountry);
+        viewModel
+          ..security = Security()
+          ..onSelectCountryofSecurity(uaeCountry);
         await Future.delayed(const Duration(milliseconds: 10));
 
         expect(viewModel.isCountrySecurityUAE, true);
@@ -941,9 +941,9 @@ void main() {
 
       test("lowercase code not equal to UAE constant → false", () async {
         final lower = Country(code: "ae", description: "UAE");
-        viewModel.security = Security();
-
-        viewModel.onSelectCountryofSecurity(lower);
+        viewModel
+          ..security = Security()
+          ..onSelectCountryofSecurity(lower);
         await Future.delayed(const Duration(milliseconds: 10));
 
         // Code comparison is a direct trim equality (no lowercase), so this
@@ -1002,11 +1002,12 @@ void main() {
     group("CreateSecurityViewModel securityGroupSelected (empty matches)", () {
       test("resets selected type, filters to empty when no refs match",
           () async {
-        viewModel.security = Security();
-        viewModel.securityReferenceData = [
-          Reference(id: 1, reference4: "GroupA"),
-          Reference(id: 2, reference4: "GroupA"),
-        ];
+        viewModel
+          ..security = Security()
+          ..securityReferenceData = [
+            Reference(id: 1, reference4: "GroupA"),
+            Reference(id: 2, reference4: "GroupA"),
+          ];
 
         final groupB = Reference(id: 99, reference4: "GroupB");
 
@@ -1146,12 +1147,13 @@ void main() {
       group("CreateSecurityViewModel searchByRim", () {
         test("corporate guarantee with personal party type shows error",
             () async {
-          viewModel.security = Security(
-            securityType: Reference(id: ServerConstants.corporateGuaranteeId),
-          );
-          viewModel.countries = [
-            Country(code: "US", description: "United States"),
-          ];
+          viewModel
+            ..security = Security(
+              securityType: Reference(id: ServerConstants.corporateGuaranteeId),
+            )
+            ..countries = [
+              Country(code: "US", description: "United States"),
+            ];
 
           when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
 
@@ -1164,10 +1166,11 @@ void main() {
 
         test("personal guarantee with non-personal party type shows error",
             () async {
-          viewModel.security = Security(
-            securityType: Reference(id: ServerConstants.personalGuaranteeId),
-          );
-          viewModel.countries = [];
+          viewModel
+            ..security = Security(
+              securityType: Reference(id: ServerConstants.personalGuaranteeId),
+            )
+            ..countries = [];
 
           when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
 
@@ -1177,8 +1180,9 @@ void main() {
         });
 
         test("invalid RIM (null customer id) shows error", () async {
-          viewModel.security = Security();
-          viewModel.countries = [];
+          viewModel
+            ..security = Security()
+            ..countries = [];
 
           when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
 
@@ -1188,11 +1192,12 @@ void main() {
         });
 
         test("valid RIM sets security provider name and country", () async {
-          viewModel.security = Security();
-          viewModel.countries = [
-            Country(code: "US", description: "United States"),
-            Country(code: "AE", description: "UAE"),
-          ];
+          viewModel
+            ..security = Security()
+            ..countries = [
+              Country(code: "US", description: "United States"),
+              Country(code: "AE", description: "UAE"),
+            ];
 
           await viewModel.searchByRim("VALIDRIM");
 
@@ -1490,8 +1495,7 @@ void main() {
     late CreateSecurityViewModel viewModel;
 
     setUp(() {
-      viewModel = CreateSecurityViewModel();
-      viewModel.security = Security();
+      viewModel = CreateSecurityViewModel()..security = Security();
     });
 
     test("draftModuleKey returns facilitiesAndSecurities", () {
@@ -1602,32 +1606,31 @@ void main() {
         );
 
         // Stub dynamicFormDocument
-        viewModel.dynamicFormDocument = {
-          "ratingConductedBy": "AGENCY_1",
-        };
-
-        // Stub sections structure exactly as method expects
-        viewModel.sections = [
-          Section(
-            rows: [
-              RowElement(),
-              RowElement(
-                fields: [
-                  DynamicField(
-                    optionList: [selectedOption],
-                    controlType: FieldType.accountNo,
-                    key: "",
-                    label: "",
-                    required: false,
-                    rowData: 0,
-                    enabledDefault: false,
-                    isDisable: false,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ];
+        viewModel
+          ..dynamicFormDocument = {
+            "ratingConductedBy": "AGENCY_1",
+          }
+          ..sections = [
+            Section(
+              rows: [
+                RowElement(),
+                RowElement(
+                  fields: [
+                    DynamicField(
+                      optionList: [selectedOption],
+                      controlType: FieldType.accountNo,
+                      key: "",
+                      label: "",
+                      required: false,
+                      rowData: 0,
+                      enabledDefault: false,
+                      isDisable: false,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ];
 
         // Spy: override filterExternalRatings
         final filteredOptions = [
@@ -1640,16 +1643,15 @@ void main() {
           filteredOptions: filteredOptions,
         )
           ..sections = viewModel.sections
-          ..dynamicFormDocument = viewModel.dynamicFormDocument;
-
-        final security = Security(
-          securityType: Reference(id: 79),
-        );
+          ..dynamicFormDocument = viewModel.dynamicFormDocument
+          ..security = Security(
+            securityType: Reference(id: 79),
+          );
 
         // Act
         await viewModel.setExternalRatingBank(
           mockFormState,
-          security,
+          viewModel.security,
         );
 
         // Assert
@@ -1690,31 +1692,31 @@ void main() {
           metaData: Reference(id: 1),
         );
 
-        viewModel.dynamicFormDocument = {
-          "ratingConductedBy": "UNKNOWN",
-        };
-
-        viewModel.sections = [
-          Section(
-            rows: [
-              RowElement(),
-              RowElement(
-                fields: [
-                  DynamicField(
-                    optionList: [selectedOption],
-                    controlType: FieldType.accountNo,
-                    key: "",
-                    label: "",
-                    required: false,
-                    rowData: 0,
-                    enabledDefault: false,
-                    isDisable: false,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ];
+        viewModel
+          ..dynamicFormDocument = {
+            "ratingConductedBy": "UNKNOWN",
+          }
+          ..sections = [
+            Section(
+              rows: [
+                RowElement(),
+                RowElement(
+                  fields: [
+                    DynamicField(
+                      optionList: [selectedOption],
+                      controlType: FieldType.accountNo,
+                      key: "",
+                      label: "",
+                      required: false,
+                      rowData: 0,
+                      enabledDefault: false,
+                      isDisable: false,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ];
 
         final security = Security(
           securityType: Reference(id: 79),
@@ -1761,9 +1763,8 @@ void main() {
       const CurrencyRates(rates: {"USD": 3.67}),
     );
 
-    vm.security = Security(presentSecurityAmount: 1000);
-
-    await vm.getCurrencyRates(Reference(name: "USD"), true);
+    await (vm..security = Security(presentSecurityAmount: 1000))
+        .getCurrencyRates(Reference(name: "USD"), true);
 
     expect(vm.exchangeRate, 3.67);
     expect(vm.newPresentSecurityAmountController.text, "3670");
@@ -1833,8 +1834,7 @@ void main() {
     late CreateSecurityViewModel viewModel;
 
     setUp(() {
-      viewModel = CreateSecurityViewModel();
-      viewModel.security = Security();
+      viewModel = CreateSecurityViewModel()..security = Security();
 
       // Seed controller with a value to verify clearing logic
       viewModel.securityProviderTlNumberController.text = "TL123";
@@ -1924,13 +1924,12 @@ void main() {
     late CreateSecurityViewModel viewModel;
 
     setUp(() {
-      viewModel = CreateSecurityViewModel();
-      viewModel.security = Security();
-
-      viewModel.yesAndNo = [
-        Reference(id: 1, name: "Yes"),
-        Reference(id: 2, name: "No"),
-      ];
+      viewModel = CreateSecurityViewModel()
+        ..security = Security()
+        ..yesAndNo = [
+          Reference(id: 1, name: "Yes"),
+          Reference(id: 2, name: "No"),
+        ];
     });
 
     test("sets isLimitCtrlSecurity = true when value is first (Yes)", () {
@@ -1966,12 +1965,11 @@ void main() {
 
     test("sets isLimitCtrlSecurity = false when yesAndNo list is null", () {
       // Arrange
-      viewModel.yesAndNo = null;
-
-      // Act
-      viewModel.changeLimitControllingSecurityValue(
-        Reference(id: 1, name: "Yes"),
-      );
+      viewModel
+        ..yesAndNo = null
+        ..changeLimitControllingSecurityValue(
+          Reference(id: 1, name: "Yes"),
+        );
 
       // Assert
       expect(viewModel.security.isLimitCtrlSecurity, false);
@@ -2288,8 +2286,9 @@ void main() {
     });
 
     test("updates currentMarketValue safely", () async {
-      viewModel.security = Security();
-      viewModel.loanToValue = 0.5;
+      viewModel
+        ..security = Security()
+        ..loanToValue = 0.5;
 
       await viewModel.onDynamicFormFieldChange(
         "currentMarketValue",
@@ -2444,9 +2443,9 @@ void main() {
     late MockCustomerRepository mockCustomerRepository;
 
     setUp(() {
-      viewModel = CreateSecurityViewModel();
       mockCustomerRepository = MockCustomerRepository();
-      viewModel.customerRepository = mockCustomerRepository;
+      viewModel = CreateSecurityViewModel()
+        ..customerRepository = mockCustomerRepository;
     });
 
     test("sets sorted countries when repository returns data", () async {
@@ -2489,8 +2488,7 @@ void main() {
     late CreateSecurityViewModel viewModel;
 
     setUp(() {
-      viewModel = CreateSecurityViewModel();
-      viewModel.security = Security();
+      viewModel = CreateSecurityViewModel()..security = Security();
     });
 
     test("updates securityType name when securityType is not null", () {
@@ -2525,8 +2523,7 @@ void main() {
     late CreateSecurityViewModel viewModel;
 
     setUp(() {
-      viewModel = CreateSecurityViewModel();
-      viewModel.security = Security();
+      viewModel = CreateSecurityViewModel()..security = Security();
     });
 
     test("does not crash and emits loaded state when repository throws",
@@ -2568,11 +2565,10 @@ void main() {
     late MockAlertManager mockAlertManager;
 
     setUp(() {
-      viewModel = CreateSecurityViewModel();
       mockRequestRepository = MockRequestRepository();
       mockAlertManager = MockAlertManager();
 
-      viewModel.repository = mockRequestRepository;
+      viewModel = CreateSecurityViewModel()..repository = mockRequestRepository;
       AlertManager.overrideInstance(mockAlertManager);
     });
 

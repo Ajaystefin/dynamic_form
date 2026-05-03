@@ -98,8 +98,9 @@ class PresentSecurityAmount extends StatelessWidget {
             if (selectedValue.isNotEmpty) {
               viewModel.security.presentSecurityAmtCurrency =
                   selectedValue.first;
-              viewModel.onCurrencyChanged(selectedValue.first, true);
-              viewModel.getCurrencyRates(selectedValue.first, true);
+              viewModel
+                ..onCurrencyChanged(selectedValue.first, true)
+                ..getCurrencyRates(selectedValue.first, true);
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {

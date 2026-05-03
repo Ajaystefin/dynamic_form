@@ -589,8 +589,9 @@ class CreateRequestViewModel extends SafeCubit<CreateRequestState> {
     customerNameLoadingStatus = LoadingStatus.loaded;
     groupIdLoadingStatus = LoadingStatus.loaded;
     groupNameLoadingStatus = LoadingStatus.loaded;
-    logger.i("groupIdLoadingStatus. $groupIdLoadingStatus");
-    logger.i("customerRimNoLoadingStatus. $customerRimNoLoadingStatus");
+    logger
+      ..i("groupIdLoadingStatus. $groupIdLoadingStatus")
+      ..i("customerRimNoLoadingStatus. $customerRimNoLoadingStatus");
   }
 
   bool? isGroupIdNameFICountry = false;

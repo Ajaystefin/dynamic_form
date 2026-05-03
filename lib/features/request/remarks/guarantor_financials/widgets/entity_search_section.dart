@@ -101,10 +101,9 @@ class EntitySearchSection extends StatelessWidget {
                             content: Text(
                               "remarks.guarantorFinancials.invalidUrl$urlString"
                                   .tr(),
-                              semanticsLabel:
-                                  "remarks.guarantorFinancials"
-                                  ".invalidUrl$urlString"
-                                      .tr(),
+                              semanticsLabel: "remarks.guarantorFinancials"
+                                      ".invalidUrl$urlString"
+                                  .tr(),
                             ),
                           ),
                         );

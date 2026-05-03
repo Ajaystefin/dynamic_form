@@ -206,12 +206,12 @@ void main() {
     final UpdateWorkflowConfigViewModel vm = createVm();
     await _initVm(tester, vm);
 
-    vm.onWorkflowTypeSelected("MyWorkflow");
-    vm.onCustomerSegmentSelected("Corporate");
-    vm.onApplicationTypeSelected("NTB");
-
-    // Change workflow — everything downstream must reset
-    vm.onWorkflowTypeSelected("MultiCatWorkflow");
+    vm
+      ..onWorkflowTypeSelected("MyWorkflow")
+      ..onCustomerSegmentSelected("Corporate")
+      ..onApplicationTypeSelected("NTB")
+      // Change workflow — everything downstream must reset
+      ..onWorkflowTypeSelected("MultiCatWorkflow");
 
     expect(vm.selectedCustomerSegment, isNull);
     expect(vm.selectedCategory, isNull);
@@ -228,8 +228,9 @@ void main() {
     final UpdateWorkflowConfigViewModel vm = createVm();
     await _initVm(tester, vm);
 
-    vm.onWorkflowTypeSelected("MyWorkflow");
-    vm.onCustomerSegmentSelected("Corporate");
+    vm
+      ..onWorkflowTypeSelected("MyWorkflow")
+      ..onCustomerSegmentSelected("Corporate");
 
     expect(vm.selectedCategory, "FULL");
     expect(vm.showCategorySelection, isFalse);
@@ -246,8 +247,9 @@ void main() {
     final UpdateWorkflowConfigViewModel vm = createVm();
     await _initVm(tester, vm);
 
-    vm.onWorkflowTypeSelected("MultiCatWorkflow");
-    vm.onCustomerSegmentSelected("Corporate");
+    vm
+      ..onWorkflowTypeSelected("MultiCatWorkflow")
+      ..onCustomerSegmentSelected("Corporate");
 
     expect(vm.showCategorySelection, isTrue);
     expect(vm.availableCategoryOptions, containsAll(["FULL", "MEMO"]));
@@ -261,9 +263,10 @@ void main() {
     final UpdateWorkflowConfigViewModel vm = createVm();
     await _initVm(tester, vm);
 
-    vm.onWorkflowTypeSelected("MultiCatWorkflow");
-    vm.onCustomerSegmentSelected("Corporate");
-    vm.onCategorySelected("FULL");
+    vm
+      ..onWorkflowTypeSelected("MultiCatWorkflow")
+      ..onCustomerSegmentSelected("Corporate")
+      ..onCategorySelected("FULL");
 
     expect(vm.selectedCategory, "FULL");
     expect(vm.availableApplicationTypes, contains("NTB"));
@@ -275,9 +278,10 @@ void main() {
     final UpdateWorkflowConfigViewModel vm = createVm();
     await _initVm(tester, vm);
 
-    vm.onWorkflowTypeSelected("MyWorkflow");
-    vm.onCustomerSegmentSelected("Corporate");
-    vm.onApplicationTypeSelected("NTB");
+    vm
+      ..onWorkflowTypeSelected("MyWorkflow")
+      ..onCustomerSegmentSelected("Corporate")
+      ..onApplicationTypeSelected("NTB");
 
     expect(vm.selectedApplicationType, "NTB");
     expect(vm.showNewApplicationNameField, isTrue);
@@ -431,12 +435,13 @@ void main() {
     await tester.pumpAndSettle();
 
     // Simulate user interactions — each handler sets _draft fields
-    vm.onWorkflowTypeSelected("MyWorkflow");
-    vm.onCustomerSegmentSelected(
-      "Corporate",
-    ); // auto-locks FULL, sets reference2=C
-    vm.onApplicationTypeSelected("NTB"); // sets reference1=NW
-    vm.onNewApplicationTypeNameChanged("  My New App  ");
+    vm
+      ..onWorkflowTypeSelected("MyWorkflow")
+      ..onCustomerSegmentSelected(
+        "Corporate",
+      ) // auto-locks FULL, sets reference2=C
+      ..onApplicationTypeSelected("NTB") // sets reference1=NW
+      ..onNewApplicationTypeNameChanged("  My New App  ");
 
     await tester.tap(find.text("save"));
     await tester.pumpAndSettle();
@@ -485,10 +490,11 @@ void main() {
       ),
     );
 
-    vm.onWorkflowTypeSelected("MyWorkflow");
-    vm.onCustomerSegmentSelected("Corporate");
-    vm.onApplicationTypeSelected("NTB");
-    vm.onNewApplicationTypeNameChanged("App Name");
+    vm
+      ..onWorkflowTypeSelected("MyWorkflow")
+      ..onCustomerSegmentSelected("Corporate")
+      ..onApplicationTypeSelected("NTB")
+      ..onNewApplicationTypeNameChanged("App Name");
 
     await tester.tap(find.text("save"));
     await tester.pumpAndSettle();

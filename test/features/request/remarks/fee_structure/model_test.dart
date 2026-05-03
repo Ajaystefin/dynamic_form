@@ -277,11 +277,11 @@ void main() {
     test("empty input clears amount/raw and displayAmount becomes empty", () {
       viewModel.defaultFeeTypes = [];
       final row = FeeStructure(id: "1", feeType: "X", amount: 5);
-      viewModel.feeRows = [row];
-      viewModel.amountControllers = [TextEditingController()];
-      viewModel.commentsControllers = [TextEditingController()];
-
-      viewModel.onAmountFieldChanged(0, "");
+      viewModel
+        ..feeRows = [row]
+        ..amountControllers = [TextEditingController()]
+        ..commentsControllers = [TextEditingController()]
+        ..onAmountFieldChanged(0, "");
 
       expect(row.amount, isNull);
       expect(row.amountRaw, isNull);
@@ -291,11 +291,11 @@ void main() {
     test("N/A input stores textual N/A and amount 0.0", () {
       viewModel.defaultFeeTypes = [];
       final row = FeeStructure(id: "1", feeType: "X", amount: null);
-      viewModel.feeRows = [row];
-      viewModel.amountControllers = [TextEditingController()];
-      viewModel.commentsControllers = [TextEditingController()];
-
-      viewModel.onAmountFieldChanged(0, "N/A");
+      viewModel
+        ..feeRows = [row]
+        ..amountControllers = [TextEditingController()]
+        ..commentsControllers = [TextEditingController()]
+        ..onAmountFieldChanged(0, "N/A");
 
       expect(row.amountRaw, "N/A");
       expect(row.amount, 0.0);
@@ -307,11 +307,11 @@ void main() {
         () {
       viewModel.defaultFeeTypes = [];
       final row = FeeStructure(id: "1", feeType: "X", amount: null);
-      viewModel.feeRows = [row];
-      viewModel.amountControllers = [TextEditingController()];
-      viewModel.commentsControllers = [TextEditingController()];
-
-      viewModel.onAmountFieldChanged(0, "12.5");
+      viewModel
+        ..feeRows = [row]
+        ..amountControllers = [TextEditingController()]
+        ..commentsControllers = [TextEditingController()]
+        ..onAmountFieldChanged(0, "12.5");
 
       expect(row.amountRaw, "12.5");
       expect(row.amount, 12.5);
@@ -321,11 +321,11 @@ void main() {
     test("invalid numeric input keeps raw and leaves parsed amount null", () {
       viewModel.defaultFeeTypes = [];
       final row = FeeStructure(id: "1", feeType: "X", amount: null);
-      viewModel.feeRows = [row];
-      viewModel.amountControllers = [TextEditingController()];
-      viewModel.commentsControllers = [TextEditingController()];
-
-      viewModel.onAmountFieldChanged(0, "invalid");
+      viewModel
+        ..feeRows = [row]
+        ..amountControllers = [TextEditingController()]
+        ..commentsControllers = [TextEditingController()]
+        ..onAmountFieldChanged(0, "invalid");
 
       expect(row.amountRaw, "invalid");
       expect(row.amount, isNull);
@@ -335,11 +335,11 @@ void main() {
     test("oversized numeric input keeps raw and leaves parsed amount null", () {
       viewModel.defaultFeeTypes = [];
       final row = FeeStructure(id: "1", feeType: "X", amount: null);
-      viewModel.feeRows = [row];
-      viewModel.amountControllers = [TextEditingController()];
-      viewModel.commentsControllers = [TextEditingController()];
-
-      viewModel.onAmountFieldChanged(0, "12345678901234567");
+      viewModel
+        ..feeRows = [row]
+        ..amountControllers = [TextEditingController()]
+        ..commentsControllers = [TextEditingController()]
+        ..onAmountFieldChanged(0, "12345678901234567");
 
       expect(row.amountRaw, "12345678901234567");
       expect(row.amount, isNull);
@@ -349,11 +349,11 @@ void main() {
     test("textual zero toggles N/A display for displayAmount", () {
       viewModel.defaultFeeTypes = [];
       final row = FeeStructure(id: "1", feeType: "X", amount: null);
-      viewModel.feeRows = [row];
-      viewModel.amountControllers = [TextEditingController()];
-      viewModel.commentsControllers = [TextEditingController()];
-
-      viewModel.onAmountFieldChanged(0, "0");
+      viewModel
+        ..feeRows = [row]
+        ..amountControllers = [TextEditingController()]
+        ..commentsControllers = [TextEditingController()]
+        ..onAmountFieldChanged(0, "0");
 
       expect(row.amountRaw, "0");
       expect(row.amount, 0.0);
@@ -363,8 +363,9 @@ void main() {
 
   group("mutations", () {
     test("addRow appends row and both controllers", () {
-      viewModel.defaultFeeTypes = [];
-      viewModel.addRow();
+      viewModel
+        ..defaultFeeTypes = []
+        ..addRow();
 
       expect(viewModel.feeRows.length, 1);
       expect(viewModel.amountControllers.length, 1);
@@ -376,9 +377,10 @@ void main() {
     test("deleteRow removes local new row and controllers only", () async {
       viewModel.defaultFeeTypes = [];
       final row = FeeStructure(id: "1", feeType: "CustomType", isNew: true);
-      viewModel.feeRows = [row];
-      viewModel.amountControllers = [TextEditingController()];
-      viewModel.commentsControllers = [TextEditingController()];
+      viewModel
+        ..feeRows = [row]
+        ..amountControllers = [TextEditingController()]
+        ..commentsControllers = [TextEditingController()];
 
       await viewModel.deleteRow(row);
 
@@ -391,13 +393,15 @@ void main() {
     test(
         "deleteRow persisted row calls repository,"
         " reloads data and shows success toast", () async {
-      viewModel.defaultFeeTypes = [];
-      viewModel.selectedCustomer = Customer(customerRimNo: 123);
+      viewModel
+        ..defaultFeeTypes = []
+        ..selectedCustomer = Customer(customerRimNo: 123);
 
       final row = FeeStructure(id: "1", feeType: "X", isNew: false);
-      viewModel.feeRows = [row];
-      viewModel.amountControllers = [TextEditingController()];
-      viewModel.commentsControllers = [TextEditingController()];
+      viewModel
+        ..feeRows = [row]
+        ..amountControllers = [TextEditingController()]
+        ..commentsControllers = [TextEditingController()];
 
       when(() => mockRepository.deleteFeeStructureData(row))
           .thenAnswer((_) async => "deleted");
@@ -416,9 +420,10 @@ void main() {
     test("deleteRow failure shows error toast and error state", () async {
       viewModel.defaultFeeTypes = [];
       final row = FeeStructure(id: "1", feeType: "X", isNew: false);
-      viewModel.feeRows = [row];
-      viewModel.amountControllers = [TextEditingController()];
-      viewModel.commentsControllers = [TextEditingController()];
+      viewModel
+        ..feeRows = [row]
+        ..amountControllers = [TextEditingController()]
+        ..commentsControllers = [TextEditingController()];
 
       when(() => mockRepository.deleteFeeStructureData(row))
           .thenThrow(Exception("fail"));
@@ -435,27 +440,29 @@ void main() {
     test(
         "onSavePress syncs values, defaults appRefNo/rimNo, saves and shows success toast",
         () async {
-      viewModel.defaultFeeTypes = [];
-      viewModel.selectedCustomer = Customer(customerRimNo: 123);
+      viewModel
+        ..defaultFeeTypes = []
+        ..selectedCustomer = Customer(customerRimNo: 123);
 
       final emptyRow = FeeStructure(id: "1", feeType: "Empty", isNew: true);
       final naRow = FeeStructure(id: "2", feeType: "NA", isNew: true);
       final numericRow = FeeStructure(id: "3", feeType: "Numeric", isNew: true);
       final hugeRow = FeeStructure(id: "4", feeType: "Huge", isNew: true);
 
-      viewModel.feeRows = [emptyRow, naRow, numericRow, hugeRow];
-      viewModel.amountControllers = [
-        TextEditingController(text: ""),
-        TextEditingController(text: "N/A"),
-        TextEditingController(text: "123.45"),
-        TextEditingController(text: "12345678901234567"),
-      ];
-      viewModel.commentsControllers = [
-        TextEditingController(text: "Comment 1"),
-        TextEditingController(text: "Comment 2"),
-        TextEditingController(text: "Comment 3"),
-        TextEditingController(text: "Comment 4"),
-      ];
+      viewModel
+        ..feeRows = [emptyRow, naRow, numericRow, hugeRow]
+        ..amountControllers = [
+          TextEditingController(text: ""),
+          TextEditingController(text: "N/A"),
+          TextEditingController(text: "123.45"),
+          TextEditingController(text: "12345678901234567"),
+        ]
+        ..commentsControllers = [
+          TextEditingController(text: "Comment 1"),
+          TextEditingController(text: "Comment 2"),
+          TextEditingController(text: "Comment 3"),
+          TextEditingController(text: "Comment 4"),
+        ];
 
       when(() => mockRepository.saveFeeStructure(any()))
           .thenAnswer((_) async => "ok");
@@ -496,13 +503,15 @@ void main() {
     });
 
     test("onSavePress handles save error gracefully", () async {
-      viewModel.defaultFeeTypes = [];
-      viewModel.selectedCustomer = Customer(customerRimNo: 123);
+      viewModel
+        ..defaultFeeTypes = []
+        ..selectedCustomer = Customer(customerRimNo: 123);
 
       final row = FeeStructure(id: "1", feeType: "X", isNew: true);
-      viewModel.feeRows = [row];
-      viewModel.amountControllers = [TextEditingController(text: "N/A")];
-      viewModel.commentsControllers = [TextEditingController(text: "Comment")];
+      viewModel
+        ..feeRows = [row]
+        ..amountControllers = [TextEditingController(text: "N/A")]
+        ..commentsControllers = [TextEditingController(text: "Comment")];
 
       when(() => mockRepository.saveFeeStructure(any()))
           .thenThrow(Exception("Save failed"));
@@ -518,13 +527,15 @@ void main() {
     testWidgets(
         "onSavePress with continue=true navigates to rmCertification route",
         (tester) async {
-      viewModel.defaultFeeTypes = [];
-      viewModel.selectedCustomer = Customer(customerRimNo: 123);
+      viewModel
+        ..defaultFeeTypes = []
+        ..selectedCustomer = Customer(customerRimNo: 123);
 
       final row = FeeStructure(id: "1", feeType: "X", isNew: true);
-      viewModel.feeRows = [row];
-      viewModel.amountControllers = [TextEditingController(text: "10")];
-      viewModel.commentsControllers = [TextEditingController(text: "Comment")];
+      viewModel
+        ..feeRows = [row]
+        ..amountControllers = [TextEditingController(text: "10")]
+        ..commentsControllers = [TextEditingController(text: "Comment")];
 
       when(() => mockRepository.saveFeeStructure(any()))
           .thenAnswer((_) async => "ok");

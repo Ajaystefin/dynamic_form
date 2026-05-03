@@ -16,32 +16,34 @@ void main() {
 
     setUp(() {
       handler = SicCodeReviewDraftHandler();
-      vm = SicCodeReviewViewModel();
+      vm = SicCodeReviewViewModel()
+        ..emit(SicCodeReviewState(loaderStatus: LoadingStatus.loaded))
 
-      // Initialize a stable loaded state to allow emit(copyWith()) to run
-      // safely.
-      vm.emit(SicCodeReviewState(loaderStatus: LoadingStatus.loaded));
-
-      // Safe defaults that tests mutate as needed:
-      vm.comment.strategyComment = "";
-      vm.controllerAccountLevelSicCode.text = "";
-      vm.selectedCustomer = null;
-      vm.customerSICcodeReview = <SicCodeReview>[];
+        // Safe defaults that tests mutate as needed:
+        ..comment.strategyComment = ""
+        ..controllerAccountLevelSicCode.text = ""
+        ..selectedCustomer = null
+        ..customerSICcodeReview = <SicCodeReview>[];
     });
 
     test(
         "buildDraftData: serializes rim, comment, and"
         " only rows matching current RIM", () {
       // Arrange
-      vm.selectedCustomer = Customer(customerRimNo: 555);
-
-      vm.comment.strategyComment = "Note";
-
-      vm.customerSICcodeReview = [
-        SicCodeReview(rimNo: 555, proposedSicCode: "1000"), // included (idx 0)
-        SicCodeReview(rimNo: 777, proposedSicCode: "2000"), // excluded (idx 1)
-        SicCodeReview(rimNo: 555, proposedSicCode: null), // included (idx 2)
-      ];
+      vm
+        ..selectedCustomer = Customer(customerRimNo: 555)
+        ..comment.strategyComment = "Note"
+        ..customerSICcodeReview = [
+          SicCodeReview(
+            rimNo: 555,
+            proposedSicCode: "1000",
+          ), // included (idx 0)
+          SicCodeReview(
+            rimNo: 777,
+            proposedSicCode: "2000",
+          ), // excluded (idx 1)
+          SicCodeReview(rimNo: 555, proposedSicCode: null), // included (idx 2)
+        ];
 
       // Act
       final data = handler.buildDraftData(vm);
@@ -67,11 +69,11 @@ void main() {
 
     test("applyDraft: early return when draft is empty", () {
       // Arrange
-      vm.selectedCustomer = Customer(customerRimNo: 123);
-      vm.customerSICcodeReview = [];
-
-      vm.comment.strategyComment = "orig";
-      vm.controllerAccountLevelSicCode.text = "";
+      vm
+        ..selectedCustomer = Customer(customerRimNo: 123)
+        ..customerSICcodeReview = []
+        ..comment.strategyComment = "orig"
+        ..controllerAccountLevelSicCode.text = "";
 
       // Act
       handler.applyDraft(vm, <String, dynamic>{});
@@ -153,18 +155,19 @@ void main() {
         "rows by index "
         '(preferred) and normalizes "null-like" values', () {
       // Arrange
-      vm.selectedCustomer = Customer(customerRimNo: 500);
-      vm.customerSICcodeReview = [
-        SicCodeReview(rimNo: 500, proposedSicCode: "A"), // idx 0
-        SicCodeReview(
-          rimNo: 500,
-          proposedSicCode: "B",
-        ), // idx 1 -> becomes 1456
-        SicCodeReview(
-          rimNo: 500,
-          proposedSicCode: "C",
-        ), // idx 2 -> becomes null
-      ];
+      vm
+        ..selectedCustomer = Customer(customerRimNo: 500)
+        ..customerSICcodeReview = [
+          SicCodeReview(rimNo: 500, proposedSicCode: "A"), // idx 0
+          SicCodeReview(
+            rimNo: 500,
+            proposedSicCode: "B",
+          ), // idx 1 -> becomes 1456
+          SicCodeReview(
+            rimNo: 500,
+            proposedSicCode: "C",
+          ), // idx 2 -> becomes null
+        ];
 
       // Act
       handler.applyDraft(vm, {
@@ -188,11 +191,12 @@ void main() {
         "applyDraft: fallback restore when index "
         "invalid matches previous proposedSicCode", () {
       // Arrange
-      vm.selectedCustomer = Customer(customerRimNo: 9);
-      vm.customerSICcodeReview = [
-        SicCodeReview(rimNo: 9, proposedSicCode: "OLD"), // idx 0
-        SicCodeReview(rimNo: 9, proposedSicCode: "X"), // idx 1
-      ];
+      vm
+        ..selectedCustomer = Customer(customerRimNo: 9)
+        ..customerSICcodeReview = [
+          SicCodeReview(rimNo: 9, proposedSicCode: "OLD"), // idx 0
+          SicCodeReview(rimNo: 9, proposedSicCode: "X"), // idx 1
+        ];
 
       // Act
       handler.applyDraft(vm, {
@@ -214,11 +218,12 @@ void main() {
         "applyDraft: fallback when draft proposed "
         "is null-like attaches to first null row", () {
       // Arrange
-      vm.selectedCustomer = Customer(customerRimNo: 12);
-      vm.customerSICcodeReview = [
-        SicCodeReview(rimNo: 12, proposedSicCode: "A"),
-        SicCodeReview(rimNo: 12, proposedSicCode: null), // eligible
-      ];
+      vm
+        ..selectedCustomer = Customer(customerRimNo: 12)
+        ..customerSICcodeReview = [
+          SicCodeReview(rimNo: 12, proposedSicCode: "A"),
+          SicCodeReview(rimNo: 12, proposedSicCode: null), // eligible
+        ];
 
       // Act
       handler.applyDraft(vm, {
@@ -235,8 +240,9 @@ void main() {
     test("applyDraft: draft has rows but vm list is null -> skips row restore",
         () {
       // Arrange
-      vm.selectedCustomer = Customer(customerRimNo: 13);
-      vm.customerSICcodeReview = null;
+      vm
+        ..selectedCustomer = Customer(customerRimNo: 13)
+        ..customerSICcodeReview = null;
 
       // Act
       handler.applyDraft(vm, {
@@ -252,8 +258,9 @@ void main() {
 
     test("applyDraft: vm list is empty -> skips row restore", () {
       // Arrange
-      vm.selectedCustomer = Customer(customerRimNo: 14);
-      vm.customerSICcodeReview = <SicCodeReview>[];
+      vm
+        ..selectedCustomer = Customer(customerRimNo: 14)
+        ..customerSICcodeReview = <SicCodeReview>[];
 
       // Act
       handler.applyDraft(vm, {

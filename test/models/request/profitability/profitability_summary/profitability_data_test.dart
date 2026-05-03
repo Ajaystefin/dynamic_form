@@ -439,9 +439,9 @@ void main() {
   // ──────────────────────────────────────────────────────────────────
   group("ProfitabilityData – field mutation", () {
     test("fields are mutable", () {
-      final data = ProfitabilityData();
-      data.nii = "updated";
-      data.realizedRwa = "realizedUpdated";
+      final data = ProfitabilityData()
+        ..nii = "updated"
+        ..realizedRwa = "realizedUpdated";
       expect(data.nii, "updated");
       expect(data.realizedRwa, "realizedUpdated");
     });

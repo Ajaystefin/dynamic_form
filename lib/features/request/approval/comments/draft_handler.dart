@@ -65,14 +65,13 @@ class CommentsDraftHandler extends DraftHandler<CommentsViewModel> {
       vm.optsActionId = int.tryParse(optsIdRaw) ?? vm.optsActionId;
     }
 
-    vm.selectedUserId =
-        (data["selectedUserId"] as String?) ?? vm.selectedUserId;
-
-    vm.selectedDelegation =
-        (data["selectedDelegation"] as String?) ?? vm.selectedDelegation;
-
-    vm.selectedReason =
-        (data["selectedReason"] as String?) ?? vm.selectedReason;
+    vm
+      ..selectedUserId =
+          (data["selectedUserId"] as String?) ?? vm.selectedUserId
+      ..selectedDelegation =
+          (data["selectedDelegation"] as String?) ?? vm.selectedDelegation
+      ..selectedReason =
+          (data["selectedReason"] as String?) ?? vm.selectedReason;
 
     final dynamic isReturn = data["isReturnSelected"];
     if (isReturn is bool) {

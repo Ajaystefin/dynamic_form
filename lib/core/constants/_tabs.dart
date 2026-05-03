@@ -348,8 +348,8 @@ class TabConstants {
       RecommendationTabs.guarantorsExposure: () =>
           AuthRepository.hasRight(RightConstants.guarantorsExposure),
       RecommendationTabs.queriesAndResponses: () =>
-          (AuthRepository.hasRight(RightConstants.queriesResponses) &&
-              Globals.isQueriesTabVisible()),
+          AuthRepository.hasRight(RightConstants.queriesResponses) &&
+          Globals.isQueriesTabVisible(),
       RecommendationTabs.previousCreditApproval: () =>
           AuthRepository.hasRight(RightConstants.previousCreditApproval),
       RecommendationTabs.recommendationCurrentApproval: () =>

@@ -56,7 +56,7 @@ class BalanceSheetAnalysis extends StatelessWidget {
               );
             },
             onSelected: (selectedValue) {
-              viewModel.selectedBalanceSheetHealth = (selectedValue.first);
+              viewModel.selectedBalanceSheetHealth = selectedValue.first;
             },
             dropdownBuilder: (context, item) => Text(item?.name ?? ""),
             selectedItems: viewModel.selectedBalanceSheetHealth != null
@@ -103,19 +103,16 @@ class BalanceSheetAnalysis extends StatelessWidget {
     final mergedRows = balanceRefs.map((ref) {
       final apiRow = viewModel.balanceSheetRows.firstWhere(
         (row) => row.id == (ref.reference2 ?? ""),
-        orElse: () {
-          return BalanceSheetAnalysisRow(
-            id: ref.reference2 ?? "",
-            balanceSheet: ref.name ?? "",
-            audited1: "",
-            audited2: "",
-            audited3: "",
-            inhouse: "",
-            isNew: false,
-          );
-        },
-      );
-      apiRow.balanceSheet = ref.name ?? "";
+        orElse: () => BalanceSheetAnalysisRow(
+          id: ref.reference2 ?? "",
+          balanceSheet: ref.name ?? "",
+          audited1: "",
+          audited2: "",
+          audited3: "",
+          inhouse: "",
+          isNew: false,
+        ),
+      )..balanceSheet = ref.name ?? "";
       return apiRow;
     }).toList();
 
@@ -127,11 +124,13 @@ class BalanceSheetAnalysis extends StatelessWidget {
     return List.generate(allRows.length, (index) {
       final row = allRows[index];
       final label = row.balanceSheet;
+      final List<String> auditedValues = [
+        row.audited1,
+        row.audited2,
+        row.audited3,
+      ];
 
-      final cells = <Widget>[];
-
-      // Balance Sheet Item Name
-      cells.add(
+      final cells = <Widget>[
         row.isNew
             ? Center(
                 child: CustomTextField(
@@ -143,21 +142,11 @@ class BalanceSheetAnalysis extends StatelessWidget {
                 ),
               )
             : Text(label),
-      );
-
-      // Audited columns
-      final List<String> auditedValues = [
-        row.audited1,
-        row.audited2,
-        row.audited3,
-      ];
-      for (int i = 0; i < auditedValues.length; i++) {
-        final String value = auditedValues[i];
-        cells.add(
+        for (int i = 0; i < auditedValues.length; i++)
           Center(
             child: row.isNew
                 ? CustomTextField(
-                    initialValue: value,
+                    initialValue: auditedValues[i],
                     validator: CustomValidator.twoDecimalNumeric,
                     inputFormatters: [DecimalInputFormatterTwoDigit()],
                     onChanged: (txt) {
@@ -168,17 +157,12 @@ class BalanceSheetAnalysis extends StatelessWidget {
                   )
                 : Text(
                     viewModel.rowValue(
-                      value,
+                      auditedValues[i],
                       isNew: row.isNew,
                       rowIndex: index,
                     ),
                   ),
           ),
-        );
-      }
-
-      // In-house
-      cells.add(
         Center(
           child: row.isNew
               ? CustomTextField(
@@ -195,9 +179,6 @@ class BalanceSheetAnalysis extends StatelessWidget {
                   ),
                 ),
         ),
-      );
-
-      cells.add(
         Center(
           child: row.isNew
               ? CustomTextField(
@@ -214,19 +195,14 @@ class BalanceSheetAnalysis extends StatelessWidget {
                   ),
                 ),
         ),
-      );
-
-      if (viewModel.hasActionColumnBalanceSheet) {
-        cells.add(
+        if (viewModel.hasActionColumnBalanceSheet)
           row.isNew
               ? IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () =>
-                      viewModel.deleteUserAddedBalanceRow(row), // ← CHANGED
+                  onPressed: () => viewModel.deleteUserAddedBalanceRow(row),
                 )
               : const SizedBox.shrink(),
-        );
-      }
+      ];
 
       return cells;
     });

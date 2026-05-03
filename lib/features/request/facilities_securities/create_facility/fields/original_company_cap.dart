@@ -49,7 +49,7 @@ class OriginalCompanyCap extends StatelessWidget {
           onSelected: (selectedValue) {
             if (selectedValue.isNotEmpty) {
               viewModel.getFacility.presentOutstandingCCValue =
-                  (selectedValue.first);
+                  selectedValue.first;
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {

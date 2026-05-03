@@ -819,7 +819,7 @@ class DynamicFormState extends State<DynamicForm> {
     // - Otherwise, keep current selection.
 
     final shouldSetDefault = (onlyIfDocumentEmpty && currentKey == null) ||
-        (forceOverwrite) ||
+        forceOverwrite ||
         (!isCurrentValid);
 
     if (shouldSetDefault) {

@@ -38,7 +38,7 @@ class OriginalLimit extends StatelessWidget {
           onSelected: (selectedValue) {
             if (selectedValue.isNotEmpty) {
               viewModel.getFacility.originalLimitCCValue =
-                  (selectedValue.first);
+                  selectedValue.first;
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {

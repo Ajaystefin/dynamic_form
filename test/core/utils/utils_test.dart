@@ -72,8 +72,7 @@ void main() {
       });
 
       test("should return false when user role is not in list", () {
-        final role = Role();
-        role.userRole = UserRole.inquiryUser;
+        final role = Role()..userRole = UserRole.inquiryUser;
         Globals.user = User(currentRole: role);
         final result =
             Utils.checkRoles([UserRole.admin, UserRole.segmentHeadBusiness]);
@@ -81,8 +80,7 @@ void main() {
       });
 
       test("should return true when user role is in list", () {
-        final role = Role();
-        role.userRole = UserRole.admin;
+        final role = Role()..userRole = UserRole.admin;
         Globals.user = User(currentRole: role);
         final result =
             Utils.checkRoles([UserRole.admin, UserRole.segmentHeadBusiness]);

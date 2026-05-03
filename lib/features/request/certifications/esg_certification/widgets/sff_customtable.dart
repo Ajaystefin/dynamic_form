@@ -41,8 +41,7 @@ class SffCustomtable extends StatelessWidget {
       key: ValueKey(
         categories
             .map(
-              (sffCategoriesList) =>
-                  "${sffCategoriesList.sffCategory}:"
+              (sffCategoriesList) => "${sffCategoriesList.sffCategory}:"
                   "${sffCategoriesList.isSelected}",
             )
             .join(";"),

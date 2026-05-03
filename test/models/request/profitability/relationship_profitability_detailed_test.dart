@@ -74,13 +74,11 @@ void main() {
         natureOfBusiness: "Consulting",
       );
 
-      final detailed = RelationshipProfitabilityDetailed(
+      RelationshipProfitabilityDetailed(
         rim: 123,
         customerName: "Test Customer",
         relationshipProfitabilityDetail: [detail1, detail2],
-      );
-
-      detailed.toJson();
+      ).toJson();
     });
   });
 }

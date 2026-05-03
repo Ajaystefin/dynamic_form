@@ -18,6 +18,7 @@ class SplashViewModel extends SafeCubit<SplashState> {
 
   Future<void> init(Map<String, String> queryParams) async {
     debugPrint("queryParams in SplashViewModel: $queryParams");
+    debugPrint("queryParams for  sso-error: ${queryParams['error']}");
     // if (await _checkAuthentication()) return;
 
     // In debug mode, show debug login screen instead of SSO redirect
@@ -83,7 +84,13 @@ class SplashViewModel extends SafeCubit<SplashState> {
   Future<void> _initiateSSORedirect() async {
     final ssoUrl = EnvConfig.ssoUrl;
     if (ssoUrl.isNotEmpty && kIsWeb) {
-      await launchUrl(Uri.parse(ssoUrl), webOnlyWindowName: "_self");
+      final bool result =
+          await launchUrl(Uri.parse(ssoUrl), webOnlyWindowName: "_self");
+      if (!result) {
+        AlertManager().showFailureToast("auth.login.errorMessageADFS".tr());
+        // Fallback if SSO URL does not respond.
+        router.go(Routes.login);
+      }
     } else {
       // Fallback if no SSO URL is configured.
       router.go(Routes.login);

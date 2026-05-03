@@ -140,7 +140,7 @@ class RiskRatingViewModel extends SafeCubit<RiskRatingState>
   bool isInitializing = true;
 
   bool get canEdit =>
-      (pageMode == PageMode.edit); // && Utils.canEditApplication();
+      pageMode == PageMode.edit; // && Utils.canEditApplication();
 
   PageMode pageMode = PageMode.na;
 
@@ -291,7 +291,7 @@ class RiskRatingViewModel extends SafeCubit<RiskRatingState>
             await repository.getUpdatedRatingDetails(
           rimNo: int.tryParse(rim),
         );
-        if ((updatedInternalRating).any((e) => e?.isClDown == true)) {
+        if (updatedInternalRating.any((e) => e?.isClDown == true)) {
           isCreditLensAvailable = false;
           emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
           return;
@@ -380,7 +380,7 @@ class RiskRatingViewModel extends SafeCubit<RiskRatingState>
       entityId: entity,
     );
 
-    if ((updatedInternalRating).any((e) => e?.isClDown == true)) {
+    if (updatedInternalRating.any((e) => e?.isClDown == true)) {
       if (index != null) {
         riskRating.internalRatings[index].entityId = entity;
       }
@@ -721,7 +721,7 @@ class RiskRatingViewModel extends SafeCubit<RiskRatingState>
               existingRating.entityId == 0 ? null : existingRating.entityId,
           rimNo: existingRating.customerRimNo,
         );
-        if ((updatedRatings).any((e) => e?.isClDown == true)) {
+        if (updatedRatings.any((e) => e?.isClDown == true)) {
           isCreditLensAvailable = false;
           emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
           return;
@@ -732,7 +732,7 @@ class RiskRatingViewModel extends SafeCubit<RiskRatingState>
       }
 
       if (updatedRiskRating.isNotEmpty) {
-        for (InternalRating internalRating in (riskRating.internalRatings)) {
+        for (InternalRating internalRating in riskRating.internalRatings) {
           final List<int?> entities = updatedRiskRating
               .map(
                 (e) => e?.rimNo == internalRating.customerRimNo
@@ -809,13 +809,11 @@ class RiskRatingViewModel extends SafeCubit<RiskRatingState>
       if (comments.isNotEmpty) {
         final List<Comment> filteredComments = comments
             .where(
-              (comment) => (comment.applicationRefNo ==
-                  Globals.request?.applicationRefNo),
+              (comment) => comment.applicationRefNo ==
+                  Globals.request?.applicationRefNo,
             )
-            .toList();
-
-        filteredComments
-            .sort((a, b) => b.createdDate!.compareTo(a.createdDate!));
+            .toList()
+          ..sort((a, b) => b.createdDate!.compareTo(a.createdDate!));
         riskRating.comments = filteredComments.first.comment;
         internalRatingTextController.text =
             filteredComments.first.comment ?? "";
@@ -828,8 +826,8 @@ class RiskRatingViewModel extends SafeCubit<RiskRatingState>
         );
         final List<Comment> filteredCommentsExternal = externalComments
             .where(
-              (comment) => (comment.applicationRefNo ==
-                  Globals.request?.applicationRefNo),
+              (comment) => comment.applicationRefNo ==
+                  Globals.request?.applicationRefNo,
             )
             .toList();
         if (filteredCommentsExternal.isNotEmpty) {
@@ -891,7 +889,7 @@ class RiskRatingViewModel extends SafeCubit<RiskRatingState>
           formKey.currentState?.save();
           final bool hasInvalidRimExt = (riskRating.externalRatings ?? [])
               .any((rating) => rating.customerRimNo == -1);
-          final bool hasInvalidRimInt = (riskRating.internalRatings).any(
+          final bool hasInvalidRimInt = riskRating.internalRatings.any(
             (rating) =>
                 rating.customerRimNo == -1 || rating.customerRimNo == null,
           );

@@ -246,8 +246,8 @@ class ViewDesktop extends StatelessWidget {
                                 Emirates(viewModel: viewModel),
                                 Visibility(
                                   visible:
-                                      (viewModel.security.securityType?.id ==
-                                          78),
+                                      viewModel.security.securityType?.id ==
+                                          78,
                                   child: CurrentTimeDepositAccountNumber(
                                     viewModel: viewModel,
                                   ),

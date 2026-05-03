@@ -188,9 +188,9 @@ void main() {
     when(() => mockAlert.showWarningToast(any())).thenReturn(null);
     when(() => mockAlert.showInfoToast(any())).thenReturn(null);
 
-    vm = TestableCreateProjectViewModel();
-    vm.repository = mockRepo;
-    vm.project = Project();
+    vm = TestableCreateProjectViewModel()
+      ..repository = mockRepo
+      ..project = Project();
 
     Globals.onAutoSave = null;
   });
@@ -283,18 +283,18 @@ void main() {
 
   group("syncModelFromControllers()", () {
     test("all controllers filled → model updated", () {
-      vm.projectNameController.text = "My Project";
-      vm.ultimateOwnerController.text = "Ultimate Co";
-      vm.ownerEntityController.text = "Entity Ltd";
-      vm.ownerRimController.text = "12345";
-      vm.entityRimController.text = "67890";
-      vm.projectValueController.text = "1000000";
-      vm.projectValueCurrentController.text = "500000";
-      vm.initialProjectValueController.text = "750000";
-      vm.projectSummaryController.text = "A summary";
-      vm.projectCompletionController.text = "45.5";
-
-      vm.syncModelFromControllers();
+      vm
+        ..projectNameController.text = "My Project"
+        ..ultimateOwnerController.text = "Ultimate Co"
+        ..ownerEntityController.text = "Entity Ltd"
+        ..ownerRimController.text = "12345"
+        ..entityRimController.text = "67890"
+        ..projectValueController.text = "1000000"
+        ..projectValueCurrentController.text = "500000"
+        ..initialProjectValueController.text = "750000"
+        ..projectSummaryController.text = "A summary"
+        ..projectCompletionController.text = "45.5"
+        ..syncModelFromControllers();
 
       expect(vm.project.projectName, "My Project");
       expect(vm.project.projectUltimateOwnerName, "Ultimate Co");
@@ -309,11 +309,11 @@ void main() {
     });
 
     test("invalid numeric values → nullable fields become null", () {
-      vm.ownerRimController.text = "abc";
-      vm.entityRimController.text = "xyz";
-      vm.projectCompletionController.text = "bad-double";
-
-      vm.syncModelFromControllers();
+      vm
+        ..ownerRimController.text = "abc"
+        ..entityRimController.text = "xyz"
+        ..projectCompletionController.text = "bad-double"
+        ..syncModelFromControllers();
 
       expect(vm.project.projectOwnerRimNo, isNull);
       expect(vm.project.projectOwnerEntityRimNo, isNull);
@@ -370,9 +370,9 @@ void main() {
 
     test("all project fields null → empty strings + Not Available fallback",
         () {
-      vm.project = Project();
-
-      vm.syncControllersFromModel();
+      vm
+        ..project = Project()
+        ..syncControllersFromModel();
 
       expect(vm.projectNameController.text, "");
       expect(vm.ultimateOwnerController.text, "");
@@ -508,8 +508,9 @@ void main() {
 
   group("onPressedContractCodeInTable()", () {
     test("isCreateProject=false, canEdit=true → autoSave called", () {
-      vm.isCreateProject = false;
-      vm.contracts = [Contract(contractCode: "C-001")];
+      vm
+        ..isCreateProject = false
+        ..contracts = [Contract(contractCode: "C-001")];
 
       var called = false;
       Globals.onAutoSave = () async => called = true;
@@ -522,8 +523,9 @@ void main() {
     });
 
     test("isCreateProject=true → autoSave NOT called", () {
-      vm.isCreateProject = true;
-      vm.contracts = [Contract(contractCode: "C-001")];
+      vm
+        ..isCreateProject = true
+        ..contracts = [Contract(contractCode: "C-001")];
 
       var called = false;
       Globals.onAutoSave = () async => called = true;
@@ -699,8 +701,9 @@ void main() {
 
     testWidgets("edit mode success → deleteDraft + dialog branch covered",
         (tester) async {
-      vm.isCreateProject = false;
-      vm.project = Project(projectCode: "202504PROJ000001");
+      vm
+        ..isCreateProject = false
+        ..project = Project(projectCode: "202504PROJ000001");
 
       when(
         () => mockRepo.saveProjectDetails(

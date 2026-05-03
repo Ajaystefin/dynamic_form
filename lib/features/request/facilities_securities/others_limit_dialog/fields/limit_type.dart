@@ -16,7 +16,7 @@ class LimitType extends StatelessWidget {
     final bool isIslamic = viewModel.selectedProductTypeOption?.id ==
         ServerConstants.productTypeIslamicID;
 
-    final List<Reference> limitTypeItems = (viewModel.limitTypes)
+    final List<Reference> limitTypeItems = viewModel.limitTypes
         .where(
           (e) =>
               (e.name ?? "").trim().toLowerCase() ==

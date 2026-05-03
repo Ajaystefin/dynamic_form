@@ -74,8 +74,9 @@ class RoleRightMappingsDraftHandler
       // restore using existing fromJson constructor
       final restored = AccessRight.fromJson(accessRightJson);
 
-      vm.accessRight = restored;
-      vm.updatedAccessRight = restored;
+      vm
+        ..accessRight = restored
+        ..updatedAccessRight = restored;
 
       logger.i(
         "RoleRightMapping draft restored "

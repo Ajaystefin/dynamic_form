@@ -99,8 +99,9 @@ void main() {
   });
 
   test("applyDraft ignores null values safely", () {
-    vm.initialText = "before";
-    vm.canSubmit = true;
+    vm
+      ..initialText = "before"
+      ..canSubmit = true;
 
     handler.applyDraft(vm, {
       "initialText": null,
@@ -114,8 +115,9 @@ void main() {
   });
 
   test("applyDraft ignores unrelated keys", () {
-    vm.initialText = "before";
-    vm.canSubmit = false;
+    vm
+      ..initialText = "before"
+      ..canSubmit = false;
 
     handler.applyDraft(vm, {
       "foo": "bar",
@@ -129,8 +131,9 @@ void main() {
   });
 
   test("applyDraft does nothing when draft map is empty", () {
-    vm.initialText = "before";
-    vm.canSubmit = true;
+    vm
+      ..initialText = "before"
+      ..canSubmit = true;
 
     handler.applyDraft(vm, {});
 

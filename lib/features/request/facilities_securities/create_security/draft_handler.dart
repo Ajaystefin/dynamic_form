@@ -118,36 +118,37 @@ class CreateSecurityDraftHandler extends DraftHandler<CreateSecurityViewModel> {
   ) {
     final security = vm.security;
 
-    security.securityGroup =
-        _refFromJson(data["securityGroup"]) ?? security.securityGroup;
-    security.securityType =
-        _refFromJson(data["securityType"]) ?? security.securityType;
-    security.securityStatus =
-        _refFromJson(data["securityStatus"]) ?? security.securityStatus;
-    security.selectedIsSecurityProviderCbdCustomerValue =
-        _refFromJson(data["selectedIsSecurityProviderCbdCustomerValue"]) ??
-            security.selectedIsSecurityProviderCbdCustomerValue;
-    security.securityProviderCategory =
-        data["securityProviderCategory"] as String? ??
-            security.securityProviderCategory;
-    security.securityProviderLegalStatus =
-        _refFromJson(data["securityProviderLegalStatus"]) ??
-            security.securityProviderLegalStatus;
-    security.securityProviderTlNo = data["securityProviderTlNo"] as String? ??
-        security.securityProviderTlNo;
-    security.securityProviderAddress =
-        data["securityProviderAddress"] as String? ??
-            security.securityProviderAddress;
-    security.securityProviderEmiratesId =
-        data["securityProviderEmiratesId"] as int? ??
-            security.securityProviderEmiratesId;
-    security.securityProviderNationality =
-        data["securityProviderNationality"] as String? ??
-            security.securityProviderNationality;
-    security.securityProvidedRim =
-        data["securityProvidedRim"] as String? ?? security.securityProvidedRim;
-    security.securityProvidedName = data["securityProvidedName"] as String? ??
-        security.securityProvidedName;
+    security
+      ..securityGroup =
+          _refFromJson(data["securityGroup"]) ?? security.securityGroup
+      ..securityType =
+          _refFromJson(data["securityType"]) ?? security.securityType
+      ..securityStatus =
+          _refFromJson(data["securityStatus"]) ?? security.securityStatus
+      ..selectedIsSecurityProviderCbdCustomerValue =
+          _refFromJson(data["selectedIsSecurityProviderCbdCustomerValue"]) ??
+              security.selectedIsSecurityProviderCbdCustomerValue
+      ..securityProviderCategory =
+          data["securityProviderCategory"] as String? ??
+              security.securityProviderCategory
+      ..securityProviderLegalStatus =
+          _refFromJson(data["securityProviderLegalStatus"]) ??
+              security.securityProviderLegalStatus
+      ..securityProviderTlNo = data["securityProviderTlNo"] as String? ??
+          security.securityProviderTlNo
+      ..securityProviderAddress =
+          data["securityProviderAddress"] as String? ??
+              security.securityProviderAddress
+      ..securityProviderEmiratesId =
+          data["securityProviderEmiratesId"] as int? ??
+              security.securityProviderEmiratesId
+      ..securityProviderNationality =
+          data["securityProviderNationality"] as String? ??
+              security.securityProviderNationality
+      ..securityProvidedRim = data["securityProvidedRim"] as String? ??
+          security.securityProvidedRim
+      ..securityProvidedName = data["securityProvidedName"] as String? ??
+          security.securityProvidedName;
 
     final dynamic countryJson = data["securityProvidedCountry"];
     if (countryJson != null && countryJson is Map) {
@@ -157,32 +158,33 @@ class CreateSecurityDraftHandler extends DraftHandler<CreateSecurityViewModel> {
       );
     }
 
-    security.countryOfSecurity =
-        data["countryOfSecurity"] as String? ?? security.countryOfSecurity;
-    security.proposedSecurityAmtCurrency =
-        _refFromJson(data["proposedSecurityAmtCurrency"]) ??
-            security.proposedSecurityAmtCurrency;
-    security.proposedSecurityAmount =
-        data["proposedSecurityAmount"] as double? ??
-            security.proposedSecurityAmount;
-    security.presentSecurityAmtCurrency =
-        _refFromJson(data["presentSecurityAmtCurrency"]) ??
-            security.presentSecurityAmtCurrency;
-    security.presentSecurityAmount = data["presentSecurityAmount"] as double? ??
-        security.presentSecurityAmount;
-    security.borrowerRole =
-        _refFromJson(data["borrowerRole"]) ?? security.borrowerRole;
-    security.securityHeldAs =
-        _refFromJson(data["securityHeldAs"]) ?? security.securityHeldAs;
-    security.isLimitCtrlSecurity =
-        data["isLimitCtrlSecurity"] as bool? ?? security.isLimitCtrlSecurity;
-    security.isTangibleSecurity =
-        data["isTangibleSecurity"] as bool? ?? security.isTangibleSecurity;
-    security.isCashCollateral =
-        data["isCashCollateral"] as bool? ?? security.isCashCollateral;
-    security.isSecurityExpiryOpenEnded =
-        data["isSecurityExpiryOpenEnded"] as bool? ??
-            security.isSecurityExpiryOpenEnded;
+    security
+      ..countryOfSecurity =
+          data["countryOfSecurity"] as String? ?? security.countryOfSecurity
+      ..proposedSecurityAmtCurrency =
+          _refFromJson(data["proposedSecurityAmtCurrency"]) ??
+              security.proposedSecurityAmtCurrency
+      ..proposedSecurityAmount =
+          data["proposedSecurityAmount"] as double? ??
+              security.proposedSecurityAmount
+      ..presentSecurityAmtCurrency =
+          _refFromJson(data["presentSecurityAmtCurrency"]) ??
+              security.presentSecurityAmtCurrency
+      ..presentSecurityAmount = data["presentSecurityAmount"] as double? ??
+          security.presentSecurityAmount
+      ..borrowerRole =
+          _refFromJson(data["borrowerRole"]) ?? security.borrowerRole
+      ..securityHeldAs =
+          _refFromJson(data["securityHeldAs"]) ?? security.securityHeldAs
+      ..isLimitCtrlSecurity =
+          data["isLimitCtrlSecurity"] as bool? ?? security.isLimitCtrlSecurity
+      ..isTangibleSecurity =
+          data["isTangibleSecurity"] as bool? ?? security.isTangibleSecurity
+      ..isCashCollateral =
+          data["isCashCollateral"] as bool? ?? security.isCashCollateral
+      ..isSecurityExpiryOpenEnded =
+          data["isSecurityExpiryOpenEnded"] as bool? ??
+              security.isSecurityExpiryOpenEnded;
 
     if (data["securityExpireDate"] != null) {
       security.securityExpireDate =
@@ -190,21 +192,22 @@ class CreateSecurityDraftHandler extends DraftHandler<CreateSecurityViewModel> {
               security.securityExpireDate;
     }
 
-    security.emirates = _refFromJson(data["emirates"]) ?? security.emirates;
-    security.deferredWaived =
-        data["deferredWaived"] as String? ?? security.deferredWaived;
-    security.selectedCashCollateralValue =
-        _refFromJson(data["selectedCashCollateralValue"]) ??
-            security.selectedCashCollateralValue;
-    security.allFacilities =
-        data["allFacilities"] as bool? ?? security.allFacilities;
-    security.remarks = data["remarks"] as String? ?? security.remarks;
-    security.cmoRemark = data["cmoRemarks"] as String? ?? security.cmoRemark;
-    security.currentDepositAccountNumber =
-        data["currentDepositAccountNumber"] as String? ??
-            security.currentDepositAccountNumber;
-    security.securityNumber =
-        data["securityNumber"] as String? ?? security.securityNumber;
+    security
+      ..emirates = _refFromJson(data["emirates"]) ?? security.emirates
+      ..deferredWaived =
+          data["deferredWaived"] as String? ?? security.deferredWaived
+      ..selectedCashCollateralValue =
+          _refFromJson(data["selectedCashCollateralValue"]) ??
+              security.selectedCashCollateralValue
+      ..allFacilities =
+          data["allFacilities"] as bool? ?? security.allFacilities
+      ..remarks = data["remarks"] as String? ?? security.remarks
+      ..cmoRemark = data["cmoRemarks"] as String? ?? security.cmoRemark
+      ..currentDepositAccountNumber =
+          data["currentDepositAccountNumber"] as String? ??
+              security.currentDepositAccountNumber
+      ..securityNumber =
+          data["securityNumber"] as String? ?? security.securityNumber;
 
     if (data["dynamicFormDocument"] != null &&
         data["dynamicFormDocument"] is Map) {
@@ -212,13 +215,14 @@ class CreateSecurityDraftHandler extends DraftHandler<CreateSecurityViewModel> {
           Map<String, dynamic>.from(data["dynamicFormDocument"] as Map);
     }
 
-    vm.securityProviderCbdCustomer =
-        data["securityProviderCbdCustomer"] as bool? ??
-            vm.securityProviderCbdCustomer;
-    vm.isEntityProvider =
-        data["isEntityProvider"] as bool? ?? vm.isEntityProvider;
-    vm.isCountrySecurityUAE =
-        data["isCountrySecurityUAE"] as bool? ?? vm.isCountrySecurityUAE;
+    vm
+      ..securityProviderCbdCustomer =
+          data["securityProviderCbdCustomer"] as bool? ??
+              vm.securityProviderCbdCustomer
+      ..isEntityProvider =
+          data["isEntityProvider"] as bool? ?? vm.isEntityProvider
+      ..isCountrySecurityUAE =
+          data["isCountrySecurityUAE"] as bool? ?? vm.isCountrySecurityUAE;
 
     vm.proposedSecurityAmountController.text =
         data["proposedSecurityAmountControllerText"] as String? ??

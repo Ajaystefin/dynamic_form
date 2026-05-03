@@ -40,15 +40,16 @@ class FiExcessMaxLimitCC extends StatelessWidget {
             if (selectedValue.isNotEmpty) {
               viewModel
                       .getFacility.excessOverMaxLimitAllowanceCurrencyByCredit =
-                  (selectedValue.first);
-              viewModel.onCurrencyChanged(
-                selectedValue.first,
-                CurrencyField.excessOverMaxLimitAllowanceRecommendedByCredit,
-              );
-              viewModel.getCurrencyRates(
-                selectedValue.first,
-                CurrencyField.excessOverMaxLimitAllowanceRecommendedByCredit,
-              );
+                  selectedValue.first;
+              viewModel
+                ..onCurrencyChanged(
+                  selectedValue.first,
+                  CurrencyField.excessOverMaxLimitAllowanceRecommendedByCredit,
+                )
+                ..getCurrencyRates(
+                  selectedValue.first,
+                  CurrencyField.excessOverMaxLimitAllowanceRecommendedByCredit,
+                );
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {

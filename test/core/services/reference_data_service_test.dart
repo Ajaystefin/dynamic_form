@@ -363,8 +363,9 @@ void main() {
             ReferenceType(name: key2, references: mockReferences2);
         final referenceTypeList = [mockReferenceType1, mockReferenceType2];
 
-        referenceDataService.getFromRefrenceList(referenceTypeList, key1);
-        referenceDataService.getFromRefrenceList(referenceTypeList, key2);
+        referenceDataService
+          ..getFromRefrenceList(referenceTypeList, key1)
+          ..getFromRefrenceList(referenceTypeList, key2);
 
         expect(
           referenceDataService.referenceData[key1],

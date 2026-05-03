@@ -173,7 +173,7 @@ class IncomeStatementAnalysis extends StatelessWidget {
               );
             },
             onSelected: (selectedValue) {
-              viewModel.selectedIncomeHealth = (selectedValue.first);
+              viewModel.selectedIncomeHealth = selectedValue.first;
             },
             dropdownBuilder: (context, item) => Text(item?.name ?? ""),
             selectedItems: viewModel.selectedIncomeHealth != null
@@ -211,20 +211,17 @@ class IncomeStatementAnalysis extends StatelessWidget {
     final mergedRows = incomeRefs.map((ref) {
       final apiRow = viewModel.incomeStatementRows.firstWhere(
         (row) => row.id == (ref.reference2 ?? ""),
-        orElse: () {
-          return IncomeStatementAnalysisRow(
-            id: ref.reference2 ?? "",
-            incomePositions: ref.name ?? "",
-            audited1: "",
-            audited2: "",
-            audited3: "",
-            inhouse: "",
-            estimated: "",
-            isNew: false,
-          );
-        },
-      );
-      apiRow.incomePositions = ref.name ?? "";
+        orElse: () => IncomeStatementAnalysisRow(
+          id: ref.reference2 ?? "",
+          incomePositions: ref.name ?? "",
+          audited1: "",
+          audited2: "",
+          audited3: "",
+          inhouse: "",
+          estimated: "",
+          isNew: false,
+        ),
+      )..incomePositions = ref.name ?? "";
       return apiRow;
     }).toList();
 
@@ -239,11 +236,9 @@ class IncomeStatementAnalysis extends StatelessWidget {
     return List.generate(allRows.length, (index) {
       final row = allRows[index];
       final ratioName = row.incomePositions;
+      final auditedValues = [row.audited1, row.audited2, row.audited3];
 
-      final cells = <Widget>[];
-
-      // Company Name
-      cells.add(
+      final cells = <Widget>[
         row.isNew
             ? Center(
                 child: CustomTextField(
@@ -257,16 +252,11 @@ class IncomeStatementAnalysis extends StatelessWidget {
                 ),
               )
             : Text(display(viewModel, row.incomePositions)),
-      );
-
-      final auditedValues = [row.audited1, row.audited2, row.audited3];
-      for (int i = 0; i < auditedValues.length; i++) {
-        final v = auditedValues[i];
-        cells.add(
+        for (int i = 0; i < auditedValues.length; i++)
           Center(
             child: row.isNew
                 ? CustomTextField(
-                    initialValue: v,
+                    initialValue: auditedValues[i],
                     validator: CustomValidator.twoDecimalNumeric,
                     inputFormatters: [DecimalInputFormatterTwoDigit()],
                     onChanged: (txt) {
@@ -275,12 +265,8 @@ class IncomeStatementAnalysis extends StatelessWidget {
                       if (i == 2) row.audited3 = txt;
                     },
                   )
-                : Text(display(viewModel, v)),
+                : Text(display(viewModel, auditedValues[i])),
           ),
-        );
-      }
-      // In-house
-      cells.add(
         Center(
           child: row.isNew
               ? CustomTextField(
@@ -291,9 +277,6 @@ class IncomeStatementAnalysis extends StatelessWidget {
                 )
               : Text(display(viewModel, row.inhouse)),
         ),
-      );
-
-      cells.add(
         Center(
           child: row.isNew
               ? CustomTextField(
@@ -304,11 +287,7 @@ class IncomeStatementAnalysis extends StatelessWidget {
                 )
               : Text(display(viewModel, row.estimated)),
         ),
-      );
-
-      // Delete button only for new rows
-      if (viewModel.hasActionColumn) {
-        cells.add(
+        if (viewModel.hasActionColumn)
           row.isNew
               ? IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
@@ -316,8 +295,7 @@ class IncomeStatementAnalysis extends StatelessWidget {
                       viewModel.deleteUserAddedIncomeRow(row), // ← CHANGED
                 )
               : const SizedBox.shrink(),
-        );
-      }
+      ];
 
       return cells;
     });

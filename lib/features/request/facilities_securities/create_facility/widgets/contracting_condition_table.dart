@@ -160,7 +160,7 @@ class ContractingStandardConditionsTable extends StatelessWidget {
                             final bool next = value ?? false;
                             // Waived-off standard condition selection
                             viewModel
-                            .changeWaivedOffContractingStandardConditionSelect(
+                                .selectWaivedOffContractingStandardCondition(
                               index,
                               next,
                             );

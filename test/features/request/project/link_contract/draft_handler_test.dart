@@ -31,21 +31,20 @@ void main() {
   setUp(() {
     handler = LinkContractDraftHandler();
 
-    vm = LinkContractViewModel();
-    // vm.draftFormKey = 'link-contract';
-    vm.contract = Contract();
-    vm.project = Project();
-    vm.customerNameController = TextEditingController();
-    vm.searchNameController = TextEditingController();
-    vm.searchRimController = TextEditingController();
-    vm.customerRimController = TextEditingController();
-    vm.paymasterNameController = TextEditingController();
-    vm.contractorScopeController = TextEditingController();
-    vm.contractorValueController = TextEditingController();
-    vm.convertedAmountController = TextEditingController();
-    vm.projectTenorController = TextEditingController();
-    vm.startDateController = TextEditingController();
-    vm.completionDateController = TextEditingController();
+    vm = LinkContractViewModel()
+      ..contract = Contract()
+      ..project = Project()
+      ..customerNameController = TextEditingController()
+      ..searchNameController = TextEditingController()
+      ..searchRimController = TextEditingController()
+      ..customerRimController = TextEditingController()
+      ..paymasterNameController = TextEditingController()
+      ..contractorScopeController = TextEditingController()
+      ..contractorValueController = TextEditingController()
+      ..convertedAmountController = TextEditingController()
+      ..projectTenorController = TextEditingController()
+      ..startDateController = TextEditingController()
+      ..completionDateController = TextEditingController();
   });
 
   // ---------------------------------------------------------------------------
@@ -68,9 +67,10 @@ void main() {
       ..projectCode = "PRJ"
       ..projectName = "Project";
 
-    vm.contract.customerRimNo = 123;
-    vm.borrowerAppRefNo = "APP";
-    vm.customerNameController.text = "Customer";
+    vm
+      ..contract.customerRimNo = 123
+      ..borrowerAppRefNo = "APP"
+      ..customerNameController.text = "Customer";
 
     final draft = handler.buildDraftData(vm);
     final json = draft["linkContract"];

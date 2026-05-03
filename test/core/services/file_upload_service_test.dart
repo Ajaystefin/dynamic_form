@@ -29,8 +29,9 @@ void main() {
       mockPlatformFile = MockPlatformFile();
 
       // Reset dependencies
-      fileUploadService.setFilePicker(mockFilePicker);
-      fileUploadService.errorMessage = "";
+      fileUploadService
+        ..setFilePicker(mockFilePicker)
+        ..errorMessage = "";
     });
 
     group("Singleton Pattern", () {

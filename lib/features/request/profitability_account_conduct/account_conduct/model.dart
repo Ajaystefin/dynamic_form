@@ -46,7 +46,7 @@ class AccountConductViewModel extends SafeCubit<AccountConductState>
       accountConduct?.currentYearLabel ?? "Current Year";
 
   PageMode pageMode = PageMode.na;
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
 
   bool isEdit =
       Globals.user?.currentRole?.rights?[RightConstants.accountConduct] ==
@@ -202,13 +202,13 @@ class AccountConductViewModel extends SafeCubit<AccountConductState>
     for (int i = 0; i < customers.length; i++) {
       final dto = customers[i];
       customers[i] = dto.copyWith(
-        passDueOrExcesses: (_controllers["passDueOrExcesses_$i"]?.text),
-        chequeReturns: (_controllers["chequeReturns_$i"]?.text),
-        turnoverInAcc: (_controllers["turnoverInAcc_$i"]?.text),
-        odHardcore: (_controllers["odHardcore_$i"]?.text),
-        unusualTransactions: (_controllers["unusualTransactions_$i"]?.text),
+        passDueOrExcesses: _controllers["passDueOrExcesses_$i"]?.text,
+        chequeReturns: _controllers["chequeReturns_$i"]?.text,
+        turnoverInAcc: _controllers["turnoverInAcc_$i"]?.text,
+        odHardcore: _controllers["odHardcore_$i"]?.text,
+        unusualTransactions: _controllers["unusualTransactions_$i"]?.text,
         transparencyDisclosureLevels:
-            (_controllers["transparencyDisclosureLevels_$i"]?.text),
+            _controllers["transparencyDisclosureLevels_$i"]?.text,
       );
     }
   }

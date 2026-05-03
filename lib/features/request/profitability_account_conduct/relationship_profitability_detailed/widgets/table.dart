@@ -98,29 +98,24 @@ List<TableColumn> getRelProfitDetColumns() {
 List<List<Widget>> getRelProfitDetRows(
   List<RelationshipProfitabilityDetail>? relationshipProfitabilityDetail,
 ) {
-  final List<List<Widget>> widgets = [];
-
-  widgets.addAll(
-    List.generate(
-        relationshipProfitabilityDetail == null
-            ? 0
-            : relationshipProfitabilityDetail.length, (index) {
-      final detail = relationshipProfitabilityDetail?[index];
-      return [
-        Text("${detail?.natureOfBusiness}"),
-        Text("${detail?.last12Months}"),
-        Text("${detail?.next12MonthsAmount}"),
-        Text(
-          "${detail?.next12MonthsProfitabilityPercent}",
-        ),
-        Text(
-          "${detail?.next12To24MonthsAmount}",
-        ),
-        Text(
-          "${detail?.next12To24MonthsProfitabilityPercent}",
-        ),
-      ];
-    }),
-  );
-  return widgets;
+  return List.generate(
+      relationshipProfitabilityDetail == null
+          ? 0
+          : relationshipProfitabilityDetail.length, (index) {
+    final detail = relationshipProfitabilityDetail?[index];
+    return [
+      Text("${detail?.natureOfBusiness}"),
+      Text("${detail?.last12Months}"),
+      Text("${detail?.next12MonthsAmount}"),
+      Text(
+        "${detail?.next12MonthsProfitabilityPercent}",
+      ),
+      Text(
+        "${detail?.next12To24MonthsAmount}",
+      ),
+      Text(
+        "${detail?.next12To24MonthsProfitabilityPercent}",
+      ),
+    ];
+  });
 }

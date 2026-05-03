@@ -286,8 +286,7 @@ void main() {
         ),
       );
 
-      final formState = tester.state<FormState>(find.byType(Form));
-      formState.save();
+      tester.state<FormState>(find.byType(Form)).save();
       expect(savedValue, "Save me");
     });
 

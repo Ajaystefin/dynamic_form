@@ -156,17 +156,15 @@ class ViewDesktop extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Gap(),
-                        Builder(
+            Builder(
               builder: (_) {
                 // Extract key for line-length compliance
-                const String custKey =
-                    "customerInformation.customerInformation"
+                const String custKey = "customerInformation.customerInformation"
                     ".customerName";
                 final String custName =
                     viewModel.customerInformation?.customerName ?? "";
                 final String rimNo =
-                    viewModel.customerInformation?.customerRimNo
-                            ?.toString() ??
+                    viewModel.customerInformation?.customerRimNo?.toString() ??
                         "";
                 return CustomSelectableText(
                   semanticsLabel: "${custKey.tr()} : $custName ",

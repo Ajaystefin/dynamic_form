@@ -36,7 +36,7 @@ class CustomFileAccordion extends StatefulWidget {
   final String? subtitle;
   final bool showLeadingIcon;
   final Widget? primaryIcon;
-  final ExpansibleController? expansionController;
+  final ExpansionTileController? expansionController;
   final Widget? trailing;
   final Color? expandedTextColor;
   final Color? iconColor;
@@ -132,9 +132,7 @@ class _CustomFileAccordionState extends State<CustomFileAccordion> {
             trailing: widget.trailing,
             onExpansionChanged: (val) {
               _isExpanded.value = val;
-              if (widget.onExpand != null) {
-                widget.onExpand!();
-              }
+              widget.onExpand?.call();
             },
             children: [
               Column(

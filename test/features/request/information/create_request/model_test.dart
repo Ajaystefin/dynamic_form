@@ -62,50 +62,50 @@ void main() {
 
     when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
 
-    viewModel = CreateRequestViewModel();
-    viewModel.repository = mockCustomerRepo;
+    viewModel = CreateRequestViewModel()
+      ..repository = mockCustomerRepo;
 
     AlertManager.overrideInstance(mockAlertManager);
     ReferenceDataService.overrideInstance(mockRefService);
 
     Globals.cleanGlobalCache();
 
-    viewModel.applicationTypes = [
-      Reference(
-        id: 1,
-        reference3: "REQ1",
-        reference2: ServerConstants.corperateCode,
-      ),
-      Reference(
-        id: 2,
-        reference3: "REQ1",
-        reference2: ServerConstants.financialCode,
-      ),
-      Reference(
-        id: 3,
-        reference3: "REQ2",
-        reference2: ServerConstants.corperateCode,
-      ),
-      Reference(
-        id: 4,
-        reference3: "REQ1",
-        reference2: "${ServerConstants.corperateCode}, "
-            "${ServerConstants.financialCode}",
-      ),
-    ];
-
-    viewModel.requestTypes = [
-      Reference(id: 10, name: "Full CA"),
-      Reference(
-        id: ServerConstants.requestFinancialId,
-        name: "Financial Request",
-      ),
-      Reference(
-        id: 12,
-        reference1: ServerConstants.isolatedMemo,
-        name: "Isolated Memo",
-      ),
-    ];
+    viewModel
+      ..applicationTypes = [
+        Reference(
+          id: 1,
+          reference3: "REQ1",
+          reference2: ServerConstants.corperateCode,
+        ),
+        Reference(
+          id: 2,
+          reference3: "REQ1",
+          reference2: ServerConstants.financialCode,
+        ),
+        Reference(
+          id: 3,
+          reference3: "REQ1",
+          reference2: ServerConstants.corperateCode,
+        ),
+        Reference(
+          id: 4,
+          reference3: "REQ1",
+          reference2: "${ServerConstants.corperateCode}, "
+              "${ServerConstants.financialCode}",
+        ),
+      ]
+      ..requestTypes = [
+        Reference(id: 10, name: "Full CA"),
+        Reference(
+          id: ServerConstants.requestFinancialId,
+          name: "Financial Request",
+        ),
+        Reference(
+          id: 12,
+          reference1: ServerConstants.isolatedMemo,
+          name: "Isolated Memo",
+        ),
+      ];
   });
 
   tearDown(Globals.cleanGlobalCache);
@@ -118,16 +118,17 @@ void main() {
   });
 
   void seedMandatorySelections({bool fi = false}) {
-    viewModel.selectedRequestType =
-        Reference(id: 100, reference1: "REQ1", name: "Request 1");
-    viewModel.selectedApplicationType =
-        Reference(id: 200, reference1: "APP1", name: "Application 1");
-    viewModel.businessSegmentValue = Reference(
-      id: fi
-          ? ServerConstants.financialInstitutionId
-          : ServerConstants.businessSegmentId[BusinessSegment.corporate],
-      name: fi ? "FI" : "Corporate",
-    );
+    viewModel
+      ..selectedRequestType =
+          Reference(id: 100, reference1: "REQ1", name: "Request 1")
+      ..selectedApplicationType =
+          Reference(id: 200, reference1: "APP1", name: "Application 1")
+      ..businessSegmentValue = Reference(
+        id: fi
+            ? ServerConstants.financialInstitutionId
+            : ServerConstants.businessSegmentId[BusinessSegment.corporate],
+        name: fi ? "FI" : "Corporate",
+      );
 
     if (fi) {
       viewModel.selectedCustomerType = Reference(
@@ -217,15 +218,15 @@ void main() {
     });
 
     test("setValueOfBusinessSegment sets corporate by default", () {
-      viewModel.bussinessSegments = [
-        Reference(id: 999, name: "Retail"),
-        Reference(
-          id: ServerConstants.businessSegmentId[BusinessSegment.corporate],
-          name: "Corporate",
-        ),
-      ];
-
-      viewModel.setValueOfBusinessSegment();
+      viewModel
+        ..bussinessSegments = [
+          Reference(id: 999, name: "Retail"),
+          Reference(
+            id: ServerConstants.businessSegmentId[BusinessSegment.corporate],
+            name: "Corporate",
+          ),
+        ]
+        ..setValueOfBusinessSegment();
 
       expect(viewModel.businessSegmentValue?.name, "Corporate");
     });
@@ -245,19 +246,21 @@ void main() {
     });
 
     test("isFieldsFilled returns true when all fields are filled", () {
-      viewModel.customerRimNo = "123";
-      viewModel.customerName = "John";
-      viewModel.groupId = "456";
-      viewModel.groupName = "Group";
+      viewModel
+        ..customerRimNo = "123"
+        ..customerName = "John"
+        ..groupId = "456"
+        ..groupName = "Group";
 
       expect(viewModel.isFieldsFilled(), isTrue);
     });
 
     test("isFieldsFilled returns false when any field is missing", () {
-      viewModel.customerRimNo = "123";
-      viewModel.customerName = null;
-      viewModel.groupId = "456";
-      viewModel.groupName = "Group";
+      viewModel
+        ..customerRimNo = "123"
+        ..customerName = null
+        ..groupId = "456"
+        ..groupName = "Group";
 
       expect(viewModel.isFieldsFilled(), isFalse);
     });
@@ -353,10 +356,11 @@ void main() {
     });
 
     test("applicationTypeItems returns corporate matching items", () {
-      viewModel.selectedRequestType = Reference(reference1: "REQ1");
-      viewModel.businessSegmentValue = Reference(
-        id: ServerConstants.businessSegmentId[BusinessSegment.corporate],
-      );
+      viewModel
+        ..selectedRequestType = Reference(reference1: "REQ1")
+        ..businessSegmentValue = Reference(
+          id: ServerConstants.businessSegmentId[BusinessSegment.corporate],
+        );
 
       final result = viewModel.applicationTypeItems();
 
@@ -366,11 +370,12 @@ void main() {
     });
 
     test("applicationTypeItems returns FI matching items", () {
-      viewModel.selectedRequestType = Reference(reference1: "REQ1");
-      viewModel.businessSegmentValue = Reference(
-        id: ServerConstants
-            .businessSegmentId[BusinessSegment.financialInstitution],
-      );
+      viewModel
+        ..selectedRequestType = Reference(reference1: "REQ1")
+        ..businessSegmentValue = Reference(
+          id: ServerConstants
+              .businessSegmentId[BusinessSegment.financialInstitution],
+        );
 
       final result = viewModel.applicationTypeItems();
 
@@ -391,18 +396,18 @@ void main() {
 
   group("reset and field control", () {
     test("resetDependentFields clears dependent fields", () {
-      viewModel.customer = Customer(id: "1");
-      viewModel.customerName = "John";
-      viewModel.customerRimNo = "123";
-      viewModel.groupId = "456";
-      viewModel.groupName = "Group A";
-      viewModel.selectedRequestType = Reference(id: 1);
-      viewModel.selectedApplicationType = Reference(id: 2);
-      viewModel.selectedCustomerType = Reference(id: 3);
-      viewModel.selectedCustomer.value = Customer(id: "1");
-      viewModel.isSearched = true;
-
-      viewModel.resetDependentFields();
+      viewModel
+        ..customer = Customer(id: "1")
+        ..customerName = "John"
+        ..customerRimNo = "123"
+        ..groupId = "456"
+        ..groupName = "Group A"
+        ..selectedRequestType = Reference(id: 1)
+        ..selectedApplicationType = Reference(id: 2)
+        ..selectedCustomerType = Reference(id: 3)
+        ..selectedCustomer.value = Customer(id: "1")
+        ..isSearched = true
+        ..resetDependentFields();
 
       expect(viewModel.customer, isNull);
       expect(viewModel.customerName, isNull);
@@ -418,21 +423,21 @@ void main() {
 
     test("onResetButtonPress clears fields and sets business segment default",
         () {
-      viewModel.bussinessSegments = [
-        Reference(
-          id: ServerConstants.businessSegmentId[BusinessSegment.corporate],
-          name: "Corporate",
-        ),
-      ];
-      viewModel.customer = Customer(id: "1");
-      viewModel.customerName = "John";
-      viewModel.customerRimNo = "123";
-      viewModel.groupId = "456";
-      viewModel.groupName = "Group";
-      viewModel.groupOwner = 5;
-      viewModel.selectedCustomer.value = Customer(id: "1");
-
-      viewModel.onResetButtonPress();
+      viewModel
+        ..bussinessSegments = [
+          Reference(
+            id: ServerConstants.businessSegmentId[BusinessSegment.corporate],
+            name: "Corporate",
+          ),
+        ]
+        ..customer = Customer(id: "1")
+        ..customerName = "John"
+        ..customerRimNo = "123"
+        ..groupId = "456"
+        ..groupName = "Group"
+        ..groupOwner = 5
+        ..selectedCustomer.value = Customer(id: "1")
+        ..onResetButtonPress();
 
       expect(viewModel.customer, isNull);
       expect(viewModel.customerName, isNull);
@@ -457,12 +462,12 @@ void main() {
     });
 
     test("handleFieldControl resets fields when data empty", () {
-      viewModel.customerName = "John";
-      viewModel.customerRimNo = "111";
-      viewModel.groupId = "222";
-      viewModel.groupName = "Group";
-
-      viewModel.handleFieldControl(ControlFields.customerName, "");
+      viewModel
+        ..customerName = "John"
+        ..customerRimNo = "111"
+        ..groupId = "222"
+        ..groupName = "Group"
+        ..handleFieldControl(ControlFields.customerName, "");
 
       expect(viewModel.customerName, isNull);
       expect(viewModel.customerRimNo, isNull);
@@ -472,11 +477,12 @@ void main() {
     });
 
     test("stopAllLoaders resets all loading flags to loaded", () {
-      viewModel.customerRimNoLoadingStatus = LoadingStatus.loading;
-      viewModel.customerNameLoadingStatus = LoadingStatus.loading;
-      viewModel.groupIdLoadingStatus = LoadingStatus.loading;
-      viewModel.groupNameLoadingStatus = LoadingStatus.loading;
-      viewModel.submitLoadingStatus = LoadingStatus.loading;
+      viewModel
+        ..customerRimNoLoadingStatus = LoadingStatus.loading
+        ..customerNameLoadingStatus = LoadingStatus.loading
+        ..groupIdLoadingStatus = LoadingStatus.loading
+        ..groupNameLoadingStatus = LoadingStatus.loading
+        ..submitLoadingStatus = LoadingStatus.loading;
       final before = viewModel.isResetPressed;
 
       viewModel.stopAllLoaders();
@@ -490,15 +496,15 @@ void main() {
     });
 
     test("onSelectionCancelButtonPress resets state", () {
-      viewModel.customer = Customer(id: "1");
-      viewModel.customerName = "John";
-      viewModel.customerRimNo = "11";
-      viewModel.groupId = "22";
-      viewModel.groupName = "Group";
-      viewModel.groupOwner = 9;
-      viewModel.isSearched = true;
-
-      viewModel.onSelectionCancelButtonPress();
+      viewModel
+        ..customer = Customer(id: "1")
+        ..customerName = "John"
+        ..customerRimNo = "11"
+        ..groupId = "22"
+        ..groupName = "Group"
+        ..groupOwner = 9
+        ..isSearched = true
+        ..onSelectionCancelButtonPress();
 
       expect(viewModel.customer, isNull);
       expect(viewModel.customerName, isNull);
@@ -613,8 +619,9 @@ void main() {
 
   group("FI customer type / class code validation", () {
     test("validateCustomerTypeAgainstClassCode returns true when not FI", () {
-      viewModel.businessSegmentValue = Reference(id: 999);
-      viewModel.selectedCustomerType = Reference(id: 1, name: "Bank");
+      viewModel
+        ..businessSegmentValue = Reference(id: 999)
+        ..selectedCustomerType = Reference(id: 1, name: "Bank");
 
       final result = viewModel.validateCustomerTypeAgainstClassCode(
         Customer(classCode: "1234"),
@@ -626,10 +633,11 @@ void main() {
     test(
         "validateCustomerTypeAgainstClassCode returns "
         "true when selectedCustomerType is null", () {
-      viewModel.businessSegmentValue = Reference(
-        id: ServerConstants.financialInstitutionId,
-      );
-      viewModel.selectedCustomerType = null;
+      viewModel
+        ..businessSegmentValue = Reference(
+          id: ServerConstants.financialInstitutionId,
+        )
+        ..selectedCustomerType = null;
 
       final result = viewModel.validateCustomerTypeAgainstClassCode(
         Customer(classCode: "1234"),
@@ -641,14 +649,15 @@ void main() {
     test(
         "country type fails when class code is "
         "not country class code and gated false", () {
-      viewModel.businessSegmentValue = Reference(
-        id: ServerConstants.financialInstitutionId,
-      );
-      viewModel.selectedCustomerType = Reference(
-        id: ServerConstants.countryIDFI,
-        name: ServerConstants.countryNameFI,
-      );
-      viewModel.isGroupIdNameFICountry = false;
+      viewModel
+        ..businessSegmentValue = Reference(
+          id: ServerConstants.financialInstitutionId,
+        )
+        ..selectedCustomerType = Reference(
+          id: ServerConstants.countryIDFI,
+          name: ServerConstants.countryNameFI,
+        )
+        ..isGroupIdNameFICountry = false;
 
       final result = viewModel.validateCustomerTypeAgainstClassCode(
         Customer(classCode: "9999"),
@@ -659,14 +668,15 @@ void main() {
     });
 
     test("country type passes when class code matches country class code", () {
-      viewModel.businessSegmentValue = Reference(
-        id: ServerConstants.financialInstitutionId,
-      );
-      viewModel.selectedCustomerType = Reference(
-        id: ServerConstants.countryIDFI,
-        name: ServerConstants.countryNameFI,
-      );
-      viewModel.isGroupIdNameFICountry = false;
+      viewModel
+        ..businessSegmentValue = Reference(
+          id: ServerConstants.financialInstitutionId,
+        )
+        ..selectedCustomerType = Reference(
+          id: ServerConstants.countryIDFI,
+          name: ServerConstants.countryNameFI,
+        )
+        ..isGroupIdNameFICountry = false;
 
       final result = viewModel.validateCustomerTypeAgainstClassCode(
         Customer(classCode: ServerConstants.countryClassCode),
@@ -678,14 +688,15 @@ void main() {
     test(
         "bank type fails when class code equals "
         "country class code and gated false", () {
-      viewModel.businessSegmentValue = Reference(
-        id: ServerConstants.financialInstitutionId,
-      );
-      viewModel.selectedCustomerType = Reference(
-        id: 99999,
-        name: "Bank",
-      );
-      viewModel.isGroupIdNameFICountry = false;
+      viewModel
+        ..businessSegmentValue = Reference(
+          id: ServerConstants.financialInstitutionId,
+        )
+        ..selectedCustomerType = Reference(
+          id: 99999,
+          name: "Bank",
+        )
+        ..isGroupIdNameFICountry = false;
 
       final result = viewModel.validateCustomerTypeAgainstClassCode(
         Customer(classCode: ServerConstants.countryClassCode),
@@ -696,14 +707,15 @@ void main() {
     });
 
     test("bank type passes when class code is not country class code", () {
-      viewModel.businessSegmentValue = Reference(
-        id: ServerConstants.financialInstitutionId,
-      );
-      viewModel.selectedCustomerType = Reference(
-        id: 99999,
-        name: "Bank",
-      );
-      viewModel.isGroupIdNameFICountry = false;
+      viewModel
+        ..businessSegmentValue = Reference(
+          id: ServerConstants.financialInstitutionId,
+        )
+        ..selectedCustomerType = Reference(
+          id: 99999,
+          name: "Bank",
+        )
+        ..isGroupIdNameFICountry = false;
 
       final result = viewModel.validateCustomerTypeAgainstClassCode(
         Customer(classCode: "1234"),
@@ -713,14 +725,15 @@ void main() {
     });
 
     test("validation is skipped when gating flag is true", () {
-      viewModel.businessSegmentValue = Reference(
-        id: ServerConstants.financialInstitutionId,
-      );
-      viewModel.selectedCustomerType = Reference(
-        id: ServerConstants.countryIDFI,
-        name: ServerConstants.countryNameFI,
-      );
-      viewModel.isGroupIdNameFICountry = true;
+      viewModel
+        ..businessSegmentValue = Reference(
+          id: ServerConstants.financialInstitutionId,
+        )
+        ..selectedCustomerType = Reference(
+          id: ServerConstants.countryIDFI,
+          name: ServerConstants.countryNameFI,
+        )
+        ..isGroupIdNameFICountry = true;
 
       final result = viewModel.validateCustomerTypeAgainstClassCode(
         Customer(classCode: "9999"),
@@ -730,24 +743,23 @@ void main() {
     });
 
     test("checkCustomerTypeCountry resets statuses when invalid", () {
-      viewModel.businessSegmentValue = Reference(
-        id: ServerConstants.financialInstitutionId,
-      );
-      viewModel.selectedCustomerType = Reference(
-        id: ServerConstants.countryIDFI,
-        name: ServerConstants.countryNameFI,
-      );
-      viewModel.isGroupIdNameFICountry = false;
-
-      viewModel.customerRimNoLoadingStatus = LoadingStatus.loading;
-      viewModel.customerNameLoadingStatus = LoadingStatus.loading;
-      viewModel.groupIdLoadingStatus = LoadingStatus.loading;
-      viewModel.groupNameLoadingStatus = LoadingStatus.loading;
-      viewModel.submitLoadingStatus = LoadingStatus.loading;
-
-      viewModel.checkCustomerTypeCountry(
-        Customer(classCode: "9999"),
-      );
+      viewModel
+        ..businessSegmentValue = Reference(
+          id: ServerConstants.financialInstitutionId,
+        )
+        ..selectedCustomerType = Reference(
+          id: ServerConstants.countryIDFI,
+          name: ServerConstants.countryNameFI,
+        )
+        ..isGroupIdNameFICountry = false
+        ..customerRimNoLoadingStatus = LoadingStatus.loading
+        ..customerNameLoadingStatus = LoadingStatus.loading
+        ..groupIdLoadingStatus = LoadingStatus.loading
+        ..groupNameLoadingStatus = LoadingStatus.loading
+        ..submitLoadingStatus = LoadingStatus.loading
+        ..checkCustomerTypeCountry(
+          Customer(classCode: "9999"),
+        );
 
       expect(viewModel.customerRimNoLoadingStatus, LoadingStatus.loaded);
       expect(viewModel.customerNameLoadingStatus, LoadingStatus.loaded);
@@ -776,13 +788,13 @@ void main() {
         groups: Group(id: "5", name: "Demo", groupOwner: 25),
       );
 
-      viewModel.selectedCustomer.value = customer;
       Globals.user = User(regions: ["Abu Dhabi"], segments: ["Corporate"]);
-      viewModel.branchList = [
-        Reference(reference1: "3", reference2: "Abu Dhabi"),
-      ];
-
-      viewModel.onSelectionPressed(MockBuildContext());
+      viewModel
+        ..selectedCustomer.value = customer
+        ..branchList = [
+          Reference(reference1: "3", reference2: "Abu Dhabi"),
+        ]
+        ..onSelectionPressed(MockBuildContext());
 
       expect(viewModel.customer?.id, "25");
       expect(viewModel.customerRimNo, "25");
@@ -792,9 +804,9 @@ void main() {
     });
 
     test("filterCustomers shows toast when allCustomers is empty", () {
-      viewModel.allCustomers = [];
-
-      viewModel.filterCustomers();
+      viewModel
+        ..allCustomers = []
+        ..filterCustomers();
 
       verify(() => mockAlertManager.showFailureToast(any())).called(1);
     });
@@ -803,11 +815,11 @@ void main() {
       final c1 = Customer(preferredName: "Alice");
       final c2 = Customer(preferredName: "Bob");
 
-      viewModel.allCustomers = [c1, c2];
-      viewModel.customerName = "";
-      viewModel.isGroupNameSelection = false;
-
-      viewModel.filterCustomers();
+      viewModel
+        ..allCustomers = [c1, c2]
+        ..customerName = ""
+        ..isGroupNameSelection = false
+        ..filterCustomers();
 
       expect(viewModel.dailogCustomers.length, 2);
       expect(viewModel.dailogCustomers, containsAll([c1, c2]));
@@ -817,11 +829,11 @@ void main() {
       final c1 = Customer(preferredName: "Alice");
       final c2 = Customer(preferredName: "Bob");
 
-      viewModel.allCustomers = [c1, c2];
-      viewModel.customerName = "ali";
-      viewModel.isGroupNameSelection = false;
-
-      viewModel.filterCustomers();
+      viewModel
+        ..allCustomers = [c1, c2]
+        ..customerName = "ali"
+        ..isGroupNameSelection = false
+        ..filterCustomers();
 
       expect(viewModel.dailogCustomers.length, 1);
       expect(viewModel.dailogCustomers.first, c1);
@@ -831,11 +843,11 @@ void main() {
       final c1 = Customer(groups: Group(name: "Group A"));
       final c2 = Customer(groups: Group(name: "Group B"));
 
-      viewModel.allCustomers = [c1, c2];
-      viewModel.groupName = "group b";
-      viewModel.isGroupNameSelection = true;
-
-      viewModel.filterCustomers();
+      viewModel
+        ..allCustomers = [c1, c2]
+        ..groupName = "group b"
+        ..isGroupNameSelection = true
+        ..filterCustomers();
 
       expect(viewModel.dailogCustomers.length, 1);
       expect(viewModel.dailogCustomers.first, c2);
@@ -844,11 +856,11 @@ void main() {
     test("filterCustomers excludes null customers", () {
       final c1 = Customer(preferredName: "Alice");
 
-      viewModel.allCustomers = [c1, null];
-      viewModel.customerName = "ali";
-      viewModel.isGroupNameSelection = false;
-
-      viewModel.filterCustomers();
+      viewModel
+        ..allCustomers = [c1, null]
+        ..customerName = "ali"
+        ..isGroupNameSelection = false
+        ..filterCustomers();
 
       expect(viewModel.dailogCustomers.length, 1);
       expect(viewModel.dailogCustomers.first, c1);
@@ -858,8 +870,9 @@ void main() {
   group("search button guards", () {
     test("onGroupNameSearchPressed shows toast when groupName invalid",
         () async {
-      viewModel.groupName = "abc";
-      viewModel.isSearched = false;
+      viewModel
+        ..groupName = "abc"
+        ..isSearched = false;
 
       await viewModel.onGroupNameSearchPressed();
 
@@ -867,8 +880,9 @@ void main() {
     });
 
     test("onGroupIdSearchPressed shows toast when groupId empty", () async {
-      viewModel.groupId = "";
-      viewModel.isSearched = false;
+      viewModel
+        ..groupId = ""
+        ..isSearched = false;
 
       await viewModel.onGroupIdSearchPressed();
 
@@ -876,8 +890,9 @@ void main() {
     });
 
     test("onGroupIdSearchPressed shows toast when already searched", () async {
-      viewModel.groupId = "123";
-      viewModel.isSearched = true;
+      viewModel
+        ..groupId = "123"
+        ..isSearched = true;
 
       await viewModel.onGroupIdSearchPressed();
 
@@ -885,8 +900,9 @@ void main() {
     });
 
     test("onCustomerRimNoSearchPressed shows toast when rim empty", () async {
-      viewModel.customerRimNo = "";
-      viewModel.isSearched = false;
+      viewModel
+        ..customerRimNo = ""
+        ..isSearched = false;
 
       await viewModel.onCustomerRimNoSearchPressed();
 
@@ -895,8 +911,9 @@ void main() {
 
     test("onCustomerRimNoSearchPressed shows toast when already searched",
         () async {
-      viewModel.customerRimNo = "123";
-      viewModel.isSearched = true;
+      viewModel
+        ..customerRimNo = "123"
+        ..isSearched = true;
 
       await viewModel.onCustomerRimNoSearchPressed();
 
@@ -904,8 +921,9 @@ void main() {
     });
 
     test("onCustomerNameSearchPressed shows toast when invalid", () async {
-      viewModel.customerName = "abc";
-      viewModel.isSearched = false;
+      viewModel
+        ..customerName = "abc"
+        ..isSearched = false;
 
       await viewModel.onCustomerNameSearchPressed();
 
@@ -916,9 +934,10 @@ void main() {
   group("search flows", () {
     test("onCustomerSearchPressed shows toast when required dropdowns missing",
         () async {
-      viewModel.selectedRequestType = null;
-      viewModel.selectedApplicationType = null;
-      viewModel.businessSegmentValue = null;
+      viewModel
+        ..selectedRequestType = null
+        ..selectedApplicationType = null
+        ..businessSegmentValue = null;
 
       await viewModel.onCustomerSearchPressed();
 
@@ -931,11 +950,12 @@ void main() {
     });
 
     test("onCustomerSearchPressed requires customer type for FI", () async {
-      viewModel.selectedRequestType = Reference(id: 1);
-      viewModel.selectedApplicationType = Reference(id: 2);
-      viewModel.businessSegmentValue =
-          Reference(id: ServerConstants.financialInstitutionId);
-      viewModel.selectedCustomerType = null;
+      viewModel
+        ..selectedRequestType = Reference(id: 1)
+        ..selectedApplicationType = Reference(id: 2)
+        ..businessSegmentValue =
+            Reference(id: ServerConstants.financialInstitutionId)
+        ..selectedCustomerType = null;
 
       await viewModel.onCustomerSearchPressed();
 
@@ -950,8 +970,9 @@ void main() {
         groups: Group(id: "456", name: "Group A", groupOwner: 123),
       );
 
-      viewModel.customerRimNoLoadingStatus = LoadingStatus.loading;
-      viewModel.customerRimNo = "123";
+      viewModel
+        ..customerRimNoLoadingStatus = LoadingStatus.loading
+        ..customerRimNo = "123";
 
       when(() => mockCustomerRepo.searchUserDetails("123", null, null, null))
           .thenAnswer((_) async => customer);
@@ -977,8 +998,9 @@ void main() {
         groups: Group(id: "G1", name: "Group One", groupOwner: 101),
       );
 
-      viewModel.customerNameLoadingStatus = LoadingStatus.loading;
-      viewModel.customerName = "Alice";
+      viewModel
+        ..customerNameLoadingStatus = LoadingStatus.loading
+        ..customerName = "Alice";
 
       when(() => mockCustomerRepo.searchCustomerProfile("Alice", null, null))
           .thenAnswer((_) async => [customer]);
@@ -1002,8 +1024,9 @@ void main() {
       final c1 = Customer(id: "1", preferredName: "John");
       final c2 = Customer(id: "2", preferredName: "Johnny");
 
-      viewModel.customerNameLoadingStatus = LoadingStatus.loading;
-      viewModel.customerName = "John";
+      viewModel
+        ..customerNameLoadingStatus = LoadingStatus.loading
+        ..customerName = "John";
 
       when(() => mockCustomerRepo.searchCustomerProfile("John", null, null))
           .thenAnswer((_) async => [c1, c2]);
@@ -1028,8 +1051,9 @@ void main() {
         groups: Group(id: "500", name: "Main Group", groupOwner: 10),
       );
 
-      viewModel.groupIdLoadingStatus = LoadingStatus.loading;
-      viewModel.groupId = "500";
+      viewModel
+        ..groupIdLoadingStatus = LoadingStatus.loading
+        ..groupId = "500";
 
       when(() => mockCustomerRepo.searchCustomerProfile(null, "500", null))
           .thenAnswer((_) async => [c1, c2]);
@@ -1045,8 +1069,9 @@ void main() {
 
     test("search result empty shows toast", () async {
       seedMandatorySelections();
-      viewModel.customerNameLoadingStatus = LoadingStatus.loading;
-      viewModel.customerName = "Unknown";
+      viewModel
+        ..customerNameLoadingStatus = LoadingStatus.loading
+        ..customerName = "Unknown";
 
       when(() => mockCustomerRepo.searchCustomerProfile("Unknown", null, null))
           .thenAnswer((_) async => []);
@@ -1059,8 +1084,9 @@ void main() {
 
     test("search throws exception and is caught", () async {
       seedMandatorySelections();
-      viewModel.customerNameLoadingStatus = LoadingStatus.loading;
-      viewModel.customerName = "Error";
+      viewModel
+        ..customerNameLoadingStatus = LoadingStatus.loading
+        ..customerName = "Error";
 
       when(() => mockCustomerRepo.searchCustomerProfile("Error", null, null))
           .thenThrow(Exception("Network failure"));
@@ -1080,8 +1106,9 @@ void main() {
         groups: Group(id: "G1", name: "Group One", groupOwner: 101),
       );
 
-      viewModel.groupName = "Group One";
-      viewModel.isSearched = false;
+      viewModel
+        ..groupName = "Group One"
+        ..isSearched = false;
 
       when(
         () => mockCustomerRepo.searchCustomerProfile(null, null, "Group One"),
@@ -1102,8 +1129,9 @@ void main() {
         groups: Group(id: "500", name: "Main Group", groupOwner: 10),
       );
 
-      viewModel.groupId = "500";
-      viewModel.isSearched = false;
+      viewModel
+        ..groupId = "500"
+        ..isSearched = false;
 
       when(() => mockCustomerRepo.searchCustomerProfile(null, "500", null))
           .thenAnswer((_) async => [ownerCustomer]);
@@ -1122,8 +1150,9 @@ void main() {
         groups: Group(id: "G2", name: "Group Two", groupOwner: 123),
       );
 
-      viewModel.customerRimNo = "123";
-      viewModel.isSearched = false;
+      viewModel
+        ..customerRimNo = "123"
+        ..isSearched = false;
 
       when(() => mockCustomerRepo.searchUserDetails("123", null, null, null))
           .thenAnswer((_) async => customer);
@@ -1142,8 +1171,9 @@ void main() {
         groups: Group(id: "G3", name: "Group Three", groupOwner: 321),
       );
 
-      viewModel.customerName = "John Smith";
-      viewModel.isSearched = false;
+      viewModel
+        ..customerName = "John Smith"
+        ..isSearched = false;
 
       when(
         () => mockCustomerRepo.searchCustomerProfile("John Smith", null, null),
@@ -1160,58 +1190,59 @@ void main() {
   group("validateSubSegment", () {
     test("calls repository.validateSubSegment when criteria met", () async {
       Globals.user = User(currentRole: Role(roleId: 100));
-      viewModel.subSegmentValidation = [
-        Reference(
-          reference1: ServerConstants.subSegmentValidationRefId,
-          reference2: "100,101",
-        ),
-      ];
-      viewModel.customer = Customer(
-        relationshipMgr: [
-          {"RelationshipMgrIdent": "RM1"},
-        ],
-      );
-
       when(() => mockCustomerRepo.validateSubSegment("RM1"))
           .thenAnswer((_) async {});
 
-      await viewModel.validateSubSegment();
+      await (viewModel
+        ..subSegmentValidation = [
+          Reference(
+            reference1: ServerConstants.subSegmentValidationRefId,
+            reference2: "100,101",
+          ),
+        ]
+        ..customer = Customer(
+          relationshipMgr: [
+            {"RelationshipMgrIdent": "RM1"},
+          ],
+        ))
+          .validateSubSegment();
 
       verify(() => mockCustomerRepo.validateSubSegment("RM1")).called(1);
     });
 
     test("does not call repository when role does not match", () async {
       Globals.user = User(currentRole: Role(roleId: 200));
-      viewModel.subSegmentValidation = [
-        Reference(
-          reference1: ServerConstants.subSegmentValidationRefId,
-          reference2: "100,101",
-        ),
-      ];
-
-      await viewModel.validateSubSegment();
+      await (viewModel
+        ..subSegmentValidation = [
+          Reference(
+            reference1: ServerConstants.subSegmentValidationRefId,
+            reference2: "100,101",
+          ),
+        ])
+          .validateSubSegment();
 
       verifyNever(() => mockCustomerRepo.validateSubSegment(any()));
     });
 
     test("rethrows and resets fields when repository throws", () async {
       Globals.user = User(currentRole: Role(roleId: 100));
-      viewModel.subSegmentValidation = [
-        Reference(
-          reference1: ServerConstants.subSegmentValidationRefId,
-          reference2: "100",
-        ),
-      ];
-      viewModel.customerName = "John";
-      viewModel.customerRimNo = "123";
-      viewModel.groupId = "555";
-      viewModel.groupName = "Group";
-      viewModel.isSearched = true;
-      viewModel.customer = Customer(
-        relationshipMgr: [
-          {"RelationshipMgrIdent": "RM1"},
-        ],
-      );
+      viewModel
+        ..subSegmentValidation = [
+          Reference(
+            reference1: ServerConstants.subSegmentValidationRefId,
+            reference2: "100",
+          ),
+        ]
+        ..customerName = "John"
+        ..customerRimNo = "123"
+        ..groupId = "555"
+        ..groupName = "Group"
+        ..isSearched = true
+        ..customer = Customer(
+          relationshipMgr: [
+            {"RelationshipMgrIdent": "RM1"},
+          ],
+        );
 
       when(() => mockCustomerRepo.validateSubSegment("RM1"))
           .thenThrow(Exception("Validation failed"));
@@ -1238,12 +1269,13 @@ void main() {
     test(
         "submitButtonValidation returns false when "
         "mandatory fields exist for corporate", () {
-      viewModel.customer = Customer(id: "123");
-      viewModel.selectedRequestType = Reference(id: 1);
-      viewModel.selectedApplicationType = Reference(id: 2);
-      viewModel.businessSegmentValue = Reference(
-        id: ServerConstants.businessSegmentId[BusinessSegment.corporate],
-      );
+      viewModel
+        ..customer = Customer(id: "123")
+        ..selectedRequestType = Reference(id: 1)
+        ..selectedApplicationType = Reference(id: 2)
+        ..businessSegmentValue = Reference(
+          id: ServerConstants.businessSegmentId[BusinessSegment.corporate],
+        );
 
       expect(viewModel.submitButtonValidation(), isFalse);
     });
@@ -1251,12 +1283,13 @@ void main() {
     test(
         "submitButtonValidation returns true for FI when customer type missing",
         () {
-      viewModel.customer = Customer(id: "123");
-      viewModel.selectedRequestType = Reference(id: 1);
-      viewModel.selectedApplicationType = Reference(id: 2);
-      viewModel.businessSegmentValue =
-          Reference(id: ServerConstants.financialInstitutionId);
-      viewModel.selectedCustomerType = null;
+      viewModel
+        ..customer = Customer(id: "123")
+        ..selectedRequestType = Reference(id: 1)
+        ..selectedApplicationType = Reference(id: 2)
+        ..businessSegmentValue =
+            Reference(id: ServerConstants.financialInstitutionId)
+        ..selectedCustomerType = null;
 
       expect(viewModel.submitButtonValidation(), isTrue);
     });
@@ -1264,12 +1297,13 @@ void main() {
     test(
         "submitButtonValidation returns false "
         "for FI when customer type selected", () {
-      viewModel.customer = Customer(id: "123");
-      viewModel.selectedRequestType = Reference(id: 1);
-      viewModel.selectedApplicationType = Reference(id: 2);
-      viewModel.businessSegmentValue =
-          Reference(id: ServerConstants.financialInstitutionId);
-      viewModel.selectedCustomerType = Reference(id: 99);
+      viewModel
+        ..customer = Customer(id: "123")
+        ..selectedRequestType = Reference(id: 1)
+        ..selectedApplicationType = Reference(id: 2)
+        ..businessSegmentValue =
+            Reference(id: ServerConstants.financialInstitutionId)
+        ..selectedCustomerType = Reference(id: 99);
 
       expect(viewModel.submitButtonValidation(), isFalse);
     });
@@ -1285,21 +1319,22 @@ void main() {
         () async {
       seedMandatorySelections(fi: true);
 
-      viewModel.selectedCustomerType = Reference(
-        id: ServerConstants.countryIDFI,
-        name: ServerConstants.countryNameFI,
-      );
-      viewModel.customer = Customer(
-        id: "123",
-        classCode: "9999",
-        groups: Group(id: "456", name: "Group A", groupOwner: 123),
-      );
-      viewModel.customerRimNo = "123";
-      viewModel.customerName = "Very Long Customer Name Example";
-      viewModel.groupId = "456";
-      viewModel.groupName = "Very Long Group Name Example";
-      viewModel.groupOwner = 123;
-      viewModel.isGroupIdNameFICountry = false;
+      viewModel
+        ..selectedCustomerType = Reference(
+          id: ServerConstants.countryIDFI,
+          name: ServerConstants.countryNameFI,
+        )
+        ..customer = Customer(
+          id: "123",
+          classCode: "9999",
+          groups: Group(id: "456", name: "Group A", groupOwner: 123),
+        )
+        ..customerRimNo = "123"
+        ..customerName = "Very Long Customer Name Example"
+        ..groupId = "456"
+        ..groupName = "Very Long Group Name Example"
+        ..groupOwner = 123
+        ..isGroupIdNameFICountry = false;
 
       await viewModel.onSubmitButtonPress(true);
 

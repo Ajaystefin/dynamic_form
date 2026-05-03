@@ -202,9 +202,10 @@ class ViewDesktop extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        viewModel.groupId = viewModel.grpId;
-                        viewModel.isSearched = false;
-                        viewModel.doSearch();
+                        viewModel
+                          ..groupId = viewModel.grpId
+                          ..isSearched = false
+                          ..doSearch();
                       },
                       child: Text(
                         "eDigitalFilingFileAttachments."

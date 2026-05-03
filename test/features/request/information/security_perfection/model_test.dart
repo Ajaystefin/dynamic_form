@@ -152,8 +152,8 @@ void main() {
 
     Globals.request = Request(applicationRefNo: "APP001");
 
-    viewModel = TestSecurityPerfectionViewModel();
-    viewModel.formKey = GlobalKey<FormState>();
+    viewModel = TestSecurityPerfectionViewModel()
+      ..formKey = GlobalKey<FormState>();
 
     /// IMPORTANT:
     /// We override singleton instances for methods that use `.instance`
@@ -186,8 +186,9 @@ void main() {
 
   void attachManualRepos() {
     /// Use this only in tests that DO NOT call init()
-    viewModel.repository = mockRequestRepo;
-    viewModel.repositoryCommon = mockCommonRepo;
+    viewModel
+      ..repository = mockRequestRepo
+      ..repositoryCommon = mockCommonRepo;
   }
 
   group("SecurityPerfectionViewModel - constructor/getters", () {
@@ -409,7 +410,9 @@ void main() {
     testWidgets("validation failure shows required field toast",
         (tester) async {
       attachManualRepos();
-      viewModel.pageMode = PageMode.edit;
+      viewModel
+        ..pageMode = PageMode.edit
+        ..formKey = GlobalKey<FormState>();
 
       await pumpLocalizedApp(
         tester,
@@ -431,31 +434,31 @@ void main() {
       "success path saves comment, builds lists, saves details, deletes draft",
       (tester) async {
         attachManualRepos();
-        viewModel.pageMode = PageMode.edit;
-        viewModel.comment = Comment(comment: "Strategy Comment");
-
-        viewModel.securityDeferral = SecurityPerfection(
-          securityDeferralList: [
-            SecurityDeferral(
-              securityNo: "SEC001",
-              isChecked: true,
-            ),
-          ],
-          covenant: [
-            SecurityCovenantCondition(
-              number: "COV001",
-              isChecked: true,
-              isCovenant: true,
-            ),
-          ],
-          condition: [
-            SecurityCovenantCondition(
-              number: "CON001",
-              isChecked: true,
-              isCovenant: false,
-            ),
-          ],
-        );
+        viewModel
+          ..pageMode = PageMode.edit
+          ..comment = Comment(comment: "Strategy Comment")
+          ..securityDeferral = SecurityPerfection(
+            securityDeferralList: [
+              SecurityDeferral(
+                securityNo: "SEC001",
+                isChecked: true,
+              ),
+            ],
+            covenant: [
+              SecurityCovenantCondition(
+                number: "COV001",
+                isChecked: true,
+                isCovenant: true,
+              ),
+            ],
+            condition: [
+              SecurityCovenantCondition(
+                number: "CON001",
+                isChecked: true,
+                isCovenant: false,
+              ),
+            ],
+          );
 
         when(() => mockCommonRepo.saveComment(any()))
             .thenAnswer((_) async => "Success");
@@ -545,14 +548,14 @@ void main() {
       "view mode still executes save branch because of !canEdit || isValid",
       (tester) async {
         attachManualRepos();
-        viewModel.pageMode = PageMode.view;
-        viewModel.comment = Comment(comment: "No-edit but valid");
-
-        viewModel.securityDeferral = SecurityPerfection(
-          securityDeferralList: [],
-          covenant: [],
-          condition: [],
-        );
+        viewModel
+          ..pageMode = PageMode.view
+          ..comment = Comment(comment: "No-edit but valid")
+          ..securityDeferral = SecurityPerfection(
+            securityDeferralList: [],
+            covenant: [],
+            condition: [],
+          );
 
         when(() => mockCommonRepo.saveComment(any()))
             .thenAnswer((_) async => "Success");
@@ -594,8 +597,9 @@ void main() {
 
     testWidgets("saveComment exception hits catch branch", (tester) async {
       attachManualRepos();
-      viewModel.pageMode = PageMode.edit;
-      viewModel.comment = Comment(comment: "Boom");
+      viewModel
+        ..pageMode = PageMode.edit
+        ..comment = Comment(comment: "Boom");
 
       when(() => mockCommonRepo.saveComment(any()))
           .thenThrow(Exception("Save comment failed"));
@@ -622,20 +626,20 @@ void main() {
       "saveSecurityDeferralDetails exception hits catch branch",
       (tester) async {
         attachManualRepos();
-        viewModel.pageMode = PageMode.edit;
-        viewModel.comment = Comment(comment: "Will fail on details save");
-
-        viewModel.securityDeferral = SecurityPerfection(
-          securityDeferralList: [
-            SecurityDeferral(securityNo: "SEC001"),
-          ],
-          covenant: [
-            SecurityCovenantCondition(number: "COV001"),
-          ],
-          condition: [
-            SecurityCovenantCondition(number: "CON001"),
-          ],
-        );
+        viewModel
+          ..pageMode = PageMode.edit
+          ..comment = Comment(comment: "Will fail on details save")
+          ..securityDeferral = SecurityPerfection(
+            securityDeferralList: [
+              SecurityDeferral(securityNo: "SEC001"),
+            ],
+            covenant: [
+              SecurityCovenantCondition(number: "COV001"),
+            ],
+            condition: [
+              SecurityCovenantCondition(number: "CON001"),
+            ],
+          );
 
         when(() => mockCommonRepo.saveComment(any()))
             .thenAnswer((_) async => "Success");

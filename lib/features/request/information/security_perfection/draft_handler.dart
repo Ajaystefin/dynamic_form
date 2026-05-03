@@ -45,10 +45,11 @@ class SecurityPerfectionDraftHandler
       /* ---------------- Restore Comments ---------------- */
       final rawComments = data["commentList"];
       if (rawComments is List) {
-        vm.comments = rawComments
-            .map((e) => Comment.fromJson(_mapToStringDynamic(e)))
-            .toList();
-        vm.comment = vm.comments.first;
+        vm
+          ..comments = rawComments
+              .map((e) => Comment.fromJson(_mapToStringDynamic(e)))
+              .toList()
+          ..comment = vm.comments.first;
       }
 
       if (vm.comments.isEmpty) {

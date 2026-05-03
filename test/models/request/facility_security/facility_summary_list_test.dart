@@ -83,8 +83,7 @@ Map<String, dynamic> _facilityJson({
     "limitGroupName": "GroupA",
     "limitGroup": 1,
     "canDelete": true,
-  };
-  base.addAll(overrides);
+  }..addAll(overrides);
   return base;
 }
 
@@ -342,9 +341,9 @@ void main() {
       // fromJson stores the raw string in limitAvailabilityDateRaw and also
       // parses it into dt
       // We want raw=string but dt=null: use constructor with manual assignment
-      final f = FacilitySummaryNew();
-      f.limitAvailabilityDateRaw = "2025-06-01T00:00:00Z";
-      f.limitAvailabilityDate = null;
+      final f = FacilitySummaryNew()
+        ..limitAvailabilityDateRaw = "2025-06-01T00:00:00Z"
+        ..limitAvailabilityDate = null;
       final save = f.toSaveJson();
       final expected =
           DateTime.parse("2025-06-01T00:00:00Z").millisecondsSinceEpoch ~/ 1000;
@@ -358,8 +357,8 @@ void main() {
     });
 
     test("raw is empty string, dt null → null", () {
-      final f = FacilitySummaryNew();
-      f.limitAvailabilityDateRaw = "";
+      final f = FacilitySummaryNew()
+        ..limitAvailabilityDateRaw = "";
       final save = f.toSaveJson();
       expect(save["limitAvailabilityDate"], isNull);
     });
@@ -623,8 +622,8 @@ void main() {
     });
 
     test("toJson includes additionalDetails when set", () {
-      final dis = FacilityDis(order: "1");
-      dis.additionalDetails = {"key": "value"};
+      final dis = FacilityDis(order: "1")
+        ..additionalDetails = {"key": "value"};
       final j = dis.toJson();
       expect(j["additionalDetails"], {"key": "value"});
     });
@@ -656,10 +655,10 @@ void main() {
 
     test("container present with valid raw JSON string", () {
       final inner = jsonEncode({"key": "value"});
-      final f = FacilitySummaryNew(facilityId: 1);
-      f.additionalDetailsContainer = {"additionalDetails": inner, "id": 5};
-      f.tenorUnit = "Months";
-      f.tenorValue = 6;
+      final f = FacilitySummaryNew(facilityId: 1)
+        ..additionalDetailsContainer = {"additionalDetails": inner, "id": 5}
+        ..tenorUnit = "Months"
+        ..tenorValue = 6;
       final j = f.toJson();
       expect(j.containsKey("additionalDetails"), isTrue);
       final addl = j["additionalDetails"] as Map;
@@ -670,11 +669,11 @@ void main() {
 
     test("container present with empty raw string, additionalDetailsParsed set",
         () {
-      final f = FacilitySummaryNew(facilityId: 2);
-      f.additionalDetailsContainer = {"additionalDetails": "", "id": 6};
-      f.additionalDetailsParsed = {"existingKey": "val"};
-      f.tenorUnit = "Days";
-      f.tenorValue = 30;
+      final f = FacilitySummaryNew(facilityId: 2)
+        ..additionalDetailsContainer = {"additionalDetails": "", "id": 6}
+        ..additionalDetailsParsed = {"existingKey": "val"}
+        ..tenorUnit = "Days"
+        ..tenorValue = 30;
       final j = f.toJson();
       final addl = j["additionalDetails"] as Map;
       final decodedInner =
@@ -687,26 +686,26 @@ void main() {
         {"index": "OldIdx", "otherField": "kept"},
       ];
       final inner = jsonEncode({"profitGrid": existingGrid});
-      final f = FacilitySummaryNew(facilityId: 3);
-      f.additionalDetailsContainer = {"additionalDetails": inner};
-      f.index = "NewIdx";
-      f.marginSign = "+";
-      f.marginValue = 2.0;
+      final f = FacilitySummaryNew(facilityId: 3)
+        ..additionalDetailsContainer = {"additionalDetails": inner}
+        ..index = "NewIdx"
+        ..marginSign = "+"
+        ..marginValue = 2.0;
       final j = f.toJson();
       final addl = j["additionalDetails"] as Map;
       final decoded = jsonDecode(addl["additionalDetails"] as String) as Map;
       final grid = decoded["profitGrid"] as List;
       expect(grid.first["index"], "NewIdx");
-      expect((grid.first["margin"])["tenorUnit"], "+");
+      expect(grid.first["margin"]["tenorUnit"], "+");
     });
 
     test("profitGrid create: empty grid → new row created", () {
       final inner = jsonEncode(<String, dynamic>{});
-      final f = FacilitySummaryNew(facilityId: 4);
-      f.additionalDetailsContainer = {"additionalDetails": inner};
-      f.index = "EIBOR";
-      f.marginSign = "-";
-      f.marginValue = 0.5;
+      final f = FacilitySummaryNew(facilityId: 4)
+        ..additionalDetailsContainer = {"additionalDetails": inner}
+        ..index = "EIBOR"
+        ..marginSign = "-"
+        ..marginValue = 0.5;
       final j = f.toJson();
       final addl = j["additionalDetails"] as Map;
       final decoded = jsonDecode(addl["additionalDetails"] as String) as Map;
@@ -720,10 +719,10 @@ void main() {
         {"indexLcLGCommision": "oldIdx", "gridCommission": "0.1"},
       ];
       final inner = jsonEncode({"lcCommission": existingLc});
-      final f = FacilitySummaryNew(facilityId: 5);
-      f.additionalDetailsContainer = {"additionalDetails": inner};
-      f.index = "newIdx";
-      f.marginValue = 1.0;
+      final f = FacilitySummaryNew(facilityId: 5)
+        ..additionalDetailsContainer = {"additionalDetails": inner}
+        ..index = "newIdx"
+        ..marginValue = 1.0;
       final j = f.toJson();
       final addl = j["additionalDetails"] as Map;
       final decoded = jsonDecode(addl["additionalDetails"] as String) as Map;
@@ -733,10 +732,10 @@ void main() {
 
     test("lcCommission created when lc was empty", () {
       final inner = jsonEncode(<String, dynamic>{});
-      final f = FacilitySummaryNew(facilityId: 6);
-      f.additionalDetailsContainer = {"additionalDetails": inner};
-      f.index = "idx";
-      f.marginValue = 0.5;
+      final f = FacilitySummaryNew(facilityId: 6)
+        ..additionalDetailsContainer = {"additionalDetails": inner}
+        ..index = "idx"
+        ..marginValue = 0.5;
       final j = f.toJson();
       final addl = j["additionalDetails"] as Map;
       final decoded = jsonDecode(addl["additionalDetails"] as String) as Map;
@@ -745,17 +744,17 @@ void main() {
     });
 
     test("container raw is invalid json → inner kept empty", () {
-      final f = FacilitySummaryNew(facilityId: 7);
-      f.additionalDetailsContainer = {"additionalDetails": "{bad}"};
-      f.tenorUnit = "Days";
+      final f = FacilitySummaryNew(facilityId: 7)
+        ..additionalDetailsContainer = {"additionalDetails": "{bad}"}
+        ..tenorUnit = "Days";
       // should not throw
       expect(f.toJson, returnsNormally);
     });
 
     test("tenorUnit/tenorValue null → tenor block not injected", () {
       final inner = jsonEncode({"existing": "data"});
-      final f = FacilitySummaryNew(facilityId: 8);
-      f.additionalDetailsContainer = {"additionalDetails": inner};
+      final f = FacilitySummaryNew(facilityId: 8)
+        ..additionalDetailsContainer = {"additionalDetails": inner};
       // tenorUnit and tenorValue remain null
       final j = f.toJson();
       final addl = j["additionalDetails"] as Map;

@@ -42,7 +42,8 @@ class FileAttachmentViewModel extends SafeCubit<FileAttachmentState> {
   String? errorMessage;
   ApplicationDetails? applicationDetails;
 
-  String? documentName, entityId;
+  String? documentName;
+  String? entityId;
   double? selectedGroupRim;
 
   List<Reference> languages = [];
@@ -100,7 +101,7 @@ class FileAttachmentViewModel extends SafeCubit<FileAttachmentState> {
 
   List<Reference> fstSubSubTypes = [];
 
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
   PageMode pageMode = PageMode.na;
 
   final Map<FileAttachmentFields, bool Function()> buttonVisibilityStatus = {
@@ -287,7 +288,7 @@ class FileAttachmentViewModel extends SafeCubit<FileAttachmentState> {
 
   //pickup multiple files in one time on browse click button
   Future<void> onBrowsePressed() async {
-    if (!(formKey.currentState!.validate())) {
+    if (!formKey.currentState!.validate()) {
       return;
     }
     try {

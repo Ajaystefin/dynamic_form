@@ -47,15 +47,16 @@ class FiRevisedBank extends StatelessWidget {
               : [viewModel.currencyCodes.first],
           onSelected: (selectedValue) {
             if (selectedValue.isNotEmpty) {
-              viewModel.getFacility.proposedLimitValue = (selectedValue.first);
-              viewModel.onCurrencyChanged(
-                selectedValue.first,
-                CurrencyField.revisedBankLimitProposedByFi,
-              );
-              viewModel.getCurrencyRates(
-                selectedValue.first,
-                CurrencyField.revisedBankLimitProposedByFi,
-              );
+              viewModel.getFacility.proposedLimitValue = selectedValue.first;
+              viewModel
+                ..onCurrencyChanged(
+                  selectedValue.first,
+                  CurrencyField.revisedBankLimitProposedByFi,
+                )
+                ..getCurrencyRates(
+                  selectedValue.first,
+                  CurrencyField.revisedBankLimitProposedByFi,
+                );
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {
@@ -99,7 +100,7 @@ class FiRevisedBank extends StatelessWidget {
         },
         onSaved: (amount) {
           viewModel.getFacility.proposedLimit =
-              int.tryParse((amount?.replaceAll(",", "") ?? "0"));
+              int.tryParse(amount?.replaceAll(",", "") ?? "0");
         },
       ),
     );

@@ -69,7 +69,7 @@ class ProjectRepository {
   }) async {
     final Map data = BaseRequest.baseRequest({
       ...?project?.toSaveEditProjectJson(
-        isCreateProject: (isCreateProject ?? false),
+        isCreateProject: isCreateProject ?? false,
       ),
     });
 
@@ -212,11 +212,8 @@ class ProjectRepository {
         await _apiManager.post(APIEndpoints.saveContractDetails, data);
 
     if (response.status == ResponseStatus.success) {
-      response.message = response.body?["baseResponse"]?["status"]
-              ?["statusDescription"] ??
+      return response.body?["baseResponse"]?["status"]?["statusDescription"] ??
           "common.saveSuccess".tr();
-//"responseData": {contractCode: 202601CONT000019}
-      return response.message;
     } else {
       throw response.message;
     }
@@ -418,10 +415,10 @@ class ProjectRepository {
         );
         // }
       } else {
-        throw ("[$projCode] ${response.message}");
+        throw "[$projCode] ${response.message}";
       }
     } catch (e) {
-      throw ("[$projCode] ${e.toString()}");
+      throw "[$projCode] ${e.toString()}";
     }
   }
 }

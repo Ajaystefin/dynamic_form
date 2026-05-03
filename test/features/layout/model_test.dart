@@ -611,12 +611,13 @@ void main() {
     });
 
     test("sideMenuVisibility should handle map operations", () {
-      sideMenuVisibility.clear();
-      sideMenuVisibility.addAll({
-        "route1": MenuMode.enabled,
-        "route2": MenuMode.disabled,
-        "route3": MenuMode.hidden,
-      });
+      sideMenuVisibility
+        ..clear()
+        ..addAll({
+          "route1": MenuMode.enabled,
+          "route2": MenuMode.disabled,
+          "route3": MenuMode.hidden,
+        });
 
       expect(sideMenuVisibility.keys.length, 3);
       expect(sideMenuVisibility.values.contains(MenuMode.enabled), true);
@@ -816,8 +817,7 @@ void main() {
 
   group("showConfirmDialog Integration Tests", () {
     test("showConfirmDialog should handle role names and types", () {
-      final Role role = Role(name: "Test Role");
-      role.userRole = UserRole.admin;
+      final Role role = Role(name: "Test Role")..userRole = UserRole.admin;
 
       expect(role.name, "Test Role");
       expect(role.userRole, UserRole.admin);
@@ -825,8 +825,8 @@ void main() {
     });
 
     test("showConfirmDialog should handle different role types", () {
-      final Role rmRole = Role(name: "RM Role");
-      rmRole.userRole = UserRole.relationshipManagerBussiness;
+      final Role rmRole = Role(name: "RM Role")
+        ..userRole = UserRole.relationshipManagerBussiness;
 
       expect(rmRole.name, "RM Role");
       expect(rmRole.userRole, UserRole.relationshipManagerBussiness);
@@ -846,11 +846,11 @@ void main() {
     });
 
     test("showConfirmDialog should handle admin role scenarios", () {
-      final Role adminRole = Role(name: "Admin Role");
-      adminRole.userRole = UserRole.admin;
+      final Role adminRole = Role(name: "Admin Role")
+        ..userRole = UserRole.admin;
 
-      final Role icsAdminRole = Role(name: "ICS Admin Role");
-      icsAdminRole.userRole = UserRole.icsAdmin;
+      final Role icsAdminRole = Role(name: "ICS Admin Role")
+        ..userRole = UserRole.icsAdmin;
 
       expect(adminRole.name, "Admin Role");
       expect(adminRole.userRole, UserRole.admin);
@@ -876,19 +876,17 @@ void main() {
     });
 
     test("showConfirmDialog return value handling", () {
-      final Role role = Role(name: "Test Role");
-      role.userRole = UserRole.admin;
+      final Role role = Role(name: "Test Role")..userRole = UserRole.admin;
       expect(role.userRole, UserRole.admin);
       expect(role.name, "Test Role");
     });
 
     test("showConfirmDialog role change scenarios", () {
-      final Role adminRole = Role(name: "Admin");
-      adminRole.userRole = UserRole.admin;
-      final Role icsAdminRole = Role(name: "ICS Admin");
-      icsAdminRole.userRole = UserRole.icsAdmin;
-      final Role rmRole = Role(name: "RM");
-      rmRole.userRole = UserRole.relationshipManagerBussiness;
+      final Role adminRole = Role(name: "Admin")..userRole = UserRole.admin;
+      final Role icsAdminRole = Role(name: "ICS Admin")
+        ..userRole = UserRole.icsAdmin;
+      final Role rmRole = Role(name: "RM")
+        ..userRole = UserRole.relationshipManagerBussiness;
 
       expect(adminRole.userRole == UserRole.admin, true);
       expect(icsAdminRole.userRole == UserRole.icsAdmin, true);
@@ -956,8 +954,7 @@ void main() {
 
     testWidgets("showConfirmDialog should execute and display role information",
         (tester) async {
-      final Role role = Role(name: "Test Role");
-      role.userRole = UserRole.admin;
+      final Role role = Role(name: "Test Role")..userRole = UserRole.admin;
 
       await tester.pumpWidget(
         MaterialApp(
@@ -1021,11 +1018,11 @@ void main() {
     testWidgets(
         "showConfirmDialog should handle role"
         " scenarios with different userRoles", (tester) async {
-      final Role role1 = Role(name: "Test Role 1");
-      role1.userRole = UserRole.relationshipManagerBussiness;
+      final Role role1 = Role(name: "Test Role 1")
+        ..userRole = UserRole.relationshipManagerBussiness;
 
-      final Role role2 = Role(name: "Test Role 2");
-      role2.userRole = UserRole.icsAdmin;
+      final Role role2 = Role(name: "Test Role 2")
+        ..userRole = UserRole.icsAdmin;
 
       await tester.pumpWidget(
         MaterialApp(
@@ -1073,19 +1070,17 @@ void main() {
     });
 
     test("showConfirmDialog should handle role change patterns", () {
-      final Role role = Role(name: "Test Role");
-      role.userRole = UserRole.relationshipManagerBussiness;
+      final Role role = Role(name: "Test Role")
+        ..userRole = UserRole.relationshipManagerBussiness;
 
       // Test the role change logic patterns
       expect(role.userRole != UserRole.admin, true);
       expect(role.userRole != UserRole.icsAdmin, true);
 
-      final Role adminRole = Role(name: "Admin");
-      adminRole.userRole = UserRole.admin;
+      final Role adminRole = Role(name: "Admin")..userRole = UserRole.admin;
       expect(adminRole.userRole == UserRole.admin, true);
 
-      final Role icsRole = Role(name: "ICS");
-      icsRole.userRole = UserRole.icsAdmin;
+      final Role icsRole = Role(name: "ICS")..userRole = UserRole.icsAdmin;
       expect(icsRole.userRole == UserRole.icsAdmin, true);
     });
 
@@ -1102,8 +1097,8 @@ void main() {
 
     testWidgets("Dialog methods should execute basic functionality",
         (tester) async {
-      final Role testRole = Role(name: "Complete Test Role");
-      testRole.userRole = UserRole.admin;
+      final Role testRole = Role(name: "Complete Test Role")
+        ..userRole = UserRole.admin;
 
       await tester.pumpWidget(
         MaterialApp(
@@ -1156,8 +1151,7 @@ void main() {
 
   group("Dialog Button Interactions", () {
     test("showConfirmDialog cancel button should execute properly", () {
-      final Role testRole = Role(name: "Test Role");
-      testRole.userRole = UserRole.admin;
+      final Role testRole = Role(name: "Test Role")..userRole = UserRole.admin;
 
       // Test the dialog method exists and can be called
       expect(viewModel.showConfirmDialog, isA<Function>());
@@ -1170,8 +1164,8 @@ void main() {
     });
 
     test("showConfirmDialog confirm button should execute properly", () {
-      final Role testRole = Role(name: "Test Role");
-      testRole.userRole = UserRole.relationshipManagerBussiness;
+      final Role testRole = Role(name: "Test Role")
+        ..userRole = UserRole.relationshipManagerBussiness;
 
       // Test the dialog method exists and can be called
       expect(viewModel.showConfirmDialog, isA<Function>());
@@ -1188,8 +1182,7 @@ void main() {
     });
 
     test("showConfirmDialog admin role navigation should execute", () {
-      final Role testRole = Role(name: "Admin Role");
-      testRole.userRole = UserRole.admin;
+      final Role testRole = Role(name: "Admin Role")..userRole = UserRole.admin;
 
       // Test admin role navigation logic patterns
       expect(testRole.userRole == UserRole.admin, true);
@@ -1204,8 +1197,8 @@ void main() {
     });
 
     test("showConfirmDialog non-admin role should use SelectRoleViewModel", () {
-      final Role testRole = Role(name: "RM Role");
-      testRole.userRole = UserRole.relationshipManagerBussiness;
+      final Role testRole = Role(name: "RM Role")
+        ..userRole = UserRole.relationshipManagerBussiness;
 
       // Test non-admin role logic patterns
       expect(testRole.userRole == UserRole.relationshipManagerBussiness, true);
@@ -1397,9 +1390,6 @@ void main() {
 
   group("Direct Dialog Button Testing", () {
     test("showConfirmDialog should handle cancel action directly", () async {
-      final role = Role(name: "Test Role");
-      role.userRole = UserRole.admin;
-
       // Create a mock context
       final mockContext = MockBuildContext();
       when(() => mockContext.mounted).thenReturn(true);
@@ -1418,14 +1408,12 @@ void main() {
     });
 
     test("showConfirmDialog should handle navigation logic patterns", () {
-      final role1 = Role(name: "Admin Role");
-      role1.userRole = UserRole.admin;
+      final role1 = Role(name: "Admin Role")..userRole = UserRole.admin;
 
-      final role2 = Role(name: "ICS Admin Role");
-      role2.userRole = UserRole.icsAdmin;
+      final role2 = Role(name: "ICS Admin Role")..userRole = UserRole.icsAdmin;
 
-      final role3 = Role(name: "RM Role");
-      role3.userRole = UserRole.relationshipManagerBussiness;
+      final role3 = Role(name: "RM Role")
+        ..userRole = UserRole.relationshipManagerBussiness;
 
       // Test the condition patterns from lines 117-119
       // bool isHomeRoute = true;
@@ -1594,8 +1582,7 @@ void main() {
 
   group("Coverage Focused Tests", () {
     test("Execute actual dialog methods to hit implementation lines", () async {
-      final role = Role(name: "Test Role");
-      role.userRole = UserRole.admin;
+      final role = Role(name: "Test Role")..userRole = UserRole.admin;
 
       // Test that the methods exist and are callable - this is sufficient for
       // coverage
@@ -1614,11 +1601,8 @@ void main() {
       // to achieve the required coverage without dealing with UI overflow
       // issues
 
-      final role1 = Role(name: "Admin Role");
-      role1.userRole = UserRole.admin;
-
-      final role2 = Role(name: "RM Role");
-      role2.userRole = UserRole.relationshipManagerBussiness;
+      final role2 = Role(name: "RM Role")
+        ..userRole = UserRole.relationshipManagerBussiness;
 
       // Simulate exact patterns from missing lines 101, 103, 110, 112, 114, 115
       bool returnValue;
@@ -1710,8 +1694,8 @@ void main() {
 
     testWidgets("showConfirmDialog with admin role should hit navigation paths",
         (tester) async {
-      final adminRole = Role(name: "Admin Coverage Test");
-      adminRole.userRole = UserRole.admin;
+      final adminRole = Role(name: "Admin Coverage Test")
+        ..userRole = UserRole.admin;
 
       // Set larger screen size to avoid overflow issues
       tester.view.physicalSize = const Size(1200, 800);
@@ -1777,11 +1761,10 @@ void main() {
       expect(returnValue, true);
 
       // Test role comparison patterns (lines 117-119)
-      final role1 = Role(name: "Test Role 1");
-      role1.userRole = UserRole.admin;
+      final role1 = Role(name: "Test Role 1")..userRole = UserRole.admin;
 
-      final role2 = Role(name: "Test Role 2");
-      role2.userRole = UserRole.relationshipManagerBussiness;
+      final role2 = Role(name: "Test Role 2")
+        ..userRole = UserRole.relationshipManagerBussiness;
 
       // These patterns appear in the dialog logic
       expect(role1.userRole == UserRole.admin, true);

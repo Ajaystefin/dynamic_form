@@ -70,7 +70,7 @@ class LimitAllocationTable extends StatelessWidget {
                 label: Text("facilities.createFacility.amountAed".tr()),
               ),
             ],
-            rows: (viewModel.borrowersByRimInTable).map((borrower) {
+            rows: viewModel.borrowersByRimInTable.map((borrower) {
               return [
                 Center(child: Text("RIM NO ${borrower.name ?? ""}")),
                 Center(

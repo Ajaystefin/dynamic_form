@@ -69,9 +69,9 @@ void main() {
   });
 
   testWidgets("buildDraftData handles unmounted form safely", (tester) async {
-    vm.formKey = GlobalKey<FormState>(); // not mounted
-
-    vm.comment = Comment()..comment = "Draft";
+    vm
+      ..formKey = GlobalKey<FormState>() // not mounted
+      ..comment = (Comment()..comment = "Draft");
 
     final draft = handler.buildDraftData(vm);
 

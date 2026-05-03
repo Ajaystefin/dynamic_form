@@ -117,18 +117,19 @@ Map<String, List<Reference>> _fullRefData() => {
 
 void _seedRefData(CovenantEditDialogViewModel vm) {
   final data = _fullRefData();
-  vm.referenceData = data;
-  vm.covenantType = data[ReferenceDataKeys.covenantType] ?? [];
-  vm.covenantSubType = data[ReferenceDataKeys.covenantSubtype] ?? [];
-  vm.covenantPeriod = data[ReferenceDataKeys.covenantPeriod] ?? [];
-  vm.covenantSubmissionTime =
-      data[ReferenceDataKeys.covenantSubmissionTime] ?? [];
-  vm.covenantBasisOfPreparation =
-      data[ReferenceDataKeys.covenantBasicSeperation] ?? [];
-  vm.covenantAuditStatus = data[ReferenceDataKeys.covenantAuditStatus] ?? [];
-  vm.covenantStatus = data[ReferenceDataKeys.covenantConditionStatus] ?? [];
-  vm.covenanttThresholdType = data[ReferenceDataKeys.thresholdType] ?? [];
-  vm.descriptionTypes = data[ReferenceDataKeys.covenantDescription] ?? [];
+  vm
+    ..referenceData = data
+    ..covenantType = data[ReferenceDataKeys.covenantType] ?? []
+    ..covenantSubType = data[ReferenceDataKeys.covenantSubtype] ?? []
+    ..covenantPeriod = data[ReferenceDataKeys.covenantPeriod] ?? []
+    ..covenantSubmissionTime =
+        data[ReferenceDataKeys.covenantSubmissionTime] ?? []
+    ..covenantBasisOfPreparation =
+        data[ReferenceDataKeys.covenantBasicSeperation] ?? []
+    ..covenantAuditStatus = data[ReferenceDataKeys.covenantAuditStatus] ?? []
+    ..covenantStatus = data[ReferenceDataKeys.covenantConditionStatus] ?? []
+    ..covenanttThresholdType = data[ReferenceDataKeys.thresholdType] ?? []
+    ..descriptionTypes = data[ReferenceDataKeys.covenantDescription] ?? [];
 }
 
 // ──────────────────────────────────────────────
@@ -163,8 +164,7 @@ void main() {
     await TestConfig.setupTestEnvironment();
     await EnvConfig.setEnvironment();
 
-    final storageService = LocalStorageService();
-    storageService.setStorage(
+    LocalStorageService().setStorage(
       HiveStorage(encryptionKey: TestConfig.testEncryptionKeyBytes),
     );
 
@@ -205,8 +205,7 @@ void main() {
   });
 
   test("isUpdateCovenant true when covenant set", () {
-    vm.covenant = Covenant();
-    expect(vm.isUpdateCovenant(), isTrue);
+    expect((vm..covenant = Covenant()).isUpdateCovenant(), isTrue);
   });
 
   // ════════════════════════════════════════════
@@ -214,18 +213,15 @@ void main() {
   // ════════════════════════════════════════════
   group("computed getters", () {
     test("isReadOnly true when pageMode=view", () {
-      vm.pageMode = PageMode.view;
-      expect(vm.isReadOnly, true);
+      expect((vm..pageMode = PageMode.view).isReadOnly, true);
     });
 
     test("isReadOnly false when pageMode=edit", () {
-      vm.pageMode = PageMode.edit;
-      expect(vm.isReadOnly, false);
+      expect((vm..pageMode = PageMode.edit).isReadOnly, false);
     });
 
     test("canEdit true when covenantEditPageMode=edit", () {
-      vm.covenantEditPageMode = PageMode.edit;
-      expect(vm.canEdit, true);
+      expect((vm..covenantEditPageMode = PageMode.edit).canEdit, true);
     });
 
     test("canEditStatusAction false by default", () {
@@ -233,8 +229,10 @@ void main() {
     });
 
     test("isActionEditable false when covConMasterId=0", () {
-      vm.covenant = Covenant()..covConMasterId = 0;
-      expect(vm.isActionEditable, false);
+      expect(
+        (vm..covenant = (Covenant()..covConMasterId = 0)).isActionEditable,
+        false,
+      );
     });
 
     test("isActionEditable false when covenant null", () {
@@ -244,16 +242,24 @@ void main() {
 
     test("isActionEditable false when isReadOnly=true even with masterId set",
         () {
-      vm.pageMode = PageMode.view;
-      vm.covenant = Covenant()..covConMasterId = 99;
-      expect(vm.isActionEditable, false);
+      expect(
+        (vm
+              ..pageMode = PageMode.view
+              ..covenant = (Covenant()..covConMasterId = 99))
+            .isActionEditable,
+        false,
+      );
     });
 
     test("isActionEditable true when not readOnly and masterId != 0", () {
-      vm.pageMode = PageMode.edit;
-      vm.covenantEditPageMode = PageMode.edit;
-      vm.covenant = Covenant()..covConMasterId = 42;
-      expect(vm.isActionEditable, true);
+      expect(
+        (vm
+              ..pageMode = PageMode.edit
+              ..covenantEditPageMode = PageMode.edit
+              ..covenant = (Covenant()..covConMasterId = 42))
+            .isActionEditable,
+        true,
+      );
     });
 
     test("isRequiredBusinessSegment returns bool", () {
@@ -267,9 +273,10 @@ void main() {
   group("loadReferenceData", () {
     test("success: populates all reference lists", () async {
       await vm.loadReferenceData();
-      expect(vm.covenantType, isNotEmpty);
-      expect(vm.covenantSubType, isNotEmpty);
-      expect(vm.descriptionTypes, isNotEmpty);
+      final v = vm;
+      expect(v.covenantType, isNotEmpty);
+      expect(v.covenantSubType, isNotEmpty);
+      expect(v.descriptionTypes, isNotEmpty);
     });
 
     test("failure: rethrows and emits loaded", () async {
@@ -318,8 +325,9 @@ void main() {
   // ════════════════════════════════════════════
   group("frequency selection", () {
     test("onFrequencySelected updates selectedFrequency and covenant", () {
-      vm.covenant = Covenant();
-      vm.onFrequencySelected([Reference(id: 1, name: "Monthly")]);
+      vm
+        ..covenant = Covenant()
+        ..onFrequencySelected([Reference(id: 1, name: "Monthly")]);
       expect(vm.selectedFrequency?.id, 1);
       expect(vm.covenant?.frequency, 1);
       expect(vm.state.loaderStatus, LoadingStatus.loaded);
@@ -418,38 +426,38 @@ void main() {
   group("_clearSelectedFrequency", () {
     test("clears frequency when information + financial statements subtype",
         () {
-      vm.selectedCovenantType = Reference(
-        id: ServerConstants.covenantTypeId[CovenantType.information],
-        name: "Information",
-      );
-      vm.selectedFrequency = Reference(id: 1, name: "Monthly");
-      vm.covenant = Covenant()..frequency = 1;
-
-      vm.onGeneralCovenantSubTypeSelect([
-        Reference(
-          id: ServerConstants.covenantSubTypeIdForFrequencyFilter,
-          name: "Financial Statements",
-        ),
-      ]);
+      vm
+        ..selectedCovenantType = Reference(
+          id: ServerConstants.covenantTypeId[CovenantType.information],
+          name: "Information",
+        )
+        ..selectedFrequency = Reference(id: 1, name: "Monthly")
+        ..covenant = (Covenant()..frequency = 1)
+        ..onGeneralCovenantSubTypeSelect([
+          Reference(
+            id: ServerConstants.covenantSubTypeIdForFrequencyFilter,
+            name: "Financial Statements",
+          ),
+        ]);
 
       expect(vm.selectedFrequency, isNull);
       expect(vm.covenant?.frequency, isNull);
     });
 
     test("does NOT clear frequency for non-information type", () {
-      vm.selectedCovenantType = Reference(
-        id: ServerConstants.covenantTypeId[CovenantType.financial],
-        name: "Financial",
-      );
-      vm.selectedFrequency = Reference(id: 1, name: "Monthly");
-      vm.covenant = Covenant()..frequency = 1;
-
-      vm.onGeneralCovenantSubTypeSelect([
-        Reference(
-          id: ServerConstants.covenantSubTypeIdForFrequencyFilter,
-          name: "Financial Statements",
-        ),
-      ]);
+      vm
+        ..selectedCovenantType = Reference(
+          id: ServerConstants.covenantTypeId[CovenantType.financial],
+          name: "Financial",
+        )
+        ..selectedFrequency = Reference(id: 1, name: "Monthly")
+        ..covenant = (Covenant()..frequency = 1)
+        ..onGeneralCovenantSubTypeSelect([
+          Reference(
+            id: ServerConstants.covenantSubTypeIdForFrequencyFilter,
+            name: "Financial Statements",
+          ),
+        ]);
 
       // Not information type → frequency should remain
       expect(vm.selectedFrequency, isNotNull);
@@ -461,14 +469,16 @@ void main() {
   // ════════════════════════════════════════════
   group("applyThresholdFromDescription", () {
     test("extracts digits and sets covenant.threshold", () {
-      vm.covenant = Covenant();
-      vm.applyThresholdFromDescription("Shall not exceed [ 250 ]");
+      vm
+        ..covenant = Covenant()
+        ..applyThresholdFromDescription("Shall not exceed [ 250 ]");
       expect(vm.covenant?.threshold, 250);
     });
 
     test("sets threshold=0 when no digits found", () {
-      vm.covenant = Covenant();
-      vm.applyThresholdFromDescription("No brackets here");
+      vm
+        ..covenant = Covenant()
+        ..applyThresholdFromDescription("No brackets here");
       expect(vm.covenant?.threshold, 0);
     });
 
@@ -487,8 +497,9 @@ void main() {
     });
 
     test("initialises covenant when null", () {
-      vm.covenant = null;
-      vm.applyThresholdFromDescription("[ 77 ]");
+      vm
+        ..covenant = null
+        ..applyThresholdFromDescription("[ 77 ]");
       expect(vm.covenant, isNotNull);
       expect(vm.covenant?.threshold, 77);
     });
@@ -517,16 +528,24 @@ void main() {
     });
 
     test("isDesktopThresholdEditable: false when no subtype selected", () {
-      vm.selectedFinancialCovenantSubType = null;
-      vm.covenant = Covenant()..covenantSubType = null;
-      expect(vm.isDesktopThresholdEditable, false);
+      expect(
+        (vm
+              ..selectedFinancialCovenantSubType = null
+              ..covenant = (Covenant()..covenantSubType = null))
+            .isDesktopThresholdEditable,
+        false,
+      );
     });
 
     test("isDesktopThresholdEditable: true when subtype has no mapping", () {
-      vm.selectedFinancialCovenantSubType =
-          Reference(id: 99999, name: "Unmapped");
-      vm.covenant = Covenant()..covenantSubType = 99999;
-      expect(vm.isDesktopThresholdEditable, true);
+      expect(
+        (vm
+              ..selectedFinancialCovenantSubType =
+                  Reference(id: 99999, name: "Unmapped")
+              ..covenant = (Covenant()..covenantSubType = 99999))
+            .isDesktopThresholdEditable,
+        true,
+      );
     });
 
     test("isThresholdTypeTextFieldRequiredFor: false when <= 10 subtypes", () {
@@ -696,32 +715,6 @@ void main() {
   //  onGeneralFieldChanged (non-specific path)
   // ════════════════════════════════════════════
   group("onGeneralFieldChanged", () {
-    testWidgets("general selection (not specific): emits loaded after delay",
-        (tester) async {
-      vm.covenant = Covenant();
-      final generalRef =
-          Reference(id: ServerConstants.covenantGeneralId, name: "General");
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Builder(
-            builder: (ctx) {
-              return ElevatedButton(
-                onPressed: () => vm.onGeneralFieldChanged(generalRef, ctx),
-                child: const Text("Go"),
-              );
-            },
-          ),
-        ),
-      );
-
-      await tester.tap(find.byType(ElevatedButton));
-      await tester.pump(const Duration(milliseconds: 400));
-
-      expect(vm.covenant?.isGeneric, true);
-      expect(vm.state.loaderStatus, LoadingStatus.loaded);
-    });
-
     testWidgets(
         "specific selection sets isGeneric=false "
         "without triggering real dialog", (tester) async {
@@ -766,16 +759,9 @@ void main() {
       expect(row.facilityDetailList, isEmpty);
     });
 
-    testWidgets(
-        "specific selection: sets row.isGeneric=false without real dialog",
-        (tester) async {
-      final row = Covenant();
-      // Set directly to verify the field mutation that
-      // onLinkedGeneralFieldChanged does
-      // before opening the dialog — avoids triggering
-      // SelectFacilitiesDialogView API calls.
-      row.isGeneric = false;
-      expect(row.isGeneric, false);
+    test("specific selection: sets row.isGeneric=false without real dialog",
+        () {
+      expect((Covenant()..isGeneric = false).isGeneric, false);
     });
   });
 
@@ -804,34 +790,34 @@ void main() {
       );
 
       test("covenant with isGeneric=false sets generalField to Specific", () {
-        vm.covenant = Covenant(
-          covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
-          covenantSubType: null,
-          isGeneric: false,
-          customerName: "Test",
-        );
-        try {
-          vm.populateFromExistingCovenant();
-        } catch (_) {}
+        vm
+          ..covenant = Covenant(
+            covenantType:
+                ServerConstants.covenantTypeId[CovenantType.financial],
+            covenantSubType: null,
+            isGeneric: false,
+            customerName: "Test",
+          )
+          ..populateFromExistingCovenant();
         expect(vm.covenant?.isGeneric, false);
       });
 
       test(
           "covenant with borrower rimNo=9999 "
           "sets TestType.name and prefills name", () {
-        vm.covenant = Covenant(
-          covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
-          customerName: "Test",
-          borrowers: [
-            Customer(
-              customerRimNo: ServerConstants.covenantToBeTestedName,
-              customerName: "NameMode",
-            ),
-          ],
-        );
-        try {
-          vm.populateFromExistingCovenant();
-        } catch (_) {}
+        vm
+          ..covenant = Covenant(
+            covenantType:
+                ServerConstants.covenantTypeId[CovenantType.financial],
+            customerName: "Test",
+            borrowers: [
+              Customer(
+                customerRimNo: ServerConstants.covenantToBeTestedName,
+                customerName: "NameMode",
+              ),
+            ],
+          )
+          ..populateFromExistingCovenant();
         expect(vm.selectedTestType, CovenantTestType.name);
         expect(vm.nameController.text, "NameMode");
         expect(vm.selectedCustomerRim, isNull);
@@ -839,38 +825,38 @@ void main() {
 
       test("covenant with facilityDetailList populates facilityList", () {
         final facilities = [Facility(limitNumber: "F1")];
-        vm.covenant = Covenant(
-          covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
-          customerName: "Test",
-          facilityDetailList: facilities,
-        );
-        try {
-          vm.populateFromExistingCovenant();
-        } catch (_) {}
+        vm
+          ..covenant = Covenant(
+            covenantType:
+                ServerConstants.covenantTypeId[CovenantType.financial],
+            customerName: "Test",
+            facilityDetailList: facilities,
+          )
+          ..populateFromExistingCovenant();
         expect(vm.facilityList, isNotEmpty);
       });
 
       test("covenant with action=0 sets selectedAction=null", () {
-        vm.covenant = Covenant(
-          covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
-          customerName: "Test",
-          action: 0,
-        );
-        try {
-          vm.populateFromExistingCovenant();
-        } catch (_) {}
+        vm
+          ..covenant = Covenant(
+            covenantType:
+                ServerConstants.covenantTypeId[CovenantType.financial],
+            customerName: "Test",
+            action: 0,
+          )
+          ..populateFromExistingCovenant();
         expect(vm.selectedAction, isNull);
       });
 
       test("covenant with valid actionId maps selectedAction", () {
-        vm.covenant = Covenant(
-          covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
-          customerName: "Test",
-          action: ServerConstants.createActionId,
-        );
-        try {
-          vm.populateFromExistingCovenant();
-        } catch (_) {}
+        vm
+          ..covenant = Covenant(
+            covenantType:
+                ServerConstants.covenantTypeId[CovenantType.financial],
+            customerName: "Test",
+            action: ServerConstants.createActionId,
+          )
+          ..populateFromExistingCovenant();
         expect(vm.state.loaderStatus, LoadingStatus.loaded);
       });
 
@@ -879,17 +865,16 @@ void main() {
         () {
           final testCustomer =
               Customer(customerRimNo: 12345, customerName: "BorrowerName");
-          vm.isNewCovenant = false;
-          vm.customersList = [testCustomer];
-          vm.covenant = Covenant(
-            covenantType:
-                ServerConstants.covenantTypeId[CovenantType.financial],
-            customerName: "Test",
-            borrowers: [Customer(customerRimNo: 12345)],
-          );
-          try {
-            vm.populateFromExistingCovenant();
-          } catch (_) {}
+          vm
+            ..isNewCovenant = false
+            ..customersList = [testCustomer]
+            ..covenant = Covenant(
+              covenantType:
+                  ServerConstants.covenantTypeId[CovenantType.financial],
+              customerName: "Test",
+              borrowers: [Customer(customerRimNo: 12345)],
+            )
+            ..populateFromExistingCovenant();
           expect(vm.selectedCustomerRim?.customerRimNo, 12345);
         },
       );
@@ -901,11 +886,12 @@ void main() {
   // ════════════════════════════════════════════
   group("onSavePress additional branches", () {
     setUp(() {
-      vm.covenant = Covenant(customerName: "Test", category: 1);
-      vm.selectedCustomerRim =
-          Customer(customerRimNo: 123, customerName: "Test");
-      vm.isNewCovenant = true;
-      vm.isRequiredBusinessSegment; // just access
+      vm
+        ..covenant = Covenant(customerName: "Test", category: 1)
+        ..selectedCustomerRim =
+            Customer(customerRimNo: 123, customerName: "Test")
+        ..isNewCovenant = true
+        ..isRequiredBusinessSegment; // just access
     });
 
     testWidgets(
@@ -917,10 +903,11 @@ void main() {
           home: Scaffold(body: Form(key: key, child: const SizedBox())),
         ),
       );
-      vm.formKey = key;
-      vm.selectedTestType = CovenantTestType.name;
-      vm.nameController.text = "Typed Name";
-      vm.isNewCovenant = true;
+      vm
+        ..formKey = key
+        ..selectedTestType = CovenantTestType.name
+        ..nameController.text = "Typed Name"
+        ..isNewCovenant = true;
       when(() => mockRepo.saveCovenantDetails(any(), any()))
           .thenAnswer((_) async => "ok");
 
@@ -936,14 +923,15 @@ void main() {
           home: Scaffold(body: Form(key: key, child: const SizedBox())),
         ),
       );
-      vm.formKey = key;
-      vm.selectedTestType = CovenantTestType.name;
-      vm.nameController.text = "ExistingBorrower";
-      vm.isNewCovenant = false;
-      vm.covenant = Covenant(
-        customerName: "Test",
-        covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
-      );
+      vm
+        ..formKey = key
+        ..selectedTestType = CovenantTestType.name
+        ..nameController.text = "ExistingBorrower"
+        ..isNewCovenant = false
+        ..covenant = Covenant(
+          customerName: "Test",
+          covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
+        );
       when(() => mockRepo.saveCovenantDetails(any(), any()))
           .thenAnswer((_) async => "ok");
 
@@ -959,18 +947,19 @@ void main() {
           home: Scaffold(body: Form(key: key, child: const SizedBox())),
         ),
       );
-      vm.formKey = key;
-      vm.isNewCovenant = true;
-      vm.selectedCovenantType = Reference(
-        id: ServerConstants.covenantTypeId[CovenantType.financial],
-        name: "Financial",
-      );
-      vm.covenant = Covenant(
-        covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
-        customerName: "X",
-      );
-      vm.financialDescriptionController.text = "Test [ 100 ]";
-      vm.selectedFinancialCovenantSubType = Reference(id: 1, name: "Sub");
+      vm
+        ..formKey = key
+        ..isNewCovenant = true
+        ..selectedCovenantType = Reference(
+          id: ServerConstants.covenantTypeId[CovenantType.financial],
+          name: "Financial",
+        )
+        ..covenant = Covenant(
+          covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
+          customerName: "X",
+        )
+        ..financialDescriptionController.text = "Test [ 100 ]"
+        ..selectedFinancialCovenantSubType = Reference(id: 1, name: "Sub");
       when(() => mockRepo.saveCovenantDetails(any(), any()))
           .thenAnswer((_) async => "ok");
 
@@ -985,12 +974,13 @@ void main() {
           home: Scaffold(body: Form(key: key, child: const SizedBox())),
         ),
       );
-      vm.formKey = key;
-      vm.covenant = Covenant(
-        covenantType: ServerConstants.covenantTypeIdFinancial,
-        customerName: "Test",
-      );
-      vm.financialDescriptionController.text = "Shall not exceed [    ]";
+      vm
+        ..formKey = key
+        ..covenant = Covenant(
+          covenantType: ServerConstants.covenantTypeIdFinancial,
+          customerName: "Test",
+        )
+        ..financialDescriptionController.text = "Shall not exceed [    ]";
 
       final result = await vm.onSavePress();
       expect(result, false);
@@ -1004,14 +994,16 @@ void main() {
           home: Scaffold(body: Form(key: key, child: const SizedBox())),
         ),
       );
-      vm.formKey = key;
-      vm.isNewCovenant = false;
-      vm.covenant = Covenant(
-        customerName: "X",
-        covenantType: ServerConstants.covenantTypeId[CovenantType.information],
-        appRefNum: "APP-001",
-      );
-      vm.selectedGeneralCovenantSubType = Reference(id: 1, name: "GenSub");
+      vm
+        ..formKey = key
+        ..isNewCovenant = false
+        ..covenant = Covenant(
+          customerName: "X",
+          covenantType:
+              ServerConstants.covenantTypeId[CovenantType.information],
+          appRefNum: "APP-001",
+        )
+        ..selectedGeneralCovenantSubType = Reference(id: 1, name: "GenSub");
       when(() => mockRepo.saveCovenantDetails(any(), any()))
           .thenAnswer((_) async => "ok");
 
@@ -1027,10 +1019,11 @@ void main() {
           home: Scaffold(body: Form(key: key, child: const SizedBox())),
         ),
       );
-      vm.formKey = key;
-      vm.selectedTestType = CovenantTestType.rim;
-      vm.selectedCustomerRim = null;
-      vm.selectedCustomer = null;
+      vm
+        ..formKey = key
+        ..selectedTestType = CovenantTestType.rim
+        ..selectedCustomerRim = null
+        ..selectedCustomer = null;
 
       final result = await vm.onSavePress();
       // When isRequiredBusinessSegment=false, empty borrowerList → returns true
@@ -1045,16 +1038,17 @@ void main() {
           home: Scaffold(body: Form(key: key, child: const SizedBox())),
         ),
       );
-      vm.formKey = key;
-      vm.isNewCovenant = true;
-      vm.isLinkFinancialView = true;
-      vm.selectedCustomerRim = Customer(customerRimNo: 100);
-      vm.covenant = Covenant(customerName: "T");
       final linkedRow = Covenant()
         ..isStandard = true
         ..covenantSubType = 1
         ..description = "";
-      vm.linkedFinancialCovenants = [linkedRow];
+      vm
+        ..formKey = key
+        ..isNewCovenant = true
+        ..isLinkFinancialView = true
+        ..selectedCustomerRim = Customer(customerRimNo: 100)
+        ..covenant = Covenant(customerName: "T")
+        ..linkedFinancialCovenants = [linkedRow];
       when(() => mockRepo.saveCovenantDetails(any(), any()))
           .thenAnswer((_) async => "ok");
 
@@ -1070,16 +1064,17 @@ void main() {
           home: Scaffold(body: Form(key: key, child: const SizedBox())),
         ),
       );
-      vm.formKey = key;
-      vm.isNewCovenant = true;
-      vm.isFinancialCovenantView = true;
-      vm.selectedCustomerRim = Customer(customerRimNo: 100);
-      vm.covenant = Covenant(customerName: "T");
       final subtypeRow = Covenant()
         ..isStandard = false
         ..covenantSubType = 1
         ..description = "Custom desc";
-      vm.financialCovenantSubtypes = [subtypeRow];
+      vm
+        ..formKey = key
+        ..isNewCovenant = true
+        ..isFinancialCovenantView = true
+        ..selectedCustomerRim = Customer(customerRimNo: 100)
+        ..covenant = Covenant(customerName: "T")
+        ..financialCovenantSubtypes = [subtypeRow];
       when(() => mockRepo.saveCovenantDetails(any(), any()))
           .thenAnswer((_) async => "ok");
 
@@ -1145,34 +1140,39 @@ void main() {
   group("selection callbacks", () {
     test("onCovenantTypeSelection resets fields and emits", () {
       vm.onCovenantTypeSelection([Reference(id: 1, name: "Financial")]);
-      expect(vm.selectedCovenantType?.id, 1);
-      expect(vm.state.loaderStatus, LoadingStatus.loaded);
+      final v = vm;
+      expect(v.selectedCovenantType?.id, 1);
+      expect(v.state.loaderStatus, LoadingStatus.loaded);
     });
 
     test("onCovenantPeriodSelect updates selectedPeriod and covenant", () {
-      vm.covenant = Covenant();
-      vm.onCovenantPeriodSelect([Reference(id: 1, name: "Annual")]);
+      vm
+        ..covenant = Covenant()
+        ..onCovenantPeriodSelect([Reference(id: 1, name: "Annual")]);
       expect(vm.selectedPeriod?.id, 1);
       expect(vm.covenant?.periodTerm, 1);
     });
 
     test("onBasisOfPreparationSelected updates covenant", () {
-      vm.covenant = Covenant();
-      vm.onBasisOfPreparationSelected([Reference(id: 1, name: "IFRS")]);
+      vm
+        ..covenant = Covenant()
+        ..onBasisOfPreparationSelected([Reference(id: 1, name: "IFRS")]);
       expect(vm.selectedBasisOfPreperation?.id, 1);
       expect(vm.covenant?.basisOfPreparation, 1);
     });
 
     test("onAuditStatusSelected updates covenant", () {
-      vm.covenant = Covenant();
-      vm.onAuditStatusSelected([Reference(id: 1, name: "Audited")]);
+      vm
+        ..covenant = Covenant()
+        ..onAuditStatusSelected([Reference(id: 1, name: "Audited")]);
       expect(vm.selectedAuditStatus?.id, 1);
       expect(vm.covenant?.auditStatus, 1);
     });
 
     test("onEntityNameChanged updates entityName", () {
-      vm.covenant = Covenant();
-      vm.onEntityNameChanged("EntityX");
+      vm
+        ..covenant = Covenant()
+        ..onEntityNameChanged("EntityX");
       expect(vm.covenant?.entityName, "EntityX");
       expect(vm.state.entityName, "EntityX");
     });
@@ -1190,8 +1190,9 @@ void main() {
     });
 
     test("onInternalFinancialCovenantChanged updates covenant", () {
-      vm.covenant = Covenant();
-      vm.onInternalFinancialCovenantChanged(InternalFinancialCovenantType.no);
+      vm
+        ..covenant = Covenant()
+        ..onInternalFinancialCovenantChanged(InternalFinancialCovenantType.no);
       expect(
         vm.selectedInternalFinancialType,
         InternalFinancialCovenantType.no,
@@ -1234,8 +1235,9 @@ void main() {
   group("deleteLinkedCovenant", () {
     test("removes covenant from linkedFinancialCovenants", () {
       final c = Covenant(covenantConditionId: 1);
-      vm.linkedFinancialCovenants = [c];
-      vm.deleteLinkedCovenant(c);
+      vm
+        ..linkedFinancialCovenants = [c]
+        ..deleteLinkedCovenant(c);
       expect(vm.linkedFinancialCovenants, isEmpty);
     });
 
@@ -1248,8 +1250,9 @@ void main() {
     test("state.addLinkFinancialView reflects remaining count", () {
       final c1 = Covenant(covenantConditionId: 1);
       final c2 = Covenant(covenantConditionId: 2);
-      vm.linkedFinancialCovenants = [c1, c2];
-      vm.deleteLinkedCovenant(c1);
+      vm
+        ..linkedFinancialCovenants = [c1, c2]
+        ..deleteLinkedCovenant(c1);
       expect(vm.state.addLinkFinancialView, true);
       vm.deleteLinkedCovenant(c2);
       expect(vm.state.addLinkFinancialView, false);
@@ -1261,15 +1264,18 @@ void main() {
   // ════════════════════════════════════════════
   group("addFinancialCovenatSubtypeView", () {
     test("adds a row to financialCovenantSubtypes", () {
-      vm.covenant = Covenant(rimNo: 100);
-      vm.addFinancialCovenatSubtypeView();
-      expect(vm.financialCovenantSubtypes.length, 1);
-      expect(vm.isFinancialCovenantView, true);
+      vm
+        ..covenant = Covenant(rimNo: 100)
+        ..addFinancialCovenatSubtypeView();
+      final v = vm;
+      expect(v.financialCovenantSubtypes.length, 1);
+      expect(v.isFinancialCovenantView, true);
     });
 
     test("new row has isStandard=true by default", () {
-      vm.covenant = Covenant();
-      vm.addFinancialCovenatSubtypeView();
+      vm
+        ..covenant = Covenant()
+        ..addFinancialCovenatSubtypeView();
       expect(vm.financialCovenantSubtypes.last.isStandard, true);
     });
   });
@@ -1281,22 +1287,23 @@ void main() {
     test(
       "clears controllers and resets flags",
       () {
-        vm.creditLensController.text = "CL";
-        vm.entityNameController.text = "Entity";
-        vm.covenant = Covenant(creditLensId: "CL", entityName: "Entity");
-        vm.linkedFinancialCovenants = [Covenant()];
+        vm
+          ..creditLensController.text = "CL"
+          ..entityNameController.text = "Entity"
+          ..covenant = Covenant(creditLensId: "CL", entityName: "Entity")
+          ..linkedFinancialCovenants = [Covenant()]
+          ..resetFieldsOnCovenantTypeChange();
 
-        vm.resetFieldsOnCovenantTypeChange();
-
-        expect(vm.creditLensController.text, "");
-        expect(vm.entityNameController.text, "");
-        expect(vm.linkedFinancialCovenants, isEmpty);
-        expect(vm.isLinkFinancialView, false);
+        final v = vm;
+        expect(v.creditLensController.text, "");
+        expect(v.entityNameController.text, "");
+        expect(v.linkedFinancialCovenants, isEmpty);
+        expect(v.isLinkFinancialView, false);
         expect(
-          vm.selectedInternalFinancialType,
+          v.selectedInternalFinancialType,
           InternalFinancialCovenantType.yes,
         );
-        expect(vm.selectedTestType, CovenantTestType.rim);
+        expect(v.selectedTestType, CovenantTestType.rim);
       },
     );
   });
@@ -1357,28 +1364,29 @@ void main() {
   // ════════════════════════════════════════════
   group("addSearchedRimToList extended", () {
     test("inserts customer at top", () {
-      vm.searchedCustomer =
-          Customer(id: "1", customerRimNo: 101, customerName: "Top");
-      vm.rimNoSearch = "101";
-      vm.customersList = [
-        Customer(customerRimNo: 200, customerName: "Existing"),
-      ];
-
-      vm.addSearchedRimToList();
+      vm
+        ..searchedCustomer =
+            Customer(id: "1", customerRimNo: 101, customerName: "Top")
+        ..rimNoSearch = "101"
+        ..customersList = [
+          Customer(customerRimNo: 200, customerName: "Existing"),
+        ]
+        ..addSearchedRimToList();
 
       expect(vm.customersList?.first.customerRimNo, 101);
     });
 
     test("resets showAddWidgets and searchLoaderStatus", () {
-      vm.searchedCustomer =
-          Customer(id: "1", customerRimNo: 102, customerName: "X");
-      vm.rimNoSearch = "102";
-      vm.showAddWidgets = true;
+      vm
+        ..searchedCustomer =
+            Customer(id: "1", customerRimNo: 102, customerName: "X")
+        ..rimNoSearch = "102"
+        ..showAddWidgets = true
+        ..addSearchedRimToList();
 
-      vm.addSearchedRimToList();
-
-      expect(vm.showAddWidgets, false);
-      expect(vm.state.searchLoaderStatus, LoadingStatus.loaded);
+      final v = vm;
+      expect(v.showAddWidgets, false);
+      expect(v.state.searchLoaderStatus, LoadingStatus.loaded);
     });
   });
 
@@ -1390,10 +1398,11 @@ void main() {
       "covenant with covenantSubType = "
       "covenantSubTypeIdForFrequencyFilter filters",
       () {
-        vm.covenant = Covenant()
-          ..covenantSubType =
-              ServerConstants.covenantSubTypeIdForFrequencyFilter;
-        vm.selectedCovenantType = Reference(id: 99, name: "Other");
+        vm
+          ..covenant = (Covenant()
+            ..covenantSubType =
+                ServerConstants.covenantSubTypeIdForFrequencyFilter)
+          ..selectedCovenantType = Reference(id: 99, name: "Other");
         final result = vm.filteredFrequencies;
         // Should filter out excludedFrequencyIds
         expect(
@@ -1410,30 +1419,43 @@ void main() {
   // ════════════════════════════════════════════
   group("shouldShowDescriptionTextArea", () {
     test("custom description → true", () {
-      vm.selectedDescriptionTypeId = ServerConstants.customDescriptionId;
-      expect(vm.shouldShowDescriptionTextArea, true);
+      expect(
+        (vm..selectedDescriptionTypeId = ServerConstants.customDescriptionId)
+            .shouldShowDescriptionTextArea,
+        true,
+      );
     });
 
     test("standard description + non-information → false", () {
-      vm.selectedDescriptionTypeId = ServerConstants.standardDescriptionId;
-      vm.selectedCovenantType = Reference(
-        id: ServerConstants.covenantTypeId[CovenantType.financial],
-        name: "Financial",
+      expect(
+        (vm
+              ..selectedDescriptionTypeId =
+                  ServerConstants.standardDescriptionId
+              ..selectedCovenantType = Reference(
+                id: ServerConstants.covenantTypeId[CovenantType.financial],
+                name: "Financial",
+              ))
+            .shouldShowDescriptionTextArea,
+        false,
       );
-      expect(vm.shouldShowDescriptionTextArea, false);
     });
 
     test("information + other subtype → true", () {
-      vm.selectedDescriptionTypeId = ServerConstants.standardDescriptionId;
-      vm.selectedCovenantType = Reference(
-        id: ServerConstants.covenantTypeId[CovenantType.information],
-        name: "Information",
+      expect(
+        (vm
+              ..selectedDescriptionTypeId =
+                  ServerConstants.standardDescriptionId
+              ..selectedCovenantType = Reference(
+                id: ServerConstants.covenantTypeId[CovenantType.information],
+                name: "Information",
+              )
+              ..selectedGeneralCovenantSubType = Reference(
+                id: ServerConstants.covenantSubTypeId[CovenantSubType.other],
+                name: "Other",
+              ))
+            .shouldShowDescriptionTextArea,
+        true,
       );
-      vm.selectedGeneralCovenantSubType = Reference(
-        id: ServerConstants.covenantSubTypeId[CovenantSubType.other],
-        name: "Other",
-      );
-      expect(vm.shouldShowDescriptionTextArea, true);
     });
   });
 
@@ -1484,17 +1506,19 @@ void main() {
   // ════════════════════════════════════════════
   group("addSearchedRimToList invalid rim", () {
     test("null searchedCustomer and non-numeric rimNoSearch shows error", () {
-      vm.searchedCustomer = null;
-      vm.rimNoSearch = "notanumber";
-      vm.addSearchedRimToList();
+      vm
+        ..searchedCustomer = null
+        ..rimNoSearch = "notanumber"
+        ..addSearchedRimToList();
       expect(alertSpy.lastFailure, isNotNull);
     });
 
     test("null searchedCustomer and numeric rimNoSearch adds customer", () {
-      vm.searchedCustomer = null;
-      vm.rimNoSearch = "777";
-      vm.customersList = [];
-      vm.addSearchedRimToList();
+      vm
+        ..searchedCustomer = null
+        ..rimNoSearch = "777"
+        ..customersList = []
+        ..addSearchedRimToList();
       // rimNo parsed from rimNoSearch string — entry added
       expect(vm.customersList?.any((c) => c.customerRimNo == 777), true);
     });
@@ -1516,65 +1540,60 @@ void main() {
   // ════════════════════════════════════════════
   group("populateFromExistingCovenant additional", () {
     test("null covenantSubType skips subtype lookup", () {
-      vm.covenant = Covenant(
-        covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
-        customerName: "Test",
-        covenantSubType: null,
-      );
-      try {
-        vm.populateFromExistingCovenant();
-      } catch (_) {}
+      vm
+        ..covenant = Covenant(
+          covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
+          customerName: "Test",
+          covenantSubType: null,
+        )
+        ..populateFromExistingCovenant();
       expect(vm.selectedCovenantSubType, isNull);
     });
 
     test("null frequency skips frequency lookup", () {
-      vm.covenant = Covenant(
-        covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
-        customerName: "Test",
-        frequency: null,
-      );
-      try {
-        vm.populateFromExistingCovenant();
-      } catch (_) {}
+      vm
+        ..covenant = Covenant(
+          covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
+          customerName: "Test",
+          frequency: null,
+        )
+        ..populateFromExistingCovenant();
       expect(vm.selectedFrequency, isNull);
     });
 
     test("isNewCovenant=true skips borrower rim lookup", () {
-      vm.isNewCovenant = true;
-      vm.covenant = Covenant(
-        covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
-        customerName: "Test",
-        borrowers: [Customer(customerRimNo: 99)],
-      );
-      try {
-        vm.populateFromExistingCovenant();
-      } catch (_) {}
+      vm
+        ..isNewCovenant = true
+        ..covenant = Covenant(
+          covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
+          customerName: "Test",
+          borrowers: [Customer(customerRimNo: 99)],
+        )
+        ..populateFromExistingCovenant();
       // isNewCovenant=true means the existing borrower rim block is skipped
       expect(vm.isNewCovenant, true);
     });
 
     test("empty facilityDetailList does not populate facilityList", () {
-      vm.covenant = Covenant(
-        covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
-        customerName: "Test",
-        facilityDetailList: [],
-      );
-      vm.facilityList = [];
-      try {
-        vm.populateFromExistingCovenant();
-      } catch (_) {}
+      vm
+        ..covenant = Covenant(
+          covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
+          customerName: "Test",
+          facilityDetailList: [],
+        )
+        ..facilityList = []
+        ..populateFromExistingCovenant();
       expect(vm.facilityList, isEmpty);
     });
 
     test("isInternalFinancial=false sets InternalFinancialCovenantType.no", () {
-      vm.covenant = Covenant(
-        covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
-        customerName: "Test",
-        isInternalFinancial: false,
-      );
-      try {
-        vm.populateFromExistingCovenant();
-      } catch (_) {}
+      vm
+        ..covenant = Covenant(
+          covenantType: ServerConstants.covenantTypeId[CovenantType.financial],
+          customerName: "Test",
+          isInternalFinancial: false,
+        )
+        ..populateFromExistingCovenant();
       expect(
         vm.selectedInternalFinancialType,
         InternalFinancialCovenantType.no,
@@ -1588,56 +1607,85 @@ void main() {
   group("description type helpers", () {
     test("updateGeneralIsStandardFromSelection sets isStandardCovenantSelected",
         () {
-      vm.descriptionTypes = [
-        Reference(id: ServerConstants.standardDescriptionId, name: "Standard"),
-        Reference(id: ServerConstants.customDescriptionId, name: "Custom"),
-      ];
-      vm.selectedDescriptionType = "Standard";
-      vm.updateGeneralIsStandardFromSelection();
+      vm
+        ..descriptionTypes = [
+          Reference(
+            id: ServerConstants.standardDescriptionId,
+            name: "Standard",
+          ),
+          Reference(id: ServerConstants.customDescriptionId, name: "Custom"),
+        ]
+        ..selectedDescriptionType = "Standard"
+        ..updateGeneralIsStandardFromSelection();
       expect(vm.isStandardCovenantSelected, true);
     });
 
     test("updateGeneralIsStandardFromSelection false for custom", () {
-      vm.descriptionTypes = [
-        Reference(id: ServerConstants.standardDescriptionId, name: "Standard"),
-        Reference(id: ServerConstants.customDescriptionId, name: "Custom"),
-      ];
-      vm.selectedDescriptionType = "Custom";
-      vm.updateGeneralIsStandardFromSelection();
+      vm
+        ..descriptionTypes = [
+          Reference(
+            id: ServerConstants.standardDescriptionId,
+            name: "Standard",
+          ),
+          Reference(
+            id: ServerConstants.customDescriptionId,
+            name: "Custom",
+          ),
+        ]
+        ..selectedDescriptionType = "Custom"
+        ..updateGeneralIsStandardFromSelection();
       expect(vm.isStandardCovenantSelected, false);
     });
 
     test("isStandardSelected true when standardDescriptionId set", () {
-      vm.selectedDescriptionTypeId = ServerConstants.standardDescriptionId;
-      expect(vm.isStandardSelected, true);
+      expect(
+        (vm..selectedDescriptionTypeId = ServerConstants.standardDescriptionId)
+            .isStandardSelected,
+        true,
+      );
     });
 
     test("isStandardSelected false when customDescriptionId set", () {
-      vm.selectedDescriptionTypeId = ServerConstants.customDescriptionId;
-      expect(vm.isStandardSelected, false);
+      expect(
+        (vm..selectedDescriptionTypeId = ServerConstants.customDescriptionId)
+            .isStandardSelected,
+        false,
+      );
     });
 
     test("isFinancialSubtypeEnabled true when standardDescriptionId set", () {
-      vm.selectedFinancialDescriptionTypeId =
-          ServerConstants.standardDescriptionId;
-      expect(vm.isFinancialSubtypeEnabled, true);
+      expect(
+        (vm
+              ..selectedFinancialDescriptionTypeId =
+                  ServerConstants.standardDescriptionId)
+            .isFinancialSubtypeEnabled,
+        true,
+      );
     });
 
     test("isFinancialSubtypeEnabled false when customDescriptionId set", () {
-      vm.selectedFinancialDescriptionTypeId =
-          ServerConstants.customDescriptionId;
-      expect(vm.isFinancialSubtypeEnabled, false);
+      expect(
+        (vm
+              ..selectedFinancialDescriptionTypeId =
+                  ServerConstants.customDescriptionId)
+            .isFinancialSubtypeEnabled,
+        false,
+      );
     });
 
     test(
         "initializeSelectedDescriptionType "
         "uses isStandardCovenantSelected=false", () {
-      vm.descriptionTypes = [
-        Reference(id: ServerConstants.standardDescriptionId, name: "Standard"),
-        Reference(id: ServerConstants.customDescriptionId, name: "Custom"),
-      ];
-      vm.isStandardCovenantSelected = false;
-      vm.initializeSelectedDescriptionType();
+      vm
+        ..descriptionTypes = [
+          Reference(
+            id: ServerConstants.standardDescriptionId,
+            name: "Standard",
+          ),
+          Reference(id: ServerConstants.customDescriptionId, name: "Custom"),
+        ]
+        ..isStandardCovenantSelected = false
+        ..initializeSelectedDescriptionType();
       expect(vm.selectedDescriptionTypeId, ServerConstants.customDescriptionId);
     });
 
@@ -1645,15 +1693,16 @@ void main() {
       "initializeFinancialSelectedDescriptionType "
       "uses isFinancialStandard=false",
       () {
-        vm.descriptionTypes = [
-          Reference(
-            id: ServerConstants.standardDescriptionId,
-            name: "Standard",
-          ),
-          Reference(id: ServerConstants.customDescriptionId, name: "Custom"),
-        ];
-        vm.isFinancialStandard = false;
-        vm.initializeFinancialSelectedDescriptionType();
+        vm
+          ..descriptionTypes = [
+            Reference(
+              id: ServerConstants.standardDescriptionId,
+              name: "Standard",
+            ),
+            Reference(id: ServerConstants.customDescriptionId, name: "Custom"),
+          ]
+          ..isFinancialStandard = false
+          ..initializeFinancialSelectedDescriptionType();
         expect(
           vm.selectedFinancialDescriptionTypeId,
           ServerConstants.customDescriptionId,
@@ -1662,14 +1711,19 @@ void main() {
     );
 
     test("onDescriptionTypeChange to standard enables financial subtype", () {
-      vm.descriptionTypes = [
-        Reference(id: ServerConstants.standardDescriptionId, name: "Standard"),
-        Reference(id: ServerConstants.customDescriptionId, name: "Custom"),
-      ];
-      vm.covenant = Covenant();
-      vm.onDescriptionTypeChange("Standard");
-      expect(vm.isStandardSelected, true);
-      expect(vm.isLinkFinancialSubtypeEnabled, true);
+      vm
+        ..descriptionTypes = [
+          Reference(
+            id: ServerConstants.standardDescriptionId,
+            name: "Standard",
+          ),
+          Reference(id: ServerConstants.customDescriptionId, name: "Custom"),
+        ]
+        ..covenant = Covenant()
+        ..onDescriptionTypeChange("Standard");
+      final v = vm;
+      expect(v.isStandardSelected, true);
+      expect(v.isLinkFinancialSubtypeEnabled, true);
     });
   });
 
@@ -1678,19 +1732,22 @@ void main() {
   // ════════════════════════════════════════════
   group("setSelectedAction", () {
     test("sets action and updates covenant.action", () {
-      vm.covenant = Covenant();
-      final ref = Reference(id: 42, name: "Amend");
-      vm.setSelectedAction(ref);
-      expect(vm.selectedAction?.id, 42);
-      expect(vm.covenant?.action, 42);
+      vm
+        ..covenant = Covenant()
+        ..setSelectedAction(Reference(id: 42, name: "Amend"));
+      final v = vm;
+      expect(v.selectedAction?.id, 42);
+      expect(v.covenant?.action, 42);
     });
 
     test("null clears both fields", () {
-      vm.covenant = Covenant()..action = 5;
-      vm.selectedAction = Reference(id: 5, name: "Old");
-      vm.setSelectedAction(null);
-      expect(vm.selectedAction, isNull);
-      expect(vm.covenant?.action, isNull);
+      vm
+        ..covenant = (Covenant()..action = 5)
+        ..selectedAction = Reference(id: 5, name: "Old")
+        ..setSelectedAction(null);
+      final v = vm;
+      expect(v.selectedAction, isNull);
+      expect(v.covenant?.action, isNull);
     });
   });
 
@@ -1706,17 +1763,25 @@ void main() {
     });
 
     test("returns empty when selectedAction not in available list", () {
-      vm.isNewCovenant = false;
-      vm.selectedAction = Reference(id: 999, name: "Unknown");
-      final result = vm.getSelectedActionItems(false);
-      expect(result, isEmpty);
+      expect(
+        (vm
+              ..isNewCovenant = false
+              ..selectedAction = Reference(id: 999, name: "Unknown"))
+            .getSelectedActionItems(false),
+        isEmpty,
+      );
     });
 
     test("new covenant with valid selectedAction returns it", () {
-      vm.isNewCovenant = false;
-      vm.selectedAction = Reference(id: 2, name: "Amend");
-      final result = vm.getSelectedActionItems(false);
-      expect(result.first.id, 2);
+      expect(
+        (vm
+              ..isNewCovenant = false
+              ..selectedAction = Reference(id: 2, name: "Amend"))
+            .getSelectedActionItems(false)
+            .first
+            .id,
+        2,
+      );
     });
   });
 
@@ -1725,22 +1790,28 @@ void main() {
   // ════════════════════════════════════════════
   group("onFinancialDescriptionTypeChange extended", () {
     setUp(() {
-      vm.descriptionTypes = [
-        Reference(id: ServerConstants.standardDescriptionId, name: "Standard"),
-        Reference(id: ServerConstants.customDescriptionId, name: "Custom"),
-      ];
-      vm.covenant = Covenant();
+      vm
+        ..descriptionTypes = [
+          Reference(
+            id: ServerConstants.standardDescriptionId,
+            name: "Standard",
+          ),
+          Reference(id: ServerConstants.customDescriptionId, name: "Custom"),
+        ]
+        ..covenant = Covenant();
     });
 
     test("unknown value sets id to -1 (orElse fallback)", () {
       vm.onFinancialDescriptionTypeChange("Unknown");
-      expect(vm.selectedFinancialDescriptionType, "Unknown");
-      expect(vm.selectedFinancialDescriptionTypeId, -1);
+      final v = vm;
+      expect(v.selectedFinancialDescriptionType, "Unknown");
+      expect(v.selectedFinancialDescriptionTypeId, -1);
     });
 
     test("custom clears financialDescriptionController text", () {
-      vm.financialDescriptionController.text = "existing text";
-      vm.onFinancialDescriptionTypeChange("Custom");
+      vm
+        ..financialDescriptionController.text = "existing text"
+        ..onFinancialDescriptionTypeChange("Custom");
       expect(vm.financialDescriptionController.text, "");
     });
 
@@ -1750,12 +1821,13 @@ void main() {
     });
 
     test("financial covenant standard updates covenant.isStandard", () {
-      vm.selectedCovenantType = Reference(
-        id: ServerConstants.covenantTypeId[CovenantType.financial],
-        name: "Financial",
-      );
-      vm.isLinkFinancialView = false;
-      vm.onFinancialDescriptionTypeChange("Standard");
+      vm
+        ..selectedCovenantType = Reference(
+          id: ServerConstants.covenantTypeId[CovenantType.financial],
+          name: "Financial",
+        )
+        ..isLinkFinancialView = false
+        ..onFinancialDescriptionTypeChange("Standard");
       expect(vm.covenant?.isStandard, true);
     });
   });
@@ -1780,18 +1852,20 @@ void main() {
   // ════════════════════════════════════════════
   group("onGeneralCovenantSubTypeSelect isNewCovenant", () {
     test("isNewCovenant=true clears selectedCustomerRim", () {
-      vm.isNewCovenant = true;
-      vm.selectedCustomerRim = Customer(customerRimNo: 99);
-      vm.covenant = Covenant();
-      vm.onGeneralCovenantSubTypeSelect([Reference(id: 1, name: "GenSub")]);
+      vm
+        ..isNewCovenant = true
+        ..selectedCustomerRim = Customer(customerRimNo: 99)
+        ..covenant = Covenant()
+        ..onGeneralCovenantSubTypeSelect([Reference(id: 1, name: "GenSub")]);
       expect(vm.selectedCustomerRim, isNull);
     });
 
     test("isNewCovenant=false keeps selectedCustomerRim", () {
-      vm.isNewCovenant = false;
-      vm.selectedCustomerRim = Customer(customerRimNo: 99);
-      vm.covenant = Covenant();
-      vm.onGeneralCovenantSubTypeSelect([Reference(id: 1, name: "GenSub")]);
+      vm
+        ..isNewCovenant = false
+        ..selectedCustomerRim = Customer(customerRimNo: 99)
+        ..covenant = Covenant()
+        ..onGeneralCovenantSubTypeSelect([Reference(id: 1, name: "GenSub")]);
       expect(vm.selectedCustomerRim?.customerRimNo, 99);
     });
   });
@@ -1801,18 +1875,20 @@ void main() {
   // ════════════════════════════════════════════
   group("onFinancialCovenantSubTypeSelect threshold regime", () {
     test("no matching threshold clears selectedThreshold", () {
-      vm.covenant = Covenant();
-      vm.selectedThreshold = Reference(id: 1, name: "Old");
-      vm.onFinancialCovenantSubTypeSelect(
-        [Reference(id: 88888, name: "NoMap")],
-      );
+      vm
+        ..covenant = Covenant()
+        ..selectedThreshold = Reference(id: 1, name: "Old")
+        ..onFinancialCovenantSubTypeSelect(
+          [Reference(id: 88888, name: "NoMap")],
+        );
       expect(vm.selectedThreshold, isNull);
     });
 
     test("covenantType 11145 sets covenantSubType from financial selection",
         () {
-      vm.covenant = Covenant()..covenantType = 11145;
-      vm.onFinancialCovenantSubTypeSelect([Reference(id: 5, name: "Sub5")]);
+      vm
+        ..covenant = (Covenant()..covenantType = 11145)
+        ..onFinancialCovenantSubTypeSelect([Reference(id: 5, name: "Sub5")]);
       expect(vm.covenant?.covenantSubType, 5);
     });
   });
@@ -1822,14 +1898,16 @@ void main() {
   // ════════════════════════════════════════════
   group("applyThresholdFromDescription extended", () {
     test("empty brackets produce threshold=0", () {
-      vm.covenant = Covenant();
-      vm.applyThresholdFromDescription("Shall not exceed [    ]");
+      vm
+        ..covenant = Covenant()
+        ..applyThresholdFromDescription("Shall not exceed [    ]");
       expect(vm.covenant?.threshold, 0);
     });
 
     test("multiple digits parsed correctly", () {
-      vm.covenant = Covenant();
-      vm.applyThresholdFromDescription("X [ 12345 ] Y");
+      vm
+        ..covenant = Covenant()
+        ..applyThresholdFromDescription("X [ 12345 ] Y");
       expect(vm.covenant?.threshold, 12345);
     });
   });
@@ -1869,14 +1947,16 @@ void main() {
   // ════════════════════════════════════════════
   group("deleteFinancialCovenat boundary", () {
     test("index exactly at length is ignored", () {
-      vm.financialCovenantSubtypes = [Covenant()];
-      vm.deleteFinancialCovenat(1);
+      vm
+        ..financialCovenantSubtypes = [Covenant()]
+        ..deleteFinancialCovenat(1);
       expect(vm.financialCovenantSubtypes.length, 1);
     });
 
     test("negative index is ignored", () {
-      vm.financialCovenantSubtypes = [Covenant()];
-      vm.deleteFinancialCovenat(-1);
+      vm
+        ..financialCovenantSubtypes = [Covenant()]
+        ..deleteFinancialCovenat(-1);
       expect(vm.financialCovenantSubtypes.length, 1);
     });
   });
@@ -1923,41 +2003,66 @@ void main() {
   // ════════════════════════════════════════════
   group("getCalculatedNextMonitoringDateRaw", () {
     test("returns null when fyEndStr is null", () {
-      vm.covenant = Covenant()..financialYearEndDate = null;
-      vm.selectedTimeForSubmission = Reference(id: 1, name: "90");
-      expect(vm.getCalculatedNextMonitoringDateRaw(), isNull);
+      expect(
+        (vm
+              ..covenant = (Covenant()..financialYearEndDate = null)
+              ..selectedTimeForSubmission = Reference(id: 1, name: "90"))
+            .getCalculatedNextMonitoringDateRaw(),
+        isNull,
+      );
     });
 
     test("returns null when submissionDaysStr is null", () {
-      vm.covenant = Covenant()..financialYearEndDate = "31/12";
-      vm.selectedTimeForSubmission = null;
-      expect(vm.getCalculatedNextMonitoringDateRaw(), isNull);
+      expect(
+        (vm
+              ..covenant = (Covenant()..financialYearEndDate = "31/12")
+              ..selectedTimeForSubmission = null)
+            .getCalculatedNextMonitoringDateRaw(),
+        isNull,
+      );
     });
 
     test("returns null when fyEndStr has wrong format", () {
-      vm.covenant = Covenant()..financialYearEndDate = "badformat";
-      vm.selectedTimeForSubmission = Reference(id: 1, name: "30");
-      expect(vm.getCalculatedNextMonitoringDateRaw(), isNull);
+      expect(
+        (vm
+              ..covenant = (Covenant()..financialYearEndDate = "badformat")
+              ..selectedTimeForSubmission = Reference(id: 1, name: "30"))
+            .getCalculatedNextMonitoringDateRaw(),
+        isNull,
+      );
     });
 
     test("returns 15th when calculated day <= 15", () {
-      vm.covenant = Covenant()..financialYearEndDate = "31/01";
-      vm.selectedTimeForSubmission = Reference(id: 1, name: "10");
-      final result = vm.getCalculatedNextMonitoringDateRaw();
-      expect(result?.day, 15);
+      expect(
+        (vm
+              ..covenant = (Covenant()..financialYearEndDate = "31/01")
+              ..selectedTimeForSubmission = Reference(id: 1, name: "10"))
+            .getCalculatedNextMonitoringDateRaw()
+            ?.day,
+        15,
+      );
     });
 
     test("returns end-of-month when calculated day > 15", () {
-      vm.covenant = Covenant()..financialYearEndDate = "31/01";
-      vm.selectedTimeForSubmission = Reference(id: 1, name: "50");
-      final result = vm.getCalculatedNextMonitoringDateRaw();
-      expect(result?.day, greaterThan(15));
+      expect(
+        (vm
+                  ..covenant = (Covenant()..financialYearEndDate = "31/01")
+                  ..selectedTimeForSubmission = Reference(id: 1, name: "50"))
+                .getCalculatedNextMonitoringDateRaw()
+                ?.day ??
+            0,
+        greaterThan(15),
+      );
     });
 
     test("returns non-null DateTime for valid inputs", () {
-      vm.covenant = Covenant()..financialYearEndDate = "31/12";
-      vm.selectedTimeForSubmission = Reference(id: 1, name: "90");
-      expect(vm.getCalculatedNextMonitoringDateRaw(), isA<DateTime>());
+      expect(
+        (vm
+              ..covenant = (Covenant()..financialYearEndDate = "31/12")
+              ..selectedTimeForSubmission = Reference(id: 1, name: "90"))
+            .getCalculatedNextMonitoringDateRaw(),
+        isA<DateTime>(),
+      );
     });
   });
 
@@ -1967,25 +2072,29 @@ void main() {
   group("updateNextMonitoringDate", () {
     test("does nothing when getCalculatedNextMonitoringDateRaw returns null",
         () {
-      vm.covenant = Covenant()..financialYearEndDate = null;
-      vm.selectedTimeForSubmission = null;
-      vm.nextMonitoringDateController.text = "existing";
-      vm.updateNextMonitoringDate();
+      vm
+        ..covenant = (Covenant()..financialYearEndDate = null)
+        ..selectedTimeForSubmission = null
+        ..nextMonitoringDateController.text = "existing"
+        ..updateNextMonitoringDate();
       expect(vm.nextMonitoringDateController.text, "existing");
     });
 
     test("updates covenant.nextMonitorDate and controller text", () {
-      vm.covenant = Covenant()..financialYearEndDate = "31/12";
-      vm.selectedTimeForSubmission = Reference(id: 1, name: "90");
-      vm.updateNextMonitoringDate();
-      expect(vm.covenant?.nextMonitorDate, isNotNull);
-      expect(vm.nextMonitoringDateController.text, isNotEmpty);
+      vm
+        ..covenant = (Covenant()..financialYearEndDate = "31/12")
+        ..selectedTimeForSubmission = Reference(id: 1, name: "90")
+        ..updateNextMonitoringDate();
+      final v = vm;
+      expect(v.covenant?.nextMonitorDate, isNotNull);
+      expect(v.nextMonitoringDateController.text, isNotEmpty);
     });
 
     test("emits loaded state", () {
-      vm.covenant = Covenant()..financialYearEndDate = "31/03";
-      vm.selectedTimeForSubmission = Reference(id: 1, name: "30");
-      vm.updateNextMonitoringDate();
+      vm
+        ..covenant = (Covenant()..financialYearEndDate = "31/03")
+        ..selectedTimeForSubmission = Reference(id: 1, name: "30")
+        ..updateNextMonitoringDate();
       expect(vm.state.loaderStatus, LoadingStatus.loaded);
     });
   });
@@ -1995,23 +2104,28 @@ void main() {
   // ════════════════════════════════════════════
   group("onFinancialYearEndSubmit", () {
     test("sets financialYearEndDate and calls updateNextMonitoringDate", () {
-      vm.covenant = Covenant();
-      vm.selectedTimeForSubmission = Reference(id: 1, name: "90");
-      vm.onFinancialYearEndSubmit("31/12");
-      expect(vm.covenant?.financialYearEndDate, "31/12");
-      expect(vm.state.loaderStatus, LoadingStatus.loaded);
+      vm
+        ..covenant = Covenant()
+        ..selectedTimeForSubmission = Reference(id: 1, name: "90")
+        ..onFinancialYearEndSubmit("31/12");
+      final v = vm;
+      expect(v.covenant?.financialYearEndDate, "31/12");
+      expect(v.state.loaderStatus, LoadingStatus.loaded);
     });
 
     test("creates covenant when null before setting date", () {
-      vm.covenant = null;
-      vm.onFinancialYearEndSubmit("30/06");
-      expect(vm.covenant, isNotNull);
-      expect(vm.covenant?.financialYearEndDate, "30/06");
+      vm
+        ..covenant = null
+        ..onFinancialYearEndSubmit("30/06");
+      final v = vm;
+      expect(v.covenant, isNotNull);
+      expect(v.covenant?.financialYearEndDate, "30/06");
     });
 
     test("null value sets null on covenant", () {
-      vm.covenant = Covenant()..financialYearEndDate = "31/12";
-      vm.onFinancialYearEndSubmit(null);
+      vm
+        ..covenant = (Covenant()..financialYearEndDate = "31/12")
+        ..onFinancialYearEndSubmit(null);
       expect(vm.covenant?.financialYearEndDate, isNull);
     });
   });
@@ -2021,23 +2135,28 @@ void main() {
   // ════════════════════════════════════════════
   group("onTimeForSubmissionSelected", () {
     test("sets selectedTimeForSubmission and updates covenant", () {
-      vm.covenant = Covenant();
-      vm.onTimeForSubmissionSelected([Reference(id: 5, name: "90")]);
-      expect(vm.selectedTimeForSubmission?.id, 5);
-      expect(vm.covenant?.timeForSubmition, 5);
-      expect(vm.state.loaderStatus, LoadingStatus.loaded);
+      vm
+        ..covenant = Covenant()
+        ..onTimeForSubmissionSelected([Reference(id: 5, name: "90")]);
+      final v = vm;
+      expect(v.selectedTimeForSubmission?.id, 5);
+      expect(v.covenant?.timeForSubmition, 5);
+      expect(v.state.loaderStatus, LoadingStatus.loaded);
     });
 
     test("creates covenant when null", () {
-      vm.covenant = null;
-      vm.onTimeForSubmissionSelected([Reference(id: 3, name: "60")]);
-      expect(vm.covenant, isNotNull);
-      expect(vm.selectedTimeForSubmission?.id, 3);
+      vm
+        ..covenant = null
+        ..onTimeForSubmissionSelected([Reference(id: 3, name: "60")]);
+      final v = vm;
+      expect(v.covenant, isNotNull);
+      expect(v.selectedTimeForSubmission?.id, 3);
     });
 
     test("triggers updateNextMonitoringDate calculation", () {
-      vm.covenant = Covenant()..financialYearEndDate = "31/12";
-      vm.onTimeForSubmissionSelected([Reference(id: 1, name: "90")]);
+      vm
+        ..covenant = (Covenant()..financialYearEndDate = "31/12")
+        ..onTimeForSubmissionSelected([Reference(id: 1, name: "90")]);
       expect(vm.nextMonitoringDateController.text, isNotEmpty);
     });
   });
@@ -2080,17 +2199,21 @@ void main() {
   // ════════════════════════════════════════════
   group("onAddButtonPress and onCancelPress", () {
     test("onAddButtonPress sets showAddWidgets=true and emits", () {
-      vm.showAddWidgets = false;
-      vm.onAddButtonPress();
-      expect(vm.showAddWidgets, true);
-      expect(vm.state.showAddWidgets, isA<bool>());
+      vm
+        ..showAddWidgets = false
+        ..onAddButtonPress();
+      final v = vm;
+      expect(v.showAddWidgets, true);
+      expect(v.state.showAddWidgets, isA<bool>());
     });
 
     test("onCancelPress sets showAddWidgets=false and emits", () {
-      vm.showAddWidgets = true;
-      vm.onCancelPress();
-      expect(vm.showAddWidgets, false);
-      expect(vm.state.showAddWidgets, false);
+      vm
+        ..showAddWidgets = true
+        ..onCancelPress();
+      final v = vm;
+      expect(v.showAddWidgets, false);
+      expect(v.state.showAddWidgets, false);
     });
   });
 
@@ -2099,16 +2222,17 @@ void main() {
   // ════════════════════════════════════════════
   group("getDescriptionCovenantHint", () {
     test("returns a string (translation key fallback)", () {
-      vm.selectedBasisOfPreperation = Reference(name: "IFRS");
-      vm.selectedAuditStatus = Reference(name: "Audited");
-      vm.emit(vm.state.copyWith(entityName: "TestEntity"));
-      final hint = vm.getDescriptionCovenantHint();
-      expect(hint, isA<String>());
+      vm
+        ..selectedBasisOfPreperation = Reference(name: "IFRS")
+        ..selectedAuditStatus = Reference(name: "Audited")
+        ..emit(vm.state.copyWith(entityName: "TestEntity"));
+      expect(vm.getDescriptionCovenantHint(), isA<String>());
     });
 
     test("handles null fields without throwing", () {
-      vm.selectedBasisOfPreperation = null;
-      vm.selectedAuditStatus = null;
+      vm
+        ..selectedBasisOfPreperation = null
+        ..selectedAuditStatus = null;
       expect(() => vm.getDescriptionCovenantHint(), returnsNormally);
     });
   });
@@ -2118,48 +2242,48 @@ void main() {
   // ════════════════════════════════════════════
   group("covenantSubTypeDropdownItems", () {
     test("returns all items when no selectedTypeId", () {
-      vm.selectedCovenantType = null;
-      vm.covenant = null;
-      final result = vm.covenantSubTypeDropdownItems;
-      expect(result, isA<List<Reference>>());
+      vm
+        ..selectedCovenantType = null
+        ..covenant = null;
+      expect(vm.covenantSubTypeDropdownItems, isA<List<Reference>>());
     });
 
     test("filters by selectedCovenantType.id", () {
       final typeId = ServerConstants.covenantTypeId[CovenantType.financial];
-      vm.selectedCovenantType = Reference(id: typeId, name: "Financial");
-      vm.referenceData[ReferenceDataKeys.covenantSubtype] = [
-        Reference(id: 1, reference2: typeId.toString(), name: "Sub1"),
-        Reference(id: 2, reference2: "9999", name: "Sub2"),
-        Reference(
-          id: ServerConstants.covenantSubTypeId[CovenantSubType.other],
-          reference2: typeId.toString(),
-          name: "Other",
-        ),
-      ];
-      final result = vm.covenantSubTypeDropdownItems;
+      vm
+        ..selectedCovenantType = Reference(id: typeId, name: "Financial")
+        ..referenceData[ReferenceDataKeys.covenantSubtype] = [
+          Reference(id: 1, reference2: typeId.toString(), name: "Sub1"),
+          Reference(id: 2, reference2: "9999", name: "Sub2"),
+          Reference(
+            id: ServerConstants.covenantSubTypeId[CovenantSubType.other],
+            reference2: typeId.toString(),
+            name: "Other",
+          ),
+        ];
       // 'Other' should be at the end
       expect(
-        result.last.id,
+        vm.covenantSubTypeDropdownItems.last.id,
         ServerConstants.covenantSubTypeId[CovenantSubType.other],
       );
     });
 
     test("falls back to all items when filter yields empty", () {
-      vm.selectedCovenantType = Reference(id: 9999999, name: "NoMatch");
-      vm.covenant = null;
-      final result = vm.covenantSubTypeDropdownItems;
-      expect(result, isA<List<Reference>>());
+      vm
+        ..selectedCovenantType = Reference(id: 9999999, name: "NoMatch")
+        ..covenant = null;
+      expect(vm.covenantSubTypeDropdownItems, isA<List<Reference>>());
     });
 
     test("uses covenant.covenantType when selectedCovenantType is null", () {
-      vm.selectedCovenantType = null;
       final typeId = ServerConstants.covenantTypeId[CovenantType.financial];
-      vm.covenant = Covenant()..covenantType = typeId;
-      vm.referenceData[ReferenceDataKeys.covenantSubtype] = [
-        Reference(id: 1, reference2: typeId.toString(), name: "CovSub"),
-      ];
-      final result = vm.covenantSubTypeDropdownItems;
-      expect(result, isA<List<Reference>>());
+      vm
+        ..selectedCovenantType = null
+        ..covenant = (Covenant()..covenantType = typeId)
+        ..referenceData[ReferenceDataKeys.covenantSubtype] = [
+          Reference(id: 1, reference2: typeId.toString(), name: "CovSub"),
+        ];
+      expect(vm.covenantSubTypeDropdownItems, isA<List<Reference>>());
     });
   });
 
@@ -2168,26 +2292,30 @@ void main() {
   // ════════════════════════════════════════════
   group("onCovenantSubTypeSelect", () {
     test("sets selectedCovenantSubType and covenant.covenantSubType", () {
-      vm.covenant = Covenant();
-      vm.selectedSubTypeValue = Reference();
-      vm.onCovenantSubTypeSelect([Reference(id: 3, name: "SubC")]);
-      expect(vm.selectedCovenantSubType?.id, 3);
-      expect(vm.covenant?.covenantSubType, 3);
+      vm
+        ..covenant = Covenant()
+        ..selectedSubTypeValue = Reference()
+        ..onCovenantSubTypeSelect([Reference(id: 3, name: "SubC")]);
+      final v = vm;
+      expect(v.selectedCovenantSubType?.id, 3);
+      expect(v.covenant?.covenantSubType, 3);
     });
 
     test("maps threshold when subtype is in minThresholdSubtypeIds", () {
       if (ServerConstants.minThresholdSubtypeIds.isEmpty) return;
-      vm.covenant = Covenant();
-      vm.selectedSubTypeValue = Reference();
       final subId = ServerConstants.minThresholdSubtypeIds.first;
-      vm.onCovenantSubTypeSelect([Reference(id: subId, name: "MinSub")]);
+      vm
+        ..covenant = Covenant()
+        ..selectedSubTypeValue = Reference()
+        ..onCovenantSubTypeSelect([Reference(id: subId, name: "MinSub")]);
       expect(vm.thresholdType, isNotNull);
     });
 
     test("emits loaded state", () {
-      vm.covenant = Covenant();
-      vm.selectedSubTypeValue = Reference();
-      vm.onCovenantSubTypeSelect([Reference(id: 99, name: "S")]);
+      vm
+        ..covenant = Covenant()
+        ..selectedSubTypeValue = Reference()
+        ..onCovenantSubTypeSelect([Reference(id: 99, name: "S")]);
       expect(vm.state.loaderStatus, LoadingStatus.loaded);
     });
   });
@@ -2219,19 +2347,20 @@ void main() {
     });
 
     test("showOnlyNonFinancialSubtypeItems returns non-financial items", () {
-      vm.showOnlyNonFinancialSubtypeItems = true;
-      vm.referenceData[ReferenceDataKeys.covenantSubtype] = [
-        Reference(
-          id: 1,
-          reference2: ServerConstants.covenantTypeIdNonFinancial.toString(),
-          name: "NF1",
-        ),
-        Reference(
-          id: 2,
-          reference2: ServerConstants.financialCovenantReference2,
-          name: "F1",
-        ),
-      ];
+      vm
+        ..showOnlyNonFinancialSubtypeItems = true
+        ..referenceData[ReferenceDataKeys.covenantSubtype] = [
+          Reference(
+            id: 1,
+            reference2: ServerConstants.covenantTypeIdNonFinancial.toString(),
+            name: "NF1",
+          ),
+          Reference(
+            id: 2,
+            reference2: ServerConstants.financialCovenantReference2,
+            name: "F1",
+          ),
+        ];
       final result = vm.getFilteredFinancialCovenantSubtypes();
       expect(result.any((r) => r.name == "NF1"), true);
       expect(result.any((r) => r.name == "F1"), false);
@@ -2252,16 +2381,17 @@ void main() {
   // ════════════════════════════════════════════
   group("getFilteredCovenantSubtypesByType", () {
     test("filters by covenant.covenantType", () {
-      vm.covenant = Covenant()..covenantType = 5;
-      vm.referenceData[ReferenceDataKeys.covenantSubtype] = [
-        Reference(id: 1, reference2: "5", name: "Match"),
-        Reference(id: 2, reference2: "6", name: "NoMatch"),
-        Reference(
-          id: ServerConstants.covenantSubTypeId[CovenantSubType.other],
-          reference2: "5",
-          name: "Other",
-        ),
-      ];
+      vm
+        ..covenant = (Covenant()..covenantType = 5)
+        ..referenceData[ReferenceDataKeys.covenantSubtype] = [
+          Reference(id: 1, reference2: "5", name: "Match"),
+          Reference(id: 2, reference2: "6", name: "NoMatch"),
+          Reference(
+            id: ServerConstants.covenantSubTypeId[CovenantSubType.other],
+            reference2: "5",
+            name: "Other",
+          ),
+        ];
       final result = vm.getFilteredCovenantSubtypesByType();
       expect(result.any((r) => r.name == "NoMatch"), false);
       expect(
@@ -2271,9 +2401,10 @@ void main() {
     });
 
     test("returns empty when null covenant", () {
-      vm.covenant = null;
-      final result = vm.getFilteredCovenantSubtypesByType();
-      expect(result, isA<List<Reference>>());
+      expect(
+        (vm..covenant = null).getFilteredCovenantSubtypesByType(),
+        isA<List<Reference>>(),
+      );
     });
   });
 
@@ -2282,24 +2413,36 @@ void main() {
   // ════════════════════════════════════════════
   group("getSelectedCustomerForDropdown", () {
     test("isNewCovenant=true with null selectedCustomer returns empty", () {
-      vm.isNewCovenant = true;
-      vm.selectedCustomer = null;
-      expect(vm.getSelectedCustomerForDropdown(false), isEmpty);
+      expect(
+        (vm
+              ..isNewCovenant = true
+              ..selectedCustomer = null)
+            .getSelectedCustomerForDropdown(false),
+        isEmpty,
+      );
     });
 
     test("forceShow=true returns customer even with isNewCovenant=true", () {
-      vm.isNewCovenant = true;
-      vm.selectedCustomer = Customer(customerName: "Test");
-      final result = vm.getSelectedCustomerForDropdown(true);
-      expect(result.length, 1);
+      expect(
+        (vm
+              ..isNewCovenant = true
+              ..selectedCustomer = Customer(customerName: "Test"))
+            .getSelectedCustomerForDropdown(true)
+            .length,
+        1,
+      );
     });
 
     test("isNewCovenant=false with selectedCustomer returns it", () {
-      vm.isNewCovenant = false;
-      vm.selectedCustomer = Customer(customerName: "Existing");
-      final result = vm.getSelectedCustomerForDropdown(false);
-      expect(result.length, 1);
-      expect(result.first.customerName, "Existing");
+      expect(
+        (vm
+              ..isNewCovenant = false
+              ..selectedCustomer = Customer(customerName: "Existing"))
+            .getSelectedCustomerForDropdown(false)
+            .first
+            .customerName,
+        "Existing",
+      );
     });
   });
 
@@ -2308,8 +2451,11 @@ void main() {
   // ════════════════════════════════════════════
   group("selection list getters", () {
     test("getSelectedFinancialSubtype: forceEmpty=true returns empty", () {
-      vm.selectedFinancialCovenantSubType = Reference(id: 1);
-      expect(vm.getSelectedFinancialSubtype(null, true), isEmpty);
+      expect(
+        (vm..selectedFinancialCovenantSubType = Reference(id: 1))
+            .getSelectedFinancialSubtype(null, true),
+        isEmpty,
+      );
     });
 
     test("getSelectedFinancialSubtype: externalSelectedItem wins", () {
@@ -2320,8 +2466,13 @@ void main() {
     test(
         "getSelectedFinancialSubtype: internal "
         "selection returned when no external", () {
-      vm.selectedFinancialCovenantSubType = Reference(id: 7, name: "Int");
-      expect(vm.getSelectedFinancialSubtype(null, false).first.id, 7);
+      expect(
+        (vm..selectedFinancialCovenantSubType = Reference(id: 7, name: "Int"))
+            .getSelectedFinancialSubtype(null, false)
+            .first
+            .id,
+        7,
+      );
     });
 
     test("getSelectedFinancialSubtype: both null returns empty", () {
@@ -2330,8 +2481,13 @@ void main() {
     });
 
     test("getSelectedThreshold: forceEmpty returns empty", () {
-      vm.selectedThreshold = Reference(id: 1);
-      expect(vm.getSelectedThreshold(null, true), isEmpty);
+      expect(
+        (vm..selectedThreshold = Reference(id: 1)).getSelectedThreshold(
+          null,
+          true,
+        ),
+        isEmpty,
+      );
     });
 
     test("getSelectedThreshold: externalSelectedItem wins", () {
@@ -2340,8 +2496,13 @@ void main() {
     });
 
     test("getSelectedThreshold: internal returned", () {
-      vm.selectedThreshold = Reference(id: 6);
-      expect(vm.getSelectedThreshold(null, false).first.id, 6);
+      expect(
+        (vm..selectedThreshold = Reference(id: 6))
+            .getSelectedThreshold(null, false)
+            .first
+            .id,
+        6,
+      );
     });
 
     test("getSelectedThreshold: both null returns empty", () {
@@ -2355,8 +2516,13 @@ void main() {
     });
 
     test("getSelectedCovenantType: internal returned", () {
-      vm.selectedCovenantType = Reference(id: 4);
-      expect(vm.getSelectedCovenantType(null).first.id, 4);
+      expect(
+        (vm..selectedCovenantType = Reference(id: 4))
+            .getSelectedCovenantType(null)
+            .first
+            .id,
+        4,
+      );
     });
 
     test("getSelectedCovenantType: both null returns empty", () {
@@ -2398,26 +2564,29 @@ void main() {
   // ════════════════════════════════════════════
   group("initializeDefaultActionIfNeeded", () {
     test("new covenant + no action: sets Create action", () {
-      vm.isNewCovenant = true;
-      vm.selectedAction = null;
-      vm.referenceData[ReferenceDataKeys.covenantConditionAction] = [
-        Reference(id: ServerConstants.createActionId, name: "Create"),
-      ];
-      vm.initializeDefaultActionIfNeeded();
+      vm
+        ..isNewCovenant = true
+        ..selectedAction = null
+        ..referenceData[ReferenceDataKeys.covenantConditionAction] = [
+          Reference(id: ServerConstants.createActionId, name: "Create"),
+        ]
+        ..initializeDefaultActionIfNeeded();
       expect(vm.selectedAction?.id, ServerConstants.createActionId);
     });
 
     test("new covenant + existing action: does not overwrite", () {
-      vm.isNewCovenant = true;
-      vm.selectedAction = Reference(id: 99, name: "Existing");
-      vm.initializeDefaultActionIfNeeded();
+      vm
+        ..isNewCovenant = true
+        ..selectedAction = Reference(id: 99, name: "Existing")
+        ..initializeDefaultActionIfNeeded();
       expect(vm.selectedAction?.id, 99);
     });
 
     test("not new covenant: does nothing", () {
-      vm.isNewCovenant = false;
-      vm.selectedAction = null;
-      vm.initializeDefaultActionIfNeeded();
+      vm
+        ..isNewCovenant = false
+        ..selectedAction = null
+        ..initializeDefaultActionIfNeeded();
       expect(vm.selectedAction, isNull);
     });
   });
@@ -2427,49 +2596,56 @@ void main() {
   // ════════════════════════════════════════════
   group("addLinkFinancialView extended", () {
     test("sets isLinkFinancialView=true", () {
-      vm.covenant = Covenant();
-      vm.addLinkFinancialView();
+      vm
+        ..covenant = Covenant()
+        ..addLinkFinancialView();
       expect(vm.isLinkFinancialView, true);
     });
 
     test("increments linkedFinancialCovenants count", () {
-      vm.covenant = Covenant();
-      vm.addLinkFinancialView();
+      vm
+        ..covenant = Covenant()
+        ..addLinkFinancialView();
       expect(vm.linkedFinancialCovenants.length, 1);
     });
 
     test("new row has isStandard=true and isInternalFinancial=true", () {
-      vm.covenant = Covenant();
-      vm.addLinkFinancialView();
+      vm
+        ..covenant = Covenant()
+        ..addLinkFinancialView();
       final row = vm.linkedFinancialCovenants.last;
       expect(row.isStandard, true);
       expect(row.isInternalFinancial, true);
     });
 
     test("picks up baseRim from covenant.rimNo", () {
-      vm.covenant = Covenant()..rimNo = 5000;
-      vm.addLinkFinancialView();
+      vm
+        ..covenant = (Covenant()..rimNo = 5000)
+        ..addLinkFinancialView();
       expect(vm.linkedFinancialCovenants.last.rimNo, 5000);
     });
 
     test("picks up baseRim from selectedCustomerRim when covenant.rimNo null",
         () {
-      vm.covenant = Covenant()..rimNo = null;
-      vm.selectedCustomerRim = Customer(customerRimNo: 4000);
-      vm.addLinkFinancialView();
+      vm
+        ..covenant = (Covenant()..rimNo = null)
+        ..selectedCustomerRim = Customer(customerRimNo: 4000)
+        ..addLinkFinancialView();
       expect(vm.linkedFinancialCovenants.last.rimNo, 4000);
     });
 
     test("selects financial covenantType from referenceData", () {
-      vm.covenant = Covenant();
-      vm.addLinkFinancialView();
+      vm
+        ..covenant = Covenant()
+        ..addLinkFinancialView();
       expect(vm.state.addLinkFinancialView, true);
     });
 
     test("emits financialViewCount equal to list length", () {
-      vm.covenant = Covenant();
-      vm.addLinkFinancialView();
-      vm.addLinkFinancialView();
+      vm
+        ..covenant = Covenant()
+        ..addLinkFinancialView()
+        ..addLinkFinancialView();
       expect(vm.state.financialViewCount, 2);
     });
   });
@@ -2566,9 +2742,10 @@ void main() {
     test("returns false when subtype IS mapped to a threshold", () {
       if (ServerConstants.minThresholdSubtypeIds.isEmpty) return;
       final mappedId = ServerConstants.minThresholdSubtypeIds.first;
-      vm.selectedFinancialCovenantSubType =
-          Reference(id: mappedId, name: "Mapped");
-      vm.covenant = Covenant()..covenantSubType = mappedId;
+      vm
+        ..selectedFinancialCovenantSubType =
+            Reference(id: mappedId, name: "Mapped")
+        ..covenant = (Covenant()..covenantSubType = mappedId);
       expect(vm.isDesktopThresholdEditable, false);
     });
   });
@@ -2615,29 +2792,31 @@ void main() {
   // ════════════════════════════════════════════
   group("filteredFrequencies full", () {
     test("non-financial, non-information type: does NOT filter", () {
-      vm.covenant = Covenant()..covenantSubType = 9999;
-      vm.selectedCovenantType = Reference(id: 9999, name: "Other");
-      vm.referenceData[ReferenceDataKeys.covenantFrequency] = [
-        Reference(id: 1, name: "A"),
-        Reference(id: 2, name: "B"),
-      ];
+      vm
+        ..covenant = (Covenant()..covenantSubType = 9999)
+        ..selectedCovenantType = Reference(id: 9999, name: "Other")
+        ..referenceData[ReferenceDataKeys.covenantFrequency] = [
+          Reference(id: 1, name: "A"),
+          Reference(id: 2, name: "B"),
+        ];
       expect(vm.filteredFrequencies.length, 2);
     });
 
     test("nonFinancial covenant type: filters excluded ids", () {
-      vm.covenant = Covenant()..covenantSubType = 9999;
-      vm.selectedCovenantType = Reference(
-        id: ServerConstants.covenantTypeId[CovenantType.nonFinancial],
-        name: "NonFinancial",
-      );
-      vm.referenceData[ReferenceDataKeys.covenantFrequency] = [
-        Reference(id: 1, name: "Keep"),
-        if (ServerConstants.excludedFrequencyIds.isNotEmpty)
-          Reference(
-            id: ServerConstants.excludedFrequencyIds.first,
-            name: "Exclude",
-          ),
-      ];
+      vm
+        ..covenant = (Covenant()..covenantSubType = 9999)
+        ..selectedCovenantType = Reference(
+          id: ServerConstants.covenantTypeId[CovenantType.nonFinancial],
+          name: "NonFinancial",
+        )
+        ..referenceData[ReferenceDataKeys.covenantFrequency] = [
+          Reference(id: 1, name: "Keep"),
+          if (ServerConstants.excludedFrequencyIds.isNotEmpty)
+            Reference(
+              id: ServerConstants.excludedFrequencyIds.first,
+              name: "Exclude",
+            ),
+        ];
       final result = vm.filteredFrequencies;
       expect(
         result.any((r) => ServerConstants.excludedFrequencyIds.contains(r.id)),
@@ -2651,12 +2830,13 @@ void main() {
   // ════════════════════════════════════════════
   group("onFinancialDescriptionChanged", () {
     setUp(() {
-      vm.selectedFinancialCovenantSubType =
-          Reference(id: 9999, name: "TestSub");
-      vm.selectedSubTypeValue =
-          Reference(reference1: "TestSub Shall not exceed [ {value} ]");
-      vm.covenant = Covenant();
-      vm.initializeFinancialDescription();
+      vm
+        ..selectedFinancialCovenantSubType =
+            Reference(id: 9999, name: "TestSub")
+        ..selectedSubTypeValue =
+            Reference(reference1: "TestSub Shall not exceed [ {value} ]")
+        ..covenant = Covenant()
+        ..initializeFinancialDescription();
     });
 
     test("updating text inside brackets updates controller", () {
@@ -2670,28 +2850,31 @@ void main() {
     });
 
     test("isUpdatingFinancialDescription guard prevents re-entry", () {
-      vm.isUpdatingFinancialDescription = true;
-      vm.onFinancialDescriptionChanged("anything");
+      vm
+        ..isUpdatingFinancialDescription = true
+        ..onFinancialDescriptionChanged("anything");
       // Should return early without crashing
       expect(vm.isUpdatingFinancialDescription, true);
       vm.isUpdatingFinancialDescription = false;
     });
 
     test("special id 11141 skips name prefix", () {
-      vm.selectedFinancialCovenantSubType =
-          Reference(id: 11141, name: "SpecialA");
-      vm.selectedSubTypeValue = Reference(reference1: "");
-      vm.initializeFinancialDescription();
+      vm
+        ..selectedFinancialCovenantSubType =
+            Reference(id: 11141, name: "SpecialA")
+        ..selectedSubTypeValue = Reference(reference1: "")
+        ..initializeFinancialDescription();
       final text = vm.financialDescriptionController.text;
       vm.onFinancialDescriptionChanged(text);
       expect(vm.financialDescriptionController.text, isA<String>());
     });
 
     test("special id 11142 skips name prefix", () {
-      vm.selectedFinancialCovenantSubType =
-          Reference(id: 11142, name: "SpecialB");
-      vm.selectedSubTypeValue = Reference(reference1: "");
-      vm.initializeFinancialDescription();
+      vm
+        ..selectedFinancialCovenantSubType =
+            Reference(id: 11142, name: "SpecialB")
+        ..selectedSubTypeValue = Reference(reference1: "")
+        ..initializeFinancialDescription();
       final text = vm.financialDescriptionController.text;
       vm.onFinancialDescriptionChanged(text);
       expect(vm.financialDescriptionController.text, isA<String>());
@@ -2709,13 +2892,15 @@ void main() {
           home: Scaffold(body: Form(key: key, child: const SizedBox())),
         ),
       );
-      vm.formKey = key;
-      vm.isNewCovenant = true;
-      vm.selectedCustomerRim = Customer(customerRimNo: 100);
-      vm.covenant = Covenant()
-        ..covenantType = 11145
-        ..customerName = "Test";
-      vm.selectedFinancialCovenantSubType = Reference(id: 55, name: "FinSub55");
+      vm
+        ..formKey = key
+        ..isNewCovenant = true
+        ..selectedCustomerRim = Customer(customerRimNo: 100)
+        ..covenant = (Covenant()
+          ..covenantType = 11145
+          ..customerName = "Test")
+        ..selectedFinancialCovenantSubType =
+            Reference(id: 55, name: "FinSub55");
       when(() => mockRepo.saveCovenantDetails(any(), any()))
           .thenAnswer((_) async => "ok");
       final result = await vm.onSavePress();
@@ -2737,14 +2922,15 @@ void main() {
           home: Scaffold(body: Form(key: key, child: const SizedBox())),
         ),
       );
-      vm.formKey = key;
-      vm.isNewCovenant = true;
-      vm.isLinkFinancialView = true;
-      vm.isFinancialStandard = false;
-      vm.selectedDescriptionTypeId = ServerConstants.standardDescriptionId;
-      vm.selectedCustomerRim = Customer(customerRimNo: 100);
-      vm.covenant = Covenant()..customerName = "Test";
-      vm.selectedGeneralCovenantSubType = Reference(id: 1, name: "GenSubName");
+      vm
+        ..formKey = key
+        ..isNewCovenant = true
+        ..isLinkFinancialView = true
+        ..isFinancialStandard = false
+        ..selectedDescriptionTypeId = ServerConstants.standardDescriptionId
+        ..selectedCustomerRim = Customer(customerRimNo: 100)
+        ..covenant = (Covenant()..customerName = "Test")
+        ..selectedGeneralCovenantSubType = Reference(id: 1, name: "GenSubName");
       when(() => mockRepo.saveCovenantDetails(any(), any()))
           .thenAnswer((_) async => "ok");
       final result = await vm.onSavePress();

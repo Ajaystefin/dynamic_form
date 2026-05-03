@@ -769,7 +769,7 @@ void main() {
     // Inspect body to ensure Encoded Base64 reached the API
     final body = mockAPIManager.callLog.first.body!;
     final Map<String, String> reqList =
-        (body["requestData"] as Map<String, String>);
+        body["requestData"] as Map<String, String>;
     final Map<String, dynamic> sent = reqList as Map<String, dynamic>;
     expect(sent["imageData"], base64Encode([1, 2, 3, 255]));
   });

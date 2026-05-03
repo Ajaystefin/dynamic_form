@@ -67,9 +67,9 @@ class _AssociatedTableState extends State<AssociatedTable> {
                     .isEmpty)
                 ? emptyRow()
                 : List.generate(
-                    ((widget.row?.facilityDetailList ??
+                    (widget.row?.facilityDetailList ??
                             widget.viewModel.facilityList)
-                        .length), (index) {
+                        .length, (index) {
                     final List<Facility> list =
                         widget.row?.facilityDetailList ??
                             widget.viewModel.facilityList;

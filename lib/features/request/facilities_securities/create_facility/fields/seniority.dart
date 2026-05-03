@@ -13,7 +13,7 @@ class FacilitySeniority extends StatelessWidget {
   Widget build(BuildContext context) {
     return LabelWidget(
       label: "facilities.createFacility.seniority".tr(),
-      isRequired: (!viewModel.isFIFlow),
+      isRequired: !viewModel.isFIFlow,
       child: CustomDropdown<Reference>(
         validationMessage:
             viewModel.isFIFlow ? null : "validation.emptyField".tr(),
@@ -23,7 +23,7 @@ class FacilitySeniority extends StatelessWidget {
             : [viewModel.seniorities.first],
         onSelected: (selectedValue) {
           if (selectedValue.isNotEmpty) {
-            viewModel.getFacility.seniorityValue = (selectedValue.first);
+            viewModel.getFacility.seniorityValue = selectedValue.first;
           }
         },
         itemBuilder: (context, item, isDisabled, isSelected) {

@@ -53,7 +53,7 @@ class LimitAvailabilityDate extends StatelessWidget {
               semanticLabel:
                   "facilities.createFacility.limitAvailabilityPeriod".tr(),
               initialValue:
-                  isCreate ? dateOnlyApiLimitDateIso : (apiLimitPeriod),
+                  isCreate ? dateOnlyApiLimitDateIso : apiLimitPeriod,
               onChanged: (value) {
                 viewModel.getFacility.limitAvailabilityPeriod = value;
               },

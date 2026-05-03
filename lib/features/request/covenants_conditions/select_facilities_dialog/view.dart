@@ -20,7 +20,8 @@ class SelectFacilitiesDialogView extends StatelessWidget {
     this.preselectedAllFacilities,
     this.isCovenant = false,
   });
-  final bool isSecuritySummary, isLinakage;
+  final bool isSecuritySummary;
+  final bool isLinakage;
   final PageMode? overridePageMode;
   final Reference? preselectedAllFacilities;
   final bool isCovenant;

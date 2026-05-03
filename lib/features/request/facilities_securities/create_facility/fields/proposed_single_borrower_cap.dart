@@ -20,7 +20,7 @@ class ProposedSingleBorrowerCap extends StatelessWidget {
   Widget build(BuildContext context) {
     // Make the field reset when limitCapType changes by including it in the key
     final String capTypeKey =
-        (viewModel.getFacility.limitCapType?.toString() ?? "none");
+        viewModel.getFacility.limitCapType?.toString() ?? "none";
     final bool isRequired = viewModel.isFIFlow ? false : true;
     final bool hasCountryCodes = viewModel.currencyCodes.isNotEmpty;
     final Reference? selectedCurrency =
@@ -53,7 +53,7 @@ class ProposedSingleBorrowerCap extends StatelessWidget {
           onSelected: (selectedValue) {
             if (selectedValue.isNotEmpty) {
               viewModel.getFacility.presentOutstandingCCValue =
-                  (selectedValue.first);
+                  selectedValue.first;
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {

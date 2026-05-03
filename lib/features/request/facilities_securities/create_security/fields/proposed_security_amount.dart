@@ -103,12 +103,13 @@ class ProposedSecurityAmount extends StatelessWidget {
           ],
           onSelected: (selectedValue) {
             if (selectedValue.isNotEmpty) {
-              viewModel.onCurrencyChanged(selectedValue.first, false);
-              viewModel.getCurrencyRates(
-                selectedValue.first,
-                false,
-                proposedAmount: viewModel.security.proposedSecurityAmount,
-              );
+              viewModel
+                ..onCurrencyChanged(selectedValue.first, false)
+                ..getCurrencyRates(
+                  selectedValue.first,
+                  false,
+                  proposedAmount: viewModel.security.proposedSecurityAmount,
+                );
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {

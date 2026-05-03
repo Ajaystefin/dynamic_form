@@ -13,7 +13,7 @@ class FacilityCommitted extends StatelessWidget {
   Widget build(BuildContext context) {
     return LabelWidget(
       label: "facilities.createFacility.committed".tr(),
-      isRequired: (!viewModel.isFIFlow),
+      isRequired: !viewModel.isFIFlow,
       child: CustomDropdown<Reference>(
         validationMessage:
             viewModel.isFIFlow ? null : "common.validation.emptyField".tr(),
@@ -25,7 +25,7 @@ class FacilityCommitted extends StatelessWidget {
             : null,
         onSelected: (selectedValue) {
           if (selectedValue.isNotEmpty) {
-            viewModel.getFacility.committedValues = (selectedValue.first);
+            viewModel.getFacility.committedValues = selectedValue.first;
           }
         },
         itemBuilder: (context, item, isDisabled, isSelected) {

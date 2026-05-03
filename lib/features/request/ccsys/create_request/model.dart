@@ -69,7 +69,7 @@ class CcsysCreateRequestViewModel extends SafeCubit<CcsysCreateRequestState> {
   bool submitButtonValidation() => customer == null;
 
   PageMode pageMode = PageMode.na;
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
 
   /// Initializes the `CcsysCreateRequestViewModel`.
   ///
@@ -401,7 +401,7 @@ class CcsysCreateRequestViewModel extends SafeCubit<CcsysCreateRequestState> {
       //   // caDateIsoPlus4: caDate, // include only if required
       // );
 
-      final Reference appType = (applicationType).firstWhere(
+      final Reference appType = applicationType.firstWhere(
         (e) => e.id == ServerConstants.ccsysAppReferenceId,
         orElse: () => Reference(
           id: ServerConstants.ccsysAppReferenceId,

@@ -247,7 +247,7 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
               exchangeRate: exchangeRate,
             );
 
-            widget.onChanged!(
+            widget.onChanged?.call(
               CurrencyUtils.createCurrencyMap(
                 currency: widget.initialOption!.pairValue ?? "",
                 amount: numValue,
@@ -290,7 +290,7 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
 
         // Emit updated value to parent
         if (widget.onChanged != null) {
-          widget.onChanged!(
+          widget.onChanged?.call(
             CurrencyUtils.createCurrencyMap(
               currency: selectedOption!.pairValue ?? "",
               amount: numValue,
@@ -376,7 +376,7 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
                         // Safe option retrieval with fallback to avoid "Bad
                         // state: No element"
                         final newOption = widget.options.firstWhere(
-                          (opt) => (opt.pairValue ?? "") == (selectedValue),
+                          (opt) => (opt.pairValue ?? "") == selectedValue,
                           orElse: () =>
                               Option(key: "AED", pairValue: "AED"), // fallback
                         );
@@ -417,7 +417,7 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
                             exchangeRate: exchangeRate,
                           );
 
-                          widget.onChanged!(
+                          widget.onChanged?.call(
                             CurrencyUtils.createCurrencyMap(
                               currency: selectedOption?.pairValue ?? "",
                               amount: numValue,
@@ -453,7 +453,7 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
                 );
 
                 // Always emit all three fields for field dependencies
-                widget.onChanged!(
+                widget.onChanged?.call(
                   CurrencyUtils.createCurrencyMap(
                     currency: selectedOption!.pairValue ?? "",
                     amount: numValue,
@@ -524,7 +524,7 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
 
       // Emit updated value with AED equivalent
       if (widget.onChanged != null) {
-        widget.onChanged!(
+        widget.onChanged?.call(
           CurrencyUtils.createCurrencyMap(
             currency: selectedCurrency?.name ?? "",
             amount: amount,

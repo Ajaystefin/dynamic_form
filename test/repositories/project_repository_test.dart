@@ -802,58 +802,56 @@ void main() {
         Globals.request = Request(applicationRefNo: "APP123");
 
         // Queue 4 responses in order of awaited calls
-        mockAPIManager.setMockResponse(
-          // getProjectDetails
-          AppResponse(
-            message: "Success",
-            body: {
-              "responseData": {"code": "PROJ001", "name": "Test Project"},
-            },
-            code: 200,
-            status: ResponseStatus.success,
-          ),
-        );
-
-        mockAPIManager.setMockResponse(
-          // getContractDetails
-          AppResponse(
-            message: "Success",
-            body: {
-              "responseData": {
-                "borrowerRole": "Main Contractor",
-                "customerName": "ABC Construction",
+        mockAPIManager
+          ..setMockResponse(
+            // getProjectDetails
+            AppResponse(
+              message: "Success",
+              body: {
+                "responseData": {"code": "PROJ001", "name": "Test Project"},
               },
-            },
-            code: 200,
-            status: ResponseStatus.success,
-          ),
-        );
-
-        mockAPIManager.setMockResponse(
-          // getLinkContract
-          AppResponse(
-            message: "Success",
-            body: {
-              "status": {"statusCode": 0, "statusDescription": "Success"},
-              "responseData": [],
-            },
-            code: 200,
-            status: ResponseStatus.success,
-          ),
-        );
-
-        mockAPIManager.setMockResponse(
-          // getPPC
-          AppResponse(
-            message: "Success",
-            body: {
-              "status": {"statusCode": 0, "statusDescription": "Success"},
-              "responseData": [],
-            },
-            code: 200,
-            status: ResponseStatus.success,
-          ),
-        );
+              code: 200,
+              status: ResponseStatus.success,
+            ),
+          )
+          ..setMockResponse(
+            // getContractDetails
+            AppResponse(
+              message: "Success",
+              body: {
+                "responseData": {
+                  "borrowerRole": "Main Contractor",
+                  "customerName": "ABC Construction",
+                },
+              },
+              code: 200,
+              status: ResponseStatus.success,
+            ),
+          )
+          ..setMockResponse(
+            // getLinkContract
+            AppResponse(
+              message: "Success",
+              body: {
+                "status": {"statusCode": 0, "statusDescription": "Success"},
+                "responseData": [],
+              },
+              code: 200,
+              status: ResponseStatus.success,
+            ),
+          )
+          ..setMockResponse(
+            // getPPC
+            AppResponse(
+              message: "Success",
+              body: {
+                "status": {"statusCode": 0, "statusDescription": "Success"},
+                "responseData": [],
+              },
+              code: 200,
+              status: ResponseStatus.success,
+            ),
+          );
 
         // final futures = [
         //   projectRepository.getProjectDetails(),

@@ -136,7 +136,7 @@ class PPC {
 
   Map<String, dynamic> toJson() {
     // Pick first non-null among synonymous fields
-    final ppcNoResolved = ppcNo ?? (ppc?.toString()) ?? ppcId ?? "";
+    final ppcNoResolved = ppcNo ?? ppc?.toString() ?? ppcId ?? "";
     final ppcDateResolved = ppcDate ?? "";
 
     // Numerics: prefer lowerCamel fields; fallback to legacy ones

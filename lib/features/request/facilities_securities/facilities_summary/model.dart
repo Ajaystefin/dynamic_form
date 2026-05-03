@@ -89,7 +89,7 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
   PageMode pageMode = PageMode.na;
 
   /// True if the user can edit this screen (based on rights/role).
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
 
   /// Financial Institution segment flow toggle (affects reference keys and
   /// behavior).
@@ -425,7 +425,7 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
         return;
       }
 
-      if ((_validateAgainstGroupCap(list, groupSpecific, selectedRim))) {
+      if (_validateAgainstGroupCap(list, groupSpecific, selectedRim)) {
         await facilitySecurityRepository.saveFacilitySummaryListEdited(edited);
         AlertManager().showSuccessToast(
           "facilities.facilitySummary.savedSuccessfully".tr(),
@@ -603,8 +603,8 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
     int totalProposed = 0;
 
     final bool isProjectGroup =
-        (limitGroupId == ServerConstants.projectSpecificLimitsID ||
-            limitGroupId == ServerConstants.projectStandByLimitID);
+        limitGroupId == ServerConstants.projectSpecificLimitsID ||
+            limitGroupId == ServerConstants.projectStandByLimitID;
 
     final List<RimSummary> rimSummaries =
         facilitySummaryList.rims ?? const <RimSummary>[];
@@ -799,9 +799,9 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
     final String apiName = (_headerNameApiByKey[key] ?? "").trim();
 
     // Proposed: compare only if both known
-    final bool proposedChanged = (apiProposed != null &&
+    final bool proposedChanged = apiProposed != null &&
         currentProposed != null &&
-        apiProposed != currentProposed);
+        apiProposed != currentProposed;
 
     final bool currencyChanged = apiCurrency != currentCurrency;
     final bool nameChanged = apiName != currentName;
@@ -943,7 +943,7 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
         final String code =
             (selectedPorposedLimit.currency ?? "").trim().toUpperCase();
         final int amountFromApi = _initialProposedByRow[key] ?? 0;
-        final num amountLive = (selectedPorposedLimit.proposedLimit ?? 0);
+        final num amountLive = selectedPorposedLimit.proposedLimit ?? 0;
         final NumberFormat formatter = NumberFormat("#,###");
 
         // If empty or AED, show snapshot + current code (no conversion needed)
@@ -1000,9 +1000,9 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
 // Apply the selected project to the facility row and refresh UI
   void applySelectedProjectTo(FacilitySummaryNew facility) {
     if (selectedProjectRef != null) {
-      facility.projectName = selectedProjectRef!
-          .name; // store as String for Text("${f.projectName}")
-      facility.isEdited = true; // so save will pick it up
+      facility
+        ..projectName = selectedProjectRef!.name
+        ..isEdited = true;
       emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
     }
   }
@@ -1283,7 +1283,7 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
               if (headerCurrencyFor(gid, rimNo) == null) {
                 final Reference ref = matchOrFirstByName(
                   currencyCodes,
-                  (facility.currency ?? "AED"),
+                  facility.currency ?? "AED",
                 );
                 headerCurrencyByKey[key] = ref;
               }
@@ -1458,7 +1458,7 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
 
     // Existing limit from header (group+rim)
     final int presentLimit =
-        (_projectExistingByKey[groupRimKey(selectedGroupId, rim)]?.toInt()) ??
+        _projectExistingByKey[groupRimKey(selectedGroupId, rim)]?.toInt() ??
             (int.tryParse(facility.limitAmount?.description ?? "") ??
                 (facilityDetail.isNotEmpty
                     ? (facilityDetail.first.presentLimit?.toInt() ?? 0)
@@ -1470,7 +1470,7 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
 
     // Proposed limit from header (group+rim)
     final int proposedLimit =
-        (_projectProposedByKey[groupRimKey(selectedGroupId, rim)]?.toInt()) ??
+        _projectProposedByKey[groupRimKey(selectedGroupId, rim)]?.toInt() ??
             _numOr(facility.proposedLimit, 0).toInt();
 
     // Project Name from header text field (use group-specific controller)

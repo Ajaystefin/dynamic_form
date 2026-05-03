@@ -46,9 +46,9 @@ class RecommendCurrentApprovalViewModel
   bool isRiskRatingInit = false;
 
   /// If this screen is accessible for edit from rights
-  bool get isEdit => (Globals.user?.currentRole
+  bool get isEdit => Globals.user?.currentRole
           ?.rights?[RightConstants.recommendationCurrentApproval] ==
-      AccessType.edit);
+      AccessType.edit;
 
   /// Controller to avoid `initialValue` refresh issues
   final TextEditingController commentController = TextEditingController();
@@ -89,9 +89,9 @@ class RecommendCurrentApprovalViewModel
     canEdit = (ServerConstants.userRoleId[UserRole.creditCommittee] ?? 0) >
         (Globals.user?.currentRole?.roleId ?? 0);
     if (Utils.checkRole(UserRole.creditAnalyst)) {
-      canEdit = (isInitByCA && isRiskRatingInit);
+      canEdit = isInitByCA && isRiskRatingInit;
     } else if (Utils.checkRole(UserRole.creditCordinator)) {
-      canEdit = (isInitByCCOOD && isRiskRatingInit);
+      canEdit = isInitByCCOOD && isRiskRatingInit;
     }
     debugPrint(
       "canEdit : $canEdit "

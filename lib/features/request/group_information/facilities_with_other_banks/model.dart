@@ -63,7 +63,7 @@ class FacilitiesWithOtherBanksViewModel
   final TextEditingController strategyCommentCBRBController =
       TextEditingController();
 
-  bool get canEdit => (pageMode == PageMode.edit);
+  bool get canEdit => pageMode == PageMode.edit;
   PageMode pageMode = PageMode.na;
 
   // ---------------------------------------------------------------------------

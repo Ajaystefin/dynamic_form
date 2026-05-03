@@ -34,7 +34,8 @@ class UserDetailViewModel extends SafeCubit<UserDetailState>
   final FocusNode formFocusNode = FocusNode();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  User? userDetails, selectUserListItem;
+  User? userDetails;
+  User? selectUserListItem;
   List<Reference>? userAccessToRegionValues = [];
   List<Reference>? userAccessToCustomerSegmentValues = [];
   String? selectedUserRoles = "";

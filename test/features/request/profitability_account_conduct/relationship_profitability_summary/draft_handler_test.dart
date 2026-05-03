@@ -22,9 +22,8 @@ void main() {
   // Helper
   // ---------------------------------------------------------------------------
   RelationshipProfitabilitySummaryViewModel buildVm() {
-    final vm = RelationshipProfitabilitySummaryViewModel();
-
-    vm.formKey = GlobalKey<FormState>();
+    final vm = RelationshipProfitabilitySummaryViewModel()
+      ..formKey = GlobalKey<FormState>();
 
     // Summary comments
     vm.summaryCommentsController.text = "Summary comment";
@@ -56,10 +55,11 @@ void main() {
     vm.getTextController("real_rwa_0").text = "5";
 
     // RAROC controllers
-    vm.realizedRarocControllers = [TextEditingController(text: "6")];
-    vm.proposedRarocControllers = [TextEditingController(text: "7")];
-    vm.finalRarocControllers = [TextEditingController(text: "8")];
-    vm.commentsControllers = [TextEditingController(text: "RAROC comment")];
+    vm
+      ..realizedRarocControllers = [TextEditingController(text: "6")]
+      ..proposedRarocControllers = [TextEditingController(text: "7")]
+      ..finalRarocControllers = [TextEditingController(text: "8")]
+      ..commentsControllers = [TextEditingController(text: "RAROC comment")];
 
     return vm;
   }

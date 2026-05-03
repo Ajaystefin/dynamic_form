@@ -236,9 +236,7 @@ class CustomDropdownState<T> extends State<CustomDropdown<T>> {
 
   void _exitEditMode() {
     // Call onEditComplete with the current text before exiting
-    if (widget.onEditComplete != null) {
-      widget.onEditComplete!(_editController.text);
-    }
+    widget.onEditComplete?.call(_editController.text);
     _isEditMode.value = false;
     _editController.clear();
   }
@@ -310,9 +308,7 @@ class CustomDropdownState<T> extends State<CustomDropdown<T>> {
         onChanged: widget.onTextChanged,
         onSubmitted: (value) {
           // Save the value when user presses Enter
-          if (widget.onEditComplete != null) {
-            widget.onEditComplete!(value);
-          }
+          widget.onEditComplete?.call(value);
         },
         inputFormatters: widget.editInputFormatters,
         keyboardType: widget.editKeyboardType,
@@ -397,8 +393,8 @@ class CustomDropdownState<T> extends State<CustomDropdown<T>> {
                       onChanged: (value) {
                         if (value == null) {
                           widget.onClear?.call([]);
-                        } else if (widget.onSelected != null) {
-                          widget.onSelected!([value]);
+                        } else {
+                          widget.onSelected?.call([value]);
                         }
                       },
                       onBeforeChange: widget.onBeforeChange,

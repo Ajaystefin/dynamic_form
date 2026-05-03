@@ -6,7 +6,7 @@ enum ConditionType {
   nonStandard;
 
   static ConditionType fromString(String value) {
-    switch ((value).trim().toUpperCase()) {
+    switch (value.trim().toUpperCase()) {
       case "STANDARD":
         return ConditionType.standard;
       case "NON-STANDARD":

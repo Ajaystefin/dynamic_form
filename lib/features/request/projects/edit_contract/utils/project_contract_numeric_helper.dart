@@ -15,7 +15,7 @@ class ProjectContractNumericHelper {
   // @visibleForTesting
   // static WarnFn warn = (msg) => AlertManager().showWarningToast(msg);
 
-  static String showStr(String? s) => (s ?? "");
+  static String showStr(String? s) => s ?? "";
 
   static InputDecoration dec(String label) => InputDecoration(
         labelText: label,

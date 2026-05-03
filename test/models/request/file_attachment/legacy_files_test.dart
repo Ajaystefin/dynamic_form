@@ -9,9 +9,9 @@ void main() {
     // Helper: create Reference; adapt to your model (constructors,
     // immutability)
     Reference ref(int id, String name) {
-      final r = Reference();
-      r.id = id;
-      r.name = name;
+      final r = Reference()
+        ..id = id
+        ..name = name;
       return r;
     }
 

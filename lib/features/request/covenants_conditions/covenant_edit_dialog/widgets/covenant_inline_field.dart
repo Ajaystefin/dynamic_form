@@ -20,7 +20,7 @@ class CovenantInlineField extends StatelessWidget {
         : DynamicFormInline(
             key: UniqueKey(),
             inputString:
-                (viewModel.selectedSubTypeValue?.reference1.toString()) ?? " ",
+                viewModel.selectedSubTypeValue?.reference1.toString() ?? " ",
           );
   }
 }

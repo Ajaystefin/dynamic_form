@@ -33,7 +33,7 @@ class SecurityPerfectionViewModel extends SafeCubit<SecurityPerfectionState>
   bool isFI = false;
 
   bool get canEdit =>
-      (pageMode == PageMode.edit); //&& Utils.canEditApplication();
+      pageMode == PageMode.edit; //&& Utils.canEditApplication();
 
   List<Comment> comments = [Comment()];
   Comment? comment = Comment();
@@ -98,9 +98,9 @@ class SecurityPerfectionViewModel extends SafeCubit<SecurityPerfectionState>
 
       getReviewComments = comments
           .where(
-            (cmt) => (cmt.applicationRefNo
+            (cmt) => cmt.applicationRefNo
                     ?.contains(Globals.request?.applicationRefNo ?? "") ??
-                false),
+                false,
           )
           .toList();
       if ((getReviewComments ?? []).isNotEmpty) {

@@ -205,30 +205,28 @@ void main() {
     ReferenceDataService.overrideInstance(mockReferenceService);
     AlertManager.overrideInstance(mockAlertManager);
 
-    viewModel = CreateFacilityViewModel();
     // Inject the repo (for all methods that use viewModel.repository)
-    viewModel.repository = mockRepository;
+    viewModel = CreateFacilityViewModel()..repository = mockRepository;
 
     mockLocalStorageService = MockLocalStorageService();
     LocalStorageService().setStorage(mockLocalStorageService);
 
     // Minimal baseline model state
-    viewModel.getFacility = Facility();
-    viewModel.facilityTypes = [
-      Reference(id: 10, name: "Type1", reference4: "A"),
-      Reference(id: 11, name: "Type2", reference4: "B"),
-    ];
-    viewModel.facilityDescriptions = [];
-    viewModel.feeDefualtRate = [];
-    viewModel.nonStandardCondition = [];
-
-    viewModel.borrowersByRimInTable = [];
-    viewModel.standardCondition = [
-      Condition(isAmended: false, isWaivedOff: false),
-    ];
-    viewModel.nonStandardCondition = [
-      Condition(isAmended: false, isWaivedOff: false),
-    ];
+    viewModel
+      ..getFacility = Facility()
+      ..facilityTypes = [
+        Reference(id: 10, name: "Type1", reference4: "A"),
+        Reference(id: 11, name: "Type2", reference4: "B"),
+      ]
+      ..facilityDescriptions = []
+      ..feeDefualtRate = []
+      ..borrowersByRimInTable = []
+      ..standardCondition = [
+        Condition(isAmended: false, isWaivedOff: false),
+      ]
+      ..nonStandardCondition = [
+        Condition(isAmended: false, isWaivedOff: false),
+      ];
   });
 
   tearDown(() {
@@ -260,84 +258,82 @@ void main() {
       ..groupId = 55
       ..customerRimNo = 321;
 
-    viewModel.period = [Reference(name: "Months")];
-    viewModel.limitGroups = [Reference(id: 77, name: "Group 77")];
-    viewModel.limitCapsType = [Reference(id: 14492, name: "Group Cap")];
-    viewModel.currencyCodes = [
-      Reference(name: "AED"),
-      Reference(name: "USD"),
-    ];
-    viewModel.accountTypes = [Reference(id: 10, name: "Account Type")];
-    viewModel.facilityDescriptions = [
-      Reference(id: 345, name: "Main Facility", reference3: "FAM"),
-    ];
-    viewModel.facilityTypes = [
-      Reference(
-        id: 555,
-        name: "Loan",
-        reference3: "PCD",
-        reference5: "FAM",
-      ),
-    ];
-    viewModel.standardCondition = [
-      Condition(
-        conditionId: 1,
-        description: "Standard 1",
-        conditionType: ConditionType.standard,
-      ),
-    ];
-    viewModel.nonStandardCondition = [
-      Condition(
-        conditionId: 2,
-        description: "Non Standard 1",
-        conditionType: ConditionType.nonStandard,
-      ),
-    ];
-    viewModel.sections = [];
-    viewModel.showCreateFacilityForm = true;
-    viewModel.selectedRim = 321;
-    viewModel.rimNo = 321;
-    viewModel.limitGroup = 77;
-    viewModel.limitCapType = 14492;
-    viewModel.subLimit = false;
-    viewModel.selectedCurrencyCode = "AED";
-    viewModel.dynamicFormDocument = {"field": "value"};
-    viewModel.selectedAccountTypes = [Reference(id: 10, name: "Account Type")];
-    viewModel.parentControlliingNumber = "PARENT-001";
-
-    viewModel.getFacility = Facility()
-      ..facilityDescription = Reference(
-        id: 345,
-        name: "Main Facility",
-        reference3: "FAM",
-      )
-      ..selectedProductTypeValue = Reference(name: "Islamic")
-      ..proposedLimit = 900
-      ..presentOutstandingAmount = 80
-      ..sharedLimit = yesRef()
-      ..committedValues = yesRef()
-      ..selectedpromissoryNoteValue = Reference(id: 1906, name: "Yes")
-      ..selectedCollateralDepantantValue = noRef()
-      ..sector = Reference(id: 501, name: "Sector")
-      ..sicCode = Reference(id: 601, name: "SIC")
-      ..advanceTypeValue = Reference(id: 701, name: "Advance")
-      ..seniorityValue = Reference(id: 801, name: "Senior")
-      ..selectedCountry = Country(description: "India")
-      ..isCrossBoarderExposure = true
-      ..remarks = "Coverage remarks"
-      ..policyDeviation = [Reference(id: 91), Reference(id: 92)]
-      ..sustainabilityClassification = [Reference(id: 1), Reference(id: 2)];
-
-    viewModel.proposedLimitController.text = "900";
-    viewModel.newProposedLimitController.text = "1,500";
-    viewModel.presentLimitController.text = "450";
-    viewModel.newPresentLimitController.text = "550";
-    viewModel.newPresentOutStandingController.text = "700";
-    viewModel.counterpartyEquity5PercentController.text = "222";
-    viewModel.counterpartyTotalAssets2PercentController.text = "333";
-    viewModel.excessOverMaxLimitAllowanceProposedByFiController.text = "444";
-    viewModel.excessOverMaxLimitAllowanceRecommendedByCreditController.text =
-        "555";
+    viewModel
+      ..period = [Reference(name: "Months")]
+      ..limitGroups = [Reference(id: 77, name: "Group 77")]
+      ..limitCapsType = [Reference(id: 14492, name: "Group Cap")]
+      ..currencyCodes = [
+        Reference(name: "AED"),
+        Reference(name: "USD"),
+      ]
+      ..accountTypes = [Reference(id: 10, name: "Account Type")]
+      ..facilityDescriptions = [
+        Reference(id: 345, name: "Main Facility", reference3: "FAM"),
+      ]
+      ..facilityTypes = [
+        Reference(
+          id: 555,
+          name: "Loan",
+          reference3: "PCD",
+          reference5: "FAM",
+        ),
+      ]
+      ..standardCondition = [
+        Condition(
+          conditionId: 1,
+          description: "Standard 1",
+          conditionType: ConditionType.standard,
+        ),
+      ]
+      ..nonStandardCondition = [
+        Condition(
+          conditionId: 2,
+          description: "Non Standard 1",
+          conditionType: ConditionType.nonStandard,
+        ),
+      ]
+      ..sections = []
+      ..showCreateFacilityForm = true
+      ..selectedRim = 321
+      ..rimNo = 321
+      ..limitGroup = 77
+      ..limitCapType = 14492
+      ..subLimit = false
+      ..selectedCurrencyCode = "AED"
+      ..dynamicFormDocument = {"field": "value"}
+      ..selectedAccountTypes = [Reference(id: 10, name: "Account Type")]
+      ..parentControlliingNumber = "PARENT-001"
+      ..getFacility = (Facility()
+        ..facilityDescription = Reference(
+          id: 345,
+          name: "Main Facility",
+          reference3: "FAM",
+        )
+        ..selectedProductTypeValue = Reference(name: "Islamic")
+        ..proposedLimit = 900
+        ..presentOutstandingAmount = 80
+        ..sharedLimit = yesRef()
+        ..committedValues = yesRef()
+        ..selectedpromissoryNoteValue = Reference(id: 1906, name: "Yes")
+        ..selectedCollateralDepantantValue = noRef()
+        ..sector = Reference(id: 501, name: "Sector")
+        ..sicCode = Reference(id: 601, name: "SIC")
+        ..advanceTypeValue = Reference(id: 701, name: "Advance")
+        ..seniorityValue = Reference(id: 801, name: "Senior")
+        ..selectedCountry = Country(description: "India")
+        ..isCrossBoarderExposure = true
+        ..remarks = "Coverage remarks"
+        ..policyDeviation = [Reference(id: 91), Reference(id: 92)]
+        ..sustainabilityClassification = [Reference(id: 1), Reference(id: 2)])
+      ..proposedLimitController.text = "900"
+      ..newProposedLimitController.text = "1,500"
+      ..presentLimitController.text = "450"
+      ..newPresentLimitController.text = "550"
+      ..newPresentOutStandingController.text = "700"
+      ..counterpartyEquity5PercentController.text = "222"
+      ..counterpartyTotalAssets2PercentController.text = "333"
+      ..excessOverMaxLimitAllowanceProposedByFiController.text = "444"
+      ..excessOverMaxLimitAllowanceRecommendedByCreditController.text = "555";
   }
 
   // ------------------------------------------------
@@ -387,17 +383,18 @@ void main() {
     test(
         "setCommitmentAccNumber updates create-flow"
         " fields and controlling data", () async {
-      viewModel.currencyCodes = [Reference(name: "AED")];
-      viewModel.limits = const [
-        LimitsResponse(
-          commitmentAccountNumber: "NEW",
-          controllingLimitNo: "CLN-123",
-          limitCurrency: "USD",
-          pastDues: 12,
-          outstandingAmount: 34,
-          limitAmount: 56,
-        ),
-      ];
+      viewModel
+        ..currencyCodes = [Reference(name: "AED")]
+        ..limits = const [
+          LimitsResponse(
+            commitmentAccountNumber: "NEW",
+            controllingLimitNo: "CLN-123",
+            limitCurrency: "USD",
+            pastDues: 12,
+            outstandingAmount: 34,
+            limitAmount: 56,
+          ),
+        ];
 
       await viewModel.setCommitmentAccNumber(" NEW ");
 
@@ -421,31 +418,32 @@ void main() {
       FacilityBorrowerMap? capturedBorrowerMap;
       List<Map<String, dynamic>>? capturedSubLimits;
 
-      viewModel.lastCreatedSubFacilityIds = [901];
-      viewModel.borrowersByRimInTable = [
-        Reference(id: 501, name: "Borrower 501", description: "200"),
-      ];
-      viewModel.facilitySubTypes = [
-        FacilitySubTypes(
-          subTypeSelected: true,
-          subType: "Loan",
-          proposedLimit: 77,
-        ),
-      ];
-      viewModel.setSubLimitAllocations(
-        0,
-        [Reference(id: 777, description: "33")],
-      );
-      viewModel.setSubLimitConditions(
-        0,
-        [
-          Condition(
-            conditionId: 44,
-            description: "Sub condition",
-            conditionType: ConditionType.standard,
+      viewModel
+        ..lastCreatedSubFacilityIds = [901]
+        ..borrowersByRimInTable = [
+          Reference(id: 501, name: "Borrower 501", description: "200"),
+        ]
+        ..facilitySubTypes = [
+          FacilitySubTypes(
+            subTypeSelected: true,
+            subType: "Loan",
+            proposedLimit: 77,
           ),
-        ],
-      );
+        ]
+        ..setSubLimitAllocations(
+          0,
+          [Reference(id: 777, description: "33")],
+        )
+        ..setSubLimitConditions(
+          0,
+          [
+            Condition(
+              conditionId: 44,
+              description: "Sub condition",
+              conditionType: ConditionType.standard,
+            ),
+          ],
+        );
 
       when(
         () => mockRepository.saveFacilityDetailsNew(
@@ -553,8 +551,9 @@ void main() {
       seedValidSaveState();
 
       FacilityDetails? capturedDetails;
-      viewModel.showCreateFacilityForm = false;
-      viewModel.limitGroup = ServerConstants.projectSpecificLimitsID;
+      viewModel
+        ..showCreateFacilityForm = false
+        ..limitGroup = ServerConstants.projectSpecificLimitsID;
       viewModel.getFacility
         ..facilityId = 777
         ..rimNo = 321
@@ -566,22 +565,22 @@ void main() {
         ..limitAmount = Reference(description: "99")
         ..commitmentAccountNumber = Reference(id: 456)
         ..projectName = Reference(name: "PJT-1 - Project One");
-      viewModel.limitDescriptionController.text = "Fallback Desc";
-      viewModel.parentProposedLimit = 444;
-      viewModel.limitCategory = "n";
-      viewModel.getFacility.selectedProjectFinanceRelatedActivityValue =
-          yesRef();
-      viewModel.facilityDetail = [
-        FacilityDetail.fromJson({
-          "limitNo": "EX-1",
-          "currency": "USD",
-          "presentLimit": 222,
-          "originalLimit": 333,
-          "type": 12,
-          "facilitySecurityDetailId": 13,
-          "facilitySecurityId": 14,
-        }),
-      ];
+      viewModel
+        ..limitDescriptionController.text = "Fallback Desc"
+        ..parentProposedLimit = 444
+        ..limitCategory = "n"
+        ..getFacility.selectedProjectFinanceRelatedActivityValue = yesRef()
+        ..facilityDetail = [
+          FacilityDetail.fromJson({
+            "limitNo": "EX-1",
+            "currency": "USD",
+            "presentLimit": 222,
+            "originalLimit": 333,
+            "type": 12,
+            "facilitySecurityDetailId": 13,
+            "facilitySecurityId": 14,
+          }),
+        ];
 
       when(
         () => mockRepository.saveFacilityDetailsNew(
@@ -699,9 +698,10 @@ void main() {
       seedValidSaveState();
 
       FacilityDetails? capturedDetails;
-      viewModel.facilityDetails = FacilityDetails(limitCapType: 14492);
-      viewModel.selectedCurrencyCode = "USD";
-      viewModel.newProposedLimitController.text = "1,250";
+      viewModel
+        ..facilityDetails = FacilityDetails(limitCapType: 14492)
+        ..selectedCurrencyCode = "USD"
+        ..newProposedLimitController.text = "1,250";
       viewModel.getFacility
         ..proposedLimit = null
         ..presentOutstandingCCValue = Reference(description: "77")
@@ -773,12 +773,13 @@ void main() {
       seedValidSaveState();
 
       FacilityBorrowerMap? capturedMap;
-      viewModel.facilityDetails = FacilityDetails(limitCapType: 14492);
-      viewModel.limitCapsCustomerList = [
-        Customer(customerRimNo: 321),
-        Customer(customerRimNo: 654),
-      ];
-      viewModel.existingFacilityId = 808;
+      viewModel
+        ..facilityDetails = FacilityDetails(limitCapType: 14492)
+        ..limitCapsCustomerList = [
+          Customer(customerRimNo: 321),
+          Customer(customerRimNo: 654),
+        ]
+        ..existingFacilityId = 808;
       viewModel.groupCapsOriginalByRim[321] = 11;
       viewModel.groupCapsPresentByRim[321] = 22;
       viewModel.borrowersByRimInTable = [
@@ -931,15 +932,15 @@ void main() {
 
     test("sub-limit setter methods update row metadata and cleanup controllers",
         () async {
-      viewModel.facilitySubTypes = [FacilitySubTypes(proposedLimit: 123)];
-      viewModel.proposedLimitControllerFor(0);
-
-      viewModel.setSubLimitCurrency(0, "USD");
-      viewModel.setSubLimitTenorUnit(0, "Months");
-      viewModel.setSubLimitTenorValue(0, 12);
-      viewModel.setSubLimitIndex(0, "SOFR");
-      viewModel.setSubLimitMarginSign(0, "+");
-      viewModel.setSubLimitMarginValue(0, 2.5);
+      viewModel
+        ..facilitySubTypes = [FacilitySubTypes(proposedLimit: 123)]
+        ..proposedLimitControllerFor(0)
+        ..setSubLimitCurrency(0, "USD")
+        ..setSubLimitTenorUnit(0, "Months")
+        ..setSubLimitTenorValue(0, 12)
+        ..setSubLimitIndex(0, "SOFR")
+        ..setSubLimitMarginSign(0, "+")
+        ..setSubLimitMarginValue(0, 2.5);
       when(() => mockRepository.getCurrencyRates(any())).thenAnswer(
         (_) async => const CurrencyRates(rates: {"USD": 3.67}),
       );
@@ -1020,17 +1021,18 @@ void main() {
     test(
         "getFacilityConditionsList populates standard, "
         "non-standard and contracting conditions", () async {
-      viewModel.limitGroups = [
-        Reference(id: ServerConstants.projectSpecificLimitsID, name: "PSL"),
-      ];
-      viewModel.facilityDescriptions = [
-        Reference(
-          id: 345,
-          name: "Main Facility",
-          description: "Desc",
-          reference3: "CLT",
-        ),
-      ];
+      viewModel
+        ..limitGroups = [
+          Reference(id: ServerConstants.projectSpecificLimitsID, name: "PSL"),
+        ]
+        ..facilityDescriptions = [
+          Reference(
+            id: 345,
+            name: "Main Facility",
+            description: "Desc",
+            reference3: "CLT",
+          ),
+        ];
       viewModel.getFacility
         ..limitGroup = ServerConstants.projectSpecificLimitsID
         ..limitCode = 345
@@ -1075,11 +1077,12 @@ void main() {
     test(
         "buildCompanyBorrowerMapForSave "
         "preserves sub-limit and original values", () {
-      viewModel.existingFacilityId = 456;
-      viewModel.limitCapsCustomerList = [
-        Customer(customerRimNo: 321),
-        Customer(customerRimNo: 654),
-      ];
+      viewModel
+        ..existingFacilityId = 456
+        ..limitCapsCustomerList = [
+          Customer(customerRimNo: 321),
+          Customer(customerRimNo: 654),
+        ];
       viewModel.groupCapsOriginalByRim[321] = 10;
       viewModel.groupCapsPresentByRim[321] = 20;
       viewModel.borrowersByRimInTable = [
@@ -1097,12 +1100,12 @@ void main() {
     });
 
     test("selectSharedLimit yes branch flags borrower rows exceeding zero", () {
-      viewModel.borrowersByRimInTable = [
-        Reference(id: 1, description: "50"),
-        Reference(id: 2, description: "0"),
-      ];
-
-      viewModel.selectSharedLimit(Reference(id: 1, name: "Yes"));
+      viewModel
+        ..borrowersByRimInTable = [
+          Reference(id: 1, description: "50"),
+          Reference(id: 2, description: "0"),
+        ]
+        ..selectSharedLimit(Reference(id: 1, name: "Yes"));
 
       expect(viewModel.groupCapRowError[1], isNotNull);
       expect(viewModel.groupCapRowError.containsKey(2), isFalse);
@@ -1111,12 +1114,13 @@ void main() {
     test("getIndexBenchMark and changeCollateralDependant hit update branches",
         () {
       final mockDynamicFormState = MockDynamicFormState();
-      viewModel.dynamicFormKey = StubDynamicFormKey(mockDynamicFormState);
-      viewModel.benchmark = [
-        Reference(id: 99, name: "SOFR"),
-        Reference(id: 100, name: "LIBOR"),
-      ];
-      viewModel.facilityDetail = [FacilityDetail.fromJson({})];
+      viewModel
+        ..dynamicFormKey = StubDynamicFormKey(mockDynamicFormState)
+        ..benchmark = [
+          Reference(id: 99, name: "SOFR"),
+          Reference(id: 100, name: "LIBOR"),
+        ]
+        ..facilityDetail = [FacilityDetail.fromJson({})];
 
       final fromList = viewModel.getIndexBenchMark({
         "value": [Option(key: "SOFR", pairValue: "SOFR")],
@@ -1181,22 +1185,23 @@ void main() {
         "cached lists after a successful create", (tester) async {
       await pumpFormForVm(tester);
       seedValidSaveState();
-      viewModel.facilitySubTypes = [FacilitySubTypes(subTypeSelected: true)];
-      viewModel.conditionsStandard = [
-        const FacilityCondition(description: "cached"),
-      ];
-      viewModel.standardCondition = [
-        Condition(
-          description: "standard",
-          conditionType: ConditionType.standard,
-        ),
-      ];
-      viewModel.nonStandardCondition = [
-        Condition(
-          description: "non-standard",
-          conditionType: ConditionType.nonStandard,
-        ),
-      ];
+      viewModel
+        ..facilitySubTypes = [FacilitySubTypes(subTypeSelected: true)]
+        ..conditionsStandard = [
+          const FacilityCondition(description: "cached"),
+        ]
+        ..standardCondition = [
+          Condition(
+            description: "standard",
+            conditionType: ConditionType.standard,
+          ),
+        ]
+        ..nonStandardCondition = [
+          Condition(
+            description: "non-standard",
+            conditionType: ConditionType.nonStandard,
+          ),
+        ];
 
       when(
         () => mockRepository.saveFacilityDetailsNew(
@@ -1231,16 +1236,18 @@ void main() {
         "borrower allocations above the group cap", (tester) async {
       await pumpFormForVm(tester);
       seedValidSaveState();
-      viewModel.facilityDetails = FacilityDetails(limitCapType: 14492);
-      viewModel.limitCapsCustomerList = [Customer(customerRimNo: 321)];
+      viewModel
+        ..facilityDetails = FacilityDetails(limitCapType: 14492)
+        ..limitCapsCustomerList = [Customer(customerRimNo: 321)];
       viewModel.getFacility
         ..sharedLimit = yesRef()
         ..proposedLimit = 300;
-      viewModel.proposedCapEdited = true;
-      viewModel.proposedCapRaw = "300";
-      viewModel.borrowersByRimInTable = [
-        Reference(id: 321, description: "450"),
-      ];
+      viewModel
+        ..proposedCapEdited = true
+        ..proposedCapRaw = "300"
+        ..borrowersByRimInTable = [
+          Reference(id: 321, description: "450"),
+        ];
 
       when(() => mockRepository.getFacilitySummaryList())
           .thenAnswer((_) async => <FacilitySummaryList>[]);
@@ -1259,15 +1266,15 @@ void main() {
     test(
         "getExisitngFacilityData maps countryOfRisk "
         "into selectedCountry when countries are loaded", () {
-      viewModel.countryList = [
-        Country(description: "United Arab Emirates"),
-        Country(description: "India"),
-      ];
-      viewModel.facilityDetail = [
-        FacilityDetail.fromJson({"countryOfRisk": "India"}),
-      ];
-
-      viewModel.getExisitngFacilityData();
+      viewModel
+        ..countryList = [
+          Country(description: "United Arab Emirates"),
+          Country(description: "India"),
+        ]
+        ..facilityDetail = [
+          FacilityDetail.fromJson({"countryOfRisk": "India"}),
+        ]
+        ..getExisitngFacilityData();
 
       expect(viewModel.getFacility.countryOfRisk, "India");
       expect(viewModel.getFacility.selectedCountry?.description, "India");
@@ -1431,18 +1438,19 @@ void main() {
     });
 
     test("setControllingLimitByAccount maps derived fields & emits", () async {
-      viewModel.limits = const [
-        LimitsResponse(
-          commitmentAccountNumber: "A1",
-          controllingLimitNo: "CLN-X",
-          limitCurrency: "AED",
-          pastDues: 10,
-          outstandingAmount: 20,
-          limitAmount: 30,
-        ),
-      ];
-      viewModel.controllingLimitNumbers = [];
-      viewModel.setControllingLimitByAccount("A1");
+      viewModel
+        ..limits = const [
+          LimitsResponse(
+            commitmentAccountNumber: "A1",
+            controllingLimitNo: "CLN-X",
+            limitCurrency: "AED",
+            pastDues: 10,
+            outstandingAmount: 20,
+            limitAmount: 30,
+          ),
+        ]
+        ..controllingLimitNumbers = []
+        ..setControllingLimitByAccount("A1");
       expect(viewModel.getFacility.controllingLimitNumber, "CLN-X");
       expect(
         viewModel.controllingLimitNumbers.map((e) => e.name),
@@ -1469,10 +1477,10 @@ void main() {
     test(
         "projectFinanceSelectedOrDefault: "
         "disabled + selected Yes => coerces to No", () {
-      viewModel.projectFinanceRelatedActivityOptions = [yesRef(), noRef()];
-      viewModel.limitGroup = 11312; // disable
-      viewModel.getFacility.selectedProjectFinanceRelatedActivityValue =
-          yesRef();
+      viewModel
+        ..projectFinanceRelatedActivityOptions = [yesRef(), noRef()]
+        ..limitGroup = 11312 // disable
+        ..getFacility.selectedProjectFinanceRelatedActivityValue = yesRef();
       final selected = viewModel.projectFinanceSelectedOrDefault;
       expect((selected.name ?? "").toLowerCase(), "no");
     });
@@ -1488,10 +1496,10 @@ void main() {
 
     test("setLimitTypeByLabel toggles isMainLimit & controllingLimitNumber",
         () {
-      viewModel.parentControlliingNumber = "CLN-Parent";
-      viewModel.getFacility.controllingLimitNumber = null;
-
-      viewModel.setLimitTypeByLabel("Sub Limit"); // isMain=false => sublimit
+      viewModel
+        ..parentControlliingNumber = "CLN-Parent"
+        ..getFacility.controllingLimitNumber = null
+        ..setLimitTypeByLabel("Sub Limit"); // isMain=false => sublimit
       expect(viewModel.isMainLimit, false);
       expect(viewModel.getFacility.controllingLimitNumber, "CLN-Parent");
 
@@ -1543,9 +1551,10 @@ void main() {
         "selectPurpose sets purpose & keeps property "
         'selections when reference1=="Y", clears otherwise', () {
       // Y => keeps property type/subtype
-      viewModel.getFacility.propertyType = Reference(id: 1, name: "PT");
-      viewModel.getFacility.propertySubType =
-          Reference(id: 2, name: "PST", reference1: "1");
+      viewModel
+        ..getFacility.propertyType = Reference(id: 1, name: "PT")
+        ..getFacility.propertySubType =
+            Reference(id: 2, name: "PST", reference1: "1");
       final selectedY = Reference(id: 123, name: "Purpose", reference1: "Y");
       viewModel.selectPurpose(selectedY);
       expect(viewModel.getFacility.purpose, selectedY);
@@ -1553,9 +1562,10 @@ void main() {
       expect(viewModel.getFacility.propertyType, isNotNull);
       expect(viewModel.getFacility.propertySubType, isNotNull);
       // non-Y (e.g., N) => clears property type/subtype
-      viewModel.getFacility.propertyType = Reference(id: 1, name: "PT");
-      viewModel.getFacility.propertySubType =
-          Reference(id: 2, name: "PST", reference1: "1");
+      viewModel
+        ..getFacility.propertyType = Reference(id: 1, name: "PT")
+        ..getFacility.propertySubType =
+            Reference(id: 2, name: "PST", reference1: "1");
       final selectedN = Reference(id: 123, name: "PurposeN", reference1: "N");
       viewModel.selectPurpose(selectedN);
       expect(viewModel.getFacility.purpose, selectedN);
@@ -1566,13 +1576,14 @@ void main() {
 
     test("onPropertyTypeSelected sets parent & clears conflicting subType", () {
       // Current subType belongs to different parent => should clear
-      viewModel.propertySubTypes = [
-        Reference(id: 100, name: "SubA", reference1: "777"),
-        Reference(id: 101, name: "SubB", reference1: "1"),
-      ];
-      viewModel.getFacility.propertySubType =
-          Reference(id: 100, name: "SubA", reference1: "777");
-      viewModel.onPropertyTypeSelected([Reference(id: 1, name: "TypeA")]);
+      viewModel
+        ..propertySubTypes = [
+          Reference(id: 100, name: "SubA", reference1: "777"),
+          Reference(id: 101, name: "SubB", reference1: "1"),
+        ]
+        ..getFacility.propertySubType =
+            Reference(id: 100, name: "SubA", reference1: "777")
+        ..onPropertyTypeSelected([Reference(id: 1, name: "TypeA")]);
       expect(viewModel.getFacility.propertyType?.id, 1);
       expect(viewModel.getFacility.propertySubType, isNull);
     });
@@ -1583,11 +1594,12 @@ void main() {
     });
 
     test("propertySubTypesForSelectedType filters by reference1", () {
-      viewModel.getFacility.propertyType = Reference(id: 99, name: "TypeZ");
-      viewModel.propertySubTypes = [
-        Reference(id: 1, name: "Sub1", reference1: "99"),
-        Reference(id: 2, name: "Sub2", reference1: "77"),
-      ];
+      viewModel
+        ..getFacility.propertyType = Reference(id: 99, name: "TypeZ")
+        ..propertySubTypes = [
+          Reference(id: 1, name: "Sub1", reference1: "99"),
+          Reference(id: 2, name: "Sub2", reference1: "77"),
+        ];
       final filtered = viewModel.propertySubTypesForSelectedType;
       expect(filtered.map((e) => e.id), [1]);
     });
@@ -1667,14 +1679,15 @@ void main() {
     test("ensureDefaultCountryOfRiskIfEmpty picks UAE & disables cross border",
         () {
       // nothing set => default to UAE
-      viewModel.countryList = [
-        Country(description: "United Arab Emirates"),
-        Country(description: "India"),
-      ];
-      viewModel.getFacility.countryOfRisk = null;
-      viewModel.getFacility.selectedCountry = null;
-      viewModel.changeCrossBoarderExposure(true); // will be turned off
-      viewModel.ensureDefaultCountryOfRiskIfEmpty();
+      viewModel
+        ..countryList = [
+          Country(description: "United Arab Emirates"),
+          Country(description: "India"),
+        ]
+        ..getFacility.countryOfRisk = null
+        ..getFacility.selectedCountry = null
+        ..changeCrossBoarderExposure(true) // will be turned off
+        ..ensureDefaultCountryOfRiskIfEmpty();
       expect(viewModel.isUAECountryOfRisk, true);
       expect(viewModel.getFacility.isCrossBoarderExposure, false);
     });
@@ -1682,9 +1695,10 @@ void main() {
     test(
         "ensureDefaultCountryOfRiskIfEmpty keeps "
         "existing non-empty & enforces UAE rule", () {
-      viewModel.countryList = [Country(description: "United Arab Emirates")];
-      viewModel.getFacility.countryOfRisk = "United Arab Emirates";
-      viewModel.ensureDefaultCountryOfRiskIfEmpty();
+      viewModel
+        ..countryList = [Country(description: "United Arab Emirates")]
+        ..getFacility.countryOfRisk = "United Arab Emirates"
+        ..ensureDefaultCountryOfRiskIfEmpty();
       expect(viewModel.getFacility.isCrossBoarderExposure, false);
     });
   });
@@ -1694,31 +1708,33 @@ void main() {
   // ------------------------------------------------
   group("Conditions & borrowers", () {
     test("initializeConditions + change* selection toggles", () {
-      viewModel.standardCondition = [
-        Condition(isAmended: false, isWaivedOff: false),
-      ];
-      viewModel.nonStandardCondition = [
-        Condition(isAmended: false, isWaivedOff: false),
-      ];
-
-      viewModel.changeStandardConditionSelect(0, true);
-      viewModel.changeNonStandardConditionSelect(0, true);
-      viewModel.changeAmendStandardConditionSelect(0, true);
-      viewModel.changeAmendNonStandardConditionSelect(0, true);
-      viewModel.changeWaivedOffStandardConditionSelect(0, true);
-      viewModel.changeWaivedOffNonStandardConditionSelect(0, true);
+      viewModel
+        ..standardCondition = [
+          Condition(isAmended: false, isWaivedOff: false),
+        ]
+        ..nonStandardCondition = [
+          Condition(isAmended: false, isWaivedOff: false),
+        ]
+        ..changeStandardConditionSelect(0, true)
+        ..changeNonStandardConditionSelect(0, true)
+        ..changeAmendStandardConditionSelect(0, true)
+        ..changeAmendNonStandardConditionSelect(0, true)
+        ..changeWaivedOffStandardConditionSelect(0, true)
+        ..changeWaivedOffNonStandardConditionSelect(0, true);
     });
 
     test("addFeeAndDefualtRate, addNonStandardCondition", () {
-      viewModel.addFeeAndDefualtRate();
+      viewModel
+        ..addFeeAndDefualtRate()
+        ..addNonStandardCondition();
       expect(viewModel.feeDefualtRate.length, 1);
-      viewModel.addNonStandardCondition();
       expect(viewModel.nonStandardCondition.length, 2);
     });
 
     test("onBorrowerChipDeleted & addBorrowertoTable", () {
-      viewModel.borrowersByRimInTable = [Reference(name: "B1")];
-      viewModel.onBorrowerChipDeleted(0);
+      viewModel
+        ..borrowersByRimInTable = [Reference(name: "B1")]
+        ..onBorrowerChipDeleted(0);
       expect(viewModel.borrowersByRimInTable.isEmpty, true);
       final borrowers = [Reference(name: "B1"), Reference(name: "B2")];
       viewModel.addBorrowertoTable(borrowers);
@@ -1731,12 +1747,13 @@ void main() {
     });
 
     test("compareAllocationAmount validates per-borrower & total", () {
-      viewModel.getFacility.proposedLimit = 300;
       final b1 = Reference(name: "B1", description: "100");
       final b2 = Reference(name: "B2", description: "150");
-      viewModel.addBorrowertoTable([b1, b2]);
+      viewModel
+        ..getFacility.proposedLimit = 300
+        ..addBorrowertoTable([b1, b2])
+        ..compareAllocationAmount("75", b1);
       // Enter 75 for b1 => OK (100 other + 75 = 175 <= 300)
-      viewModel.compareAllocationAmount("75", b1);
       expect(b1.description, "75");
       // Enter 250 for b1 => exceeds total (150 other + 250 = 400 > 300),
       // reverts to null
@@ -1944,11 +1961,12 @@ void main() {
 
     test("getFacilitySubTypes returns empty when no reference5 matches",
         () async {
-      viewModel.facilityTypes = [
-        Reference(name: "Loan", reference5: "AAA"),
-        Reference(name: "OD", reference5: "BBB"),
-      ];
-      viewModel.getFacility.facilityDescription = Reference(reference3: "CLT");
+      viewModel
+        ..facilityTypes = [
+          Reference(name: "Loan", reference5: "AAA"),
+          Reference(name: "OD", reference5: "BBB"),
+        ]
+        ..getFacility.facilityDescription = Reference(reference3: "CLT");
 
       await viewModel.getFacilitySubTypes();
 
@@ -1958,10 +1976,11 @@ void main() {
     test(
         "validateSubTypeProposedLimit returns "
         "error when selected row exceeds parent", () {
-      viewModel.getFacility.proposedLimit = 400;
-      viewModel.facilitySubTypes = [
-        FacilitySubTypes(subTypeSelected: true, proposedLimit: 300),
-      ];
+      viewModel
+        ..getFacility.proposedLimit = 400
+        ..facilitySubTypes = [
+          FacilitySubTypes(subTypeSelected: true, proposedLimit: 300),
+        ];
 
       final result = viewModel.validateSubTypeProposedLimit(0, "500");
 
@@ -1971,11 +1990,12 @@ void main() {
     test(
         "exceedsParentCapWith returns false "
         "when aggregated value is within parent", () {
-      viewModel.getFacility.proposedLimit = 1000;
-      viewModel.facilitySubTypes = [
-        FacilitySubTypes(subTypeSelected: true, proposedLimit: 300),
-        FacilitySubTypes(subTypeSelected: true, proposedLimit: 200),
-      ];
+      viewModel
+        ..getFacility.proposedLimit = 1000
+        ..facilitySubTypes = [
+          FacilitySubTypes(subTypeSelected: true, proposedLimit: 300),
+          FacilitySubTypes(subTypeSelected: true, proposedLimit: 200),
+        ];
 
       final result = viewModel.exceedsParentCapWith(
         rowIndex: 1,
@@ -2008,27 +2028,28 @@ void main() {
     test(
         "setGroupCapsAllocation valid value "
         "updates borrower and clears row error", () {
-      viewModel.getFacility.sharedLimit =
-          Reference(id: ServerConstants.optionYESid, name: "Yes");
-      viewModel.getFacility.proposedLimit = 500;
-      viewModel.groupCapRowError[1001] = "old error";
-      viewModel.borrowersByRimInTable = [
-        Reference(id: 1001, description: "100"),
-      ];
-
-      viewModel.setGroupCapsAllocation(1001, "150");
+      viewModel
+        ..getFacility.sharedLimit =
+            Reference(id: ServerConstants.optionYESid, name: "Yes")
+        ..getFacility.proposedLimit = 500
+        ..groupCapRowError[1001] = "old error"
+        ..borrowersByRimInTable = [
+          Reference(id: 1001, description: "100"),
+        ]
+        ..setGroupCapsAllocation(1001, "150");
 
       expect(viewModel.borrowersByRimInTable.first.description, "150");
       expect(viewModel.groupCapRowError.containsKey(1001), false);
     });
 
     test("setGroupCapsAllocation handles non-numeric input gracefully", () {
-      viewModel.getFacility.sharedLimit =
-          Reference(id: ServerConstants.optionYESid, name: "Yes");
-      viewModel.getFacility.proposedLimit = 500;
-      viewModel.borrowersByRimInTable = [
-        Reference(id: 1001, description: "100"),
-      ];
+      viewModel
+        ..getFacility.sharedLimit =
+            Reference(id: ServerConstants.optionYESid, name: "Yes")
+        ..getFacility.proposedLimit = 500
+        ..borrowersByRimInTable = [
+          Reference(id: 1001, description: "100"),
+        ];
 
       expect(
         () => viewModel.setGroupCapsAllocation(1001, "abc"),
@@ -2106,14 +2127,16 @@ void main() {
       expect(viewModel.isSubLimitMode, true);
 
       // AED => max equals parent
-      viewModel.selectedCurrencyCode = ServerConstants.aedCurrency;
-      viewModel.exchangeRate = 0;
-      viewModel.parentProposedLimit = 1000;
+      viewModel
+        ..selectedCurrencyCode = ServerConstants.aedCurrency
+        ..exchangeRate = 0
+        ..parentProposedLimit = 1000;
       expect(viewModel.maxInputInSelectedCurrency, 1000);
 
       // non-AED with rate
-      viewModel.selectedCurrencyCode = "USD";
-      viewModel.exchangeRate = 2; // AED cap / 2
+      viewModel
+        ..selectedCurrencyCode = "USD"
+        ..exchangeRate = 2; // AED cap / 2
       expect(viewModel.maxInputInSelectedCurrency, 500);
     });
 
@@ -2195,18 +2218,20 @@ void main() {
     });
 
     test("exceedsParentLimit returns true when exceeding in AED", () {
-      viewModel.selectedCurrencyCode = ServerConstants.aedCurrency;
-      viewModel.exchangeRate = 0;
-      viewModel.parentProposedLimit = 100;
+      viewModel
+        ..selectedCurrencyCode = ServerConstants.aedCurrency
+        ..exchangeRate = 0
+        ..parentProposedLimit = 100;
 
       expect(viewModel.exceedsParentLimit(150), true);
       expect(viewModel.exceedsParentLimit(50), false);
     });
 
     test("exceedsParentLimit converts non-AED to AED before comparing", () {
-      viewModel.selectedCurrencyCode = "USD";
-      viewModel.exchangeRate = 3.67; // USD to AED
-      viewModel.parentProposedLimit = 1000; // AED
+      viewModel
+        ..selectedCurrencyCode = "USD"
+        ..exchangeRate = 3.67 // USD to AED
+        ..parentProposedLimit = 1000; // AED
 
       // 300 USD * 3.67 = 1101 AED > 1000 AED
       expect(viewModel.exceedsParentLimit(300), true);
@@ -2249,8 +2274,9 @@ void main() {
   group("Edge Cases", () {
     test("setControllingLimitByAccount with null/empty account does nothing",
         () {
-      viewModel.getFacility.controllingLimitNumber = "EXISTING";
-      viewModel.setControllingLimitByAccount(null);
+      viewModel
+        ..getFacility.controllingLimitNumber = "EXISTING"
+        ..setControllingLimitByAccount(null);
       expect(viewModel.getFacility.controllingLimitNumber, "EXISTING");
 
       viewModel.setControllingLimitByAccount("  ");
@@ -2258,20 +2284,22 @@ void main() {
     });
 
     test("setControllingLimitByAccount when account not found in limits", () {
-      viewModel.limits = [
-        const LimitsResponse(
-          commitmentAccountNumber: "ACC1",
-          controllingLimitNo: "CLN1",
-        ),
-      ];
-      viewModel.setControllingLimitByAccount("ACC999");
+      viewModel
+        ..limits = [
+          const LimitsResponse(
+            commitmentAccountNumber: "ACC1",
+            controllingLimitNo: "CLN1",
+          ),
+        ]
+        ..setControllingLimitByAccount("ACC999");
       // Should not crash, controllingLimitNumber should be null
       expect(viewModel.getFacility.controllingLimitNumber, isNull);
     });
 
     test("compareAllocationAmount with empty borrowers table", () {
-      viewModel.borrowersByRimInTable = [];
-      viewModel.getFacility.proposedLimit = 1000;
+      viewModel
+        ..borrowersByRimInTable = []
+        ..getFacility.proposedLimit = 1000;
       final borrower = Reference(name: "B1");
 
       viewModel.compareAllocationAmount("500", borrower);
@@ -2279,22 +2307,24 @@ void main() {
     });
 
     test("compareAllocationAmount resets warning flag on valid entry", () {
-      viewModel.getFacility.proposedLimit = 1000;
       final b1 = Reference(name: "B1");
-      viewModel.borrowersByRimInTable = [b1];
-
+      viewModel
+        ..getFacility.proposedLimit = 1000
+        ..borrowersByRimInTable = [b1];
+      final compareAllocationAmount = viewModel.compareAllocationAmount;
       // First invalid entry shows warning
-      viewModel.compareAllocationAmount("1500", b1);
+      compareAllocationAmount("1500", b1);
       expect(b1.description, isNull);
 
       // Valid entry resets flag
-      viewModel.compareAllocationAmount("500", b1);
+      compareAllocationAmount("500", b1);
       expect(b1.description, "500");
     });
 
     test("changeBorrower with null does nothing", () {
-      viewModel.getFacility.rimNo = 123;
-      viewModel.changeBorrower(null);
+      viewModel
+        ..getFacility.rimNo = 123
+        ..changeBorrower(null);
       expect(viewModel.getFacility.rimNo, 123);
     });
 
@@ -2306,37 +2336,42 @@ void main() {
     });
 
     test("onPropertyTypeSelected with empty list does nothing", () {
-      viewModel.getFacility.propertyType = Reference(id: 1, name: "Old");
-      viewModel.onPropertyTypeSelected([]);
+      viewModel
+        ..getFacility.propertyType = Reference(id: 1, name: "Old")
+        ..onPropertyTypeSelected([]);
       expect(viewModel.getFacility.propertyType?.id, null);
     });
 
     test("onPropertySubTypeSelected with empty list does nothing", () {
-      viewModel.getFacility.propertySubType = Reference(id: 1, name: "Old");
-      viewModel.onPropertySubTypeSelected([]);
+      viewModel
+        ..getFacility.propertySubType = Reference(id: 1, name: "Old")
+        ..onPropertySubTypeSelected([]);
       expect(viewModel.getFacility.propertySubType?.id, null);
     });
 
     test("onProjectNameSelected with empty list does nothing", () {
-      viewModel.getFacility.projectName = Reference(name: "Old");
-      viewModel.onProjectNameSelected([]);
+      viewModel
+        ..getFacility.projectName = Reference(name: "Old")
+        ..onProjectNameSelected([]);
       expect(viewModel.getFacility.projectName?.name, "Old");
     });
 
     test("propertySubTypesForSelectedType returns all when no parent selected",
         () {
-      viewModel.getFacility.propertyType = null;
-      viewModel.propertySubTypes = [
-        Reference(id: 1, name: "Sub1"),
-        Reference(id: 2, name: "Sub2"),
-      ];
+      viewModel
+        ..getFacility.propertyType = null
+        ..propertySubTypes = [
+          Reference(id: 1, name: "Sub1"),
+          Reference(id: 2, name: "Sub2"),
+        ];
       expect(viewModel.propertySubTypesForSelectedType.length, 2);
     });
 
     test('projectNameSelectedForUi returns null when not in "No" mode', () {
-      viewModel.getFacility.selectedProjectFinanceRelatedActivityValue =
-          Reference(name: "Yes");
-      viewModel.getFacility.projectName = null;
+      viewModel
+        ..getFacility.selectedProjectFinanceRelatedActivityValue =
+            Reference(name: "Yes")
+        ..getFacility.projectName = null;
       final result = viewModel.projectNameSelectedForUi;
       expect(result, isNull);
     });
@@ -2675,9 +2710,10 @@ void main() {
     },
   );
   test("maxInputInSelectedCurrency handles zero exchangeRate safely", () {
-    viewModel.parentProposedLimit = 1000;
-    viewModel.selectedCurrencyCode = "USD";
-    viewModel.exchangeRate = 0;
+    viewModel
+      ..parentProposedLimit = 1000
+      ..selectedCurrencyCode = "USD"
+      ..exchangeRate = 0;
 
     expect(viewModel.maxInputInSelectedCurrency, 1000);
   });
@@ -2687,9 +2723,9 @@ void main() {
     final b1 = Reference(name: "B1", description: "100");
     final b2 = Reference(name: "B2", description: "200");
 
-    viewModel.borrowersByRimInTable = [b1, b2];
-
-    viewModel.compareAllocationAmount("100", b1);
+    viewModel
+      ..borrowersByRimInTable = [b1, b2]
+      ..compareAllocationAmount("100", b1);
 
     expect(b1.description, "100"); // exact match OK
   });
@@ -2698,8 +2734,7 @@ void main() {
     (tester) async {
       final borrower = Reference(id: 1);
 
-      final c = viewModel.controllerForBorrower(borrower);
-      c.text = "100";
+      final c = viewModel.controllerForBorrower(borrower)..text = "100";
 
       await viewModel.close(); // dispose controllers
 
@@ -2726,8 +2761,9 @@ void main() {
 
   group("Draft + getter coverage", () {
     test("draftFormKey returns update key when editing existing facility", () {
-      viewModel.showCreateFacilityForm = false;
-      viewModel.existingFacilityId = 321;
+      viewModel
+        ..showCreateFacilityForm = false
+        ..existingFacilityId = 321;
 
       expect(
         viewModel.draftFormKey,
@@ -2737,9 +2773,9 @@ void main() {
 
     test("draftFormKey returns create+desc key when creating with description",
         () {
-      viewModel.showCreateFacilityForm = true;
-      viewModel.getFacility.facilityDescription =
-          Reference(id: 25, name: "Desc");
+      viewModel
+        ..showCreateFacilityForm = true
+        ..getFacility.facilityDescription = Reference(id: 25, name: "Desc");
 
       expect(
         viewModel.draftFormKey,
@@ -2749,19 +2785,21 @@ void main() {
 
     test("draftFormKey falls back to route when no desc and no existing id",
         () {
-      viewModel.showCreateFacilityForm = true;
-      viewModel.existingFacilityId = null;
-      viewModel.getFacility.facilityDescription = null;
+      viewModel
+        ..showCreateFacilityForm = true
+        ..existingFacilityId = null
+        ..getFacility.facilityDescription = null;
 
       expect(viewModel.draftFormKey, isNotEmpty);
     });
 
     test("accountTypesForUi returns filtered list when reference3 matches", () {
-      viewModel.accountTypes = [
-        Reference(id: 1, name: "A", reference1: "CLT"),
-        Reference(id: 2, name: "B", reference1: "OTHER"),
-      ];
-      viewModel.getFacility.facilityDescription = Reference(reference3: "CLT");
+      viewModel
+        ..accountTypes = [
+          Reference(id: 1, name: "A", reference1: "CLT"),
+          Reference(id: 2, name: "B", reference1: "OTHER"),
+        ]
+        ..getFacility.facilityDescription = Reference(reference3: "CLT");
 
       final result = viewModel.accountTypesForUi;
 
@@ -2770,11 +2808,12 @@ void main() {
     });
 
     test("accountTypesForUi falls back to full list when no match", () {
-      viewModel.accountTypes = [
-        Reference(id: 1, name: "A", reference1: "XXX"),
-        Reference(id: 2, name: "B", reference1: "YYY"),
-      ];
-      viewModel.getFacility.facilityDescription = Reference(reference3: "CLT");
+      viewModel
+        ..accountTypes = [
+          Reference(id: 1, name: "A", reference1: "XXX"),
+          Reference(id: 2, name: "B", reference1: "YYY"),
+        ]
+        ..getFacility.facilityDescription = Reference(reference3: "CLT");
 
       final result = viewModel.accountTypesForUi;
 
@@ -2791,15 +2830,17 @@ void main() {
     });
 
     test("accountTypeCsvForSave falls back to facility.accountTypeValue", () {
-      viewModel.selectedAccountTypes = [];
-      viewModel.getFacility.accountTypeValue = Reference(id: 99);
+      viewModel
+        ..selectedAccountTypes = []
+        ..getFacility.accountTypeValue = Reference(id: 99);
 
       expect(viewModel.accountTypeCsvForSave, "99");
     });
 
     test("accountTypeCsvForSave returns null when nothing selected", () {
-      viewModel.selectedAccountTypes = [];
-      viewModel.getFacility.accountTypeValue = null;
+      viewModel
+        ..selectedAccountTypes = []
+        ..getFacility.accountTypeValue = null;
 
       expect(viewModel.accountTypeCsvForSave, isNull);
     });
@@ -2812,15 +2853,17 @@ void main() {
 
     test("commitmentAccSelectedForUi returns null in create flow with items",
         () {
-      viewModel.commitmentAccountNumberItems = ["ACC1"];
-      viewModel.showCreateFacilityForm = true;
+      viewModel
+        ..commitmentAccountNumberItems = ["ACC1"]
+        ..showCreateFacilityForm = true;
 
       expect(viewModel.commitmentAccSelectedForUi, isNull);
     });
 
     test("projectFinanceDefaultRef forced yes for 11315", () {
-      viewModel.projectFinanceRelatedActivityOptions = [yesRef(), noRef()];
-      viewModel.limitGroup = 11315;
+      viewModel
+        ..projectFinanceRelatedActivityOptions = [yesRef(), noRef()]
+        ..limitGroup = 11315;
 
       expect(
         (viewModel.projectFinanceDefaultRef.name ?? "").toLowerCase(),
@@ -2831,10 +2874,11 @@ void main() {
     test(
         "projectNameSelectedForUi suppresses "
         "General for 11315 when No selected", () {
-      viewModel.limitGroup = 11315;
-      viewModel.getFacility.selectedProjectFinanceRelatedActivityValue =
-          Reference(name: "No");
-      viewModel.getFacility.projectName = null;
+      viewModel
+        ..limitGroup = 11315
+        ..getFacility.selectedProjectFinanceRelatedActivityValue =
+            Reference(name: "No")
+        ..getFacility.projectName = null;
 
       expect(viewModel.projectNameSelectedForUi, isNull);
     });
@@ -2897,12 +2941,12 @@ void main() {
 
   group("Project finance enforcement", () {
     test("enforceProjectFinanceRuleIfNeeded forces default when disabled", () {
-      viewModel.projectFinanceRelatedActivityOptions = [yesRef(), noRef()];
-      viewModel.limitGroup = 11312; // disabled
-      viewModel.getFacility.selectedProjectFinanceRelatedActivityValue =
-          Reference(name: "Yes");
-
-      viewModel.enforceProjectFinanceRuleIfNeeded();
+      viewModel
+        ..projectFinanceRelatedActivityOptions = [yesRef(), noRef()]
+        ..limitGroup = 11312 // disabled
+        ..getFacility.selectedProjectFinanceRelatedActivityValue =
+            Reference(name: "Yes")
+        ..enforceProjectFinanceRuleIfNeeded();
 
       expect(
         (viewModel.getFacility.selectedProjectFinanceRelatedActivityValue
@@ -2916,12 +2960,12 @@ void main() {
     test(
         "enforceProjectFinanceRuleIfNeeded "
         "sets default in create flow when null", () {
-      viewModel.projectFinanceRelatedActivityOptions = [yesRef(), noRef()];
-      viewModel.limitGroup = 99999;
-      viewModel.showCreateFacilityForm = true;
-      viewModel.getFacility.selectedProjectFinanceRelatedActivityValue = null;
-
-      viewModel.enforceProjectFinanceRuleIfNeeded();
+      viewModel
+        ..projectFinanceRelatedActivityOptions = [yesRef(), noRef()]
+        ..limitGroup = 99999
+        ..showCreateFacilityForm = true
+        ..getFacility.selectedProjectFinanceRelatedActivityValue = null
+        ..enforceProjectFinanceRuleIfNeeded();
 
       expect(
         viewModel.getFacility.selectedProjectFinanceRelatedActivityValue,
@@ -2958,13 +3002,13 @@ void main() {
 
   group("Reset + display helpers", () {
     test("emitLimitCapsRefresh clears cap fields and row errors", () {
-      viewModel.groupCapRowError[100] = "err";
-      viewModel.proposedCapRaw = "200";
-      viewModel.proposedCapEdited = true;
-      viewModel.getFacility.proposedLimit = 200;
-      viewModel.getFacility.proposedLimitAED = 200;
-
-      viewModel.emitLimitCapsRefresh();
+      viewModel
+        ..groupCapRowError[100] = "err"
+        ..proposedCapRaw = "200"
+        ..proposedCapEdited = true
+        ..getFacility.proposedLimit = 200
+        ..getFacility.proposedLimitAED = 200
+        ..emitLimitCapsRefresh();
 
       expect(viewModel.groupCapRowError, isEmpty);
       expect(viewModel.proposedCapRaw, isNull);
@@ -2989,10 +3033,11 @@ void main() {
   group("Validation + toast gating", () {
     test("validateProposedLimit returns exceed error for sub-limit over parent",
         () {
-      viewModel.getFacility.isMainLimit = false;
-      viewModel.selectedCurrencyCode = ServerConstants.aedCurrency;
-      viewModel.parentProposedLimit = 100;
-      viewModel.exchangeRate = 0;
+      viewModel
+        ..getFacility.isMainLimit = false
+        ..selectedCurrencyCode = ServerConstants.aedCurrency
+        ..parentProposedLimit = 100
+        ..exchangeRate = 0;
 
       final result = viewModel.validateProposedLimit("150");
 
@@ -3000,9 +3045,10 @@ void main() {
     });
 
     test("shouldShowProposedLimitExceedAlert returns true only first time", () {
-      viewModel.selectedCurrencyCode = ServerConstants.aedCurrency;
-      viewModel.parentProposedLimit = 100;
-      viewModel.exchangeRate = 0;
+      viewModel
+        ..selectedCurrencyCode = ServerConstants.aedCurrency
+        ..parentProposedLimit = 100
+        ..exchangeRate = 0;
 
       // expect(viewModel.shouldShowProposedLimitExceedAlert(150), true);
       // expect(viewModel.shouldShowProposedLimitExceedAlert(150), false);
@@ -3046,12 +3092,12 @@ void main() {
 
   group("Conditions additional branches", () {
     test("removeNonStandardCondition removes row", () {
-      viewModel.nonStandardCondition = [
-        Condition(),
-        Condition(),
-      ];
-
-      viewModel.removeNonStandardCondition(0);
+      viewModel
+        ..nonStandardCondition = [
+          Condition(),
+          Condition(),
+        ]
+        ..removeNonStandardCondition(0);
 
       expect(viewModel.nonStandardCondition.length, 1);
     });
@@ -3059,11 +3105,11 @@ void main() {
     test(
         "changeContractingStandardConditionSelect "
         "toggles selected and resets others", () {
-      viewModel.contractingStandardCondition = [
-        Condition(isSelected: false, isAmended: true, isWaivedOff: true),
-      ];
-
-      viewModel.changeContractingStandardConditionSelect(0, true);
+      viewModel
+        ..contractingStandardCondition = [
+          Condition(isSelected: false, isAmended: true, isWaivedOff: true),
+        ]
+        ..changeContractingStandardConditionSelect(0, true);
 
       expect(viewModel.contractingStandardCondition[0].isSelected, true);
       expect(viewModel.contractingStandardCondition[0].isAmended, false);
@@ -3073,11 +3119,11 @@ void main() {
     test(
         "changeAmendContractingStandardConditionSelect "
         "toggles amend and resets others", () {
-      viewModel.contractingStandardCondition = [
-        Condition(isSelected: true, isAmended: false, isWaivedOff: true),
-      ];
-
-      viewModel.changeAmendContractingStandardConditionSelect(0, true);
+      viewModel
+        ..contractingStandardCondition = [
+          Condition(isSelected: true, isAmended: false, isWaivedOff: true),
+        ]
+        ..changeAmendContractingStandardConditionSelect(0, true);
 
       expect(viewModel.contractingStandardCondition[0].isAmended, true);
       expect(viewModel.contractingStandardCondition[0].isSelected, false);
@@ -3087,11 +3133,11 @@ void main() {
     test(
         "changeWaivedOffContractingStandardConditionSelect "
         "toggles waived and resets others", () {
-      viewModel.contractingStandardCondition = [
-        Condition(isSelected: true, isAmended: true, isWaivedOff: false),
-      ];
-
-      viewModel.changeWaivedOffContractingStandardConditionSelect(0, true);
+      viewModel
+        ..contractingStandardCondition = [
+          Condition(isSelected: true, isAmended: true, isWaivedOff: false),
+        ]
+        ..selectWaivedOffContractingStandardCondition(0, true);
 
       expect(viewModel.contractingStandardCondition[0].isWaivedOff, true);
       expect(viewModel.contractingStandardCondition[0].isSelected, false);
@@ -3101,10 +3147,11 @@ void main() {
 
   group("Selection branches not yet covered", () {
     test("selectSharedLimit NO clears cap fields", () {
-      viewModel.proposedCapRaw = "100";
-      viewModel.proposedCapEdited = true;
-      viewModel.getFacility.proposedLimit = 100;
-      viewModel.getFacility.proposedLimitAED = 100;
+      viewModel
+        ..proposedCapRaw = "100"
+        ..proposedCapEdited = true
+        ..getFacility.proposedLimit = 100
+        ..getFacility.proposedLimitAED = 100;
       viewModel.groupCapRowError[1] = "err";
 
       viewModel.selectSharedLimit(
@@ -3119,10 +3166,10 @@ void main() {
     });
 
     test("selectSector clears sicCode when sector changes", () {
-      viewModel.getFacility.sector = Reference(id: 1, name: "Old");
-      viewModel.getFacility.sicCode = Reference(id: 999, name: "SIC");
-
-      viewModel.selectSector(Reference(id: 2, name: "New"));
+      viewModel
+        ..getFacility.sector = Reference(id: 1, name: "Old")
+        ..getFacility.sicCode = Reference(id: 999, name: "SIC")
+        ..selectSector(Reference(id: 2, name: "New"));
 
       expect(viewModel.getFacility.sector?.id, 2);
       expect(viewModel.getFacility.sicCode, isNull);
@@ -3248,52 +3295,54 @@ void main() {
   });
   group("Currency branches", () {
     test("maxInputInSelectedCurrency AED path", () {
-      viewModel.parentProposedLimit = 1000;
-      viewModel.selectedCurrencyCode = ServerConstants.aedCurrency;
-      viewModel.exchangeRate = 0;
+      viewModel
+        ..parentProposedLimit = 1000
+        ..selectedCurrencyCode = ServerConstants.aedCurrency
+        ..exchangeRate = 0;
 
       expect(viewModel.maxInputInSelectedCurrency, 1000);
     });
 
     test("maxInputInSelectedCurrency non-AED path", () {
-      viewModel.parentProposedLimit = 1000;
-      viewModel.selectedCurrencyCode = "USD";
-      viewModel.exchangeRate = 2;
+      viewModel
+        ..parentProposedLimit = 1000
+        ..selectedCurrencyCode = "USD"
+        ..exchangeRate = 2;
 
       expect(viewModel.maxInputInSelectedCurrency, 500);
     });
 
     test("exceedsParentLimit AED branch", () {
-      viewModel.parentProposedLimit = 1000;
-      viewModel.selectedCurrencyCode = ServerConstants.aedCurrency;
-      viewModel.exchangeRate = 0;
+      viewModel
+        ..parentProposedLimit = 1000
+        ..selectedCurrencyCode = ServerConstants.aedCurrency
+        ..exchangeRate = 0;
 
       expect(viewModel.exceedsParentLimit(1500), true);
     });
 
     test("exceedsParentLimit non-AED branch", () {
-      viewModel.parentProposedLimit = 1000;
-      viewModel.selectedCurrencyCode = "USD";
-      viewModel.exchangeRate = 2;
+      viewModel
+        ..parentProposedLimit = 1000
+        ..selectedCurrencyCode = "USD"
+        ..exchangeRate = 2;
 
       expect(viewModel.exceedsParentLimit(600), true);
     });
   });
   test("group cap validation branch executes", () {
-    // Force group cap required
-    viewModel.getFacility.sharedLimit =
-        Reference(id: ServerConstants.optionYESid, name: "Yes");
-
-    // Set group cap value
-    viewModel.getFacility.proposedLimit = 100;
+    // Force group cap required and set group cap value.
+    viewModel.getFacility
+      ..sharedLimit = Reference(id: ServerConstants.optionYESid, name: "Yes")
+      ..proposedLimit = 100;
 
     // Existing borrower row
-    viewModel.borrowersByRimInTable = [
-      Reference(id: 1001, description: "150"),
-    ];
-
-    // Execute the guarded logic
-    viewModel.setGroupCapsAllocation(1001, "150");
+    viewModel
+      ..borrowersByRimInTable = [
+        Reference(id: 1001, description: "150"),
+      ]
+      // Execute the guarded logic
+      ..setGroupCapsAllocation(1001, "150");
 
     // ASSERTION CAN BE MINIMAL — WE CARE ABOUT EXECUTION
     expect(viewModel.groupCapRowError.containsKey(1001), true);
@@ -3305,8 +3354,9 @@ void main() {
     viewModel.getFacility.sharedLimit =
         Reference(id: ServerConstants.optionYESid, name: "Yes");
 
-    viewModel.borrowersByRimInTable = [];
-    viewModel.selectedRim = 777;
+    viewModel
+      ..borrowersByRimInTable = []
+      ..selectedRim = 777;
 
     final selected = viewModel.selectedBorrowersForUi;
 
@@ -3433,24 +3483,24 @@ void main() {
 
   group("getExisitngFacilityData()", () {
     test("getExisitngFacilityData populates facility from facilityDetail", () {
-      viewModel.facilityDescriptions = [
-        Reference(id: 25, name: "Desc1"),
-        Reference(id: 26, name: "Desc2"),
-      ];
-      viewModel.advanceTypes = [Reference(id: 232, name: "AdvType")];
-      viewModel.seniorities = [Reference(id: 100, name: "Senior")];
-      viewModel.sicCodes = [Reference(id: 361, name: "SIC")];
-      viewModel.sectors = [Reference(id: 356, name: "Sector")];
-      viewModel.accountTypes = [Reference(id: 1644, name: "AccType")];
-      viewModel.purposes = [Reference(id: 11353, name: "Purpose")];
-      viewModel.emirates = [Reference(id: 11370, name: "Dubai")];
-      viewModel.projectFinanceRelatedActivityOptions = [yesRef(), noRef()];
-      viewModel.sharedLimits = [yesRef(), noRef()];
-      viewModel.projectNames = [Reference(name: "Project A")];
-      viewModel.committedValues = [yesRef(), noRef()];
-      viewModel.countryList = [Country(description: "United Arab Emirates")];
-
-      viewModel.getExisitngFacilityData();
+      viewModel
+        ..facilityDescriptions = [
+          Reference(id: 25, name: "Desc1"),
+          Reference(id: 26, name: "Desc2"),
+        ]
+        ..advanceTypes = [Reference(id: 232, name: "AdvType")]
+        ..seniorities = [Reference(id: 100, name: "Senior")]
+        ..sicCodes = [Reference(id: 361, name: "SIC")]
+        ..sectors = [Reference(id: 356, name: "Sector")]
+        ..accountTypes = [Reference(id: 1644, name: "AccType")]
+        ..purposes = [Reference(id: 11353, name: "Purpose")]
+        ..emirates = [Reference(id: 11370, name: "Dubai")]
+        ..projectFinanceRelatedActivityOptions = [yesRef(), noRef()]
+        ..sharedLimits = [yesRef(), noRef()]
+        ..projectNames = [Reference(name: "Project A")]
+        ..committedValues = [yesRef(), noRef()]
+        ..countryList = [Country(description: "United Arab Emirates")]
+        ..getExisitngFacilityData();
 
       expect(viewModel.state.loaderStatus, LoadingStatus.loading);
     });
@@ -3515,11 +3565,12 @@ void main() {
 
     test("getFacilitySubTypes returns empty when no reference5 matches",
         () async {
-      viewModel.facilityTypes = [
-        Reference(name: "Loan", reference5: "AAA"),
-        Reference(name: "OD", reference5: "BBB"),
-      ];
-      viewModel.getFacility.facilityDescription = Reference(reference3: "CLT");
+      viewModel
+        ..facilityTypes = [
+          Reference(name: "Loan", reference5: "AAA"),
+          Reference(name: "OD", reference5: "BBB"),
+        ]
+        ..getFacility.facilityDescription = Reference(reference3: "CLT");
 
       await viewModel.getFacilitySubTypes();
 
@@ -3529,27 +3580,28 @@ void main() {
     test(
         "setGroupCapsAllocation valid value "
         "updates borrower and clears row error", () {
-      viewModel.getFacility.sharedLimit =
-          Reference(id: ServerConstants.optionYESid, name: "Yes");
-      viewModel.getFacility.proposedLimit = 500;
-      viewModel.groupCapRowError[1001] = "old error";
-      viewModel.borrowersByRimInTable = [
-        Reference(id: 1001, description: "100"),
-      ];
-
-      viewModel.setGroupCapsAllocation(1001, "150");
+      viewModel
+        ..getFacility.sharedLimit =
+            Reference(id: ServerConstants.optionYESid, name: "Yes")
+        ..getFacility.proposedLimit = 500
+        ..groupCapRowError[1001] = "old error"
+        ..borrowersByRimInTable = [
+          Reference(id: 1001, description: "100"),
+        ]
+        ..setGroupCapsAllocation(1001, "150");
 
       expect(viewModel.borrowersByRimInTable.first.description, "150");
       expect(viewModel.groupCapRowError.containsKey(1001), false);
     });
 
     test("setGroupCapsAllocation handles non-numeric input gracefully", () {
-      viewModel.getFacility.sharedLimit =
-          Reference(id: ServerConstants.optionYESid, name: "Yes");
-      viewModel.getFacility.proposedLimit = 500;
-      viewModel.borrowersByRimInTable = [
-        Reference(id: 1001, description: "100"),
-      ];
+      viewModel
+        ..getFacility.sharedLimit =
+            Reference(id: ServerConstants.optionYESid, name: "Yes")
+        ..getFacility.proposedLimit = 500
+        ..borrowersByRimInTable = [
+          Reference(id: 1001, description: "100"),
+        ];
 
       expect(
         () => viewModel.setGroupCapsAllocation(1001, "abc"),
@@ -3560,10 +3612,11 @@ void main() {
     test(
         "validateSubTypeProposedLimit returns "
         "error when selected row exceeds parent", () {
-      viewModel.getFacility.proposedLimit = 400;
-      viewModel.facilitySubTypes = [
-        FacilitySubTypes(subTypeSelected: true, proposedLimit: 300),
-      ];
+      viewModel
+        ..getFacility.proposedLimit = 400
+        ..facilitySubTypes = [
+          FacilitySubTypes(subTypeSelected: true, proposedLimit: 300),
+        ];
 
       final result = viewModel.validateSubTypeProposedLimit(0, "500");
 
@@ -3573,11 +3626,12 @@ void main() {
     test(
         "exceedsParentCapWith returns false "
         "when aggregated value is within parent", () {
-      viewModel.getFacility.proposedLimit = 1000;
-      viewModel.facilitySubTypes = [
-        FacilitySubTypes(subTypeSelected: true, proposedLimit: 300),
-        FacilitySubTypes(subTypeSelected: true, proposedLimit: 200),
-      ];
+      viewModel
+        ..getFacility.proposedLimit = 1000
+        ..facilitySubTypes = [
+          FacilitySubTypes(subTypeSelected: true, proposedLimit: 300),
+          FacilitySubTypes(subTypeSelected: true, proposedLimit: 200),
+        ];
 
       final result = viewModel.exceedsParentCapWith(
         rowIndex: 1,
@@ -3612,19 +3666,19 @@ void main() {
 
       final b1 = Reference(name: "B1", description: "100");
       final b2 = Reference(name: "B2", description: "150");
-      viewModel.borrowersByRimInTable = [b1, b2];
-
-      viewModel.compareAllocationAmount("100", b1);
+      viewModel
+        ..borrowersByRimInTable = [b1, b2]
+        ..compareAllocationAmount("100", b1);
 
       expect(b1.description, "100");
     });
 
     test("projectFinanceSelectedOrDefault returns selected value when enabled",
         () {
-      viewModel.projectFinanceRelatedActivityOptions = [yesRef(), noRef()];
-      viewModel.limitGroup = 99999;
-      viewModel.getFacility.selectedProjectFinanceRelatedActivityValue =
-          yesRef();
+      viewModel
+        ..projectFinanceRelatedActivityOptions = [yesRef(), noRef()]
+        ..limitGroup = 99999
+        ..getFacility.selectedProjectFinanceRelatedActivityValue = yesRef();
 
       final selected = viewModel.projectFinanceSelectedOrDefault;
 
@@ -3633,9 +3687,10 @@ void main() {
 
     test("projectFinanceSelectedOrDefault falls back when nothing selected",
         () {
-      viewModel.projectFinanceRelatedActivityOptions = [yesRef(), noRef()];
-      viewModel.limitGroup = 99999;
-      viewModel.getFacility.selectedProjectFinanceRelatedActivityValue = null;
+      viewModel
+        ..projectFinanceRelatedActivityOptions = [yesRef(), noRef()]
+        ..limitGroup = 99999
+        ..getFacility.selectedProjectFinanceRelatedActivityValue = null;
 
       final selected = viewModel.projectFinanceSelectedOrDefault;
 

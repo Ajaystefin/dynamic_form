@@ -44,8 +44,9 @@ class ActionsSection extends StatelessWidget {
               ?
               //  viewModel.viewAccessRolesCheck() ? null :
               () {
-                  viewModel.clearAll();
-                  viewModel.onDiscard(context);
+                  viewModel
+                    ..clearAll()
+                    ..onDiscard(context);
                 }
               : null,
         ),

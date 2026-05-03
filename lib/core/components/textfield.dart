@@ -348,9 +348,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   onChangeValue = value.trim().isEmpty ? null : value;
                   if (mounted) setState(() {});
                 }
-                if (widget.onChanged != null) {
-                  widget.onChanged!(value);
-                }
+                widget.onChanged?.call(value);
                 // Trigger debounced search if configured
                 _handleDebouncedSearch(value);
                 // state.didChange(value);
@@ -371,7 +369,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 prefixText: widget.prefixText,
                 suffixIcon: _buildSuffixIcon(),
                 filled: widget.filled || isReadOnly,
-                fillColor: (isReadOnly)
+                fillColor: isReadOnly
                     ? AppColors.textFieldDisabledFill
                     : widget.fillColor,
                 isDense: true,

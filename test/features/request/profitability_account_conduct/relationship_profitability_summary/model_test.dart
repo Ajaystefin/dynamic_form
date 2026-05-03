@@ -455,8 +455,9 @@ void main() {
     testWidgets(
         "saveComments throws -> catch branch emits error and failure toast",
         (tester) async {
-      harnessVm.formKey = await pumpForm(tester);
-      harnessVm.throwOnSaveComments = true;
+      harnessVm
+        ..formKey = await pumpForm(tester)
+        ..throwOnSaveComments = true;
 
       await harnessVm.onSaveAndContinue(
         false,
@@ -473,8 +474,9 @@ void main() {
     testWidgets(
         "saveRelationProfitDetailSumData throws -> "
         "catch branch emits error and failure toast", (tester) async {
-      harnessVm.formKey = await pumpForm(tester);
-      harnessVm.throwOnSaveRelation = true;
+      harnessVm
+        ..formKey = await pumpForm(tester)
+        ..throwOnSaveRelation = true;
 
       await harnessVm.onSaveAndContinue(
         false,
@@ -648,19 +650,19 @@ void main() {
   group("debouncedTotals() and table refresh", () {
     test("debouncedTotals computes totals and sets table loader back to loaded",
         () async {
-      vm.relationshipProfitabilitySummaryData =
-          RelationshipProfitabilitySummary(
-        relationshipProfitability: [
-          RelationshipProfitability(
-            projectedNext12Months: ProfitabilityData(nii: "10", nfi: "5"),
-            realizedLastYear: ProfitabilityData(nii: "20", nfi: "5"),
-          ),
-        ],
-      );
-
-      vm.debouncedTotals();
-      vm.debouncedTotals();
-      vm.debouncedTotals();
+      vm
+        ..relationshipProfitabilitySummaryData =
+            RelationshipProfitabilitySummary(
+          relationshipProfitability: [
+            RelationshipProfitability(
+              projectedNext12Months: ProfitabilityData(nii: "10", nfi: "5"),
+              realizedLastYear: ProfitabilityData(nii: "20", nfi: "5"),
+            ),
+          ],
+        )
+        ..debouncedTotals()
+        ..debouncedTotals()
+        ..debouncedTotals();
 
       await Future<void>.delayed(const Duration(milliseconds: 260));
       await Future<void>.delayed(Duration.zero);
@@ -680,9 +682,10 @@ void main() {
     });
 
     test("forceTableRefresh can be called repeatedly", () async {
-      vm.forceTableRefresh();
-      vm.forceTableRefresh();
-      vm.forceTableRefresh();
+      vm
+        ..forceTableRefresh()
+        ..forceTableRefresh()
+        ..forceTableRefresh();
 
       await Future<void>.delayed(Duration.zero);
 
@@ -979,14 +982,13 @@ void main() {
   group("close()", () {
     test("close disposes created controllers/focus nodes without crashing",
         () async {
-      final localVm = RelationshipProfitabilitySummaryViewModel();
-      localVm.relationshipProfitabilitySummaryData = sampleSummaryData();
+      final localVm = RelationshipProfitabilitySummaryViewModel()
+        ..relationshipProfitabilitySummaryData = sampleSummaryData();
 
       await localVm.initializeProfitabilityControllers();
       await localVm.initializeControllers();
 
       localVm.debouncedTotals();
-
       await localVm.close();
       expect(true, isTrue);
     });
@@ -1000,17 +1002,20 @@ void main() {
 
   group("Additional property / enum / utility coverage", () {
     test("summaryCommentsController text can be updated", () {
-      vm.summaryComments = "Hello";
-      vm.summaryCommentsController.text = vm.summaryComments ?? "";
+      vm
+        ..summaryComments = "Hello"
+        ..summaryCommentsController.text = "Hello";
 
       expect(vm.summaryCommentsController.text, "Hello");
     });
 
     test("sumProfitabilityData and request properties can be assigned", () {
-      vm.sumProfitabilityData = ProfitabilityData(nii: "1");
-      vm.request = Request(applicationRefNo: "REQ-1");
+      vm
+        ..isFIApplication = true
+        ..sumProfitabilityData = ProfitabilityData(rwa: "1000")
+        ..request = Request(applicationRefNo: "REQ-1");
 
-      expect(vm.sumProfitabilityData!.nii, "1");
+      expect(vm.sumProfitabilityData!.nii, null);
       expect(vm.request!.applicationRefNo, "REQ-1");
     });
 
@@ -1027,14 +1032,15 @@ void main() {
     });
 
     test("manual property coverage", () {
-      vm.context = FakeBuildContext();
-      vm.comment = Comment(comment: "x");
-      vm.comments = [Comment(comment: "a"), Comment(comment: "b")];
-      vm.groupComments = "g";
-      vm.realizedRarocControllers = [TextEditingController(text: "1")];
-      vm.proposedRarocControllers = [TextEditingController(text: "2")];
-      vm.finalRarocControllers = [TextEditingController(text: "3")];
-      vm.commentsControllers = [TextEditingController(text: "4")];
+      vm
+        ..context = FakeBuildContext()
+        ..comment = Comment(comment: "x")
+        ..comments = [Comment(comment: "a"), Comment(comment: "b")]
+        ..groupComments = "g"
+        ..realizedRarocControllers = [TextEditingController(text: "1")]
+        ..proposedRarocControllers = [TextEditingController(text: "2")]
+        ..finalRarocControllers = [TextEditingController(text: "3")]
+        ..commentsControllers = [TextEditingController(text: "4")];
 
       expect(vm.context, isNotNull);
       expect(vm.comment!.comment, "x");

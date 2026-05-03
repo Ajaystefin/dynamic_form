@@ -148,10 +148,9 @@ void main() {
             bytes: Uint8List.fromList([1, 2, 3, 4]),
           ),
         ],
-      );
-
-      document.reference3 = "Ref3";
-      document.subSubSubType = Reference(id: 5, name: "SubSubSubType1");
+      )
+        ..reference3 = "Ref3"
+        ..subSubSubType = Reference(id: 5, name: "SubSubSubType1");
 
       final json = document.toJson();
 

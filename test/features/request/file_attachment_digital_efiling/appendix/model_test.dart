@@ -620,8 +620,9 @@ void main() {
       final img = PlatformFile(name: "b.png", size: 1);
       final generic = PlatformFile(name: "c.txt", size: 1);
 
-      viewModel.fiKeyFinancialFiguresExcelFiles = [excel];
-      viewModel.fiKeyFinancialFiguresImageFiles = [img];
+      viewModel
+        ..fiKeyFinancialFiguresExcelFiles = [excel]
+        ..fiKeyFinancialFiguresImageFiles = [img];
       viewModel.selectedFiles.add(generic);
 
       await viewModel.removeAnyFile(excel);
@@ -710,25 +711,25 @@ void main() {
   group("RIM filter and rows", () {
     test("onSelectRim filters fiServerRows by rimNo", () {
       // Prepare rows (no repo)
-      viewModel.allExcelRows = [
-        FiAppendixXlsxRow(
-          appendixXlsxId: 1,
-          rimNo: 100,
-          appRefNo: "202602FULLAR000922",
-        ),
-        FiAppendixXlsxRow(
-          appendixXlsxId: 2,
-          rimNo: 101,
-          appRefNo: "202602FULLAR000922",
-        ),
-        FiAppendixXlsxRow(
-          appendixXlsxId: 3,
-          rimNo: 100,
-          appRefNo: "202602FULLAR000922",
-        ),
-      ];
-
-      viewModel.onSelectRim("100");
+      viewModel
+        ..allExcelRows = [
+          FiAppendixXlsxRow(
+            appendixXlsxId: 1,
+            rimNo: 100,
+            appRefNo: "202602FULLAR000922",
+          ),
+          FiAppendixXlsxRow(
+            appendixXlsxId: 2,
+            rimNo: 101,
+            appRefNo: "202602FULLAR000922",
+          ),
+          FiAppendixXlsxRow(
+            appendixXlsxId: 3,
+            rimNo: 100,
+            appRefNo: "202602FULLAR000922",
+          ),
+        ]
+        ..onSelectRim("100");
       expect(viewModel.fiServerRows.length, 2);
       expect(viewModel.fiServerRows.every((r) => r.rimNo == 100), isTrue);
 
@@ -773,13 +774,15 @@ void main() {
     });
 
     test("basic setters mutate state", () {
-      testableViewModel.setRating("AA");
-      testableViewModel.setApplicationId("app-1");
+      testableViewModel
+        ..setRating("AA")
+        ..setApplicationId("app-1");
       final now = DateTime.now();
-      testableViewModel.setSelectedDate(now);
-      testableViewModel.setCountryName("UAE");
-      testableViewModel.setPopulation("10M");
-      testableViewModel.setGdp("500B");
+      testableViewModel
+        ..setSelectedDate(now)
+        ..setCountryName("UAE")
+        ..setPopulation("10M")
+        ..setGdp("500B");
 
       expect(testableViewModel.selectedRating, "AA");
       expect(testableViewModel.applicationId, "app-1");
@@ -828,8 +831,9 @@ void main() {
   // test VM, remove guards ----------------
   group("Additional coverage", () {
     test("updateExportPartners/updateImportPartners assign values", () {
-      viewModel.updateExportPartners(["A", "B"]);
-      viewModel.updateImportPartners(["X", "Y", "Z"]);
+      viewModel
+        ..updateExportPartners(["A", "B"])
+        ..updateImportPartners(["X", "Y", "Z"]);
 
       expect(viewModel.appendix.exportPartners, ["A", "B"]);
       expect(viewModel.appendix.importPartners, ["X", "Y", "Z"]);
@@ -906,8 +910,9 @@ void main() {
       final sLen = viewModel.appendix.strengths.length;
       final tLen = viewModel.appendix.threats.length;
 
-      viewModel.removeStrengthTableRow(5);
-      viewModel.removeThreatTableRow(9);
+      viewModel
+        ..removeStrengthTableRow(5)
+        ..removeThreatTableRow(9);
 
       expect(viewModel.appendix.strengths.length, sLen);
       expect(viewModel.appendix.threats.length, tLen);
@@ -921,19 +926,20 @@ void main() {
 
     test("onSelectRim with invalid rim string results in empty fiServerRows",
         () {
-      viewModel.allExcelRows = [
-        FiAppendixXlsxRow(
-          appendixXlsxId: 1,
-          rimNo: 100,
-          appRefNo: "202602FULLAR000922",
-        ),
-        FiAppendixXlsxRow(
-          appendixXlsxId: 2,
-          rimNo: 101,
-          appRefNo: "202602FULLAR000922",
-        ),
-      ];
-      viewModel.onSelectRim("abc"); // parses to -1
+      viewModel
+        ..allExcelRows = [
+          FiAppendixXlsxRow(
+            appendixXlsxId: 1,
+            rimNo: 100,
+            appRefNo: "202602FULLAR000922",
+          ),
+          FiAppendixXlsxRow(
+            appendixXlsxId: 2,
+            rimNo: 101,
+            appRefNo: "202602FULLAR000922",
+          ),
+        ]
+        ..onSelectRim("abc"); // parses to -1
       expect(viewModel.fiServerRows, isEmpty);
     });
 
@@ -1106,8 +1112,9 @@ void main() {
       final sBefore = viewModel.appendix.strengths.length;
       final tBefore = viewModel.appendix.threats.length;
 
-      viewModel.setStrengthAt(-1, "ignored");
-      viewModel.setThreatAt(-1, "ignored");
+      viewModel
+        ..setStrengthAt(-1, "ignored")
+        ..setThreatAt(-1, "ignored");
 
       expect(viewModel.appendix.strengths.length, sBefore);
       expect(viewModel.appendix.threats.length, tBefore);
@@ -2014,12 +2021,12 @@ void main() {
 
   group("MORE: remove helpers (in-range + out-of-range safety)", () {
     test("removeFiExcelAt: in-range removes; out-of-range no-op", () {
-      viewModel.fiKeyFinancialFiguresExcelFiles = [
-        PlatformFile(name: "a.xlsx", size: 1),
-        PlatformFile(name: "b.xlsx", size: 1),
-      ];
-
-      viewModel.removeFiExcelAt(0);
+      viewModel
+        ..fiKeyFinancialFiguresExcelFiles = [
+          PlatformFile(name: "a.xlsx", size: 1),
+          PlatformFile(name: "b.xlsx", size: 1),
+        ]
+        ..removeFiExcelAt(0);
       expect(
         viewModel.fiKeyFinancialFiguresExcelFiles.map((e) => e.name).toList(),
         ["b.xlsx"],
@@ -2033,12 +2040,12 @@ void main() {
     });
 
     test("removeFiImageAt: in-range removes; out-of-range no-op", () {
-      viewModel.fiKeyFinancialFiguresImageFiles = [
-        PlatformFile(name: "a.png", size: 1),
-        PlatformFile(name: "b.png", size: 1),
-      ];
-
-      viewModel.removeFiImageAt(1);
+      viewModel
+        ..fiKeyFinancialFiguresImageFiles = [
+          PlatformFile(name: "a.png", size: 1),
+          PlatformFile(name: "b.png", size: 1),
+        ]
+        ..removeFiImageAt(1);
       expect(
         viewModel.fiKeyFinancialFiguresImageFiles.map((e) => e.name).toList(),
         ["a.png"],
@@ -3155,15 +3162,16 @@ void main() {
         (tester) async {
       await pumpLocalizedApp(tester, child: const SizedBox());
 
-      viewModel.selectedSectionType = ServerConstants.country;
-      viewModel.selectedRating = "AA";
-      viewModel.appendix.countryName = "UAE";
-      viewModel.appendix.populationText = "10M";
-      viewModel.appendix.gdpText = "500B";
-      viewModel.appendix.exportPartners = ["E1"];
-      viewModel.appendix.importPartners = ["I1"];
-      viewModel.appendix.strengths = ["S1"];
-      viewModel.appendix.threats = ["T1"];
+      viewModel
+        ..selectedSectionType = ServerConstants.country
+        ..selectedRating = "AA"
+        ..appendix.countryName = "UAE"
+        ..appendix.populationText = "10M"
+        ..appendix.gdpText = "500B"
+        ..appendix.exportPartners = ["E1"]
+        ..appendix.importPartners = ["I1"]
+        ..appendix.strengths = ["S1"]
+        ..appendix.threats = ["T1"];
 
       when(() => mockAppendixRepo.saveAppendixBusinessSegmentPayload(any()))
           .thenAnswer((_) async => "ok");
@@ -4086,16 +4094,12 @@ void main() {
     group("Filters/Helpers edge cases", () {
       test("_filterExcelRows with no selected rim copies all", () {
         // selectedRimNumber is null by default
-        viewModel.allExcelRows = [
-          FiAppendixXlsxRow(appendixXlsxId: 1, rimNo: 100, appRefNo: "A"),
-          FiAppendixXlsxRow(appendixXlsxId: 2, rimNo: 101, appRefNo: "B"),
-        ];
-
-        // Call the public filtering action by toggling selected to null and
-        // invoking internal filter
-        // Easiest route: set selectedRimNumber null and call onSelectRim with
-        // invalid to force fallback then call _filter flow indirectly
-        viewModel.selectedRimNumber = null;
+        viewModel
+          ..allExcelRows = [
+            FiAppendixXlsxRow(appendixXlsxId: 1, rimNo: 100, appRefNo: "A"),
+            FiAppendixXlsxRow(appendixXlsxId: 2, rimNo: 101, appRefNo: "B"),
+          ]
+          ..selectedRimNumber = null;
         // _filterExcelRows is private, but get there by calling onSelectRim?
         // That sets selected. So instead, simulate "no selected" case:
         // Use the same logic that _filterExcelRows performs when
@@ -4269,15 +4273,16 @@ void main() {
         AppendixRepository.debugReplaceInstance = mockAppendixRepo;
 
         // 3) Arrange ViewModel input
-        viewModel.selectedSectionType = ServerConstants.country;
-        viewModel.selectedRating = "AA";
-        viewModel.appendix.countryName = "UAE";
-        viewModel.appendix.populationText = "10M";
-        viewModel.appendix.gdpText = "500B";
-        viewModel.appendix.strengths = ["S1"];
-        viewModel.appendix.threats = ["T1"];
-        viewModel.appendix.exportPartners = ["E1"];
-        viewModel.appendix.importPartners = ["I1"];
+        viewModel
+          ..selectedSectionType = ServerConstants.country
+          ..selectedRating = "AA"
+          ..appendix.countryName = "UAE"
+          ..appendix.populationText = "10M"
+          ..appendix.gdpText = "500B"
+          ..appendix.strengths = ["S1"]
+          ..appendix.threats = ["T1"]
+          ..appendix.exportPartners = ["E1"]
+          ..appendix.importPartners = ["I1"];
 
         // 4) Stub repo call
         when(() => mockAppendixRepo.saveAppendixBusinessSegmentPayload(any()))
@@ -5018,8 +5023,9 @@ void main() {
         (tester) async {
       await pumpLocalizedApp(tester, child: const SizedBox());
 
-      viewModel.rimNumbers = ["100", "200"];
-      viewModel.selectedRimNumber = "100";
+      viewModel
+        ..rimNumbers = ["100", "200"]
+        ..selectedRimNumber = "100";
 
       when(
         () => mockCustomerRepo.getApplicationDetails(appRefNo: "APP-DET-NULL"),

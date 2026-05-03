@@ -28,20 +28,22 @@ class EnvConfig {
             ? response.body
             : json.decode(response.body.toString());
 
-        logger.i(
-          "External config loaded successfully with "
-          "${_config!.keys.length} configuration keys",
-        );
-        logger.d("External config keys: ${_config!.keys.toList()}");
+        logger
+          ..i(
+            "External config loaded successfully with "
+            "${_config!.keys.length} configuration keys",
+          )
+          ..d("External config keys: ${_config!.keys.toList()}");
       } else {
-        logger.w(
-          "External config request completed but"
-          " returned no data or error status",
-        );
-        logger.d(
-          "Response status: ${response.status}, "
-          "Response code: ${response.code}",
-        );
+        logger
+          ..w(
+            "External config request completed but"
+            " returned no data or error status",
+          )
+          ..d(
+            "Response status: ${response.status}, "
+            "Response code: ${response.code}",
+          );
       }
     } catch (e) {
       logger.d("Error details: ${e.toString()}");

@@ -187,47 +187,47 @@ class CreateFacilityDraftHandler extends DraftHandler<CreateFacilityViewModel> {
   ) {
     final facility = vm.getFacility;
 
-    facility.facilityDescription = _refFromJson(data["facilityDescription"]) ??
-        facility.facilityDescription;
-    facility.selectedProductTypeValue =
-        _refFromJson(data["selectedProductTypeValue"]) ??
-            facility.selectedProductTypeValue;
-    facility.selectedProjectFinanceRelatedActivityValue =
-        _refFromJson(data["selectedProjectFinanceRelatedActivityValue"]) ??
-            facility.selectedProjectFinanceRelatedActivityValue;
-    facility.sharedLimit =
-        _refFromJson(data["sharedLimit"]) ?? facility.sharedLimit;
-    facility.selectedCollateralDepantantValue =
-        _refFromJson(data["selectedCollateralDepantantValue"]) ??
-            facility.selectedCollateralDepantantValue;
-    facility.selectedpromissoryNoteValue =
-        _refFromJson(data["selectedpromissoryNoteValue"]) ??
-            facility.selectedpromissoryNoteValue;
-    facility.selectedRegulatorySpecialisedLandingValue =
-        _refFromJson(data["selectedRegulatorySpecialisedLandingValue"]) ??
-            facility.selectedRegulatorySpecialisedLandingValue;
-    facility.seniorityValue =
-        _refFromJson(data["seniorityValue"]) ?? facility.seniorityValue;
-    facility.advanceTypeValue =
-        _refFromJson(data["advanceTypeValue"]) ?? facility.advanceTypeValue;
-    facility.sector = _refFromJson(data["sector"]) ?? facility.sector;
-    facility.sicCode = _refFromJson(data["sicCode"]) ?? facility.sicCode;
-    facility.accountTypeValue =
-        _refFromJson(data["accountTypeValue"]) ?? facility.accountTypeValue;
-    facility.purpose = _refFromJson(data["purposeValue"]) ?? facility.purpose;
-    facility.propertyType =
-        _refFromJson(data["propertyType"]) ?? facility.propertyType;
-    facility.propertySubType =
-        _refFromJson(data["propertySubType"]) ?? facility.propertySubType;
-    facility.emirates = _refFromJson(data["emirates"]) ?? facility.emirates;
-    facility.committedValues =
-        _refFromJson(data["committedValues"]) ?? facility.committedValues;
-    facility.regulatorySpecification =
-        _refFromJson(data["regulatorySpecification"]) ??
-            facility.regulatorySpecification;
-    facility.selectedLimitTypeValue =
-        _refFromJson(data["selectedLimitTypeValue"]) ??
-            facility.selectedLimitTypeValue;
+    facility
+      ..facilityDescription = _refFromJson(data["facilityDescription"]) ??
+          facility.facilityDescription
+      ..selectedProductTypeValue =
+          _refFromJson(data["selectedProductTypeValue"]) ??
+              facility.selectedProductTypeValue
+      ..selectedProjectFinanceRelatedActivityValue =
+          _refFromJson(data["selectedProjectFinanceRelatedActivityValue"]) ??
+              facility.selectedProjectFinanceRelatedActivityValue
+      ..sharedLimit = _refFromJson(data["sharedLimit"]) ?? facility.sharedLimit
+      ..selectedCollateralDepantantValue =
+          _refFromJson(data["selectedCollateralDepantantValue"]) ??
+              facility.selectedCollateralDepantantValue
+      ..selectedpromissoryNoteValue =
+          _refFromJson(data["selectedpromissoryNoteValue"]) ??
+              facility.selectedpromissoryNoteValue
+      ..selectedRegulatorySpecialisedLandingValue =
+          _refFromJson(data["selectedRegulatorySpecialisedLandingValue"]) ??
+              facility.selectedRegulatorySpecialisedLandingValue
+      ..seniorityValue =
+          _refFromJson(data["seniorityValue"]) ?? facility.seniorityValue
+      ..advanceTypeValue =
+          _refFromJson(data["advanceTypeValue"]) ?? facility.advanceTypeValue
+      ..sector = _refFromJson(data["sector"]) ?? facility.sector
+      ..sicCode = _refFromJson(data["sicCode"]) ?? facility.sicCode
+      ..accountTypeValue =
+          _refFromJson(data["accountTypeValue"]) ?? facility.accountTypeValue
+      ..purpose = _refFromJson(data["purposeValue"]) ?? facility.purpose
+      ..propertyType =
+          _refFromJson(data["propertyType"]) ?? facility.propertyType
+      ..propertySubType =
+          _refFromJson(data["propertySubType"]) ?? facility.propertySubType
+      ..emirates = _refFromJson(data["emirates"]) ?? facility.emirates
+      ..committedValues =
+          _refFromJson(data["committedValues"]) ?? facility.committedValues
+      ..regulatorySpecification =
+          _refFromJson(data["regulatorySpecification"]) ??
+              facility.regulatorySpecification
+      ..selectedLimitTypeValue =
+          _refFromJson(data["selectedLimitTypeValue"]) ??
+              facility.selectedLimitTypeValue;
 
     if (data["sustainabilityClassification"] != null &&
         data["sustainabilityClassification"] is List) {
@@ -268,35 +268,30 @@ class CreateFacilityDraftHandler extends DraftHandler<CreateFacilityViewModel> {
               .toList();
     }
 
-    facility.proposedLimit =
-        data["proposedLimit"] as int? ?? facility.proposedLimit;
-    facility.presentLimit =
-        data["presentLimit"] as int? ?? facility.presentLimit;
-    facility.originalLimit =
-        data["originalLimit"] as int? ?? facility.originalLimit;
-    facility.currency = data["currency"] as String? ?? facility.currency;
-    facility.countryOfRisk =
-        data["countryOfRisk"] as String? ?? facility.countryOfRisk;
-    facility.remarks = data["remarks"] as String? ?? facility.remarks;
-    facility.facilityTitle =
-        data["facilityTitle"] as String? ?? facility.facilityTitle;
-    facility.index = data["index"] as String? ?? facility.index;
-    facility.marginSign = data["marginSign"] as String? ?? facility.marginSign;
-    facility.marginValue =
-        data["marginValue"] as String? ?? facility.marginValue;
-    facility.limitAvailabilityPeriod =
-        data["limitAvailabilityPeriod"] as String? ??
-            facility.limitAvailabilityPeriod;
-    facility.limitLabel = data["limitLabel"] as String? ?? facility.limitLabel;
-    facility.isMainLimit = data["isMainLimit"] as bool? ?? facility.isMainLimit;
-    facility.isCommitted = data["isCommitted"] as bool? ?? facility.isCommitted;
-    facility.limitCategory =
-        data["limitCategory"] as String? ?? facility.limitCategory;
-    facility.productCodeProject =
-        data["productCodeProject"] as String? ?? facility.productCodeProject;
-
-    facility.tenorUnit = _refFromJson(data["tenorUnit"]) ?? facility.tenorUnit;
-    facility.tenorValue = data["tenorValue"] as num? ?? facility.tenorValue;
+    facility
+      ..proposedLimit = data["proposedLimit"] as int? ?? facility.proposedLimit
+      ..presentLimit = data["presentLimit"] as int? ?? facility.presentLimit
+      ..originalLimit = data["originalLimit"] as int? ?? facility.originalLimit
+      ..currency = data["currency"] as String? ?? facility.currency
+      ..countryOfRisk =
+          data["countryOfRisk"] as String? ?? facility.countryOfRisk
+      ..remarks = data["remarks"] as String? ?? facility.remarks
+      ..facilityTitle =
+          data["facilityTitle"] as String? ?? facility.facilityTitle
+      ..index = data["index"] as String? ?? facility.index
+      ..marginSign = data["marginSign"] as String? ?? facility.marginSign
+      ..marginValue = data["marginValue"] as String? ?? facility.marginValue
+      ..limitAvailabilityPeriod = data["limitAvailabilityPeriod"] as String? ??
+          facility.limitAvailabilityPeriod
+      ..limitLabel = data["limitLabel"] as String? ?? facility.limitLabel
+      ..isMainLimit = data["isMainLimit"] as bool? ?? facility.isMainLimit
+      ..isCommitted = data["isCommitted"] as bool? ?? facility.isCommitted
+      ..limitCategory =
+          data["limitCategory"] as String? ?? facility.limitCategory
+      ..productCodeProject =
+          data["productCodeProject"] as String? ?? facility.productCodeProject
+      ..tenorUnit = _refFromJson(data["tenorUnit"]) ?? facility.tenorUnit
+      ..tenorValue = data["tenorValue"] as num? ?? facility.tenorValue;
 
     if (data["limitExpireDate"] != null) {
       facility.limitExpireDate =
@@ -310,36 +305,37 @@ class CreateFacilityDraftHandler extends DraftHandler<CreateFacilityViewModel> {
     }
 
     if (vm.isFIFlow) {
-      facility.excessOverMaxLimitAllowanceByFi =
-          data["excessOverMaxLimitAllowanceByFi"] as double? ??
-              facility.excessOverMaxLimitAllowanceByFi;
-      facility.excessOverMaxLimitAllowanceCurrencyByFi =
-          _refFromJson(data["excessOverMaxLimitAllowanceCurrencyByFi"]) ??
-              facility.excessOverMaxLimitAllowanceCurrencyByFi;
-      facility.cbdEquityTier325Percent =
-          data["cbdEquityTier325Percent"] as double? ??
-              facility.cbdEquityTier325Percent;
-      facility.cbdEquityTier325PercentCurrency =
-          _refFromJson(data["cbdEquityTier325PercentCurrency"]) ??
-              facility.cbdEquityTier325PercentCurrency;
-      facility.counterpartyEquity5Percent =
-          data["counterpartyEquity5Percent"] as double? ??
-              facility.counterpartyEquity5Percent;
-      facility.counterpartyEquity5PercentCurrency =
-          _refFromJson(data["counterpartyEquity5PercentCurrency"]) ??
-              facility.counterpartyEquity5PercentCurrency;
-      facility.counterpartyTotalAssets2Percent =
-          data["counterpartyTotalAssets2Percent"] as double? ??
-              facility.counterpartyTotalAssets2Percent;
-      facility.counterpartyTotalAssets2PercentCurrency =
-          _refFromJson(data["counterpartyTotalAssets2PercentCurrency"]) ??
-              facility.counterpartyTotalAssets2PercentCurrency;
-      facility.excessOverMaxLimitAllowanceByCredit =
-          data["excessOverMaxLimitAllowanceByCredit"] as double? ??
-              facility.excessOverMaxLimitAllowanceByCredit;
-      facility.excessOverMaxLimitAllowanceCurrencyByCredit =
-          _refFromJson(data["excessOverMaxLimitAllowanceCurrencyByCredit"]) ??
-              facility.excessOverMaxLimitAllowanceCurrencyByCredit;
+      facility
+        ..excessOverMaxLimitAllowanceByFi =
+            data["excessOverMaxLimitAllowanceByFi"] as double? ??
+                facility.excessOverMaxLimitAllowanceByFi
+        ..excessOverMaxLimitAllowanceCurrencyByFi =
+            _refFromJson(data["excessOverMaxLimitAllowanceCurrencyByFi"]) ??
+                facility.excessOverMaxLimitAllowanceCurrencyByFi
+        ..cbdEquityTier325Percent =
+            data["cbdEquityTier325Percent"] as double? ??
+                facility.cbdEquityTier325Percent
+        ..cbdEquityTier325PercentCurrency =
+            _refFromJson(data["cbdEquityTier325PercentCurrency"]) ??
+                facility.cbdEquityTier325PercentCurrency
+        ..counterpartyEquity5Percent =
+            data["counterpartyEquity5Percent"] as double? ??
+                facility.counterpartyEquity5Percent
+        ..counterpartyEquity5PercentCurrency =
+            _refFromJson(data["counterpartyEquity5PercentCurrency"]) ??
+                facility.counterpartyEquity5PercentCurrency
+        ..counterpartyTotalAssets2Percent =
+            data["counterpartyTotalAssets2Percent"] as double? ??
+                facility.counterpartyTotalAssets2Percent
+        ..counterpartyTotalAssets2PercentCurrency =
+            _refFromJson(data["counterpartyTotalAssets2PercentCurrency"]) ??
+                facility.counterpartyTotalAssets2PercentCurrency
+        ..excessOverMaxLimitAllowanceByCredit =
+            data["excessOverMaxLimitAllowanceByCredit"] as double? ??
+                facility.excessOverMaxLimitAllowanceByCredit
+        ..excessOverMaxLimitAllowanceCurrencyByCredit =
+            _refFromJson(data["excessOverMaxLimitAllowanceCurrencyByCredit"]) ??
+                facility.excessOverMaxLimitAllowanceCurrencyByCredit;
     }
 
     vm.limitTypeController.text = data["limitTypeControllerText"] as String? ??
@@ -387,12 +383,13 @@ class CreateFacilityDraftHandler extends DraftHandler<CreateFacilityViewModel> {
               vm.excessOverMaxLimitAllowanceRecommendedByCreditController.text;
     }
 
-    vm.isLimitCaps = data["isLimitCaps"] as bool? ?? vm.isLimitCaps;
-    vm.isFeeRowMandatory =
-        data["isFeeRowMandatory"] as bool? ?? vm.isFeeRowMandatory;
-    vm.subLimit = data["subLimit"] as bool? ?? vm.subLimit;
-    vm.limitCategory = data["limitCategoryVM"] as String? ?? vm.limitCategory;
-    vm.productType = data["productType"] as int? ?? vm.productType;
+    vm
+      ..isLimitCaps = data["isLimitCaps"] as bool? ?? vm.isLimitCaps
+      ..isFeeRowMandatory =
+          data["isFeeRowMandatory"] as bool? ?? vm.isFeeRowMandatory
+      ..subLimit = data["subLimit"] as bool? ?? vm.subLimit
+      ..limitCategory = data["limitCategoryVM"] as String? ?? vm.limitCategory
+      ..productType = data["productType"] as int? ?? vm.productType;
 
     if (data["selectedAccountTypes"] != null &&
         data["selectedAccountTypes"] is List) {

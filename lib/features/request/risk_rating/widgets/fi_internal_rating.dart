@@ -21,8 +21,8 @@ class FiInternalRating extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool deleteColumn = ((viewModel.riskRating.internalRatings)
-        .any((item) => item.isDeletable == true));
+    final bool deleteColumn = viewModel.riskRating.internalRatings
+        .any((item) => item.isDeletable == true);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -349,7 +349,7 @@ class FiInternalRating extends StatelessWidget {
           isEditable: viewModel.isProposedbyCreditEditables(),
         ),
         //Delete Column
-        if ((viewModel.riskRating.internalRatings)
+        if (viewModel.riskRating.internalRatings
             .any((item) => item.isDeletable == true))
           internalRating.isDeletable == true && viewModel.canEdit
               ? Center(

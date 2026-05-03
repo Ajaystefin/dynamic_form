@@ -13,7 +13,7 @@ class FacilitySector extends StatelessWidget {
   Widget build(BuildContext context) {
     return LabelWidget(
       label: "facilities.createFacility.sector".tr(),
-      isRequired: (!viewModel.isFIFlow),
+      isRequired: !viewModel.isFIFlow,
       child: CustomDropdown<Reference>(
         validationMessage:
             viewModel.isFIFlow ? null : "common.validation.emptyField".tr(),

@@ -33,8 +33,9 @@ void main() {
     vm.reference = Reference();
     expect(handler.resolveDraftKey(vm), "update_reference_10_new");
 
-    vm.selectedReferenceType = null;
-    vm.reference = Reference(id: 5);
+    vm
+      ..selectedReferenceType = null
+      ..reference = Reference(id: 5);
     expect(handler.resolveDraftKey(vm), "update_reference_na_5");
   });
 
@@ -117,17 +118,17 @@ void main() {
       expect(vm.normalizeStatusForDropdown(""), null);
     });
     test("syncControllersWithReference syncs all fields", () {
-      vm.reference = Reference(
-        name: "Name",
-        description: "Desc",
-        reference1: "R1",
-        reference2: "R2",
-        reference3: "R3",
-        reference4: "R4",
-        reference5: "R5",
-      );
-
-      vm.syncControllersWithReference();
+      vm
+        ..reference = Reference(
+          name: "Name",
+          description: "Desc",
+          reference1: "R1",
+          reference2: "R2",
+          reference3: "R3",
+          reference4: "R4",
+          reference5: "R5",
+        )
+        ..syncControllersWithReference();
 
       expect(vm.nameController.text, "Name");
       expect(vm.descriptionController.text, "Desc");
@@ -158,8 +159,9 @@ void main() {
       bool called = false;
       Globals.onAutoSave = () async => called = true;
 
-      vm.onUpdateReferenceData(Reference());
-      vm.onFieldChanged();
+      vm
+        ..onUpdateReferenceData(Reference())
+        ..onFieldChanged();
 
       expect(called, false);
     });
@@ -223,8 +225,9 @@ void main() {
       bool called = false;
       Globals.onAutoSave = () async => called = true;
 
-      vm.formKey = GlobalKey<FormState>(); // never validated
-      vm.onFieldChanged();
+      vm
+        ..formKey = GlobalKey<FormState>() // never validated
+        ..onFieldChanged();
 
       expect(called, false);
     });
@@ -305,8 +308,9 @@ void main() {
     });
 
     test("resolveDraftKey handles null reference and null type together", () {
-      vm.reference = Reference();
-      vm.selectedReferenceType = null;
+      vm
+        ..reference = Reference()
+        ..selectedReferenceType = null;
 
       final key = handler.resolveDraftKey(vm);
 
@@ -314,8 +318,9 @@ void main() {
     });
   });
   test("resolveDraftKey uses na when referenceType id missing", () {
-    vm.selectedReferenceType = ReferenceType(name: "NoId");
-    vm.reference = Reference(id: 7);
+    vm
+      ..selectedReferenceType = ReferenceType(name: "NoId")
+      ..reference = Reference(id: 7);
 
     final key = handler.resolveDraftKey(vm);
 

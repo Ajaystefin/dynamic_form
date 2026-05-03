@@ -110,17 +110,19 @@ class EncryptionHelper {
       final webInfo = await deviceInfo.webBrowserInfo;
 
       // Create identifier from web browser info
-      buffer.write(webInfo.userAgent ?? "");
-      buffer.write(webInfo.language ?? "");
-      buffer.write(webInfo.platform ?? "");
-      buffer.write(webInfo.vendor ?? "");
-      buffer.write(webInfo.vendorSub ?? "");
-      buffer.write(webInfo.hardwareConcurrency?.toString() ?? "");
-      buffer.write(webInfo.maxTouchPoints?.toString() ?? "");
+      buffer
+        ..write(webInfo.userAgent ?? "")
+        ..write(webInfo.language ?? "")
+        ..write(webInfo.platform ?? "")
+        ..write(webInfo.vendor ?? "")
+        ..write(webInfo.vendorSub ?? "")
+        ..write(webInfo.hardwareConcurrency?.toString() ?? "")
+        ..write(webInfo.maxTouchPoints?.toString() ?? "");
     } catch (e) {
       // Fallback for testing or unsupported platforms
-      buffer.write("fallback-device-id");
-      buffer.write(DateTime.now().timeZoneOffset.inMinutes.toString());
+      buffer
+        ..write("fallback-device-id")
+        ..write(DateTime.now().timeZoneOffset.inMinutes.toString());
     }
 
     // Generate UUID v5 based on device info for consistency

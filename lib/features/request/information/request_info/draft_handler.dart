@@ -49,9 +49,9 @@ class RequestInfoDraftHandler extends DraftHandler<RequestInfoViewModel> {
 
       // Dates: save from state first, fallback to applicationDetails
       "allDocRecvdDate":
-          (vm.applicationDetails?.dateAllDocumentReceived)?.toIso8601String(),
+          vm.applicationDetails?.dateAllDocumentReceived?.toIso8601String(),
       "custRequestReceived":
-          (vm.applicationDetails?.custRequestReceived)?.toIso8601String(),
+          vm.applicationDetails?.custRequestReceived?.toIso8601String(),
       "presentReviewDate": (vm.state.presentReviewDate ??
               vm.applicationDetails?.presentReviewDate)
           ?.toIso8601String(),
@@ -269,20 +269,20 @@ class RequestInfoDraftHandler extends DraftHandler<RequestInfoViewModel> {
     vm.applicationDetails?.custRequestReceived = defaultCustReqRecvdDate;
 
     // Update VM methods (keeps any internal sync logic)
-    vm.updatePresentReviewDate(present);
-    vm.updateNextReviewDate(next);
-    vm.updateMarkForwardDate(markForward);
-
-    // Final state patch: make sure date pickers see the exact restored state
-    vm.emit(
-      vm.state.copyWith(
-        presentReviewDate: present,
-        nextReviewDate: next,
-        markForwardDate: markForward,
-        defaultPresentReviewDate: defaultPresent,
-        defaultNextReviewDate: defaultNext,
-        overrideDate: overrideDate,
-      ),
-    );
+    vm
+      ..updatePresentReviewDate(present)
+      ..updateNextReviewDate(next)
+      ..updateMarkForwardDate(markForward)
+      // Final state patch: make sure date pickers see the exact restored state
+      ..emit(
+        vm.state.copyWith(
+          presentReviewDate: present,
+          nextReviewDate: next,
+          markForwardDate: markForward,
+          defaultPresentReviewDate: defaultPresent,
+          defaultNextReviewDate: defaultNext,
+          overrideDate: overrideDate,
+        ),
+      );
   }
 }

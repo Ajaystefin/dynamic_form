@@ -125,9 +125,10 @@ void main() {
     );
 
     // ViewModel
-    vm = SearchProjectViewModel();
-    vm.repository = mockRepo;
-    vm.formKey = GlobalKey<FormState>();
+    vm = SearchProjectViewModel()
+      ..repository = mockRepo
+      ..formKey = GlobalKey<FormState>()
+      ..referenceDataService = mockRefService;
 
     // Allow overriding the singleton AlertManager if your implementation
     // supports it.
@@ -137,7 +138,6 @@ void main() {
 
     // Inject the reference data service via the setter (requires tiny seam in
     // VM)
-    vm.referenceDataService = mockRefService;
     ReferenceDataService.overrideInstance(mockRefService);
 
     registerFallbackValue(Role());
@@ -363,10 +363,10 @@ void main() {
     });
 
     test("project path selects project list and resets selection", () {
-      vm.projectTypeRefItems = [Reference(name: "P")];
-      vm.contractTypeRefItems = [Reference(name: "C")];
-
-      vm.onChangedSearchByValue(SearchByOption.project);
+      vm
+        ..projectTypeRefItems = [Reference(name: "P")]
+        ..contractTypeRefItems = [Reference(name: "C")]
+        ..onChangedSearchByValue(SearchByOption.project);
 
       expect(vm.searchCriteriaItems!.first.name, "P");
       expect(vm.searchCriteriaValue?.name, "Select");
@@ -376,10 +376,10 @@ void main() {
     });
 
     test("contract path selects contract list and resets selection", () {
-      vm.projectTypeRefItems = [Reference(name: "P")];
-      vm.contractTypeRefItems = [Reference(name: "C")];
-
-      vm.onChangedSearchByValue(SearchByOption.contract);
+      vm
+        ..projectTypeRefItems = [Reference(name: "P")]
+        ..contractTypeRefItems = [Reference(name: "C")]
+        ..onChangedSearchByValue(SearchByOption.contract);
       expect(vm.searchCriteriaItems!.first.name, "C");
       expect(vm.searchCriteriaValue?.name, "Select");
     });
@@ -400,11 +400,12 @@ void main() {
 
   group("onSearchCriteriaSelected", () {
     test("sets selected, clears text, shows field, hides table", () {
-      vm.dropDownFeildText = "old";
-      vm.controllerDropDownFeildText.text = "old";
-      vm.onSearchCriteriaSelected(
-        Reference(name: "Project Code", description: "projectCode"),
-      );
+      vm
+        ..dropDownFeildText = "old"
+        ..controllerDropDownFeildText.text = "old"
+        ..onSearchCriteriaSelected(
+          Reference(name: "Project Code", description: "projectCode"),
+        );
 
       expect(vm.searchCriteriaValue!.name, "Project Code");
       expect(vm.controllerDropDownFeildText.text, "");
@@ -527,10 +528,11 @@ void main() {
 
     testWidgets("project path: builds payload, calls repo, sets projects",
         (tester) async {
-      vm.pageMode = PageMode.edit;
-      vm.selectedSearchByValue = SearchByOption.project;
-      vm.searchCriteriaValue =
-          Reference(name: "Project Code", description: "projectCode");
+      vm
+        ..pageMode = PageMode.edit
+        ..selectedSearchByValue = SearchByOption.project
+        ..searchCriteriaValue =
+            Reference(name: "Project Code", description: "projectCode");
 
       when(
         () => mockRepo.getSearchProjectDetails(
@@ -571,10 +573,11 @@ void main() {
 
     testWidgets("contract path: builds payload and sets contracts",
         (tester) async {
-      vm.pageMode = PageMode.edit;
-      vm.selectedSearchByValue = SearchByOption.contract;
-      vm.searchCriteriaValue =
-          Reference(name: "Contract Code", description: "contractCode");
+      vm
+        ..pageMode = PageMode.edit
+        ..selectedSearchByValue = SearchByOption.contract
+        ..searchCriteriaValue =
+            Reference(name: "Contract Code", description: "contractCode");
 
       when(
         () => mockRepo.getSearchProjectDetails(
@@ -693,11 +696,11 @@ void main() {
 
   group("reset & navigation", () {
     test("onResetPressed resets flags and fields", () {
-      vm.customerRimNoLoadingStatus = LoadingStatus.loading;
-      vm.dropDownFeildText = "abc";
-      vm.searchCriteriaValue = Reference(name: "Old");
-
-      vm.onResetPressed(FakeBuildContext());
+      vm
+        ..customerRimNoLoadingStatus = LoadingStatus.loading
+        ..dropDownFeildText = "abc"
+        ..searchCriteriaValue = Reference(name: "Old")
+        ..onResetPressed(FakeBuildContext());
 
       expect(vm.customerRimNoLoadingStatus, LoadingStatus.loaded);
       expect(vm.dropDownFeildText, isNull);
@@ -718,12 +721,13 @@ void main() {
     });
 
     test("onPressedProjectView/onPressedContractView route with extra", () {
-      vm.onPressedProjectView(
-        project: Project(projectCode: "1", projectName: "P"),
-      );
-      vm.onPressedContractView(
-        contract: Project(projectCode: "2", projectName: "C"),
-      );
+      vm
+        ..onPressedProjectView(
+          project: Project(projectCode: "1", projectName: "P"),
+        )
+        ..onPressedContractView(
+          contract: Project(projectCode: "2", projectName: "C"),
+        );
       // If your router is testable, assert `.go` was called, otherwise covering
       // lines is sufficient
     });

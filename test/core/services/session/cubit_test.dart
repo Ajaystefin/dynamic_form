@@ -117,9 +117,8 @@ void main() {
 
     sessionCubit = SessionCubit()
       ..stopSession()
-      ..status = SessionStatus.active;
-
-    sessionCubit.continueSession();
+      ..status = SessionStatus.active
+      ..continueSession();
   });
 
   tearDown(() async {
@@ -184,14 +183,16 @@ void main() {
   });
 
   test("userInteracted ignored when inactive", () {
-    sessionCubit.status = SessionStatus.inactive;
-    sessionCubit.userInteracted();
+    sessionCubit
+      ..status = SessionStatus.inactive
+      ..userInteracted();
     expect(sessionCubit.status, SessionStatus.inactive);
   });
 
   test("continueSession always restores active", () {
-    sessionCubit.status = SessionStatus.inactive;
-    sessionCubit.continueSession();
+    sessionCubit
+      ..status = SessionStatus.inactive
+      ..continueSession();
     expect(sessionCubit.status, SessionStatus.active);
   });
 
@@ -225,8 +226,9 @@ void main() {
     SessionManager.sessionDuration = const Duration(seconds: 10);
     SessionManager.warningDuration = const Duration(seconds: 10);
 
-    sessionCubit.startSession(mockContext: ctx);
-    sessionCubit.startSession(mockContext: ctx);
+    sessionCubit
+      ..startSession(mockContext: ctx)
+      ..startSession(mockContext: ctx);
 
     await tester.pump(const Duration(seconds: 1));
     expect(sessionCubit.status, SessionStatus.active);
@@ -247,8 +249,7 @@ void main() {
   });
 
   test("logout early-return when already loggedOut", () async {
-    sessionCubit.status = SessionStatus.loggedOut;
-    await sessionCubit.logout();
+    await (sessionCubit..status = SessionStatus.loggedOut).logout();
     expect(sessionCubit.status, SessionStatus.loggedOut);
   });
 

@@ -17,9 +17,9 @@ void main() {
       Reference? role,
       List<FileAccess>? accesses,
     }) {
-      final vm = FileAccessViewModel();
-      vm.selectedRoleType = role;
-      vm.fileAccesses = accesses ?? [];
+      final vm = FileAccessViewModel()
+        ..selectedRoleType = role
+        ..fileAccesses = accesses ?? [];
       return vm;
     }
 

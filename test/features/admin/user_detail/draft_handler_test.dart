@@ -25,19 +25,17 @@ void main() {
   // Helper
   // ---------------------------------------------------------------------------
   UserDetailViewModel buildVm({String? userId}) {
-    final vm = UserDetailViewModel();
-
-    // ✅ REQUIRED: seed islamic dropdown options (otherwise applyDraft crashes)
-    vm.islamicRelationshipUserOptions = [
-      Reference(
-        id: 0,
-        name: "requestInformation.requestInformation.yes".tr(),
-      ),
-      Reference(
-        id: 1,
-        name: "requestInformation.requestInformation.no".tr(),
-      ),
-    ];
+    final vm = UserDetailViewModel()
+      ..islamicRelationshipUserOptions = [
+        Reference(
+          id: 0,
+          name: "requestInformation.requestInformation.yes".tr(),
+        ),
+        Reference(
+          id: 1,
+          name: "requestInformation.requestInformation.no".tr(),
+        ),
+      ];
 
     if (userId != null) {
       vm.userDetails = User(
@@ -86,8 +84,8 @@ void main() {
   });
 
   test("resolveDraftKey uses selectUserListItem id when present", () {
-    final vm = UserDetailViewModel();
-    vm.selectUserListItem = User(id: "456", name: "Selected User");
+    final vm = UserDetailViewModel()
+      ..selectUserListItem = User(id: "456", name: "Selected User");
 
     final key = handler.resolveDraftKey(vm);
 

@@ -58,7 +58,7 @@ class CommentsTableWidget extends StatelessWidget {
 
     const int previewCharLimit = 50;
 
-    return List.generate((comments).length, (index) {
+    return List.generate(comments.length, (index) {
       final Comment comment = comments[index];
 
       final String commentText = (comment.comment ?? "").trim();

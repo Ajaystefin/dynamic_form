@@ -243,9 +243,10 @@ void main() {
     });
 
     test("onSave processes form data correctly when valid", () async {
-      viewModel.formKey = mockGlobalKey;
-      viewModel.creditCommitteeRecommendations = "Updated recommendation";
-      viewModel.ccoComments = "Updated CCO comment";
+      viewModel
+        ..formKey = mockGlobalKey
+        ..creditCommitteeRecommendations = "Updated recommendation"
+        ..ccoComments = "Updated CCO comment";
 
       await viewModel.onSave();
 
@@ -330,10 +331,11 @@ void main() {
     });
 
     test("all comment fields can be cleared", () {
-      viewModel.creditCommitteeRecommendations = "";
-      viewModel.ccoComments = "";
-      viewModel.ceoComments = "";
-      viewModel.bcicComments = "";
+      viewModel
+        ..creditCommitteeRecommendations = ""
+        ..ccoComments = ""
+        ..ceoComments = ""
+        ..bcicComments = "";
 
       expect(viewModel.creditCommitteeRecommendations, "");
       expect(viewModel.ccoComments, "");
@@ -452,11 +454,12 @@ void main() {
 
     test("onSavePress show success toast after bypassing validation", () async {
       // Arrange
-      viewModel.ccoComments = "Test1";
-      viewModel.ceoComments = "Test2";
-      viewModel.bcicComments = "Test3";
-      viewModel.creditCommitteeRecommendations = "Test4";
-      viewModel.formKey = mockGlobalKey;
+      viewModel
+        ..ccoComments = "Test1"
+        ..ceoComments = "Test2"
+        ..bcicComments = "Test3"
+        ..creditCommitteeRecommendations = "Test4"
+        ..formKey = mockGlobalKey;
       when(() => mockAlert.showSuccessToast(any())).thenReturn(null);
       when(
         () => mockApprovalRepository.saveApplicationStrategyDetails(
@@ -583,17 +586,19 @@ void main() {
       expect(viewModel.canSubmit, false);
       expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
 
-      viewModel.onTextChange("", 1);
-      viewModel.onTextChange("New Comment", 2);
-      viewModel.onTextChange("", 3);
-      viewModel.onTextChange("", 4);
+      viewModel
+        ..onTextChange("", 1)
+        ..onTextChange("New Comment", 2)
+        ..onTextChange("", 3)
+        ..onTextChange("", 4);
       expect(viewModel.canSubmit, false);
       expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
 
-      viewModel.onTextChange("New Comment 1", 1);
-      viewModel.onTextChange("New Comment 2", 2);
-      viewModel.onTextChange("New Comment 3", 3);
-      viewModel.onTextChange("New Comment 4", 4);
+      viewModel
+        ..onTextChange("New Comment 1", 1)
+        ..onTextChange("New Comment 2", 2)
+        ..onTextChange("New Comment 3", 3)
+        ..onTextChange("New Comment 4", 4);
       expect(viewModel.canSubmit, true);
       expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
     });

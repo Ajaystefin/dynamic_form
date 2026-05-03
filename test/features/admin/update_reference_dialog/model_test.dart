@@ -30,9 +30,9 @@ void main() {
 
   setUp(() {
     mockRepository = MockAdminRepository();
-    viewModel = UpdateReferenceDialogViewModel();
-    // Set the repository directly instead of using the singleton
-    viewModel.repository = mockRepository;
+    viewModel = UpdateReferenceDialogViewModel()
+      ..repository = mockRepository
+      ..reference = Reference(id: 1, name: "Ref", status: "active");
     formKey = GlobalKey<FormState>();
     viewModel.formKey = formKey;
     formKey = GlobalKey<FormState>();

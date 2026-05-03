@@ -1,4 +1,3 @@
-import "package:wcas_frontend/core/components/rich_text_editor/unified_editor_controller.dart";
 import "package:wcas_frontend/core/services/draft/draft_handler_base.dart";
 import "package:wcas_frontend/features/request/approval/group_summary/model.dart";
 import "package:wcas_frontend/models/request/comment.dart";
@@ -17,13 +16,11 @@ class GroupSummaryTabsDraftHandler extends DraftHandler<GroupSummaryViewModel> {
     final String? commentContent = _asString(data["strategyComment"]);
     if (commentContent != null) {
       vm.comment ??= Comment();
-      UnifiedEditorController commentCtrls() => vm.controller;
-
-      vm.comment!.comment = commentContent;
-      commentCtrls().setText(commentContent);
-      vm.initialText = commentContent;
-      // Nudge UI to rebuild if it binds directly to VM fields
-      vm.emit(vm.state.copyWith());
+      vm
+        ..comment!.comment = commentContent
+        ..controller.setText(commentContent)
+        ..initialText = commentContent
+        ..emit(vm.state.copyWith());
     }
   }
 

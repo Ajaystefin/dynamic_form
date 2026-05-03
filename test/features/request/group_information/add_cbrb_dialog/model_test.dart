@@ -93,9 +93,9 @@ void main() {
     // replace the next line with your actual override method.
     // CustomerRepository.overrideInstance(mockCustomerRepository);
 
-    viewModel = AddCbrbDialogViewModel();
-    viewModel.repository = mockRepository;
-    viewModel.customerRepository = mockCustomerRepository;
+    viewModel = AddCbrbDialogViewModel()
+      ..repository = mockRepository
+      ..customerRepository = mockCustomerRepository;
   });
 
   tearDown(() async {
@@ -145,10 +145,9 @@ void main() {
         stubGetApplicationDetails: () async {
           // simulate getApplicationDetails success
         },
-      );
-
-      vm.repository = mockRepository;
-      vm.customerRepository = mockCustomerRepository;
+      )
+        ..repository = mockRepository
+        ..customerRepository = mockCustomerRepository;
 
       await vm.init(MockBuildContext());
 
@@ -164,10 +163,9 @@ void main() {
         " selectedCustomer and customerName", () async {
       final vm = TestableAddCbrbDialogViewModel(
         stubGetApplicationDetails: () async {},
-      );
-
-      vm.repository = mockRepository;
-      vm.customerRepository = mockCustomerRepository;
+      )
+        ..repository = mockRepository
+        ..customerRepository = mockCustomerRepository;
 
       final initial = CBRB()
         ..rimNo = 555
@@ -264,12 +262,13 @@ void main() {
       when(() => mockRepository.saveCBRBData(any()))
           .thenAnswer((_) async => "saved");
 
-      viewModel.selectedCustomer = Customer(
-        customerRimNo: 123,
-        customerName: "New Customer",
-      );
-      viewModel.currentCbrbItems = CBRB();
-      viewModel.cbrbCollection = null; // to cover ??= []
+      viewModel
+        ..selectedCustomer = Customer(
+          customerRimNo: 123,
+          customerName: "New Customer",
+        )
+        ..currentCbrbItems = CBRB()
+        ..cbrbCollection = null; // to cover ??= []
 
       await tester.pumpWidget(
         MaterialApp(
@@ -309,13 +308,14 @@ void main() {
       when(() => mockRepository.saveCBRBData(any()))
           .thenAnswer((_) async => "updated");
 
-      viewModel.initialCbrbs = CBRB();
-      viewModel.selectedCustomer = Customer(
-        customerRimNo: 777,
-        customerName: "Existing Customer",
-      );
-      viewModel.currentCbrbItems = CBRB();
-      viewModel.cbrbCollection = [];
+      viewModel
+        ..initialCbrbs = CBRB()
+        ..selectedCustomer = Customer(
+          customerRimNo: 777,
+          customerName: "Existing Customer",
+        )
+        ..currentCbrbItems = CBRB()
+        ..cbrbCollection = [];
 
       await tester.pumpWidget(
         MaterialApp(
@@ -351,12 +351,13 @@ void main() {
       when(() => mockRepository.saveCBRBData(any()))
           .thenThrow(Exception("save failed"));
 
-      viewModel.selectedCustomer = Customer(
-        customerRimNo: 999,
-        customerName: "Fail Customer",
-      );
-      viewModel.currentCbrbItems = CBRB();
-      viewModel.cbrbCollection = [];
+      viewModel
+        ..selectedCustomer = Customer(
+          customerRimNo: 999,
+          customerName: "Fail Customer",
+        )
+        ..currentCbrbItems = CBRB()
+        ..cbrbCollection = [];
 
       await tester.pumpWidget(
         MaterialApp(
@@ -383,18 +384,17 @@ void main() {
 
   group("direct property logic coverage", () {
     test("CBRB properties are set correctly before save", () {
-      viewModel.selectedCustomer = Customer(
-        customerRimNo: 123,
-        customerName: "Test",
-      );
-      viewModel.currentCbrbItems = CBRB();
-      viewModel.cbrbCollection = [];
+      viewModel
+        ..selectedCustomer = Customer(
+          customerRimNo: 123,
+          customerName: "Test",
+        )
+        ..currentCbrbItems = CBRB()
+        ..cbrbCollection = [];
 
       final updatedData = viewModel.currentCbrbItems
         ..rimNo = viewModel.selectedCustomer?.customerRimNo
-        ..customerName = viewModel.selectedCustomer?.customerName;
-
-      updatedData
+        ..customerName = viewModel.selectedCustomer?.customerName
         ..news = true
         ..deleted = false;
 
@@ -405,12 +405,13 @@ void main() {
     });
 
     test("json conversion works for populated cbrbCollection", () {
-      viewModel.selectedCustomer = Customer(
-        customerRimNo: 321,
-        customerName: "Json Customer",
-      );
-      viewModel.currentCbrbItems = CBRB();
-      viewModel.cbrbCollection = [];
+      viewModel
+        ..selectedCustomer = Customer(
+          customerRimNo: 321,
+          customerName: "Json Customer",
+        )
+        ..currentCbrbItems = CBRB()
+        ..cbrbCollection = [];
 
       final updatedData = viewModel.currentCbrbItems
         ..rimNo = viewModel.selectedCustomer?.customerRimNo

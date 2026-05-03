@@ -11,9 +11,9 @@ class RelationshipUtilization {
   RelationshipUtilization.fromJson(Map<String, dynamic> json) {
     rim = json["rim"] as int?;
     customerName = json["customerName"] as String?;
-    clientTurnover = (json["clientTurnover"]).toString();
-    throughputToCbdPercentage = (json["throughputToCbdPercentage"]).toString();
-    turnoverInCbdCua = (json["turnoverInCbdCua"]).toString();
+    clientTurnover = json["clientTurnover"].toString();
+    throughputToCbdPercentage = json["throughputToCbdPercentage"].toString();
+    turnoverInCbdCua = json["turnoverInCbdCua"].toString();
 
     // Accept both backend key and your desired key
     final dynamic detailsRaw = json["relationshipRevenueDetails"] ??

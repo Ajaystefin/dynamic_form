@@ -61,16 +61,15 @@ class PresentOutstanding extends StatelessWidget {
                   selectedValue.first;
 
               //   Toggle converted AED field
-              viewModel.onCurrencyChanged(
-                selectedValue.first,
-                CurrencyField.presentOutstanding,
-              );
-
-              //   Convert amount
-              viewModel.getCurrencyRates(
-                selectedValue.first,
-                CurrencyField.presentOutstanding,
-              );
+              viewModel
+                ..onCurrencyChanged(
+                  selectedValue.first,
+                  CurrencyField.presentOutstanding,
+                )
+                ..getCurrencyRates(
+                  selectedValue.first,
+                  CurrencyField.presentOutstanding,
+                );
             }
           },
           itemBuilder: (context, item, isDisabled, isSelected) {

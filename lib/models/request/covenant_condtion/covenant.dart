@@ -93,7 +93,7 @@ class Covenant {
               .map((e) => Facility.fromJson(e))
               .toList()
           : [],
-      facilityIdList: (json["facilityIdList"]),
+      facilityIdList: json["facilityIdList"],
     );
   }
   int? covenantConditionId;

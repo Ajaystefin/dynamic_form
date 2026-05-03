@@ -17,8 +17,9 @@ void main() {
   // ---------------------------------------------------------------------------
 
   test("buildDraftData returns strategyComment and canSubmit", () {
-    vm.strategyComment = "closure comment";
-    vm.canSubmit = true;
+    vm
+      ..strategyComment = "closure comment"
+      ..canSubmit = true;
 
     final draft = handler.buildDraftData(vm);
 
@@ -28,8 +29,9 @@ void main() {
   });
 
   test("buildDraftData works with empty strategyComment", () {
-    vm.strategyComment = "";
-    vm.canSubmit = false;
+    vm
+      ..strategyComment = ""
+      ..canSubmit = false;
 
     final draft = handler.buildDraftData(vm);
 
@@ -74,8 +76,9 @@ void main() {
   });
 
   test("applyDraft ignores null values safely", () {
-    vm.strategyComment = "before";
-    vm.canSubmit = true;
+    vm
+      ..strategyComment = "before"
+      ..canSubmit = true;
 
     handler.applyDraft(vm, {
       "strategyComment": null,
@@ -87,8 +90,9 @@ void main() {
   });
 
   test("applyDraft ignores unrelated keys", () {
-    vm.strategyComment = "before";
-    vm.canSubmit = false;
+    vm
+      ..strategyComment = "before"
+      ..canSubmit = false;
 
     handler.applyDraft(vm, {
       "foo": "bar",
@@ -100,8 +104,9 @@ void main() {
   });
 
   test("applyDraft does nothing when draft map is empty", () {
-    vm.strategyComment = "before";
-    vm.canSubmit = true;
+    vm
+      ..strategyComment = "before"
+      ..canSubmit = true;
 
     handler.applyDraft(vm, {});
 

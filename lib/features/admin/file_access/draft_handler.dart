@@ -59,10 +59,10 @@ class FileAccessDraftHandler extends DraftHandler<FileAccessViewModel> {
           )
           .toList();
 
-      vm.fileAccesses = restored;
-
-      vm.firstLevelParentsWithChildren =
-          restored.where((e) => e.children?.isNotEmpty == true).toList();
+      vm
+        ..fileAccesses = restored
+        ..firstLevelParentsWithChildren =
+            restored.where((e) => e.children?.isNotEmpty == true).toList();
 
       logger.i(
         "FileAccess draft restored (${restored.length} root nodes)",

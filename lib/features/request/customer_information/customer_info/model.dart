@@ -45,7 +45,7 @@ class CustomerInfoViewModel extends SafeCubit<CustomerInfoState>
   List<TextEditingController> rimControllers = [];
 
   bool get canEdit =>
-      (pageMode == PageMode.edit); // && Utils.canEditApplication();
+      pageMode == PageMode.edit; // && Utils.canEditApplication();
 
   Map<String, List<Reference>> referenceData = {};
   List<Country>? countries;
@@ -92,9 +92,9 @@ class CustomerInfoViewModel extends SafeCubit<CustomerInfoState>
     RegExp(r"[a-zA-Z0-9 ,\-./#&']"),
   );
 
-  Reference? selectedApplicationType,
-      selectedRequestType,
-      selectedBusinessSegment;
+  Reference? selectedApplicationType;
+  Reference? selectedRequestType;
+  Reference? selectedBusinessSegment;
 
   // ---------------------------------------------------------------------------
   // DraftMixin implementation
@@ -419,7 +419,7 @@ class CustomerInfoViewModel extends SafeCubit<CustomerInfoState>
   Future<void> getChildRimsForGroup() async {
     try {
       if (Utils.isGroupApplication()) {
-        customerList = (await repositoryCustomer.getChildRimsForGroup() ?? []);
+        customerList = await repositoryCustomer.getChildRimsForGroup() ?? [];
         if ((customerList ?? []).isNotEmpty) {
           selectedCustomer = customerList?.first;
         }
@@ -666,12 +666,13 @@ class CustomerInfoViewModel extends SafeCubit<CustomerInfoState>
         if (rimControllers.length > index) {
           rimControllers[index].clear();
         }
-        owner.custOwnershipRim = 0;
-        owner.custOwnershipName = "";
-        owner.nationality = "";
-        owner.resident = "";
-        owner.identificationDetail = "";
-        owner.identificationNumber = "";
+        owner
+          ..custOwnershipRim = 0
+          ..custOwnershipName = ""
+          ..nationality = ""
+          ..resident = ""
+          ..identificationDetail = ""
+          ..identificationNumber = "";
       }
     }
 
@@ -1223,7 +1224,7 @@ class CustomerInfoViewModel extends SafeCubit<CustomerInfoState>
 
   void onSelectPropsedSicCode(List<Reference> selectedValue) {
     customerInformation?.proposedSICCode = selectedValue.first.name;
-    selectedProposedSicCode = (selectedValue.first);
+    selectedProposedSicCode = selectedValue.first;
     customerInformation?.industryDescription = selectedValue.first.description;
     customerInformation?.industrySicCode = selectedValue.first.name;
     emit(state.copyWith(loaderStatus: LoadingStatus.loaded));

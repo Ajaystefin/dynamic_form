@@ -159,10 +159,10 @@ void main() {
     mockRepo = MockDashboardRepository();
     // mockAuthRepo = MockAuthRepository();
 
-    viewModel = HomeViewModel();
-    // mockContext = MockContext();
+    viewModel = HomeViewModel()
+      // mockContext = MockContext();
 
-    viewModel.repository = mockRepo;
+      ..repository = mockRepo;
 
     mockLocalStorageService = MockLocalStorageService();
 
@@ -929,13 +929,14 @@ void main() {
           ),
         ).thenAnswer((_) async => []);
 
-        viewModel.selectedSummary = SummaryType.me;
+        viewModel
+          ..selectedSummary = SummaryType.me
 
-        // Act
-        viewModel.onClickBarGraphLegend(
-          "New to Bank",
-          selectedDocStage: null,
-        );
+          // Act
+          ..onClickBarGraphLegend(
+            "New to Bank",
+            selectedDocStage: null,
+          );
 
         // Assert
         expect(viewModel.selectedBarGraphLegendLabel, "New to Bank");
@@ -963,13 +964,14 @@ void main() {
           ),
         ).thenAnswer((_) async => []);
 
-        viewModel.selectedSummary = SummaryType.me;
+        viewModel
+          ..selectedSummary = SummaryType.me
 
-        // First click
-        viewModel.onClickBarGraphLegend("New to Bank");
+          // First click
+          ..onClickBarGraphLegend("New to Bank")
 
-        // Second click (toggle off)
-        viewModel.onClickBarGraphLegend("New to Bank");
+          // Second click (toggle off)
+          ..onClickBarGraphLegend("New to Bank");
 
         // Assert
         expect(viewModel.selectedBarGraphLegendLabel, isNull);
@@ -1018,8 +1020,7 @@ void main() {
     late HomeViewModel viewModel;
 
     setUp(() {
-      viewModel = HomeViewModel();
-      viewModel.showCreateRequest = false;
+      viewModel = HomeViewModel()..showCreateRequest = false;
     });
 
     test("sets showCreateRequest TRUE for allowed roles", () {
@@ -1033,8 +1034,9 @@ void main() {
           currentRole: Role()..userRole = role,
         );
 
-        viewModel.showCreateRequest = false;
-        viewModel.showCreateReq();
+        viewModel
+          ..showCreateRequest = false
+          ..showCreateReq();
 
         expect(
           viewModel.showCreateRequest,
@@ -1217,12 +1219,13 @@ void main() {
       "fetches users when BPM roles exist and match Globals.superBpmRolesId",
       () async {
         // summaryFirstStringForType → "1,2"
-        viewModel.summaryData = Summary(
-          pendingWithMe: {
-            1: AssignToDetail(assingToRoles: "1,2"),
-          },
-        );
-        viewModel.selectedSummary = SummaryType.me;
+        viewModel
+          ..summaryData = Summary(
+            pendingWithMe: {
+              1: AssignToDetail(assingToRoles: "1,2"),
+            },
+          )
+          ..selectedSummary = SummaryType.me;
 
         Globals.superBpmRolesId = [
           {"RM": 1},
@@ -1252,12 +1255,13 @@ void main() {
     test(
       "does not call repo when no roles match wanted role IDs",
       () async {
-        viewModel.summaryData = Summary(
-          pendingWithMe: {
-            1: AssignToDetail(assingToRoles: "9"),
-          },
-        );
-        viewModel.selectedSummary = SummaryType.me;
+        viewModel
+          ..summaryData = Summary(
+            pendingWithMe: {
+              1: AssignToDetail(assingToRoles: "9"),
+            },
+          )
+          ..selectedSummary = SummaryType.me;
 
         Globals.superBpmRolesId = [
           {"RM": 1},
@@ -1275,12 +1279,13 @@ void main() {
     test(
       "removes duplicate role names before calling repository",
       () async {
-        viewModel.summaryData = Summary(
-          pendingWithMe: {
-            1: AssignToDetail(assingToRoles: "1,1,2"),
-          },
-        );
-        viewModel.selectedSummary = SummaryType.me;
+        viewModel
+          ..summaryData = Summary(
+            pendingWithMe: {
+              1: AssignToDetail(assingToRoles: "1,1,2"),
+            },
+          )
+          ..selectedSummary = SummaryType.me;
 
         Globals.superBpmRolesId = [
           {"RM": 1},
@@ -1300,11 +1305,11 @@ void main() {
   });
 
   HomeViewModel createViewModel(MockDashboardRepository repo) {
-    final vm = HomeViewModel();
-    vm.repository = repo;
-    vm.selectedAssignToDetail = AssignToDetail(
-      userAction: 0,
-    );
+    final vm = HomeViewModel()
+      ..repository = repo
+      ..selectedAssignToDetail = AssignToDetail(
+        userAction: 0,
+      );
     return vm;
   }
 
@@ -1320,10 +1325,11 @@ void main() {
     test(
       "throws and shows failure when no assignee and not assign-to-me",
       () async {
-        viewModel.selectedAssignee = null;
-        viewModel.selectedAssignToDetail = AssignToDetail(
-          userAction: 0,
-        );
+        viewModel
+          ..selectedAssignee = null
+          ..selectedAssignToDetail = AssignToDetail(
+            userAction: 0,
+          );
 
         // Toast will throw internally, so wrap safely
         try {
@@ -1350,8 +1356,9 @@ void main() {
     test(
       "throws error when no assignee and not assign-to-me",
       () async {
-        viewModel.selectedAssignee = null;
-        viewModel.selectedAssignToDetail = manualAssignDetail();
+        viewModel
+          ..selectedAssignee = null
+          ..selectedAssignToDetail = manualAssignDetail();
 
         try {
           await viewModel.assignToUser("REF001");
@@ -1381,8 +1388,9 @@ void main() {
     });
 
     test("returns null when summaryData is null", () {
-      viewModel.summaryData = null;
-      viewModel.selectedSummary = SummaryType.me;
+      viewModel
+        ..summaryData = null
+        ..selectedSummary = SummaryType.me;
 
       final result = viewModel.summaryFirstStringForType();
 
@@ -1391,13 +1399,14 @@ void main() {
     });
 
     test("returns first non-empty trimmed assingToRoles", () {
-      viewModel.summaryData = Summary(
-        pendingWithMe: {
-          1: AssignToDetail(assingToRoles: "   "),
-          2: AssignToDetail(assingToRoles: "RM,CA"),
-        },
-      );
-      viewModel.selectedSummary = SummaryType.me;
+      viewModel
+        ..summaryData = Summary(
+          pendingWithMe: {
+            1: AssignToDetail(assingToRoles: "   "),
+            2: AssignToDetail(assingToRoles: "RM,CA"),
+          },
+        )
+        ..selectedSummary = SummaryType.me;
 
       final result = viewModel.summaryFirstStringForType();
 
@@ -1405,13 +1414,14 @@ void main() {
     });
 
     test("preserves insertion order when selecting first role", () {
-      viewModel.summaryData = Summary(
-        pendingWithMe: {
-          10: AssignToDetail(assingToRoles: "FIRST"),
-          20: AssignToDetail(assingToRoles: "SECOND"),
-        },
-      );
-      viewModel.selectedSummary = SummaryType.me;
+      viewModel
+        ..summaryData = Summary(
+          pendingWithMe: {
+            10: AssignToDetail(assingToRoles: "FIRST"),
+            20: AssignToDetail(assingToRoles: "SECOND"),
+          },
+        )
+        ..selectedSummary = SummaryType.me;
 
       final result = viewModel.summaryFirstStringForType();
 
@@ -1422,15 +1432,15 @@ void main() {
       final firstDetail = AssignToDetail(assingToRoles: "ROLE1");
       final secondDetail = AssignToDetail(assingToRoles: "ROLE2");
 
-      viewModel.summaryData = Summary(
-        pendingWithMe: {
-          1: firstDetail,
-          2: secondDetail,
-        },
-      );
-      viewModel.selectedSummary = SummaryType.me;
-
-      viewModel.summaryFirstStringForType();
+      viewModel
+        ..summaryData = Summary(
+          pendingWithMe: {
+            1: firstDetail,
+            2: secondDetail,
+          },
+        )
+        ..selectedSummary = SummaryType.me
+        ..summaryFirstStringForType();
 
       expect(viewModel.selectedAssignToDetail, firstDetail);
     });
@@ -1542,29 +1552,29 @@ void main() {
     late HomeViewModel viewModel;
 
     setUp(() {
-      viewModel = HomeViewModel();
-      viewModel.worklistData = [
-        Request(
-          customerName: "Alice",
-          applicationRefNo: "REF123",
-          customerRimNo: 111,
-          requestedBy: "John",
-          receivedFrom: "Branch",
-          status: "APPROVED",
-          applicationType: Reference(name: "TYPE_A"),
-          businessSegment: Reference(name: "CORPORATE"),
-        ),
-        Request(
-          customerName: "Bob",
-          applicationRefNo: "XYZ999",
-          customerRimNo: 222,
-          requestedBy: "Mary",
-          receivedFrom: "Online",
-          status: "PENDING",
-          applicationType: Reference(name: "TYPE_B"),
-          businessSegment: Reference(name: "BUSINESS"),
-        ),
-      ];
+      viewModel = HomeViewModel()
+        ..worklistData = [
+          Request(
+            customerName: "Alice",
+            applicationRefNo: "REF123",
+            customerRimNo: 111,
+            requestedBy: "John",
+            receivedFrom: "Branch",
+            status: "APPROVED",
+            applicationType: Reference(name: "TYPE_A"),
+            businessSegment: Reference(name: "CORPORATE"),
+          ),
+          Request(
+            customerName: "Bob",
+            applicationRefNo: "XYZ999",
+            customerRimNo: 222,
+            requestedBy: "Mary",
+            receivedFrom: "Online",
+            status: "PENDING",
+            applicationType: Reference(name: "TYPE_B"),
+            businessSegment: Reference(name: "BUSINESS"),
+          ),
+        ];
     });
 
     test("filters by applicantName", () async {

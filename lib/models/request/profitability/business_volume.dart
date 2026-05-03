@@ -12,7 +12,7 @@ class BusinessVolume {
     natureOfBusiness = json["natureOfBusiness"] ?? "";
     previousYear = json["previousYear"] ?? "";
     currentYearYtd = json["currentYearYtd"] ?? "";
-    estimatesForNextYear = (json["estimatesForNextYear"])?.toString();
+    estimatesForNextYear = json["estimatesForNextYear"]?.toString();
   }
   int? businessVolumeId; // Added for API compatibility
   String? natureOfBusiness;

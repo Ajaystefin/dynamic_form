@@ -95,7 +95,7 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
   bool get isReadOnly => pageMode == PageMode.view;
 
   PageMode? covenantEditPageMode;
-  bool get canEdit => (covenantEditPageMode == PageMode.edit);
+  bool get canEdit => covenantEditPageMode == PageMode.edit;
 
   /// Checks if the covenant is being updated.
   bool isUpdateCovenant() => covenant != null;
@@ -324,7 +324,7 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
     try {
       if (Utils.isGroupApplication()) {
         customerList =
-            (await CustomerRepository.instance.getChildRimsForGroup() ?? []);
+            await CustomerRepository.instance.getChildRimsForGroup() ?? [];
       } else {
         // Fallback for non-owner: use customers already in this request
         customerList = Globals.request?.customers ?? [];
@@ -584,12 +584,12 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
       //      prefill NameField with custName (e.g., "test2").
       //      This is ONLY for rimNo == 9999 as per requirement.
       // ------------------------------------------------------------------
-      final bool hasborrowerWithNameMode = (covenant?.borrowers?.any(
+      final bool hasborrowerWithNameMode = covenant?.borrowers?.any(
             (borrower) =>
                 borrower.customerRimNo ==
                 ServerConstants.covenantToBeTestedName,
           ) ??
-          false);
+          false;
 
       if (hasborrowerWithNameMode) {
         // If there are multiple borrowers, we use the first 9999-rim entry for
@@ -672,7 +672,7 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
   /// This is triggered by the "Add" button in AddRimValueDropdown.
   void addSearchedRimToList() {
     final int? rimNo =
-        (searchedCustomer?.customerRimNo) ?? int.tryParse(rimNoSearch);
+        searchedCustomer?.customerRimNo ?? int.tryParse(rimNoSearch);
     if (rimNo == null) {
       AlertManager().showFailureToast("riskRating.invalidRim".tr());
       return;
@@ -1692,7 +1692,7 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
     } else if (data is Map) {
       // Preferred new format from dialog
       final List<Facility> selectedFacilities =
-          (data["selectedFacilities"] as List<Facility>? ?? const []);
+          data["selectedFacilities"] as List<Facility>? ?? const [];
       final Reference? allRef = data["allFacilitiesOption"] as Reference?;
       facilityList = selectedFacilities;
       selectedAllFacilitiesYesNo = allRef; // persist desktop radio
@@ -1706,7 +1706,7 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
       setRowFacilitiesAndOption(row, data, null);
     } else if (data is Map) {
       final List<Facility> selectedFacilities =
-          (data["selectedFacilities"] as List<Facility>? ?? const []);
+          data["selectedFacilities"] as List<Facility>? ?? const [];
       final Reference? allRef = data["allFacilitiesOption"] as Reference?;
       setRowFacilitiesAndOption(row, selectedFacilities, allRef);
     }
@@ -1846,7 +1846,7 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
         final bool hasBrackets =
             descText.contains("[") && descText.contains("]");
         final String bracketRaw = getBracketRawValue(descText);
-        if ((hasBrackets && bracketRaw.isEmpty)) {
+        if (hasBrackets && bracketRaw.isEmpty) {
           AlertManager().showFailureToast(
             "covenantsConditions.covenantEditDialog.requiredTresholdValue".tr(),
           );
@@ -1871,15 +1871,15 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
 
         // When saving an EXISTING covenant in "Name" mode, always send 9999.
         // For a NEW covenant in "Name" mode, send 0 (first-time behavior).
-        final bool isExistingCovenant = (!isNewCovenant);
+        final bool isExistingCovenant = !isNewCovenant;
 
         // Also true for covenants that originally came with 9999 in payload.
-        final bool payloadCameWithNameModeBorrower = (covenant?.borrowers?.any(
+        final bool payloadCameWithNameModeBorrower = covenant?.borrowers?.any(
               (borrower) =>
                   borrower.customerRimNo ==
                   ServerConstants.covenantToBeTestedName,
             ) ??
-            false);
+            false;
 
         final int borrowerNameModeRimNo =
             (isExistingCovenant || payloadCameWithNameModeBorrower)
@@ -1925,7 +1925,7 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
           covenant?.description = " $finText";
         }
       } else {
-        if ((covenant?.description?.trim().isEmpty ?? true)) {
+        if (covenant?.description?.trim().isEmpty ?? true) {
           covenant?.description = selectedGeneralCovenantSubType?.name;
         }
         covenant?.covenantSubType = generalSubTypeId;
@@ -1990,15 +1990,15 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
           final bool? rowIsStandard = row.isStandard;
 
           // copy base fields from desktop (same as before)
-          row.linkFinancialCovenant(covenant!);
-          row.covenantType =
-              ServerConstants.covenantTypeId[CovenantType.financial];
-          row.rimNo = selectedCustomer?.customerRimNo;
-          row.isStandard = rowIsStandard ?? true;
-
-          row.covenantSubType = rowSubtype;
-          row.thresholdType = rowThresholdType;
-          row.description = (rowDescription ?? "").trim();
+          row
+            ..linkFinancialCovenant(covenant!)
+            ..covenantType =
+                ServerConstants.covenantTypeId[CovenantType.financial]
+            ..rimNo = selectedCustomer?.customerRimNo
+            ..isStandard = rowIsStandard ?? true
+            ..covenantSubType = rowSubtype
+            ..thresholdType = rowThresholdType
+            ..description = (rowDescription ?? "").trim();
 
           // If standard & empty description but subtype chosen → build template
           if ((row.isStandard ?? true) &&
@@ -2020,8 +2020,9 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
           }
 
           // finalize flags, collect
-          row.isNew = true;
-          row.isDeleted = false;
+          row
+            ..isNew = true
+            ..isDeleted = false;
           final Map<String, dynamic> json = row.toSaveNewJson();
           covenantJsonList.add(json);
         }
@@ -2037,11 +2038,10 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
           final bool? rowIsStandard = row.isStandard;
 
           // link (copies base fields)
-          row.linkFinancialCovenant(covenant!);
-
-          //restore the row's own choice (keep rows independent from desktop)
-          row.covenantType =
-              ServerConstants.covenantTypeId[CovenantType.financial];
+          row
+            ..linkFinancialCovenant(covenant!)
+            ..covenantType =
+                ServerConstants.covenantTypeId[CovenantType.financial];
 
           // Always take RIM from the header covenant (fallback to selections if
           // needed)
@@ -2049,14 +2049,14 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
               selectedCustomerRim?.customerRimNo ??
               selectedCustomer?.customerRimNo;
 
-          row.rimNo = baseRim;
-
-          row.isStandard =
-              rowIsStandard ?? true; // default to standard for safety
-          row.covenantSubType = rowSubtype; // keep row selection
-          row.thresholdType = rowThresholdType; // keep row mapping/manual
-          row.description = (rowDescription ?? "")
-              .trim(); // use row text (from AddFinancialDescriptionView)
+          row
+            ..rimNo = baseRim
+            ..isStandard =
+                rowIsStandard ?? true // default to standard for safety
+            ..covenantSubType = rowSubtype // keep row selection
+            ..thresholdType = rowThresholdType // keep row mapping/manual
+            ..description = (rowDescription ?? "")
+                .trim(); // use row text (from AddFinancialDescriptionView)
 
           // if you want to enforce a non-empty standard template when row is
           // std & description empty:
@@ -2078,8 +2078,9 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
           }
 
           // finalize flags
-          row.isNew = true;
-          row.isDeleted = false;
+          row
+            ..isNew = true
+            ..isDeleted = false;
 
           final Map<String, dynamic> json = row.toSaveNewJson();
           covenantJsonList.add(json);
@@ -2135,11 +2136,11 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
       ..isDeleted = false
       ..rimNo = baseRim
       ..borrowers = Globals.request?.customers ?? []
-      ..isStandard = true // default row is Standard
-      ..isInternalFinancial = true // common default
-      ..covenantSubType = null //no subtype selected yet
-      ..thresholdType = null //  let mapping/onRowSelect set it later
-      ..description = null; //  will be filled via row edit
+      ..isStandard = true
+      ..isInternalFinancial = true
+      ..covenantSubType = null
+      ..thresholdType = null
+      ..description = null;
 
     linkedFinancialCovenants.add(linkedCovenant);
 
@@ -2196,16 +2197,13 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
       ..isDeleted = false
       ..rimNo =
           selectedCustomer?.customerRimNo ?? selectedCustomer?.customerRimNo
-      ..borrowers = Globals.request?.customers ?? [];
-    newSubtype.linkFinancialCovenant(covenant!);
-    newSubtype
+      ..borrowers = Globals.request?.customers ?? []
+      ..linkFinancialCovenant(covenant!)
       ..isStandard = true
       ..covenantSubType = null
       ..thresholdType = null
       ..isInternalFinancial = true
       ..description = null
-
-      // Make each row independent of Desktop:
       ..timeForSubmition = null
       ..frequency = null
       ..financialYearEndDate = null
