@@ -1,0 +1,69 @@
+import "package:easy_localization/easy_localization.dart";
+import "package:flutter/material.dart";
+import "package:wcas_frontend/core/components/dropdown/dropdown.dart";
+import "package:wcas_frontend/core/components/label.dart";
+import "package:wcas_frontend/core/constants/_reference_data_keys.dart";
+import "package:wcas_frontend/features/request/covenants_conditions/covenant_edit_dialog/model.dart";
+import "package:wcas_frontend/models/admin/reference.dart";
+
+/// Threshold type field for the covenant edit dialog.
+class TresholdTypeField extends StatelessWidget {
+  /// Creates a threshold type field.
+  const TresholdTypeField({
+    required this.viewModel,
+    super.key,
+    this.isEnabled = false,
+    this.selectedItem,
+    this.forceEmptySelection = false,
+  });
+
+  /// Covenant edit dialog view model.
+  final CovenantEditDialogViewModel viewModel;
+
+  /// Whether the threshold type dropdown is enabled.
+  final bool isEnabled;
+
+  /// Selected threshold type item.
+  final Reference? selectedItem;
+
+  /// Whether to force empty selection.
+  final bool forceEmptySelection;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool shouldRequire = viewModel.shouldRequireMainThresholdType;
+    final bool canEdit = isEnabled && !viewModel.isReadOnly;
+
+    return LabelWidget(
+      label: "covenantsConditions.covenantEditDialog.thresholdType".tr(),
+      isRequired: shouldRequire,
+      child: CustomDropdown<Reference>(
+        hintText: "common.selectValue".tr(),
+        isEnabled: canEdit,
+        semanticLabel:
+            "covenantsConditions.covenantEditDialog.thresholdType".tr(),
+        validationMessage:
+            shouldRequire ? "common.validation.emptyField".tr() : null,
+        items: viewModel.referenceData[ReferenceDataKeys.thresholdType] ?? [],
+        onSelected: (selectedValue) {
+          if (selectedValue.isNotEmpty) {
+            viewModel.selectedThreshold = selectedValue.first;
+            viewModel.covenant?.thresholdType = viewModel.selectedThreshold?.id;
+          }
+        },
+        dropdownBuilder: (context, item) =>
+            dropdownBuilderWidget(text: item?.name),
+        itemBuilder: (context, item, {isDisabled, isSelected}) {
+          return dropdownItemBuildWidget(
+            item.name,
+            isSelected: isSelected ?? false,
+          );
+        },
+        selectedItems: viewModel.getSelectedThreshold(
+          selectedItem,
+          forceEmpty: forceEmptySelection,
+        ),
+      ),
+    );
+  }
+}

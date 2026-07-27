@@ -1,0 +1,154 @@
+import "package:easy_localization/easy_localization.dart";
+import "package:flutter/material.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
+import "package:wcas_frontend/core/components/box_layout.dart";
+import "package:wcas_frontend/core/components/gap.dart";
+import "package:wcas_frontend/core/components/section_header.dart";
+import "package:wcas_frontend/core/components/top_section/top_section_details.dart";
+import "package:wcas_frontend/core/constants/_server_constants.dart";
+import "package:wcas_frontend/core/globals.dart";
+import "package:wcas_frontend/core/utils/utils.dart";
+import "package:wcas_frontend/features/layout/view.dart";
+import "package:wcas_frontend/features/request/certifications/esg_certification/model.dart";
+import "package:wcas_frontend/features/request/certifications/esg_certification/state.dart";
+import "package:wcas_frontend/features/request/certifications/esg_certification/widgets/section_dynamic_comment_field.dart";
+import "package:wcas_frontend/features/request/certifications/esg_certification/widgets/section_five.dart";
+import "package:wcas_frontend/features/request/certifications/esg_certification/widgets/section_four.dart";
+import "package:wcas_frontend/features/request/certifications/esg_certification/widgets/section_one.dart";
+import "package:wcas_frontend/features/request/certifications/esg_certification/widgets/section_three.dart";
+import "package:wcas_frontend/features/request/certifications/esg_certification/widgets/section_two.dart";
+import "package:wcas_frontend/models/admin/reference.dart";
+
+/// Desktop view for the ESG Certification screen.
+class ViewDesktop extends StatelessWidget {
+  /// Creates the desktop view.
+  const ViewDesktop({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final EsgCertificationViewModel viewModel =
+        context.read<EsgCertificationViewModel>();
+    return BlocBuilder<EsgCertificationViewModel, EsgCertificationState>(
+      builder: (context, state) {
+        return Layout(
+          child: _buildBodyContent(context, state, viewModel),
+        );
+      },
+    );
+  }
+
+  Widget _buildBodyContent(
+    BuildContext context,
+    EsgCertificationState state,
+    EsgCertificationViewModel viewModel,
+  ) {
+    switch (state.loaderStatus) {
+      case LoadingStatus.loading:
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      case LoadingStatus.empty:
+        return Center(
+          child: Text("common.emptyState".tr()),
+        );
+      case LoadingStatus.error:
+        return Center(
+          child: Text("common.serverError".tr()),
+        );
+      default:
+        return SingleChildScrollView(
+          child: BoxLayout(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomSectionHeader(
+                  title: "certification.esgCertification.title".tr(),
+                ),
+                const Gap(),
+                BoxLayout(
+                  child: TopSectionDetails(request: Globals.request!),
+                ),
+                BoxLayout(
+                  disabled: viewModel.isReadOnly,
+                  child: Form(
+                    key: viewModel.formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (viewModel
+                            .hasSectionId(ServerConstants.esgSection1Id)) ...[
+                          SectionOne(
+                            key: const ValueKey("section1"),
+                            viewModel: viewModel,
+                          ),
+                          const Gap(),
+                        ],
+
+                        if (viewModel.sffRequired &&
+                            viewModel.hasSectionId(
+                              ServerConstants.esgSection2Id,
+                            )) ...[
+                          SectionTwo(
+                            key: ValueKey("section2-${state.fieldVersion}"),
+                            viewModel: viewModel,
+                          ),
+                          const Gap(),
+                        ],
+
+                        if (viewModel.sllRequired &&
+                            viewModel.hasSectionId(
+                              ServerConstants.esgSection3Id,
+                            )) ...[
+                          SectionThree(
+                            key: ValueKey("section3-${state.fieldVersion}"),
+                            viewModel: viewModel,
+                          ),
+                          const Gap(),
+                        ],
+
+                        if (viewModel
+                            .hasSectionId(ServerConstants.esgSection4Id)) ...[
+                          SectionFour(
+                            key: ValueKey("section4-${state.fieldVersion}"),
+                            viewModel: viewModel,
+                          ),
+                          const Gap(),
+                        ],
+
+                        // Build only dynamic sections whose title is present
+                        ...viewModel.dynamicSections
+                            .where(
+                          (Reference ref) => (ref.name ?? "").trim().isNotEmpty,
+                        )
+                            .map((Reference ref) {
+                          final int refId = ref.id ?? 0;
+                          final String headerTitle = ref.name ?? "";
+                          final String label = ref.description ?? "";
+                          final String initialValue =
+                              viewModel.initialTextOnceFor(refId);
+
+                          return SectionDynamicCommentField(
+                            key: ValueKey(
+                              "strategy-$refId-${state.fieldVersion}",
+                            ),
+                            readOnly: viewModel.isReadOnly,
+                            fieldLabel: label,
+                            initialCommentText: initialValue,
+                            sectionTitle: headerTitle,
+                            onChanged: (val) =>
+                                viewModel.updateComment(refId, val),
+                          );
+                        }),
+
+                        SectionFive(viewModel: viewModel, state: state),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+    }
+  }
+}

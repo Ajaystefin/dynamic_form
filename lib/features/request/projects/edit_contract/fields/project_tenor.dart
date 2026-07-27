@@ -1,0 +1,38 @@
+import "package:easy_localization/easy_localization.dart";
+import "package:flutter/material.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
+import "package:wcas_frontend/core/components/label.dart";
+import "package:wcas_frontend/core/components/textfield.dart";
+import "package:wcas_frontend/core/constants/constants.dart";
+import "package:wcas_frontend/features/request/projects/edit_contract/model.dart";
+import "package:wcas_frontend/features/request/projects/edit_contract/state.dart";
+
+/// Project tenor field.
+class ProjectTenor extends StatelessWidget {
+  /// Creates a project tenor field.
+  const ProjectTenor({required this.viewModel, super.key});
+
+  /// Edit contract view model.
+  final EditContractViewModel viewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<EditContractViewModel, EditContractState>(
+      builder: (context, state) {
+        return LabelWidget(
+          label: "project.linkContract.projectTenor".tr(),
+          child: CustomTextField(
+            semanticLabel: "project.linkContract.projectTenor".tr(),
+            controller: viewModel.projectTenorController,
+            readOnly: true,
+            filled: true,
+            fillColor: AppColors.tableActivatedColor,
+            onSaved: (tenor) {
+              viewModel.onSavedTenor(tenor);
+            },
+          ),
+        );
+      },
+    );
+  }
+}

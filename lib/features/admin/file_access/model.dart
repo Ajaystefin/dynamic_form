@@ -1,0 +1,214 @@
+import "dart:async";
+import "package:flutter/material.dart";
+import "package:wcas_frontend/core/constants/_reference_data_keys.dart";
+import "package:wcas_frontend/core/constants/_server_constants.dart";
+import "package:wcas_frontend/core/constants/constants.dart";
+import "package:wcas_frontend/core/services/draft/draft_handler_base.dart";
+import "package:wcas_frontend/core/services/draft/draft_mixin.dart";
+import "package:wcas_frontend/core/services/reference_data_service.dart";
+import "package:wcas_frontend/core/utils/alert_manager.dart";
+import "package:wcas_frontend/core/utils/logger.dart";
+import "package:wcas_frontend/core/utils/safe_cubit.dart";
+import "package:wcas_frontend/core/utils/utils.dart";
+import "package:wcas_frontend/features/admin/file_access/draft_handler.dart";
+import "package:wcas_frontend/features/admin/file_access/state.dart";
+import "package:wcas_frontend/models/admin/file_access.dart";
+import "package:wcas_frontend/models/admin/reference.dart";
+import "package:wcas_frontend/repositories/admin_repository.dart";
+
+/// View model responsible for managing file access operations.
+class FileAccessViewModel extends SafeCubit<FileAccessState>
+    with DraftMixin<FileAccessViewModel> {
+  /// Creates a [FileAccessViewModel].
+  FileAccessViewModel()
+      : super(FileAccessState(loaderStatus: LoadingStatus.loading));
+
+  /// Repository used for file access operations.
+  AdminRepository repository = AdminRepository();
+
+  /// Reference data cache.
+  Map<String, List<Reference>> referenceData = {};
+
+  /// Form key used for validation.
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  /// Currently selected role type.
+  Reference? selectedRoleType;
+
+  /// List of file accesses.
+  List<FileAccess> fileAccesses = [];
+
+  /// First-level parent nodes having children.
+  List<FileAccess> firstLevelParentsWithChildren = [];
+
+  /// Updated file access records.
+  List<FileAccess> updatedFileAccess = [];
+
+  /// Available roles.
+  List<Reference>? roles = [];
+
+  /// Initializes the view model.
+  Future<void> init(BuildContext? context) async {
+    logger.i("initialising FileAccessViewModel");
+    await loadReferenceData();
+
+    registerDraftCallback();
+
+    emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
+  }
+
+  /// Called when a role type is selected.
+  ///
+  /// It assigns the selected role type to [selectedRoleType] and calls
+  /// [getFileAccess] to fetch file attachments for the selected role type.
+  /// After the fetch is complete, it updates the [`loaderStatus`] to
+  Future<void> onRoleTypeSelected(Reference data) async {
+    selectedRoleType = data;
+    await getFileAccess();
+    emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
+  }
+
+  /// Loads reference data for search criteria, segment types, region list,
+  /// advance request types, and role types. Populates the [referenceData] map
+  /// with the fetched data. If an error occurs during the fetching process,
+  /// it updates the loader status to [LoadingStatus.error].
+  Future<void> loadReferenceData() async {
+    try {
+      referenceData = await ReferenceDataService()
+          .getReferenceData([ReferenceDataKeys.roleType]);
+
+      final List<Reference> allRoles =
+          referenceData[ReferenceDataKeys.roleType] ?? [];
+
+      roles = allRoles.where((role) {
+        final int? roleId = role.id;
+
+        // Filter out Approval Delegation roles
+        if (role.reference2 == ServerConstants.approvalDelegation) {
+          return false;
+        }
+
+        if (roleId == null) {
+          return true;
+        }
+
+        return (roleId != ServerConstants.financialPoolMaker &&
+                roleId != ServerConstants.financialPoolChecker &&
+                roleId != ServerConstants.financialPoolCoordinator) ||
+            role.status == "inactive";
+      }).toList();
+    } on Object catch (e) {
+      emit(state.copyWith(loaderStatus: LoadingStatus.error));
+      AlertManager().showFailureToast(e.toString());
+    }
+  }
+
+  /// Fetches file attachments for the selected role type from the server.
+  ///
+  /// Emits a [LoadingStatus] of [LoadingStatus.loading] to indicate that the
+  /// file attachments are being fetched. If the fetch is successful, it
+  /// assigns the fetched file attachments to [fileAccesses] and emits a
+  /// [LoadingStatus] of [LoadingStatus.loaded]. If there is an error, it
+  /// emits a [LoadingStatus] of [LoadingStatus.loaded] and logs the error.
+  Future<void> getFileAccess() async {
+    emit(state.copyWith(fileAccessStatus: LoadingStatus.loading));
+    try {
+      fileAccesses = await repository.getFileAttachments(selectedRoleType);
+      await loadDraftIfAvailable();
+      emit(state.copyWith(fileAccessStatus: LoadingStatus.loaded));
+
+      firstLevelParentsWithChildren = fileAccesses
+          .where((file) => file.children != null && file.children!.isNotEmpty)
+          .toList();
+
+      // DEFER UI notification to next frame
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        emit(state.copyWith(fileAccessStatus: LoadingStatus.loaded));
+      });
+
+      emit(state.copyWith(fileAccessStatus: LoadingStatus.loaded));
+    } on Object catch (e) {
+      emit(state.copyWith(fileAccessStatus: LoadingStatus.error));
+      AlertManager().showFailureToast(e.toString());
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // DraftMixin implementation
+  // ---------------------------------------------------------------------------
+
+  /// Draft module key.
+  @override
+  String get draftModuleKey => DraftModuleKeys.admin;
+
+  /// Draft form key.
+  @override
+  String get draftFormKey => Routes.fileAccess;
+
+  /// Draft handler implementation.
+  @override
+  DraftHandler<FileAccessViewModel> get draftHandler =>
+      FileAccessDraftHandler();
+
+  // ---------------------------------------------------------------------------
+
+  /// Saves all file attachments to the server.
+  ///
+  /// Flattens all FileAccess and their children and calls
+  /// [AdminRepository.saveFileAttachments] to save the file attachments.
+  /// If the save is successful, it shows a success toast with the actual
+  /// response message. If there is an error, it shows a failure toast with a
+  /// generic error message and rethrows the error.
+  ///
+  /// This function is called when the user presses the save button.
+  Future<void> onSave() async {
+    // Flatten all FileAccess and their children
+
+    // final List<FileAccess> fileAttachments = [
+    //   for (final element in updatedFileAccess) ...[
+    //     element,
+    //     if (element.children?.isNotEmpty ?? false) ...element.children!,
+    //   ],
+    // ];
+
+    final seenIds = <dynamic>{};
+
+    final List<FileAccess> fileAttachments = [
+      for (final element in updatedFileAccess) ...[
+        if (seenIds.add(element.id)) element,
+        if (element.children?.isNotEmpty ?? false)
+          ...element.children!.where(
+            (child) => seenIds.add(child.id),
+          ),
+      ],
+    ];
+
+    emit(state.copyWith(savingStatus: LoadingStatus.loading));
+
+    try {
+      final response = await repository.saveFileAttachments(
+        fileAttachments,
+        selectedRoleType,
+      );
+
+      if (response != null && response.isNotEmpty) {
+        AlertManager().showSuccessToast(response);
+      }
+
+      unawaited(deleteDraft());
+
+      emit(state.copyWith(savingStatus: LoadingStatus.loaded));
+    } on Object catch (e) {
+      AlertManager().showFailureToast(e.toString());
+      emit(state.copyWith(savingStatus: LoadingStatus.error));
+    }
+  }
+
+  /// Closes the view model and unregisters draft callbacks.
+  @override
+  Future<void> close() {
+    unregisterDraftCallback();
+
+    return super.close();
+  }
+}
