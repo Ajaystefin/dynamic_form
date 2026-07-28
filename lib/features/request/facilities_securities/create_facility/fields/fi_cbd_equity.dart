@@ -36,7 +36,7 @@ class FiCbdEquity extends StatelessWidget {
             selected,
             CurrencyField.cbdEquityTier325Percent,
           )
-          ..getCurrencyRates(
+          ..getCurrencyRatesDebounced(
             selected,
             CurrencyField.cbdEquityTier325Percent,
           );
@@ -56,7 +56,7 @@ class FiCbdEquity extends StatelessWidget {
           final String? selectedCode = selected?.name?.toUpperCase();
 
           if (selectedCode != ServerConstants.aedCurrency) {
-            viewModel.getCurrencyRates(
+            viewModel.getCurrencyRatesDebounced(
               selected,
               CurrencyField.cbdEquityTier325Percent,
             );

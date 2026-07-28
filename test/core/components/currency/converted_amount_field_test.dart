@@ -150,7 +150,8 @@ void main() {
       expect(find.byType(TextField), findsOneWidget);
     });
 
-    testWidgets("readOnly/filled can be turned off for the present-security "
+    testWidgets(
+        "readOnly/filled can be turned off for the present-security "
         "call site", (tester) async {
       await tester.pumpWidget(
         wrap(
@@ -167,6 +168,48 @@ void main() {
       final TextField field = tester.widget<TextField>(find.byType(TextField));
       expect(field.readOnly, isFalse);
       expect(field.decoration?.filled, isFalse);
+    });
+
+    testWidgets("renders no suffix loader when no listenable is supplied",
+        (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          ConvertedAmountField(
+            currencies: currencyCodes,
+            controller: textController,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    });
+
+    testWidgets("shows and hides the spinner with the listenable",
+        (tester) async {
+      final ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
+      addTearDown(isLoading.dispose);
+
+      await tester.pumpWidget(
+        wrap(
+          ConvertedAmountField(
+            currencies: currencyCodes,
+            controller: textController,
+            isLoadingListenable: isLoading,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+
+      isLoading.value = true;
+      await tester.pump();
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      isLoading.value = false;
+      await tester.pump();
+      expect(find.byType(CircularProgressIndicator), findsNothing);
     });
   });
 }

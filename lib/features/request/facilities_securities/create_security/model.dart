@@ -1,5 +1,6 @@
 import "dart:async";
 import "package:easy_localization/easy_localization.dart";
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:wcas_frontend/core/components/dynamic_form/dynamic_form.dart";
 import "package:wcas_frontend/core/components/dynamic_form/models/field.dart";
@@ -16,6 +17,7 @@ import "package:wcas_frontend/core/services/reference_data_service.dart";
 import "package:wcas_frontend/core/services/route_service.dart";
 import "package:wcas_frontend/core/utils/alert_manager.dart";
 import "package:wcas_frontend/core/utils/logger.dart";
+import "package:wcas_frontend/core/utils/rate_debouncer.dart";
 import "package:wcas_frontend/core/utils/safe_cubit.dart";
 import "package:wcas_frontend/core/utils/screen_access_conditions.dart";
 import "package:wcas_frontend/core/utils/utils.dart";
@@ -159,6 +161,24 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
 
   /// Exchange rate used for currency conversion calculations.
   num exchangeRate = 0;
+
+  /// Rate debouncers, keyed by which security amount they serve
+  /// (`true` = present, `false` = proposed). Created on first use.
+  final Map<bool, RateDebouncer> _rateDebouncers = <bool, RateDebouncer>{};
+
+  RateDebouncer _rateDebouncerFor({required bool isPresentSecurityAmount}) =>
+      _rateDebouncers.putIfAbsent(isPresentSecurityAmount, RateDebouncer.new);
+
+  /// Whether a rate fetch for the present or proposed security amount is
+  /// pending or in flight.
+  ///
+  /// Passed to `ConvertedAmountField.isLoadingListenable` so the AED field can
+  /// show a spinner.
+  ValueListenable<bool> rateLoadingFor({
+    required bool isPresentSecurityAmount,
+  }) =>
+      _rateDebouncerFor(isPresentSecurityAmount: isPresentSecurityAmount)
+          .isLoading;
 
   /// Loan-to-value ratio associated with the security.
   double? loanToValue;
@@ -385,11 +405,7 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
       preselectedCountry = security.securityProvidedCountry;
       // security.securityType = null;
       securityProviderNameController.text = security.securityProvidedName ?? "";
-      await getCurrencyRates(
-        security.proposedSecurityAmtCurrency,
-        isPresentSecurityAmount: false,
-        proposedAmount: security.proposedSecurityAmount,
-      );
+      await applyInitialSecurityCurrency();
       if (security.dynamicFormDocument != null) {
         //Imp Note:below code for additional details is temporarily written here
         //to test, it will be needed to be moved to a method upon its desired
@@ -651,19 +667,109 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
     });
   }
 
+  /// Debounced entry point for [getCurrencyRates].
+  ///
+  /// Every keystroke in an amount field triggers a rate lookup; this collapses
+  /// a burst of them into one call 300 ms after the last, drives the AED
+  /// field's spinner via [rateLoadingFor], and discards a response that a later
+  /// trigger has already superseded.
+  Future<void> getCurrencyRatesDebounced(
+    Reference? selectedCurrency, {
+    required bool isPresentSecurityAmount,
+    double? proposedAmount,
+  }) {
+    return _rateDebouncerFor(isPresentSecurityAmount: isPresentSecurityAmount)
+        .run(
+      (int requestId) => _fetchAndApplyRates(
+        selectedCurrency,
+        isPresentSecurityAmount: isPresentSecurityAmount,
+        proposedAmount: proposedAmount,
+        requestId: requestId,
+      ),
+    );
+  }
+
+  /// Seeds the AED fields from the values the get-security response already
+  /// carries, instead of recomputing them live on load.
+  ///
+  /// A fresh conversion can disagree with the AED amount the backend saved, so
+  /// the stored `aedPresentSecurity` / `aedProposedSecurity` win on load. The
+  /// live path takes over as soon as the user edits an amount or a currency.
+  ///
+  /// The rate fetch itself is **not** skipped: [getCurrencyRates] also pushes
+  /// `securityvalueadjustedtoLTV` into the dynamic form, and that payload's
+  /// `aedEquivalent` needs the rate. Only the controller writes are replaced.
+  Future<void> applyInitialSecurityCurrency() async {
+    final formatter = NumberFormat("#,###");
+
+    final double? storedPresent = security.aedPresentSecurity;
+    final double? storedProposed = security.aedProposedSecurity;
+
+    await getCurrencyRates(
+      security.proposedSecurityAmtCurrency,
+      isPresentSecurityAmount: false,
+      proposedAmount: security.proposedSecurityAmount,
+    );
+
+    if (storedPresent != null && storedPresent > 0) {
+      newPresentSecurityAmountController.text =
+          formatter.format(storedPresent.round());
+      security.aedPresentSecurity = storedPresent;
+    }
+
+    if (storedProposed != null && storedProposed > 0) {
+      newProposedSecurityAmountController.text =
+          formatter.format(storedProposed.round());
+      security.aedProposedSecurity = storedProposed;
+    }
+  }
+
   /// Retrieves exchange rates and updates AED-equivalent security values.
   ///
   /// Converts the selected security amount using the current exchange
   /// rate, updates the corresponding AED amount fields, and recalculates
   /// security values adjusted by loan-to-value ratios.
+  ///
+  /// Undebounced. UI callbacks should use [getCurrencyRatesDebounced]; this
+  /// remains for load-time and programmatic use, and its signature is
+  /// deliberately unchanged — test doubles override it.
   Future<void> getCurrencyRates(
     Reference? selectedCurrency, {
     required bool isPresentSecurityAmount,
     double? proposedAmount,
+  }) {
+    return _fetchAndApplyRates(
+      selectedCurrency,
+      isPresentSecurityAmount: isPresentSecurityAmount,
+      proposedAmount: proposedAmount,
+    );
+  }
+
+  /// The body of [getCurrencyRates], plus the staleness guard the debounced
+  /// path needs.
+  ///
+  /// When [requestId] is supplied, the result is discarded if a newer request
+  /// for the same amount field has been scheduled in the meantime, so a slow
+  /// response for a currency the user has moved on from cannot overwrite the
+  /// current value.
+  Future<void> _fetchAndApplyRates(
+    Reference? selectedCurrency, {
+    required bool isPresentSecurityAmount,
+    double? proposedAmount,
+    int? requestId,
   }) async {
+    bool isCurrent() =>
+        requestId == null ||
+        (_rateDebouncers[isPresentSecurityAmount]?.isCurrent(requestId) ??
+            true);
+
     try {
       final CurrencyRates currencyRates =
           await securityRepository.getCurrencyRates(selectedCurrency);
+
+      if (!isCurrent()) {
+        return;
+      }
 
       // Resolve the selected currency code/name safely
       final String selectedCode = selectedCurrency?.name ?? "";
@@ -679,9 +785,9 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
       // Convert
       final double convertedValue = amount * exchangeRate;
 
-      // Format values
+      // Format values. Rounded, not truncated: a converted 7.6 must show as 8.
       final formatter = NumberFormat("#,###");
-      final String formattedAED = formatter.format(convertedValue.toInt());
+      final String formattedAED = formatter.format(convertedValue.round());
 
       // Update the correct controller (present vs proposed)
       if (isPresentSecurityAmount) {
@@ -1993,6 +2099,10 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
   @override
   Future<void> close() {
     unregisterDraftCallback();
+    for (final RateDebouncer debouncer in _rateDebouncers.values) {
+      debouncer.dispose();
+    }
+    _rateDebouncers.clear();
     return super.close();
   }
 }

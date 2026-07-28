@@ -38,7 +38,7 @@ class FiExcessMaxLimit extends StatelessWidget {
             selected,
             CurrencyField.excessOverMaxLimitAllowanceProposedByFi,
           )
-          ..getCurrencyRates(
+          ..getCurrencyRatesDebounced(
             selected,
             CurrencyField.excessOverMaxLimitAllowanceProposedByFi,
           );
@@ -64,7 +64,7 @@ class FiExcessMaxLimit extends StatelessWidget {
 
           if (selectedCode != ServerConstants.aedCurrency) {
             //  Convert amount
-            viewModel.getCurrencyRates(
+            viewModel.getCurrencyRatesDebounced(
               selected,
               CurrencyField.excessOverMaxLimitAllowanceProposedByFi,
             );

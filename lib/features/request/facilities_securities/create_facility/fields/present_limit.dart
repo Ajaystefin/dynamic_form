@@ -58,7 +58,7 @@ class PresentLimit extends StatelessWidget {
             selected,
             CurrencyField.presentLimit,
           )
-          ..getCurrencyRates(
+          ..getCurrencyRatesDebounced(
             selected,
             CurrencyField.presentLimit,
           );
@@ -80,7 +80,10 @@ class PresentLimit extends StatelessWidget {
           final String? selectedCode = selected?.name?.toUpperCase();
 
           if (selectedCode != ServerConstants.aedCurrency) {
-            viewModel.getCurrencyRates(selected, CurrencyField.presentLimit);
+            viewModel.getCurrencyRatesDebounced(
+              selected,
+              CurrencyField.presentLimit,
+            );
           } else {
             final String formatted = formatter.format(amount);
             viewModel.newPresentLimitController.value = TextEditingValue(

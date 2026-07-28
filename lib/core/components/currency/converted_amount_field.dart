@@ -1,10 +1,12 @@
 import "package:easy_localization/easy_localization.dart";
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:wcas_frontend/core/components/currency/defaults.dart";
 import "package:wcas_frontend/core/components/dropdown/dropdown.dart";
 import "package:wcas_frontend/core/components/textfield.dart";
 import "package:wcas_frontend/core/constants/_server_constants.dart";
+import "package:wcas_frontend/core/constants/constants.dart";
 import "package:wcas_frontend/core/utils/scale.dart";
 import "package:wcas_frontend/models/admin/reference.dart";
 
@@ -36,6 +38,7 @@ class ConvertedAmountField extends StatelessWidget {
     this.readOnly = true,
     this.filled = true,
     this.initialValue = "0",
+    this.isLoadingListenable,
   });
 
   /// Currency options for the dropdown — in practice `viewModel.currencyCodes`.
@@ -68,6 +71,14 @@ class ConvertedAmountField extends StatelessWidget {
   /// Initial text for the amount field.
   final String? initialValue;
 
+  /// Drives a small spinner in the field's suffix while an exchange-rate fetch
+  /// is pending (debouncing) or in flight.
+  ///
+  /// The view model owns the notifier; this widget only listens. When null no
+  /// suffix is rendered at all, so call sites that never fetch a rate are
+  /// unaffected.
+  final ValueListenable<bool>? isLoadingListenable;
+
   /// Resolves the AED entry without ever throwing: a blank [Reference] when the
   /// list is empty, the AED entry when present, otherwise the first currency.
   Reference _aedOrFallback() {
@@ -80,14 +91,40 @@ class ConvertedAmountField extends StatelessWidget {
     );
   }
 
+  /// The rate-fetch spinner.
+  ///
+  /// The [SizedBox] is rendered whether or not a fetch is running so the field
+  /// does not shift when the spinner appears.
+  Widget _loaderSuffix(ValueListenable<bool> listenable) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: listenable,
+      builder: (BuildContext context, bool isLoading, _) => Padding(
+        padding: const EdgeInsets.all(12),
+        child: SizedBox(
+          width: 16,
+          height: 16,
+          child: isLoading
+              ? const CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.darkGrey),
+                )
+              : null,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final ValueListenable<bool>? loading = isLoadingListenable;
+
     return CustomTextField(
       controller: controller,
       initialValue: initialValue,
       readOnly: readOnly,
       filled: filled,
       inputFormatters: inputFormatters,
+      suffixIcon: loading == null ? null : _loaderSuffix(loading),
       prefixIcon: CustomDropdown<Reference>(
         width: dropdownWidth ?? 70.w,
         height: null,

@@ -39,7 +39,7 @@ class FiExcessMaxLimitCC extends StatelessWidget {
             selected,
             CurrencyField.excessOverMaxLimitAllowanceRecommendedByCredit,
           )
-          ..getCurrencyRates(
+          ..getCurrencyRatesDebounced(
             selected,
             CurrencyField.excessOverMaxLimitAllowanceRecommendedByCredit,
           );
@@ -49,8 +49,8 @@ class FiExcessMaxLimitCC extends StatelessWidget {
           viewModel.excessOverMaxLimitAllowanceRecommendedByCreditController,
       initialValue: viewModel.facilityDetail.isNotEmpty
           ? formatter.format(
-              viewModel
-                      .facilityDetail.first.excessOverMaxLimitAllowanceByCredit ??
+              viewModel.facilityDetail.first
+                      .excessOverMaxLimitAllowanceByCredit ??
                   0,
             )
           : "",
@@ -64,13 +64,14 @@ class FiExcessMaxLimitCC extends StatelessWidget {
           final String? selectedCode = selected?.name?.toUpperCase();
 
           if (selectedCode != ServerConstants.aedCurrency) {
-            viewModel.getCurrencyRates(
+            viewModel.getCurrencyRatesDebounced(
               selected,
               CurrencyField.excessOverMaxLimitAllowanceRecommendedByCredit,
             );
           } else {
             final String formatted = formatter.format(amount);
-            viewModel.newExcessOverMaxLimitAllowanceRecommendedByCreditController
+            viewModel
+                .newExcessOverMaxLimitAllowanceRecommendedByCreditController
                 .value = TextEditingValue(
               text: formatted,
               selection: TextSelection.collapsed(offset: formatted.length),

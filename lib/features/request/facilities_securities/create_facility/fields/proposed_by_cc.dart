@@ -48,7 +48,7 @@ class FacilityProposedByCC extends StatelessWidget {
             selected,
             CurrencyField.proposedBycc,
           )
-          ..getCurrencyRates(
+          ..getCurrencyRatesDebounced(
             selected,
             CurrencyField.proposedBycc,
           );
@@ -73,7 +73,7 @@ class FacilityProposedByCC extends StatelessWidget {
           final String? selectedCode = selected?.name?.toUpperCase();
 
           if (selectedCode != ServerConstants.aedCurrency) {
-            viewModel.getCurrencyRates(
+            viewModel.getCurrencyRatesDebounced(
               selected,
               CurrencyField.proposedBycc,
             );

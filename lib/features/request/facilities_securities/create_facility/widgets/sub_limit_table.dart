@@ -116,7 +116,7 @@ class FacilitySubTypeTable extends StatelessWidget {
         final String tooltipMsg = (selectedCurrencyCode != "AED" &&
                 rate > 0 &&
                 proposedLimitAmount > 0)
-            ? "AED: ${numberFormatter.format((proposedLimitAmount * rate).toInt())}"
+            ? "AED: ${numberFormatter.format((proposedLimitAmount * rate).round())}"
             : "";
 
         return [

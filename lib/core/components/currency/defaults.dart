@@ -1,3 +1,4 @@
+import "package:easy_localization/easy_localization.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:wcas_frontend/core/components/dropdown/multi_select_dropdown.dart";
@@ -43,6 +44,29 @@ List<TextInputFormatter> securityAmountFormatters({int maxLength = 15}) {
     LengthLimitingTextInputFormatter(maxLength),
     FilteringTextInputFormatter.digitsOnly,
   ];
+}
+
+/// The value to write back to the model for an amount field whose display is
+/// rounded.
+///
+/// Amount fields show `NumberFormat("#,###")` of a rounded value, so parsing the
+/// field's own text on save would push that rounding into the payload — an API
+/// value of `1234.6` would be saved as `1235`. When [text] still equals the
+/// formatted [original] the user has not edited the field, so the untouched API
+/// value is returned instead. Otherwise the text is parsed as usual.
+///
+/// Mirrors `_amountForEmit` in the dynamic form's `CurrencyDropdown`. Only
+/// meaningful for fields backed by a fractional model property; the
+/// `create_facility` amounts are all `int?` and need no such guard.
+double? amountForEmit(String? text, num? original) {
+  final String raw = text ?? "";
+
+  if (original != null &&
+      NumberFormat("#,###").format(original.round()) == raw) {
+    return original.toDouble();
+  }
+
+  return double.tryParse(raw.replaceAll(",", ""));
 }
 
 /// Default dropdown item builder — the selection-aware list row used by every

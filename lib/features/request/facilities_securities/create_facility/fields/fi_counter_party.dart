@@ -34,7 +34,7 @@ class FiCounterParty extends StatelessWidget {
             selected,
             CurrencyField.counterpartyEquity5Percent,
           )
-          ..getCurrencyRates(
+          ..getCurrencyRatesDebounced(
             selected,
             CurrencyField.counterpartyEquity5Percent,
           );
@@ -55,7 +55,7 @@ class FiCounterParty extends StatelessWidget {
           final String? selectedCode = selected?.name?.toUpperCase();
 
           if (selectedCode != ServerConstants.aedCurrency) {
-            viewModel.getCurrencyRates(
+            viewModel.getCurrencyRatesDebounced(
               selected,
               CurrencyField.counterpartyEquity5Percent,
             );

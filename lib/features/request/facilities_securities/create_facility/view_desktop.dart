@@ -266,6 +266,8 @@ class ViewDesktop extends StatelessWidget {
                       currencies: viewModel.currencyCodes,
                       controller: viewModel.newPresentLimitController,
                       inputFormatters: currencyAmountFormatters(),
+                      isLoadingListenable:
+                          viewModel.rateLoadingFor(CurrencyField.presentLimit),
                     )
                   else
                     const SizedBox(),
@@ -275,6 +277,8 @@ class ViewDesktop extends StatelessWidget {
                       currencies: viewModel.currencyCodes,
                       controller: viewModel.newProposedLimitController,
                       inputFormatters: currencyAmountFormatters(),
+                      isLoadingListenable:
+                          viewModel.rateLoadingFor(CurrencyField.proposedLimit),
                     )
                   else
                     const SizedBox(),
@@ -283,6 +287,8 @@ class ViewDesktop extends StatelessWidget {
                       currencies: viewModel.currencyCodes,
                       controller: viewModel.newProposedByccController,
                       inputFormatters: currencyAmountFormatters(),
+                      isLoadingListenable:
+                          viewModel.rateLoadingFor(CurrencyField.proposedBycc),
                     )
                   else
                     const SizedBox(),
@@ -321,6 +327,9 @@ class ViewDesktop extends StatelessWidget {
                             currencies: viewModel.currencyCodes,
                             controller: viewModel.newProposedLimitController,
                             inputFormatters: currencyAmountFormatters(),
+                            isLoadingListenable: viewModel.rateLoadingFor(
+                              CurrencyField.revisedBankLimitProposedByFi,
+                            ),
                           )
                         else
                           const SizedBox.shrink(),
@@ -329,6 +338,10 @@ class ViewDesktop extends StatelessWidget {
                             currencies: viewModel.currencyCodes,
                             controller: ctrl,
                             inputFormatters: currencyAmountFormatters(),
+                            isLoadingListenable: viewModel.rateLoadingFor(
+                              CurrencyField
+                                  .excessOverMaxLimitAllowanceProposedByFi,
+                            ),
                           )
                         else
                           const SizedBox.shrink(),
@@ -362,6 +375,9 @@ class ViewDesktop extends StatelessWidget {
                         currencies: viewModel.currencyCodes,
                         controller: viewModel.newCbdEquityTier325PercentController,
                         inputFormatters: currencyAmountFormatters(),
+                        isLoadingListenable: viewModel.rateLoadingFor(
+                          CurrencyField.cbdEquityTier325Percent,
+                        ),
                       )
                     else
                       const SizedBox.shrink(),
@@ -370,6 +386,9 @@ class ViewDesktop extends StatelessWidget {
                         currencies: viewModel.currencyCodes,
                         controller: viewModel.newCounterpartyEquity5PercentController,
                         inputFormatters: currencyAmountFormatters(),
+                        isLoadingListenable: viewModel.rateLoadingFor(
+                          CurrencyField.counterpartyEquity5Percent,
+                        ),
                       )
                     else
                       const SizedBox.shrink(),
@@ -378,6 +397,9 @@ class ViewDesktop extends StatelessWidget {
                         currencies: viewModel.currencyCodes,
                         controller: viewModel.newCounterpartyTotalAssets2PercentController,
                         inputFormatters: currencyAmountFormatters(),
+                        isLoadingListenable: viewModel.rateLoadingFor(
+                          CurrencyField.counterpartyTotalAssets2Percent,
+                        ),
                       )
                     else
                       const SizedBox.shrink(),
@@ -641,6 +663,9 @@ class ViewDesktop extends StatelessWidget {
             currencies: viewModel.currencyCodes,
             controller: viewModel.newProposedByccController,
             inputFormatters: currencyAmountFormatters(),
+            isLoadingListenable: viewModel.rateLoadingFor(
+              CurrencyField.revisedBankLimitRecommendedByCredit,
+            ),
           )
         else
           const SizedBox.shrink(),
@@ -649,6 +674,9 @@ class ViewDesktop extends StatelessWidget {
             currencies: viewModel.currencyCodes,
             controller: ccController,
             inputFormatters: currencyAmountFormatters(),
+            isLoadingListenable: viewModel.rateLoadingFor(
+              CurrencyField.excessOverMaxLimitAllowanceRecommendedByCredit,
+            ),
           )
         else
           const SizedBox.shrink(),

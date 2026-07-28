@@ -46,7 +46,7 @@ class FiRevisedBank extends StatelessWidget {
             selected,
             CurrencyField.revisedBankLimitProposedByFi,
           )
-          ..getCurrencyRates(
+          ..getCurrencyRatesDebounced(
             selected,
             CurrencyField.revisedBankLimitProposedByFi,
           );
@@ -62,7 +62,7 @@ class FiRevisedBank extends StatelessWidget {
           final String? selectedCode = selected?.name?.toUpperCase();
 
           if (selectedCode != ServerConstants.aedCurrency) {
-            viewModel.getCurrencyRates(
+            viewModel.getCurrencyRatesDebounced(
               selected,
               CurrencyField.revisedBankLimitProposedByFi,
             );

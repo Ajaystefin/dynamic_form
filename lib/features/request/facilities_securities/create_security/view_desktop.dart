@@ -199,6 +199,9 @@ class ViewDesktop extends StatelessWidget {
                                   // security.aedPresentSecurity.
                                   readOnly: false,
                                   filled: false,
+                                  isLoadingListenable: viewModel.rateLoadingFor(
+                                    isPresentSecurityAmount: true,
+                                  ),
                                 )
                               else
                                 const SizedBox(),
@@ -214,6 +217,9 @@ class ViewDesktop extends StatelessWidget {
                                       currencyListTileItemBuilder,
                                   inputFormatters:
                                       securityAmountFormatters(maxLength: 12),
+                                  isLoadingListenable: viewModel.rateLoadingFor(
+                                    isPresentSecurityAmount: false,
+                                  ),
                                 )
                               else
                                 const SizedBox(),

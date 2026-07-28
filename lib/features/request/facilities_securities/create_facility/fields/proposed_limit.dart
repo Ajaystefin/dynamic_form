@@ -89,7 +89,7 @@ class ProposedLimit extends StatelessWidget {
             selected,
             CurrencyField.proposedLimit,
           )
-          ..getCurrencyRates(
+          ..getCurrencyRatesDebounced(
             selected,
             CurrencyField.proposedLimit,
           );
@@ -129,7 +129,7 @@ class ProposedLimit extends StatelessWidget {
           // ------------------ CURRENCY HANDLING (FIX) ------------------
           if (selectedCode != ServerConstants.aedCurrency) {
             //   DO NOT touch proposedLimitAED directly
-            viewModel.getCurrencyRates(
+            viewModel.getCurrencyRatesDebounced(
               selected,
               CurrencyField.proposedLimit,
             );

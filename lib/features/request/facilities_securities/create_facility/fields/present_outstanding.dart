@@ -54,7 +54,7 @@ class PresentOutstanding extends StatelessWidget {
             selected,
             CurrencyField.presentOutstanding,
           )
-          ..getCurrencyRates(
+          ..getCurrencyRatesDebounced(
             selected,
             CurrencyField.presentOutstanding,
           );
@@ -74,7 +74,7 @@ class PresentOutstanding extends StatelessWidget {
               curr?.name?.toUpperCase() ?? ServerConstants.aedCurrency;
 
           if (code != ServerConstants.aedCurrency) {
-            viewModel.getCurrencyRates(
+            viewModel.getCurrencyRatesDebounced(
               curr,
               CurrencyField.presentOutstanding,
             );

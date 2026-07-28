@@ -55,7 +55,8 @@ class ProposedSecurityAmount extends StatelessWidget {
       initialValue: (viewModel.security.proposedSecurityAmount == null ||
               viewModel.security.proposedSecurityAmount == 0)
           ? "0"
-          : formatter.format(viewModel.security.proposedSecurityAmount?.toInt()),
+          : formatter
+              .format(viewModel.security.proposedSecurityAmount?.round()),
       // No thousands-separator formatter here: onChanged below inserts the
       // commas itself by writing a formatted value back to the controller.
       inputFormatters: securityAmountFormatters(),
@@ -65,14 +66,14 @@ class ProposedSecurityAmount extends StatelessWidget {
           final double amount = double.tryParse(cleaned) ?? 0;
           viewModel.security.proposedSecurityAmount = amount;
           // Format entered amount
-          final String formatted = formatter.format(amount.toInt());
+          final String formatted = formatter.format(amount.round());
           viewModel.proposedSecurityAmountController.value = TextEditingValue(
             text: formatted,
             selection: TextSelection.collapsed(offset: formatted.length),
           );
 
           //  Trigger conversion update
-          viewModel.getCurrencyRates(
+          viewModel.getCurrencyRatesDebounced(
             viewModel.security.proposedSecurityAmtCurrency,
             isPresentSecurityAmount: false,
             proposedAmount: amount,
@@ -81,14 +82,20 @@ class ProposedSecurityAmount extends StatelessWidget {
       },
       hintText: "0",
       onSaved: (String? value) {
-        viewModel.security.aedProposedSecurity = double.tryParse(
-              viewModel.newProposedSecurityAmountController.text
-                  .replaceAll(",", ""),
+        // Both fields display a rounded value, so parsing their own text would
+        // push that rounding into the save payload. amountForEmit returns the
+        // untouched model value whenever the text still matches it.
+        final num? originalAmount = viewModel.security.proposedSecurityAmount;
+        final num? originalAed = viewModel.security.aedProposedSecurity;
+
+        viewModel.security.aedProposedSecurity = amountForEmit(
+              viewModel.newProposedSecurityAmountController.text,
+              originalAed,
             ) ??
-            double.tryParse(value?.replaceAll(",", "") ?? "0");
+            amountForEmit(value, originalAmount);
 
         viewModel.security.proposedSecurityAmount =
-            double.tryParse(value?.replaceAll(",", "") ?? "0");
+            amountForEmit(value, originalAmount);
       },
       controller: viewModel.proposedSecurityAmountController,
       currencies: viewModel.currencyCodes,
@@ -105,7 +112,7 @@ class ProposedSecurityAmount extends StatelessWidget {
             selected,
             isPresentSecurityAmount: false,
           )
-          ..getCurrencyRates(
+          ..getCurrencyRatesDebounced(
             selected,
             isPresentSecurityAmount: false,
             proposedAmount: viewModel.security.proposedSecurityAmount,

@@ -1,5 +1,6 @@
 import "dart:async";
 import "package:easy_localization/easy_localization.dart";
+import "package:flutter/foundation.dart";
 import "package:flutter/widgets.dart";
 import "package:wcas_frontend/core/components/dynamic_form/dynamic_form.dart";
 import "package:wcas_frontend/core/components/dynamic_form/models/field.dart";
@@ -16,6 +17,7 @@ import "package:wcas_frontend/core/services/reference_data_service.dart";
 import "package:wcas_frontend/core/services/route_service.dart";
 import "package:wcas_frontend/core/utils/alert_manager.dart";
 import "package:wcas_frontend/core/utils/logger.dart";
+import "package:wcas_frontend/core/utils/rate_debouncer.dart";
 import "package:wcas_frontend/core/utils/safe_cubit.dart";
 import "package:wcas_frontend/core/utils/screen_access_conditions.dart";
 import "package:wcas_frontend/core/utils/utils.dart";
@@ -206,6 +208,20 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
 
   /// Exchange rate used for currency conversions.
   num exchangeRate = 0;
+
+  /// Per-field rate debouncers, created on first use by [_rateDebouncerFor].
+  final Map<CurrencyField, RateDebouncer> _rateDebouncers =
+      <CurrencyField, RateDebouncer>{};
+
+  RateDebouncer _rateDebouncerFor(CurrencyField field) =>
+      _rateDebouncers.putIfAbsent(field, RateDebouncer.new);
+
+  /// Whether a rate fetch for [field] is pending or in flight.
+  ///
+  /// Passed to `ConvertedAmountField.isLoadingListenable` so the AED field can
+  /// show a spinner.
+  ValueListenable<bool> rateLoadingFor(CurrencyField field) =>
+      _rateDebouncerFor(field).isLoading;
 
   /// Identifier of the last created parent facility.
   int? lastCreatedParentFacilityId;
@@ -2876,6 +2892,10 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
 
     final formatter = NumberFormat("#,###");
 
+    // Currency of a field that displayed its stored AED amount instead of
+    // converting. See the warmCurrencyRate call at the end of this method.
+    Reference? shortCircuitedCurrency;
+
     void processCurrencyCovertedFieldField({
       required double? apiAmount,
       required Reference? apiCurrency,
@@ -2885,6 +2905,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       required TextEditingController convertedCtrl,
       required void Function({bool value}) setVisibilityFlag,
       required CurrencyField currencyField,
+      num? apiAedAmount,
     }) {
       final double amount =
           (apiAmount == null || apiAmount.isNaN) ? 0 : apiAmount;
@@ -2914,9 +2935,19 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       setVisibilityFlag(value: isNonAED);
 
       if (isNonAED) {
-        // Initial conversion flow
         onCurrencyChanged(currency, currencyField);
-        getCurrencyRates(currency, currencyField);
+
+        // Initial-AED short-circuit: when the API already carries the converted
+        // amount, show it as-is rather than recomputing it live — a fresh
+        // conversion can disagree with the value the backend saved. The live
+        // path takes over as soon as the user edits the amount or the currency.
+        if (apiAedAmount != null && apiAedAmount > 0) {
+          convertedCtrl.text = formatter.format(apiAedAmount.round());
+          shortCircuitedCurrency = currency;
+        } else {
+          // Initial conversion flow
+          getCurrencyRates(currency, currencyField);
+        }
       } else {
         // Direct AED formatting
         convertedCtrl.text = formatter.format(amount);
@@ -2933,6 +2964,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       setVisibilityFlag: ({bool? value}) =>
           showNewPresentOutStandingLimit = value ?? false,
       currencyField: CurrencyField.presentOutstanding,
+      apiAedAmount: detail.presentOutstandingAED,
     );
 
     // ------------------------------------------------------
@@ -2991,6 +3023,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       setVisibilityFlag: ({bool? value}) =>
           showNewProposedLimitAmount = value ?? false,
       currencyField: CurrencyField.proposedLimit,
+      apiAedAmount: detail.proposedLimitAED,
     );
 
     // 5. Present Limit (if used similarly)
@@ -3004,6 +3037,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       setVisibilityFlag: ({bool? value}) =>
           showNewPresentLimitAmount = value ?? false,
       currencyField: CurrencyField.presentLimit,
+      apiAedAmount: detail.presentLimitAED,
     );
 
     // 6. Revised Bank Limit Proposed By FI
@@ -3018,6 +3052,8 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       setVisibilityFlag: ({bool? value}) =>
           showNewRevisedBankLimitProposedByFiAmount = value ?? false,
       currencyField: CurrencyField.revisedBankLimitProposedByFi,
+      // Shares proposedLimitController / newProposedLimitController with #4.
+      apiAedAmount: detail.proposedLimitAED,
     );
 
     // 7. Revised Bank Limit Recommended By Credit
@@ -3078,20 +3114,92 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       currencyField: CurrencyField.proposedBycc,
     );
 
+    // Fields that showed their stored AED amount skipped the rate fetch, but
+    // exceedsParentLimit and maxInputInSelectedCurrency read exchangeRate. One
+    // warm-up call keeps sub-limit validation behaving as it does today; it is
+    // skipped entirely when every field converted normally.
+    final Reference? warmCurrency = shortCircuitedCurrency;
+    if (warmCurrency != null) {
+      unawaited(warmCurrencyRate(warmCurrency));
+    }
+
     emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
+  }
+
+  /// Debounced entry point for [getCurrencyRates].
+  ///
+  /// Every keystroke in an amount field triggers a rate lookup; this collapses
+  /// a burst of them into one call 300 ms after the last, drives the AED
+  /// field's spinner via [rateLoadingFor], and discards a response that a later
+  /// trigger has already superseded.
+  Future<void> getCurrencyRatesDebounced(
+    Reference? selectedCurrency,
+    CurrencyField currencyField,
+  ) {
+    return _rateDebouncerFor(currencyField).run(
+      (int requestId) => _fetchAndApplyRates(
+        selectedCurrency,
+        currencyField,
+        requestId: requestId,
+      ),
+    );
+  }
+
+  /// Fetches the rate for [selectedCurrency] into [exchangeRate] and does
+  /// nothing else — no conversion, no controller write.
+  ///
+  /// Used on load by [applyInitialCurrencyVisibility] for fields that display a
+  /// stored AED amount instead of converting. Those fields no longer fetch a
+  /// rate, but [maxInputInSelectedCurrency] and [exceedsParentLimit] read
+  /// [exchangeRate], so it still has to be populated for sub-limit validation.
+  Future<void> warmCurrencyRate(Reference? selectedCurrency) async {
+    try {
+      final CurrencyRates rates =
+          await repository.getCurrencyRates(selectedCurrency);
+      exchangeRate = rates.rates[selectedCurrency?.name] ?? 0;
+    } on Object catch (error) {
+      AlertManager().showFailureToast(error.toString());
+    }
   }
 
   /// Retrieves currency exchange rates and updates converted amount fields.
   ///
   /// For non-AED currencies, the entered amount is converted using the
   /// latest exchange rate. AED values are displayed without conversion.
+  ///
+  /// Undebounced. UI callbacks should use [getCurrencyRatesDebounced]; this
+  /// remains for load-time and programmatic use, and its signature is
+  /// deliberately unchanged — test doubles override it.
   Future<void> getCurrencyRates(
     Reference? selectedCurrency,
     CurrencyField currencyField,
-  ) async {
+  ) {
+    return _fetchAndApplyRates(selectedCurrency, currencyField);
+  }
+
+  /// The body of [getCurrencyRates], plus the staleness guard the debounced
+  /// path needs.
+  ///
+  /// When [requestId] is supplied, the result is discarded if a newer request
+  /// for the same [currencyField] has been scheduled in the meantime, so a slow
+  /// response for a currency the user has moved on from cannot overwrite the
+  /// current value.
+  Future<void> _fetchAndApplyRates(
+    Reference? selectedCurrency,
+    CurrencyField currencyField, {
+    int? requestId,
+  }) async {
+    bool isCurrent() =>
+        requestId == null ||
+        (_rateDebouncers[currencyField]?.isCurrent(requestId) ?? true);
+
     try {
       final CurrencyRates rates =
           await repository.getCurrencyRates(selectedCurrency);
+
+      if (!isCurrent()) {
+        return;
+      }
 
       final num rate = rates.rates[selectedCurrency?.name] ?? 0;
 
@@ -3131,7 +3239,8 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
 
       // 2️ AED selected → no conversion
       if (currencyCode == ServerConstants.aedCurrency) {
-        final int aedValue = rawAmount.toInt();
+        // Rounded, not truncated: a stored 7.6 must display as 8.
+        final int aedValue = rawAmount.round();
 
         ctrl.value = TextEditingValue(
           text: formatter.format(aedValue),
@@ -3893,6 +4002,10 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
   @override
   Future<void> close() {
     // unregisterDraftCallback();
+    for (final RateDebouncer debouncer in _rateDebouncers.values) {
+      debouncer.dispose();
+    }
+    _rateDebouncers.clear();
     return super.close();
   }
 

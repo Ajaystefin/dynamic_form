@@ -28,8 +28,8 @@ class PresentSecurityAmount extends StatelessWidget {
       //             .securityTypeId[SecurityType.assignmentOfInsurancess]) &&
       //     (!viewModel.isParipassu),
       controller: viewModel.presentSecurityAmountController,
-      readOnly: !(Globals.request?.applicationSubType ==
-          ServerConstants.manualEntry),
+      readOnly:
+          !(Globals.request?.applicationSubType == ServerConstants.manualEntry),
       // filled: !((viewModel.security.securityType?.id ==
       //         ServerConstants
       //             .securityTypeId[SecurityType.assignmentOfInsurancess]) &&
@@ -42,23 +42,26 @@ class PresentSecurityAmount extends StatelessWidget {
       initialValue: (viewModel.security.presentSecurityAmount == null ||
               viewModel.security.presentSecurityAmount == 0)
           ? "0"
-          : formatter.format(viewModel.security.presentSecurityAmount!.toInt()),
+          : formatter.format(viewModel.security.presentSecurityAmount!.round()),
       // No thousands-separator formatter here: onChanged below inserts the
       // commas itself by writing a formatted value back to the controller.
       inputFormatters: securityAmountFormatters(),
       hintText: "0",
       onSaved: (String? value) {
-        viewModel.security.presentSecurityAmount = double.tryParse(
-          value?.replaceAll(",", "") ?? "0",
-        );
+        // Both fields display a rounded value, so parsing their own text would
+        // push that rounding into the save payload. amountForEmit returns the
+        // untouched model value whenever the text still matches it.
+        final num? originalAmount = viewModel.security.presentSecurityAmount;
+        final num? originalAed = viewModel.security.aedPresentSecurity;
 
-        viewModel.security.aedPresentSecurity = double.tryParse(
-              viewModel.newPresentSecurityAmountController.text
-                  .replaceAll(",", ""),
+        viewModel.security.presentSecurityAmount =
+            amountForEmit(value, originalAmount);
+
+        viewModel.security.aedPresentSecurity = amountForEmit(
+              viewModel.newPresentSecurityAmountController.text,
+              originalAed,
             ) ??
-            double.tryParse(
-              value?.replaceAll(",", "") ?? "0",
-            );
+            amountForEmit(value, originalAmount);
       },
       onChanged: (String? value) {
         if (value != null && value.isNotEmpty) {
@@ -68,14 +71,14 @@ class PresentSecurityAmount extends StatelessWidget {
           viewModel.security.presentSecurityAmount = amount;
 
           // Format entered amount
-          final String formatted = formatter.format(amount.toInt());
+          final String formatted = formatter.format(amount.round());
           viewModel.presentSecurityAmountController.value = TextEditingValue(
             text: formatted,
             selection: TextSelection.collapsed(offset: formatted.length),
           );
 
           //  Trigger conversion update
-          viewModel.getCurrencyRates(
+          viewModel.getCurrencyRatesDebounced(
             viewModel.security.presentSecurityAmtCurrency,
             isPresentSecurityAmount: true,
           );
@@ -98,7 +101,7 @@ class PresentSecurityAmount extends StatelessWidget {
             selected,
             isPresentSecurityAmount: true,
           )
-          ..getCurrencyRates(
+          ..getCurrencyRatesDebounced(
             selected,
             isPresentSecurityAmount: true,
           );
