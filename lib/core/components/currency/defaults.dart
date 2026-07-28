@@ -24,8 +24,8 @@ typedef CurrencyItemBuilder = Widget Function(
 ///
 /// Note the ordering: [LengthLimitingTextInputFormatter] runs **before**
 /// [ThousandsSeparatorFormatter], so the cap applies to the raw digits rather
-/// than to the comma-grouped text. Fields that historically used the opposite
-/// ordering must keep passing their own list rather than calling this helper.
+/// than to the comma-grouped text. A field that needs the opposite ordering
+/// must pass its own list rather than calling this helper.
 List<TextInputFormatter> currencyAmountFormatters({int maxLength = 15}) {
   return <TextInputFormatter>[
     LengthLimitingTextInputFormatter(maxLength),

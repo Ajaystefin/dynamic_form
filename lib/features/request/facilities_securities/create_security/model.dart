@@ -689,39 +689,39 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
     );
   }
 
-  /// Seeds the AED fields from the values the get-security response already
-  /// carries, instead of recomputing them live on load.
+  /// Places the AED amounts the get-security response already carries, without
+  /// calling the exchange rate API.
   ///
-  /// A fresh conversion can disagree with the AED amount the backend saved, so
-  /// the stored `aedPresentSecurity` / `aedProposedSecurity` win on load. The
-  /// live path takes over as soon as the user edits an amount or a currency.
-  ///
-  /// The rate fetch itself is **not** skipped: [getCurrencyRates] also pushes
-  /// `securityvalueadjustedtoLTV` into the dynamic form, and that payload's
-  /// `aedEquivalent` needs the rate. Only the controller writes are replaced.
+  /// `aedPresentSecurity` / `aedProposedSecurity` are shown exactly as the
+  /// backend saved them; a fresh conversion can disagree with them, and the
+  /// live path takes over the moment the user edits an amount or a currency.
+  /// A rate is fetched only for a proposed amount the response has no AED value
+  /// for at all — `0` is an answer, so only `null` counts as missing.
   Future<void> applyInitialSecurityCurrency() async {
     final formatter = NumberFormat("#,###");
 
     final double? storedPresent = security.aedPresentSecurity;
     final double? storedProposed = security.aedProposedSecurity;
 
+    if (storedPresent != null) {
+      newPresentSecurityAmountController.text =
+          formatter.format(storedPresent.round());
+    }
+
+    if (storedProposed != null) {
+      newProposedSecurityAmountController.text =
+          formatter.format(storedProposed.round());
+      return;
+    }
+
+    // The response carries no AED for the proposed amount, so convert it. The
+    // present amount has no such fallback: it is only ever shown from
+    // `aedPresentSecurity` or left for the user's first edit to fill.
     await getCurrencyRates(
       security.proposedSecurityAmtCurrency,
       isPresentSecurityAmount: false,
       proposedAmount: security.proposedSecurityAmount,
     );
-
-    if (storedPresent != null && storedPresent > 0) {
-      newPresentSecurityAmountController.text =
-          formatter.format(storedPresent.round());
-      security.aedPresentSecurity = storedPresent;
-    }
-
-    if (storedProposed != null && storedProposed > 0) {
-      newProposedSecurityAmountController.text =
-          formatter.format(storedProposed.round());
-      security.aedProposedSecurity = storedProposed;
-    }
   }
 
   /// Retrieves exchange rates and updates AED-equivalent security values.
@@ -730,9 +730,8 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
   /// rate, updates the corresponding AED amount fields, and recalculates
   /// security values adjusted by loan-to-value ratios.
   ///
-  /// Undebounced. UI callbacks should use [getCurrencyRatesDebounced]; this
-  /// remains for load-time and programmatic use, and its signature is
-  /// deliberately unchanged — test doubles override it.
+  /// Undebounced, for load-time and programmatic use. UI callbacks should go
+  /// through [getCurrencyRatesDebounced] instead.
   Future<void> getCurrencyRates(
     Reference? selectedCurrency, {
     required bool isPresentSecurityAmount,
@@ -1793,7 +1792,11 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
         _updateLTVSecurityValue({
           "fromCurrency": security.presentSecurityAmtCurrency?.name,
           "fromVal": securityvalueadjustedtoLTV2.round(),
-          "aedEquivalent": (securityvalueadjustedtoLTV2 * exchangeRate).round(),
+          // Left for the dynamic form to fill: its currency field recalculates
+          // a null aedEquivalent with the market value's own currency rate,
+          // fetching one if it has none. The security's rate is not usable
+          // here — the market value can be in a different currency.
+          "aedEquivalent": null,
         });
 
       case "policyNumber":

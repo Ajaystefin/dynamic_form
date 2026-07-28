@@ -122,8 +122,8 @@ class Security {
       securityProvidedNumber: json["wcasSecurityNumber"],
       presentSecurityAmount: (json["presentSecurity"] as num?)?.toDouble(),
       proposedSecurityAmount: (json["proposedSecurity"] as num?)?.toDouble(),
-      aedPresentSecurity: json["aedPresentSecurity"],
-      aedProposedSecurity: json["aedProposedSecurity"],
+      aedPresentSecurity: _toDoubleOrNull(json["aedPresentSecurity"]),
+      aedProposedSecurity: _toDoubleOrNull(json["aedProposedSecurity"]),
       securityGroup: Reference(reference4: json["securityGroup"].toString()),
       securityProvidedName: "${json['securityProviderName'] ?? ""}",
       securityProvidedRim: isSecurityProvidedCBDCustomer
@@ -492,6 +492,21 @@ class Security {
 
     return data;
   }
+}
+
+/// Converts a JSON value to a double if possible.
+///
+/// The AED amounts arrive as an `int` whenever the backend has nothing after
+/// the decimal point (`"aedProposedSecurity": 578`), which a `double?` field
+/// cannot hold without this conversion. Quoted amounts are accepted too.
+double? _toDoubleOrNull(v) {
+  if (v == null) {
+    return null;
+  }
+  if (v is num) {
+    return v.toDouble();
+  }
+  return double.tryParse(v.toString());
 }
 
 /// Extracts facility numbers from a list or comma-separated value.

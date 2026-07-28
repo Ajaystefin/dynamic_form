@@ -10,9 +10,8 @@ import "package:flutter/foundation.dart";
 /// slow response for a currency the user has already moved on from can land
 /// last and overwrite the current converted value.
 ///
-/// Ported from the same mechanism in the dynamic form's `CurrencyDropdown`
-/// (`_debouncedGetCurrencyRates`), which this deliberately mirrors rather than
-/// re-inventing.
+/// Mirrors the dynamic form's `CurrencyDropdown._debouncedGetCurrencyRates`;
+/// keep the two in step.
 class RateDebouncer {
   /// Creates a [RateDebouncer].
   RateDebouncer({this.duration = const Duration(milliseconds: 300)});

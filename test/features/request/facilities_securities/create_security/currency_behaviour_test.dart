@@ -152,7 +152,7 @@ void main() {
       expect(viewModel.security.aedProposedSecurity, 222.6);
     });
 
-    test("still fetches the rate, so the LTV push keeps working", () async {
+    test("makes no rate call when the API supplies the AED values", () async {
       stubRates({"USD": 3.67});
       viewModel.security = Security(
         proposedSecurityAmtCurrency: Reference(name: "USD"),
@@ -162,8 +162,27 @@ void main() {
 
       await viewModel.applyInitialSecurityCurrency();
 
-      verify(() => mockRepository.getCurrencyRates(any())).called(1);
-      expect(viewModel.exchangeRate, 3.67);
+      verifyNever(() => mockRepository.getCurrencyRates(any()));
+      // The rate is only fetched once the user edits a field.
+      expect(viewModel.exchangeRate, 0);
+    });
+
+    test("treats a stored AED of 0 as an answer, not as missing", () async {
+      stubRates({"AUD": 2.51});
+      // Mirrors issue/getSecurityDetails.json: present side is a genuine zero.
+      viewModel.security = Security(
+        proposedSecurityAmtCurrency: Reference(name: "AUD"),
+        presentSecurityAmount: 0,
+        proposedSecurityAmount: 230,
+        aedPresentSecurity: 0,
+        aedProposedSecurity: 578,
+      );
+
+      await viewModel.applyInitialSecurityCurrency();
+
+      verifyNever(() => mockRepository.getCurrencyRates(any()));
+      expect(viewModel.newPresentSecurityAmountController.text, "0");
+      expect(viewModel.newProposedSecurityAmountController.text, "578");
     });
 
     test("falls back to the live conversion when no AED value is stored",
@@ -176,6 +195,7 @@ void main() {
 
       await viewModel.applyInitialSecurityCurrency();
 
+      verify(() => mockRepository.getCurrencyRates(any())).called(1);
       expect(viewModel.newProposedSecurityAmountController.text, "600");
     });
   });

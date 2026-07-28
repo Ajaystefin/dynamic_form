@@ -128,8 +128,6 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // The outgoing widgets used `.where(...).first` here and threw a
-      // StateError instead of rendering.
       expect(tester.takeException(), isNull);
       expect(find.text("USD"), findsOneWidget);
     });

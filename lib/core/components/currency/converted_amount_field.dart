@@ -18,13 +18,9 @@ import "package:wcas_frontend/models/admin/reference.dart";
 /// converts, fetches a rate or touches a model. Its currency dropdown is
 /// locked to AED and has no `onSelected`, so it is a display affordance only.
 ///
-/// Replaces the former `CommonCurrencyConvertField` (which reached into
-/// `CreateFacilityViewModel` just to read its currency list) and the two
-/// per-field read-only widgets in `create_security`.
-///
-/// Unlike all three of those, the AED lookup here cannot throw: they used
-/// `.where((c) => c.name == "AED").first`, which raises a `StateError` when the
-/// currency list is empty or has not loaded AED yet. See [_aedOrFallback].
+/// Used by every AED field in `create_facility` and `create_security`. The AED
+/// lookup cannot throw whatever the caller passes — an empty currency list or
+/// one that has not loaded AED yet still renders. See [_aedOrFallback].
 class ConvertedAmountField extends StatelessWidget {
   /// Creates a [ConvertedAmountField].
   const ConvertedAmountField({
@@ -61,11 +57,11 @@ class ConvertedAmountField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
 
   /// Whether the field rejects input. Defaults to true; the present-security
-  /// call site passes false to preserve its long-standing editable behaviour.
+  /// call site passes false, where the AED box is editable.
   final bool readOnly;
 
-  /// Whether the field paints a fill colour. Defaults to true, for the same
-  /// reason as [readOnly].
+  /// Whether the field paints a fill colour. Defaults to true, and is passed
+  /// false alongside [readOnly] at that same call site.
   final bool filled;
 
   /// Initial text for the amount field.

@@ -15,9 +15,8 @@ import "package:wcas_frontend/models/admin/reference.dart";
 /// This widget is deliberately **presentational**. It owns no state, creates no
 /// [TextEditingController], performs no exchange-rate conversion and never
 /// references a view model. Every model write, validation rule and conversion
-/// trigger stays in the caller's callbacks, exactly as it was before the
-/// composition was extracted. It exists solely to remove the twenty-odd
-/// verbatim copies of the dropdown-inside-a-text-field boilerplate.
+/// trigger stays in the caller's callbacks. It exists solely to hold the
+/// dropdown-inside-a-text-field composition in one place.
 ///
 /// Three parameters carry that guarantee and should not be "simplified":
 ///
@@ -31,8 +30,8 @@ import "package:wcas_frontend/models/admin/reference.dart";
 ///   defaulting here would silently change what those fields accept. Use
 ///   [currencyAmountFormatters] or [securityAmountFormatters] explicitly.
 /// * [fieldKey] is applied to the inner [CustomTextField] rather than to this
-///   widget, because that is where the existing `key:` values sit — they exist
-///   to force the field's cached `initialValue` to be re-read.
+///   widget, because a key there is what forces the field's cached
+///   `initialValue` to be re-read.
 ///
 /// The build output is intentionally just an optional [LabelWidget] wrapping a
 /// [CustomTextField]. Do **not** introduce an `InheritedWidget`, `Provider`,
