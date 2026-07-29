@@ -80,28 +80,32 @@ class _LegacyFileDetailsState extends State<LegacyFileDetails> {
       final sr = 0 + i + 1; // serial number
 
       return [
-        Text(sr.toString()),
-        CustomTooltip(
-          message: document.name ?? "",
-          child: IconButton(
-            onPressed: () {
-              viewModel.downloadDocument(
-                document.data?.edmsDriveItemId ?? "",
-                document.data?.webUrl ?? "",
-                document.name ?? "",
-              );
-            },
-            icon: const Icon(Icons.insert_drive_file),
+        Center(child: Text(sr.toString())),
+        Center(
+          child: CustomTooltip(
+            message: document.name ?? "",
+            child: IconButton(
+              onPressed: () {
+                viewModel.downloadDocument(
+                  document.data?.edmsDriveItemId ?? "",
+                  document.data?.webUrl ?? "",
+                  document.name ?? "",
+                );
+              },
+              icon: const Icon(Icons.insert_drive_file),
+            ),
           ),
         ),
         Text(
           document.name ?? "N/A",
         ),
-        Text(
-          document.data?.date != null
-              ? DateFormat("dd-MM-yyyy")
-                  .format(document.data?.date ?? DateTime.now())
-              : "N/A",
+        Center(
+          child: Text(
+            document.data?.date != null
+                ? DateFormat("dd-MM-yyyy")
+                    .format(document.data?.date ?? DateTime.now())
+                : "N/A",
+          ),
         ),
       ];
     }).toList();

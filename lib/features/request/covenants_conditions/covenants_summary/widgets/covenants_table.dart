@@ -96,10 +96,10 @@ class CovenantTableWidget extends StatelessWidget {
     return List.generate(viewModel.covenant.length, (index) {
       final Covenant covenant = viewModel.covenant[index];
 
-      const int deleteAllowedActionId =ServerConstants.covenantCreateActionId;
+      const int deleteAllowedActionId = ServerConstants.covenantCreateActionId;
 
       final bool shouldShowDeleteIcon =
-           covenant.action == deleteAllowedActionId;
+          covenant.action == deleteAllowedActionId;
 
       // Primary borrower derived from the model (if present)
       final Customer? primaryBorrower =
@@ -229,7 +229,7 @@ class CovenantTableWidget extends StatelessWidget {
           ),
         ),
         Text(testedOnDisplay),
-        Text(covenant.status!),
+        Text(covenant.status ?? ""),
         Text(viewModel.getReferenceName(viewModel.action, covenant.action)),
         if (shouldShowDeleteIcon)
           dynamicIcon(

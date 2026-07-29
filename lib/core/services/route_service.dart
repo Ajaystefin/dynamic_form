@@ -417,11 +417,9 @@ GoRouter router = GoRouter(
         final CreateFacilityArgs? facilityArgs =
             extras?["facilityArgs"] as CreateFacilityArgs?;
         final PageMode? pageMode = extras?["pageMode"] as PageMode?;
-        final bool subLimitValidation = extras?["sublimitValidation"] ?? false;
         return CreateFacilityView(
           facilityArgs,
           pageMode: pageMode,
-          sublimitValidation: subLimitValidation,
         );
       },
     ),

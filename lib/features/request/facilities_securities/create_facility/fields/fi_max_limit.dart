@@ -52,30 +52,30 @@ class FiExcessMaxLimit extends StatelessWidget {
             )
           : "",
       onChanged: (String? value) {
-        if (value != null && value.isNotEmpty) {
-          final String cleaned = value.replaceAll(",", "");
-          final double amount = double.tryParse(cleaned) ?? 0;
+        // An empty box is an amount of 0, and has to reach the conversion below
+        // like any other edit — otherwise the AED box keeps its last value.
+        final String cleaned = (value ?? "").replaceAll(",", "");
+        final double amount = double.tryParse(cleaned) ?? 0;
 
-          viewModel.getFacility.excessOverMaxLimitAllowanceByFi = amount;
+        viewModel.getFacility.excessOverMaxLimitAllowanceByFi = amount;
 
-          final Reference? selected =
-              viewModel.getFacility.excessOverMaxLimitAllowanceCurrencyByFi;
-          final String? selectedCode = selected?.name?.toUpperCase();
+        final Reference? selected =
+            viewModel.getFacility.excessOverMaxLimitAllowanceCurrencyByFi;
+        final String? selectedCode = selected?.name?.toUpperCase();
 
-          if (selectedCode != ServerConstants.aedCurrency) {
-            //  Convert amount
-            viewModel.getCurrencyRatesDebounced(
-              selected,
-              CurrencyField.excessOverMaxLimitAllowanceProposedByFi,
-            );
-          } else {
-            final String formatted = formatter.format(amount);
-            viewModel.newExcessOverMaxLimitAllowanceProposedByFiController
-                .value = TextEditingValue(
-              text: formatted,
-              selection: TextSelection.collapsed(offset: formatted.length),
-            );
-          }
+        if (selectedCode != ServerConstants.aedCurrency) {
+          //  Convert amount
+          viewModel.getCurrencyRatesDebounced(
+            selected,
+            CurrencyField.excessOverMaxLimitAllowanceProposedByFi,
+          );
+        } else {
+          final String formatted = formatter.format(amount);
+          viewModel.newExcessOverMaxLimitAllowanceProposedByFiController.value =
+              TextEditingValue(
+            text: formatted,
+            selection: TextSelection.collapsed(offset: formatted.length),
+          );
         }
       },
       onSaved: (amount) {

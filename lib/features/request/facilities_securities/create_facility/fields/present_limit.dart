@@ -41,6 +41,7 @@ class PresentLimit extends StatelessWidget {
         (ServerConstants.bilateralLoanGroup ==
             viewModel.getFacility.facilityTypeSelectedValue?.id);
     return CurrencyAmountField(
+      readOnly: true,
       isLabelEnabled:
           Globals.request?.applicationSubType == ServerConstants.manualEntry,
       // isEnabled: isEnable??false,
@@ -68,29 +69,34 @@ class PresentLimit extends StatelessWidget {
           formatter.format(viewModel.getFacility.presentLimitAED ?? 0),
       validator: isRequired ? CustomValidator.requiredField : null,
       onChanged: (String? value) {
-        if (value != null && value.isNotEmpty) {
-          final String cleaned = value.replaceAll(",", "");
-          final int amount = int.tryParse(cleaned) ?? 0;
-          viewModel.getFacility.presentLimit = amount == 0
-              ? (viewModel.facilityDetail.isNotEmpty
-                  ? viewModel.facilityDetail.first.presentLimit
-                  : 0)
-              : amount;
-          final Reference? selected = viewModel.getFacility.presentLimitValue;
-          final String? selectedCode = selected?.name?.toUpperCase();
+        // An empty box is an amount of 0, and has to reach the conversion below
+        // like any other edit — otherwise the AED box keeps its last value.
+        final String cleaned = (value ?? "").replaceAll(",", "");
+        final int amount = int.tryParse(cleaned) ?? 0;
+        // A typed "0" still falls back to the API amount, as it always has. An
+        // emptied box is a real 0 — restoring the API amount there would put it
+        // straight back into the AED box the user just cleared.
+        viewModel.getFacility.presentLimit = cleaned.isEmpty
+            ? 0
+            : (amount == 0
+                ? (viewModel.facilityDetail.isNotEmpty
+                    ? viewModel.facilityDetail.first.presentLimit
+                    : 0)
+                : amount);
+        final Reference? selected = viewModel.getFacility.presentLimitValue;
+        final String? selectedCode = selected?.name?.toUpperCase();
 
-          if (selectedCode != ServerConstants.aedCurrency) {
-            viewModel.getCurrencyRatesDebounced(
-              selected,
-              CurrencyField.presentLimit,
-            );
-          } else {
-            final String formatted = formatter.format(amount);
-            viewModel.newPresentLimitController.value = TextEditingValue(
-              text: formatted,
-              selection: TextSelection.collapsed(offset: formatted.length),
-            );
-          }
+        if (selectedCode != ServerConstants.aedCurrency) {
+          viewModel.getCurrencyRatesDebounced(
+            selected,
+            CurrencyField.presentLimit,
+          );
+        } else {
+          final String formatted = formatter.format(amount);
+          viewModel.newPresentLimitController.value = TextEditingValue(
+            text: formatted,
+            selection: TextSelection.collapsed(offset: formatted.length),
+          );
         }
       },
     );

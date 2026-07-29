@@ -1547,6 +1547,23 @@ void main() {
           equals(PageMode.na),
         );
       });
+
+      test("landingRoute should return the screen owned by the role", () {
+        // Act & Assert
+        expect(
+          AuthRepository.landingRoute(UserRole.icsAdmin),
+          equals(Routes.userList),
+        );
+        expect(
+          AuthRepository.landingRoute(UserRole.admin),
+          equals(Routes.manageReference),
+        );
+        expect(
+          AuthRepository.landingRoute(UserRole.relationshipManager),
+          equals(Routes.home),
+        );
+        expect(AuthRepository.landingRoute(null), equals(Routes.home));
+      });
     });
 
     group("Edge Cases and Error Handling", () {

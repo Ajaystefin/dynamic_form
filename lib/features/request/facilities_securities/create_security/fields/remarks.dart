@@ -28,7 +28,7 @@ class Remarks extends StatelessWidget {
       child: viewModel.isFIFlow && viewModel.remarksController != null
           ? UnifiedTextEditor(
               controller: viewModel.remarksController,
-              initialText: viewModel.security.remarks ?? "",
+              initialText: viewModel.security.remarksFi ?? "",
               ignoreProvider: Utils.checkApplicationType(
                 ApplicationType.cancellation,
               ),

@@ -58,26 +58,26 @@ class FiRevisedBankByCC extends StatelessWidget {
           : null,
       controller: viewModel.proposedByccController,
       onChanged: (String? value) {
-        if (value != null && value.isNotEmpty) {
-          final String cleaned = value.replaceAll(",", "");
-          final double amount = double.tryParse(cleaned) ?? 0;
-          viewModel.getFacility.proposedByCc = amount;
+        // An empty box is an amount of 0, and has to reach the conversion below
+        // like any other edit — otherwise the AED box keeps its last value.
+        final String cleaned = (value ?? "").replaceAll(",", "");
+        final double amount = double.tryParse(cleaned) ?? 0;
+        viewModel.getFacility.proposedByCc = amount;
 
-          final String? selectedCode =
-              viewModel.getFacility.proposedByCcCurrency?.toUpperCase();
+        final String? selectedCode =
+            viewModel.getFacility.proposedByCcCurrency?.toUpperCase();
 
-          if (selectedCode != ServerConstants.aedCurrency) {
-            viewModel.getCurrencyRatesDebounced(
-              Reference(name: selectedCode),
-              CurrencyField.revisedBankLimitRecommendedByCredit,
-            );
-          } else {
-            final String formatted = formatter.format(amount);
-            viewModel.newProposedByccController.value = TextEditingValue(
-              text: formatted,
-              selection: TextSelection.collapsed(offset: formatted.length),
-            );
-          }
+        if (selectedCode != ServerConstants.aedCurrency) {
+          viewModel.getCurrencyRatesDebounced(
+            Reference(name: selectedCode),
+            CurrencyField.revisedBankLimitRecommendedByCredit,
+          );
+        } else {
+          final String formatted = formatter.format(amount);
+          viewModel.newProposedByccController.value = TextEditingValue(
+            text: formatted,
+            selection: TextSelection.collapsed(offset: formatted.length),
+          );
         }
       },
       onSaved: (amount) {

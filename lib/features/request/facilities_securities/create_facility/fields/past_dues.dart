@@ -23,11 +23,10 @@ class FacilityPastDues extends StatelessWidget {
     final bool hasCountryCodes = viewModel.currencyCodes.isNotEmpty;
     final Reference? selectedCurrency = viewModel.getFacility.pastDues;
     return CurrencyAmountField(
-      label: "facilities.createFacility.pastDue".tr(),
+      label: "facilities.createFacility.pastDue".tr(), readOnly: true,
       isLabelEnabled:
           Globals.request?.applicationSubType == ServerConstants.manualEntry,
-      fieldKey:
-          ValueKey(viewModel.getFacility.pastDues?.description ?? ""), //
+      fieldKey: ValueKey(viewModel.getFacility.pastDues?.description ?? ""), //
 
       // This field stores a free-text description rather than a parsed amount,
       // so it has never applied input formatters.

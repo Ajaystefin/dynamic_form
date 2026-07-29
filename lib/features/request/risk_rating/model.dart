@@ -899,7 +899,8 @@ class RiskRatingViewModel extends SafeCubit<RiskRatingState>
           ..sort((a, b) => b.createdDate!.compareTo(a.createdDate!));
         riskRating.comments = filteredComments.first.comment;
         internalRatingTextController.text =
-            filteredComments.first.comment ?? "";
+            filteredComments.first.comment ?? riskRating.comments ?? "";
+        internalRatingControler.setText(internalRatingTextController.text);
       }
       if (isFiFlow) {
         final List<Comment> externalComments =
@@ -916,7 +917,10 @@ class RiskRatingViewModel extends SafeCubit<RiskRatingState>
         if (filteredCommentsExternal.isNotEmpty) {
           filteredCommentsExternal
               .sort((a, b) => b.createdDate!.compareTo(a.createdDate!));
-          riskRating.externalComments = filteredCommentsExternal.first.comment;
+          riskRating.externalComments =
+              filteredCommentsExternal.first.comment ??
+                  externalComments.first.comment;
+          externalRatingControler.setText(riskRating.externalComments ?? "");
         }
       }
     } on Object catch (e) {

@@ -110,6 +110,12 @@ class FacilityDetail {
     this.excessOverMaxLimitAllowanceByCredit,
     this.counterpartyEquity5PercentCurrency,
     this.excessOverMaxLimitAllowanceCurrencyByCredit,
+    this.cbdEquityTier325PercentAED,
+    this.counterpartyEquity5PercentAED,
+    this.counterpartyTotalAssets2PercentAED,
+    this.proposedByCcAED,
+    this.excessOverMaxLimitAllowanceByFiAED,
+    this.excessOverMaxLimitAllowanceByCreditAED,
   });
 
   /// Creates a [FacilityDetail] instance from a JSON map.
@@ -119,8 +125,19 @@ class FacilityDetail {
       presentLimitAED: _toIntOrNull(json["presentLimitAED"]),
       tenorUnit: _toStrOrNull(json["tenorUnit"]),
       tenorValue: _toStrOrNull(json["tenorValue"]),
-      presentOutstandingAED: json["presentOutstandingAED"] as num?,
-      proposedLimitAED: json["proposedLimitAED"] as num?,
+      presentOutstandingAED: _toDoubleOrNull(json["presentOutstandingAED"]),
+      proposedLimitAED: _toDoubleOrNull(json["proposedLimitAED"]),
+      cbdEquityTier325PercentAED:
+          _toDoubleOrNull(json["cbdEquityTier325PercentAED"]),
+      counterpartyEquity5PercentAED:
+          _toDoubleOrNull(json["counterpartyEquity5PercentAED"]),
+      counterpartyTotalAssets2PercentAED:
+          _toDoubleOrNull(json["counterpartyTotalAssets2PercentAED"]),
+      proposedByCcAED: _toDoubleOrNull(json["proposedByCcAED"]),
+      excessOverMaxLimitAllowanceByFiAED:
+          _toDoubleOrNull(json["excessOverMaxLimitAllowanceAED"]),
+      excessOverMaxLimitAllowanceByCreditAED:
+          _toDoubleOrNull(json["excessOverMaxLimitAllowanceByCcAED"]),
       presentOutstandingCurrency: json["presentOutstandingCurrency"] as String?,
       rimNo: json["rimNo"] ?? 0,
       excessOverMaxLimitAllowanceByFi:
@@ -411,6 +428,24 @@ class FacilityDetail {
 
   /// Proposed limit in AED.
   final num? proposedLimitAED;
+
+  /// CBD equity tier 3.25 percent amount in AED.
+  final double? cbdEquityTier325PercentAED;
+
+  /// Counterparty equity 5 percent amount in AED.
+  final double? counterpartyEquity5PercentAED;
+
+  /// Counterparty total assets 2 percent amount in AED.
+  final double? counterpartyTotalAssets2PercentAED;
+
+  /// Proposed amount by CC in AED.
+  final double? proposedByCcAED;
+
+  /// Excess over maximum limit allowance proposed by FI, in AED.
+  final double? excessOverMaxLimitAllowanceByFiAED;
+
+  /// Excess over maximum limit allowance recommended by credit, in AED.
+  final double? excessOverMaxLimitAllowanceByCreditAED;
 
   /// Present outstanding currency.
   String? presentOutstandingCurrency;
@@ -846,6 +881,21 @@ int? _toIntOrNull(v) {
     return v.toInt();
   }
   return int.tryParse(v.toString()); // handles "123" strings if ever returned
+}
+
+/// Converts a value to a double if possible.
+///
+/// Returns `null` if the value cannot be converted. The AED amounts arrive as
+/// an `int` whenever the backend has nothing after the decimal point
+/// (`"proposedLimitAED": 7`), and quoted amounts are accepted too.
+double? _toDoubleOrNull(v) {
+  if (v == null) {
+    return null;
+  }
+  if (v is num) {
+    return v.toDouble();
+  }
+  return double.tryParse(v.toString());
 }
 
 /// Converts a value to a boolean if possible.

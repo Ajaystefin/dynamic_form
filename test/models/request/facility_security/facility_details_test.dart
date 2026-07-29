@@ -439,6 +439,80 @@ void main() {
       expect(detail.limitAvailabilityDate, isNull);
     });
 
+    group("AED amounts", () {
+      // getFacilityDetails carries an AED counterpart for every amount
+      // create_facility converts, and the screen shows them instead of
+      // converting on load — so all nine have to survive the parse.
+      FacilityDetail parseAed(Object? value) {
+        return FacilityDetail.fromJson(<String, dynamic>{
+          "accountType": "",
+          "presentOutstandingAED": value,
+          "proposedLimitAED": value,
+          "cbdEquityTier325PercentAED": value,
+          "counterpartyEquity5PercentAED": value,
+          "counterpartyTotalAssets2PercentAED": value,
+          "proposedByCcAED": value,
+          "excessOverMaxLimitAllowanceAED": value,
+          "excessOverMaxLimitAllowanceByCcAED": value,
+        });
+      }
+
+      test("accepts whole numbers sent as ints", () {
+        // The shape issue/getFacilityDetails.json returns: whole AED amounts
+        // arrive unquoted and without a decimal point.
+        final FacilityDetail detail = parseAed(7);
+
+        expect(detail.presentOutstandingAED, 7.0);
+        expect(detail.proposedLimitAED, 7.0);
+        expect(detail.cbdEquityTier325PercentAED, 7.0);
+        expect(detail.counterpartyEquity5PercentAED, 7.0);
+        expect(detail.counterpartyTotalAssets2PercentAED, 7.0);
+        expect(detail.proposedByCcAED, 7.0);
+        expect(detail.excessOverMaxLimitAllowanceByFiAED, 7.0);
+        expect(detail.excessOverMaxLimitAllowanceByCreditAED, 7.0);
+      });
+
+      test("accepts doubles", () {
+        final FacilityDetail detail = parseAed(7.345);
+
+        expect(detail.proposedLimitAED, 7.345);
+        expect(detail.cbdEquityTier325PercentAED, 7.345);
+        expect(detail.excessOverMaxLimitAllowanceByCreditAED, 7.345);
+      });
+
+      test("accepts quoted amounts", () {
+        final FacilityDetail detail = parseAed("7.345");
+
+        expect(detail.proposedLimitAED, 7.345);
+        expect(detail.proposedByCcAED, 7.345);
+        expect(detail.excessOverMaxLimitAllowanceByFiAED, 7.345);
+      });
+
+      test("leaves a missing amount null", () {
+        final FacilityDetail detail = parseAed(null);
+
+        expect(detail.presentOutstandingAED, isNull);
+        expect(detail.proposedLimitAED, isNull);
+        expect(detail.cbdEquityTier325PercentAED, isNull);
+        expect(detail.counterpartyEquity5PercentAED, isNull);
+        expect(detail.counterpartyTotalAssets2PercentAED, isNull);
+        expect(detail.proposedByCcAED, isNull);
+        expect(detail.excessOverMaxLimitAllowanceByFiAED, isNull);
+        expect(detail.excessOverMaxLimitAllowanceByCreditAED, isNull);
+      });
+
+      test("reads the two excess amounts from their own response keys", () {
+        final FacilityDetail detail = FacilityDetail.fromJson(<String, dynamic>{
+          "accountType": "",
+          "excessOverMaxLimitAllowanceAED": 11,
+          "excessOverMaxLimitAllowanceByCcAED": 22,
+        });
+
+        expect(detail.excessOverMaxLimitAllowanceByFiAED, 11.0);
+        expect(detail.excessOverMaxLimitAllowanceByCreditAED, 22.0);
+      });
+    });
+
     test("toJson serializes all top-level keys & nested lists", () {
       // Build via fromJson then toJson for consistency and to hit recursion
       final detail = FacilityDetail.fromJson(

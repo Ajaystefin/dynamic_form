@@ -178,9 +178,27 @@ class FeeStructureViewModel extends SafeCubit<FeeStructureState>
 
   /// Selects a default customer from borrowers or customers list.
   void defaultSelectedCustomer() {
-    selectedCustomer = ((Globals.request?.borrowers ?? []).isNotEmpty)
-        ? Globals.request?.borrowers?.first
-        : Globals.request?.customers?.first;
+    final List<Customer> borrowers = Globals.request?.borrowers ?? [];
+    final List<Customer> customers = Globals.request?.customers ?? [];
+
+    if (borrowers.isNotEmpty) {
+      selectedCustomer = borrowers.first;
+    } else if (customers.isNotEmpty) {
+      selectedCustomer = customers.first;
+    } else if (Globals.request?.customerRimNo != null) {
+      selectedCustomer = Customer(
+        customerRimNo: Globals.request?.customerRimNo,
+        customerName: Globals.request?.customerName,
+      );
+    } else {
+      selectedCustomer = null;
+    }
+
+    if (selectedCustomer != null) {
+      customerList = [selectedCustomer!];
+    }
+
+    Globals.selectedCustomer = selectedCustomer;
   }
 
   /// Called when user changes customer from dropdown.

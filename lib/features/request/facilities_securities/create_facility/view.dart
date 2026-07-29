@@ -13,7 +13,6 @@ class CreateFacilityView extends StatelessWidget {
   const CreateFacilityView(
     this.facilityArgs, {
     this.pageMode,
-    this.sublimitValidation = false,
     super.key,
   });
 
@@ -23,8 +22,6 @@ class CreateFacilityView extends StatelessWidget {
   /// Mode in which the page is displayed.
   final PageMode? pageMode;
 
-  /// Indicates whether sub-limit validation is enabled.
-  final bool sublimitValidation;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +32,6 @@ class CreateFacilityView extends StatelessWidget {
           showCreateForm: facilityArgs?.showCreateFacilityForm ?? false,
           selectedFacility: facilityArgs?.facility,
           pageModeFromArgs: pageMode,
-          sublimitValidation: sublimitValidation,
         ),
       child: ResponsiveBuilder(
         builder: (context, sizingInformation) {

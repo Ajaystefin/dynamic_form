@@ -61,24 +61,28 @@ class ProposedSecurityAmount extends StatelessWidget {
       // commas itself by writing a formatted value back to the controller.
       inputFormatters: securityAmountFormatters(),
       onChanged: (String? value) {
-        if (value != null && value.isNotEmpty) {
-          final String cleaned = value.replaceAll(",", "");
-          final double amount = double.tryParse(cleaned) ?? 0;
-          viewModel.security.proposedSecurityAmount = amount;
-          // Format entered amount
+        // An empty box is an amount of 0, and has to reach the conversion below
+        // like any other edit — otherwise the AED box keeps its last value.
+        final String cleaned = (value ?? "").replaceAll(",", "");
+        final double amount = double.tryParse(cleaned) ?? 0;
+        viewModel.security.proposedSecurityAmount = amount;
+
+        // Format entered amount. Skipped for an empty box: reformatting would
+        // write a "0" back into it and the field could never be cleared.
+        if (cleaned.isNotEmpty) {
           final String formatted = formatter.format(amount.round());
           viewModel.proposedSecurityAmountController.value = TextEditingValue(
             text: formatted,
             selection: TextSelection.collapsed(offset: formatted.length),
           );
-
-          //  Trigger conversion update
-          viewModel.getCurrencyRatesDebounced(
-            viewModel.security.proposedSecurityAmtCurrency,
-            isPresentSecurityAmount: false,
-            proposedAmount: amount,
-          );
         }
+
+        //  Trigger conversion update
+        viewModel.getCurrencyRatesDebounced(
+          viewModel.security.proposedSecurityAmtCurrency,
+          isPresentSecurityAmount: false,
+          proposedAmount: amount,
+        );
       },
       hintText: "0",
       onSaved: (String? value) {

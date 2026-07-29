@@ -1,5 +1,4 @@
 import "package:easy_localization/easy_localization.dart";
-import "package:wcas_frontend/core/constants/constants.dart";
 import "package:wcas_frontend/core/services/route_service.dart";
 import "package:wcas_frontend/core/utils/alert_manager.dart";
 import "package:wcas_frontend/core/utils/api_exception.dart";
@@ -55,12 +54,6 @@ class SelectRoleViewModel extends SafeCubit<SelectRoleState> {
 
   /// Navigates the user to the appropriate screen after role selection.
   void routeAfterRoleChange(UserRole? userRole) {
-    if (userRole == UserRole.icsAdmin) {
-      router.go(Routes.userList);
-    } else if (userRole == UserRole.admin) {
-      router.go(Routes.manageReference);
-    } else {
-      router.go(Routes.home);
-    }
+    router.go(AuthRepository.landingRoute(userRole));
   }
 }

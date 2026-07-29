@@ -1120,32 +1120,6 @@ void main() {
       expect(vm.selectedCustomer, customer);
     });
 
-    // test('sets selectedCustomer to null when both lists are empty', () {
-    //   // Arrange
-    //   Globals.request = Request(
-    //     borrowers: [],
-    //     customers: [],
-    //   );
-
-    //   // Act
-    //   vm.defaultSelectedCustomer();
-
-    //   // Assert
-    //   expect(vm.selectedCustomer, isNull);
-    // });
-
-    test("throws Object when both lists are empty", () {
-      Globals.request = Request(
-        borrowers: [],
-        customers: [],
-      );
-
-      expect(
-        () => vm.defaultSelectedCustomer(),
-        throwsA(isA<StateError>()),
-      );
-    });
-
     test("sets selectedCustomer to null when request is null", () {
       // Arrange
       Globals.request = null;

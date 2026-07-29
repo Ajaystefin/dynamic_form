@@ -59,35 +59,36 @@ class FacilityProposedByCC extends StatelessWidget {
       readOnly: !viewModel.isEditableForProposedByCC(),
       keyboardType: TextInputType.number,
       onChanged: (String? value) {
-        if (value != null && value.isNotEmpty) {
-          final String cleaned = value.replaceAll(",", "");
-          final int amount = int.tryParse(cleaned) ?? 0;
+        // An empty box is an amount of 0, and has to reach the conversion below
+        // like any other edit — otherwise the AED box keeps its last value.
+        final String cleaned = (value ?? "").replaceAll(",", "");
+        final int amount = int.tryParse(cleaned) ?? 0;
 
-          viewModel.getFacility.proposedByCc = amount.toDouble();
+        viewModel.getFacility.proposedByCc = amount.toDouble();
 
-          final Reference? selected =
-              viewModel.getFacility.proposedByCcCurrency != null
-                  ? Reference(name: viewModel.getFacility.proposedByCcCurrency)
-                  : null;
+        final Reference? selected =
+            viewModel.getFacility.proposedByCcCurrency != null
+                ? Reference(name: viewModel.getFacility.proposedByCcCurrency)
+                : null;
 
-          final String? selectedCode = selected?.name?.toUpperCase();
+        final String? selectedCode = selected?.name?.toUpperCase();
 
-          if (selectedCode != ServerConstants.aedCurrency) {
-            viewModel.getCurrencyRatesDebounced(
-              selected,
-              CurrencyField.proposedBycc,
-            );
-          } else {
-            // NOTE: unlike every other currency field, the AED branch here
-            // writes back into its OWN source controller rather than the
-            // converted `newProposedByccController`. This is intentional and
-            // long-standing — do not "fix" it to match the other fields.
-            final String formatted = formatter.format(amount);
-            viewModel.proposedByccController.value = TextEditingValue(
-              text: formatted,
-              selection: TextSelection.collapsed(offset: formatted.length),
-            );
-          }
+        if (selectedCode != ServerConstants.aedCurrency) {
+          viewModel.getCurrencyRatesDebounced(
+            selected,
+            CurrencyField.proposedBycc,
+          );
+        } else if (cleaned.isNotEmpty) {
+          // NOTE: unlike every other currency field, the AED branch here
+          // writes back into its OWN source controller rather than the
+          // converted `newProposedByccController`. That is intentional — do
+          // not "fix" it to match the other fields. It is skipped for an empty
+          // box, which would otherwise be refilled with "0" and never clear.
+          final String formatted = formatter.format(amount);
+          viewModel.proposedByccController.value = TextEditingValue(
+            text: formatted,
+            selection: TextSelection.collapsed(offset: formatted.length),
+          );
         }
       },
       onSaved: (String? value) {

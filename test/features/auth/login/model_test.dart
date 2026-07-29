@@ -78,6 +78,8 @@ void main() {
       when(
         () => mockAuthRepository.login(username: username, password: password),
       ).thenAnswer((_) async => mockResult);
+      when(() => mockAuthRepository.goToLandingScreen())
+          .thenAnswer((_) async {});
 
       Globals.user = User(
         segments: ["Retail"],
@@ -92,7 +94,7 @@ void main() {
 
       expect(viewModel.state.loaderStatus, LoadingStatus.loaded);
       verify(() => mockAlertManager.showSuccessToast(mockResult)).called(1);
-      verify(() => mockGoRouter.go(any())).called(1);
+      verify(() => mockAuthRepository.goToLandingScreen()).called(1);
     });
 
     test("Login using credentials successfully with multiple roles", () async {

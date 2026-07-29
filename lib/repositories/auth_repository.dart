@@ -417,6 +417,27 @@ class AuthRepository {
     await updateUserInCache();
   }
 
+  /// Returns the landing screen route for the given [userRole].
+  static String landingRoute(UserRole? userRole) =>
+      userRole == UserRole.icsAdmin
+          ? Routes.userList
+          : userRole == UserRole.admin
+              ? Routes.manageReference
+              : Routes.home;
+
+  /// Navigates to the landing screen of the user's current role.
+  ///
+  /// Loads the role's rights first when the destination is not the
+  /// dashboard, which loads them itself in `HomeViewModel.init`.
+  Future<void> goToLandingScreen() async {
+    final Role? role = Globals.user?.currentRole;
+    final String route = landingRoute(role?.userRole);
+    if (route != Routes.home && role != null) {
+      await updateRole(role);
+    }
+    router.go(route);
+  }
+
   /// Retrieves and applies access rights for the specified role.
   ///
   /// Loads the role's screen permissions from the backend, maps them to

@@ -636,6 +636,15 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
     }
   }
 
+  Reference? _findReferenceById(List<Reference>? list, int? id) {
+    if (list == null || id == null) {
+      return null;
+    }
+
+    final int index = list.indexWhere((ref) => ref.id == id);
+    return index == -1 ? null : list[index];
+  }
+
   /// Populates the dialog state from an existing covenant record.
   ///
   /// This method restores:
@@ -662,9 +671,10 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
         firstName: covenant?.customerName,
       );
 
-      selectedCovenantType =
-          covenantType!.firstWhere((ref) => ref.id == covenant!.covenantType);
-
+      selectedCovenantType = _findReferenceById(
+        covenantType,
+        covenant?.covenantType,
+      );
       creditLensController.text = covenant?.creditLensId ?? "";
       entityNameController.text = covenant?.entityName ?? "";
       state.entityName = covenant?.entityName ?? "";
@@ -673,12 +683,14 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
           covenant?.covenantSubType == ServerConstants.customDescriptionId;
 
       if (covenant?.covenantSubType != null && !isCustomPseudoSubtype) {
-        selectedCovenantSubType = covenantSubType!
-            .firstWhere((ref) => ref.id == covenant!.covenantSubType);
-        selectedGeneralCovenantSubType = covenantSubType!
-            .firstWhere((ref) => ref.id == covenant!.covenantSubType);
-        selectedFinancialCovenantSubType = covenantSubType!
-            .firstWhere((ref) => ref.id == covenant!.covenantSubType);
+        final Reference? matchedSubType = _findReferenceById(
+          covenantSubType,
+          covenant?.covenantSubType,
+        );
+
+        selectedCovenantSubType = matchedSubType;
+        selectedGeneralCovenantSubType = matchedSubType;
+        selectedFinancialCovenantSubType = matchedSubType;
       } else if (isCustomPseudoSubtype) {
         selectedCovenantSubType = null;
         selectedGeneralCovenantSubType = null;
@@ -692,13 +704,19 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
       }
 
       if (covenant?.periodTerm != null) {
-        selectedPeriod =
-            covenantPeriod!.firstWhere((ref) => ref.id == covenant!.periodTerm);
+        if (covenant?.periodTerm != null) {
+          selectedPeriod = _findReferenceById(
+            covenantPeriod,
+            covenant?.periodTerm,
+          );
+        }
       }
 
       if (covenant?.basisOfPreparation != null) {
-        selectedBasisOfPreperation = covenantBasisOfPreparation!
-            .firstWhere((ref) => ref.id == covenant!.basisOfPreparation);
+        selectedBasisOfPreperation = _findReferenceById(
+          covenantBasisOfPreparation,
+          covenant?.basisOfPreparation,
+        );
       }
 
       if (covenant?.isInternalFinancial != null) {
@@ -735,34 +753,41 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
         }
       }
       initializeFinancialSelectedDescriptionType();
+      final Reference? descriptionTypeRef = _findReferenceById(
+        descriptionTypes,
+        selectedDescriptionTypeId,
+      );
 
-      selectedDescriptionType = descriptionTypes
-          .firstWhere(
-            (ref) => ref.id == selectedDescriptionTypeId,
-            orElse: () => descriptionTypes.first,
-          )
-          .name;
+      selectedDescriptionType = descriptionTypeRef?.name ?? "";
+      final Reference? financialDescriptionTypeRef = _findReferenceById(
+        descriptionTypes,
+        selectedFinancialDescriptionTypeId,
+      );
 
-      selectedFinancialDescriptionType = descriptionTypes
-          .firstWhere(
-            (ref) => ref.id == selectedFinancialDescriptionTypeId,
-            orElse: () => descriptionTypes.first,
-          )
-          .name;
+      selectedFinancialDescriptionType =
+          financialDescriptionTypeRef?.name ?? "";
 
       if (covenant?.timeForSubmition != null) {
-        selectedTimeForSubmission = covenantSubmissionTime!
-            .firstWhere((ref) => ref.id == covenant!.timeForSubmition);
+        if (covenant?.timeForSubmition != null) {
+          selectedTimeForSubmission = _findReferenceById(
+            covenantSubmissionTime,
+            covenant?.timeForSubmition,
+          );
+        }
       }
 
       if (covenant?.auditStatus != null) {
-        selectedAuditStatus = covenantAuditStatus!
-            .firstWhere((ref) => ref.id == covenant!.auditStatus);
+        selectedAuditStatus = _findReferenceById(
+          covenantAuditStatus,
+          covenant?.auditStatus,
+        );
       }
 
       if (covenant?.frequency != null) {
-        selectedFrequency = referenceData[ReferenceDataKeys.covenantFrequency]
-            ?.firstWhere((Reference value) => value.id == covenant?.frequency);
+        selectedFrequency = _findReferenceById(
+          referenceData[ReferenceDataKeys.covenantFrequency],
+          covenant?.frequency,
+        );
       }
 
       final int? actionId = covenant?.action;
@@ -778,9 +803,9 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
       }
 
       if (covenant?.thresholdType != null) {
-        selectedThreshold =
-            referenceData[ReferenceDataKeys.thresholdType]?.firstWhere(
-          (Reference value) => value.id == covenant?.thresholdType,
+        selectedThreshold = _findReferenceById(
+          referenceData[ReferenceDataKeys.thresholdType],
+          covenant?.thresholdType,
         );
       }
 
@@ -2139,34 +2164,40 @@ class CovenantEditDialogViewModel extends SafeCubit<CovenantEditDialogState> {
   void initializeSelectedDescriptionType() {
     final bool isStandard = isStandardCovenantSelected ?? true;
 
-    final Reference matchedRef = descriptionTypes.firstWhere(
-      (reference) =>
-          reference.id ==
-          (isStandard
-              ? ServerConstants.standardDescriptionId
-              : ServerConstants.customDescriptionId),
-      orElse: () => descriptionTypes.first,
-    );
+    // final Reference matchedRef = descriptionTypes.firstWhere(
+    //   (reference) =>
+    //       reference.id ==
+    //       (isStandard
+    //           ? ServerConstants.standardDescriptionId
+    //           : ServerConstants.customDescriptionId),
+    //   orElse: () => descriptionTypes.first,
+    // );
 
-    selectedDescriptionType = matchedRef.name;
-    selectedDescriptionTypeId = matchedRef.id;
+    final int id = isStandard
+        ? ServerConstants.standardDescriptionId
+        : ServerConstants.customDescriptionId;
+
+    final Reference? matchedRef = _findReferenceById(descriptionTypes, id);
+
+    selectedDescriptionType = matchedRef?.name ?? "";
+    selectedDescriptionTypeId = matchedRef?.id;
+
+    // selectedDescriptionType = matchedRef.name;
+    // selectedDescriptionTypeId = matchedRef.id;
   }
 
   /// Initializes selected financial description type.
   void initializeFinancialSelectedDescriptionType() {
     final bool isStandard = isFinancialStandard ?? true;
 
-    final Reference matchedRef = descriptionTypes.firstWhere(
-      (reference) =>
-          reference.id ==
-          (isStandard
-              ? ServerConstants.standardDescriptionId
-              : ServerConstants.customDescriptionId),
-      orElse: () => descriptionTypes.first,
-    );
+    final int id = isStandard
+        ? ServerConstants.standardDescriptionId
+        : ServerConstants.customDescriptionId;
 
-    selectedFinancialDescriptionType = matchedRef.name;
-    selectedFinancialDescriptionTypeId = matchedRef.id;
+    final Reference? matchedRef = _findReferenceById(descriptionTypes, id);
+
+    selectedFinancialDescriptionType = matchedRef?.name ?? "";
+    selectedFinancialDescriptionTypeId = matchedRef?.id;
   }
 
   /// Updates the selected radio option in covenant description.

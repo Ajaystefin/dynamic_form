@@ -283,11 +283,12 @@ class _ProjectStandbyLimitsTableState extends State<ProjectStandbyLimitsTable> {
         Text("${dis.order}"),
 
         Center(
-          child: CustomIcon(
-            // Restricting allocate project for Main Limit (isMainLimit = true) and allowing for sublimits (isMainLimit = false)
-            onTap: isProjectStandByMainLimit
-                ? null
-                : () {
+          child: isProjectStandByMainLimit
+              // Restricting allocate project for Main Limit (controllingLimitNo.startsWith(PSBL)) and allowing for sublimits (isMainLimit = false)
+
+              ? null
+              : CustomIcon(
+                  onTap: () {
                     DialogHelper.showCustomDialog(
                       barrierDismissible: false,
                       width: 500.w,
@@ -305,11 +306,9 @@ class _ProjectStandbyLimitsTableState extends State<ProjectStandbyLimitsTable> {
                       context: context,
                     );
                   },
-            icon: Icons.add_circle_outline_sharp,
-            iconColor: isProjectStandByMainLimit
-                ? AppColors.tableCellColorGroupedRow
-                : AppColors.buttonBackground,
-          ),
+                  icon: Icons.add_circle_outline_sharp,
+                  iconColor: AppColors.buttonBackground,
+                ),
         ),
 
         Text(f.projectName ?? ""),

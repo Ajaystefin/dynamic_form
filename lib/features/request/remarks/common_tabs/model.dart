@@ -146,15 +146,40 @@ class CommonTabsViewModel extends SafeCubit<CommonTabsState>
   }
 
   /// Sets the default selected customer.
+
   void defaultSelectedCustomer() {
-    selectedCustomer = ((Globals.request?.borrowers ?? []).isNotEmpty)
-        ? Globals.request?.borrowers?.first
-        : Globals.request?.customers?.first;
+    final List<Customer> borrowers = Globals.request?.borrowers ?? [];
+    final List<Customer> customers = Globals.request?.customers ?? [];
+
+    if (borrowers.isNotEmpty) {
+      selectedCustomer = borrowers.first;
+    } else if (customers.isNotEmpty) {
+      selectedCustomer = customers.first;
+    } else if (Globals.request?.customerRimNo != null) {
+      selectedCustomer = Customer(
+        customerRimNo: Globals.request?.customerRimNo,
+        customerName: Globals.request?.customerName,
+        type: selectedCustomer?.type,
+      );
+    } else {
+      selectedCustomer = null;
+    }
+
+    if (selectedCustomer != null) {
+      customerList = [selectedCustomer!];
+    }
+
+    Globals.selectedCustomer = selectedCustomer;
   }
 
   /// Sets which tabs should display asterisks based on business segment and
   /// customer type
   void setAsterisks() {
+    if (selectedCustomer == null) {
+      showAsteriskTabs = [];
+      return;
+    }
+
     showAsteriskTabs = Utils.getMandatoryRemarksTabs(selectedCustomer);
   }
 

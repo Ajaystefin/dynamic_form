@@ -706,6 +706,8 @@ class ServerConstants {
 
   /// Product code for PSPL.
   static const String productCodePspl = "PSPL";
+  // Tenor unit - on demand value
+  static const String tenorOnDemandUnit = "On Demand";
 
   /// Facility type reference ID.
   static const facilityTypeReferenceID = 4;
@@ -770,7 +772,7 @@ class ServerConstants {
   static const int conditionCustomId = 13946;
 
   /// Create action ID for conditions.
-  static const int conditionActionCreateId = 13936; 
+  static const int conditionActionCreateId = 13936;
 
   /// New status ID for conditions.
   static const int conditionStatusNewId = 13933;
@@ -1260,7 +1262,7 @@ class ServerConstants {
   static const String cfoBpmRole = "Chief Financial Officer-WCAS";
 
   /// Manual entry value.
-  static const String manualEntry = "Manual Entry";
+  static const String manualEntry = "ME";
 
   /// User Roles ///
 

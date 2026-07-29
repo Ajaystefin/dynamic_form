@@ -46,6 +46,9 @@ void main() {
   }
 
   /// Seeds the minimum state `applyInitialCurrencyVisibility` reads.
+  ///
+  /// [fiAmount] / [fiAmountAed] drive the six FI fields at once — they all read
+  /// their amount, currency and AED value off the same `FacilityDetail`.
   void seedFacility({
     required String currency,
     int presentOutstanding = 0,
@@ -54,6 +57,12 @@ void main() {
     num? presentLimitAed,
     num? presentOutstandingAed,
     num? proposedLimitAed,
+    num fiAmount = 0,
+    num? fiAmountAed,
+    double proposedByCc = 0,
+    num? proposedByCcAed,
+    bool isMainLimit = true,
+    int? parentProposedLimit,
   }) {
     final FacilityDetail detail = FacilityDetail.fromJson({
       "presentLimit": presentLimit,
@@ -61,17 +70,37 @@ void main() {
       if (presentOutstandingAed != null)
         "presentOutstandingAED": presentOutstandingAed,
       if (proposedLimitAed != null) "proposedLimitAED": proposedLimitAed,
+      if (proposedByCcAed != null) "proposedByCcAED": proposedByCcAed,
+      "cbdEquityTier325Percent": fiAmount,
+      "cbdEquityTier325PercentCurrency": currency,
+      "counterpartyEquity5Percent": fiAmount,
+      "counterpartyEquity5PercentCurrency": currency,
+      "counterpartyTotalAssets2Percent": fiAmount,
+      "counterpartyTotalAssets2PercentCurrency": currency,
+      "excessOverMaxLimitAllowance": fiAmount,
+      "excessOverMaxLimitAllowanceCurrency": currency,
+      "excessOverMaxLimitAllowanceByCc": fiAmount,
+      "excessOverMaxLimitAllowanceCurrencyByCc": currency,
+      if (fiAmountAed != null) ...{
+        "cbdEquityTier325PercentAED": fiAmountAed,
+        "counterpartyEquity5PercentAED": fiAmountAed,
+        "counterpartyTotalAssets2PercentAED": fiAmountAed,
+        "excessOverMaxLimitAllowanceAED": fiAmountAed,
+        "excessOverMaxLimitAllowanceByCcAED": fiAmountAed,
+      },
     });
 
     viewModel
       ..facilityDetail = <FacilityDetail>[detail]
+      ..parentProposedLimit = parentProposedLimit
+      ..getFacility.isMainLimit = isMainLimit
       ..getFacility.presentOutstandingAmount = presentOutstanding
       ..getFacility.presentOutstandingCurrency = Reference(name: currency)
       ..getFacility.proposedLimit = proposedLimit
       ..getFacility.proposedLimitValue = Reference(name: currency)
       ..getFacility.presentLimit = presentLimit
       ..getFacility.presentLimitValue = Reference(name: currency)
-      ..getFacility.proposedByCc = 0
+      ..getFacility.proposedByCc = proposedByCc
       ..getFacility.proposedByCcCurrency = currency;
   }
 
@@ -135,6 +164,51 @@ void main() {
     });
   });
 
+  group("clearing an amount", () {
+    test("a cleared amount shows 0 and fetches no rate", () async {
+      stubRates({"USD": 3.67});
+      // What the field widget leaves behind when the box is emptied.
+      viewModel.getFacility.presentLimit = 0;
+
+      await viewModel.getCurrencyRatesDebounced(
+        Reference(name: "USD"),
+        CurrencyField.presentLimit,
+      );
+
+      verifyNever(() => mockRepository.getCurrencyRates(any()));
+      expect(viewModel.newPresentLimitController.text, "0");
+    });
+
+    test("a rate already in flight cannot overwrite the cleared box", () async {
+      final Completer<CurrencyRates> inFlight = Completer<CurrencyRates>();
+      when(() => mockRepository.getCurrencyRates(any()))
+          .thenAnswer((_) => inFlight.future);
+
+      final Reference usd = Reference(name: "USD");
+      viewModel.getFacility.presentLimit = 100;
+
+      unawaited(
+        viewModel.getCurrencyRatesDebounced(usd, CurrencyField.presentLimit),
+      );
+      // Past the debounce, so the request is out and waiting on the response.
+      await Future<void>.delayed(const Duration(milliseconds: 400));
+
+      // The user clears the box while that response is still travelling.
+      viewModel.getFacility.presentLimit = 0;
+      await viewModel.getCurrencyRatesDebounced(
+        usd,
+        CurrencyField.presentLimit,
+      );
+      expect(viewModel.newPresentLimitController.text, "0");
+
+      inFlight.complete(const CurrencyRates(rates: {"USD": 3.67}));
+      await Future<void>.delayed(Duration.zero);
+
+      // Not "367": the superseded response is discarded.
+      expect(viewModel.newPresentLimitController.text, "0");
+    });
+  });
+
   group("rounding", () {
     test("the AED branch rounds rather than truncates", () async {
       stubRates({"AED": 1});
@@ -175,8 +249,44 @@ void main() {
       expect(viewModel.showNewProposedLimitAmount, isTrue);
     });
 
-    test("still warms exchangeRate so sub-limit validation keeps working",
+    test("the six FI amounts show their stored AED and fetch nothing",
         () async {
+      stubRates({"USD": 3.67});
+      seedFacility(
+        currency: "USD",
+        fiAmount: 125,
+        fiAmountAed: 459,
+        proposedByCc: 125,
+        proposedByCcAed: 459,
+        presentLimitAed: 1,
+        presentOutstandingAed: 1,
+        proposedLimitAed: 1,
+      );
+
+      viewModel.applyInitialCurrencyVisibility();
+      await Future<void>.delayed(Duration.zero);
+
+      expect(viewModel.newCbdEquityTier325PercentController.text, "459");
+      expect(viewModel.newCounterpartyEquity5PercentController.text, "459");
+      expect(
+        viewModel.newCounterpartyTotalAssets2PercentController.text,
+        "459",
+      );
+      expect(
+        viewModel.newExcessOverMaxLimitAllowanceProposedByFiController.text,
+        "459",
+      );
+      expect(
+        viewModel
+            .newExcessOverMaxLimitAllowanceRecommendedByCreditController.text,
+        "459",
+      );
+      expect(viewModel.newProposedByccController.text, "459");
+
+      verifyNever(() => mockRepository.getCurrencyRates(any()));
+    });
+
+    test("a main limit loads without warming the rate at all", () async {
       stubRates({"USD": 3.67});
       seedFacility(
         currency: "USD",
@@ -187,24 +297,62 @@ void main() {
       );
 
       viewModel.applyInitialCurrencyVisibility();
+      // The warm-up would be fire-and-forget; give it the chance to land.
+      await Future<void>.delayed(Duration.zero);
+
+      verifyNever(() => mockRepository.getCurrencyRates(any()));
+      // The rate is only fetched once the user edits a field.
+      expect(viewModel.exchangeRate, 0);
+    });
+
+    test("a sub-limit still warms exchangeRate for its parent-cap validation",
+        () async {
+      stubRates({"USD": 3.67});
+      seedFacility(
+        currency: "USD",
+        presentLimit: 50,
+        presentLimitAed: 184,
+        presentOutstandingAed: 294,
+        proposedLimitAed: 459,
+        isMainLimit: false,
+        parentProposedLimit: 1000,
+      );
+
+      viewModel.applyInitialCurrencyVisibility();
       // The warm-up is fire-and-forget; let it land.
       await Future<void>.delayed(Duration.zero);
 
       // Without the warm-up this would stay 0 and exceedsParentLimit would
       // start treating entered amounts as already-AED.
       expect(viewModel.exchangeRate, 3.67);
+      verify(() => mockRepository.getCurrencyRates(any())).called(1);
     });
 
     test("falls back to the live conversion when no AED value is stored",
         () async {
       stubRates({"USD": 3});
-      // presentOutstanding has no stored AED here, so it converts as before.
+      // presentOutstanding has no stored AED here, so it converts live.
       seedFacility(currency: "USD", presentOutstanding: 80);
 
       viewModel.applyInitialCurrencyVisibility();
       await Future<void>.delayed(Duration.zero);
 
       expect(viewModel.newPresentOutStandingController.text, "240");
+      // Only that one field converts; the empty ones need no rate.
+      verify(() => mockRepository.getCurrencyRates(any())).called(1);
+    });
+
+    test("an empty amount shows 0 without fetching a rate", () async {
+      stubRates({"USD": 3});
+      // Nothing entered anywhere: converting could only ever produce 0.
+      seedFacility(currency: "USD");
+
+      viewModel.applyInitialCurrencyVisibility();
+      await Future<void>.delayed(Duration.zero);
+
+      expect(viewModel.newPresentOutStandingController.text, "0");
+      expect(viewModel.newCbdEquityTier325PercentController.text, "0");
+      verifyNever(() => mockRepository.getCurrencyRates(any()));
     });
 
     test("AED currencies never short-circuit and never fetch", () {

@@ -37,7 +37,6 @@ class AddFacilitySubLimitBox extends StatelessWidget {
     this.projectName,
     this.totalProposedLimit,
     this.isStanbySublimitValidation,
-    this.isSubLimit = false,
   });
 
   /// Facility associated with the sub-limit.
@@ -73,8 +72,6 @@ class AddFacilitySubLimitBox extends StatelessWidget {
   /// Indicates whether standby sub-limit validation is enabled.
   final bool? isStanbySublimitValidation;
 
-  /// Indicates whether the current item is a sub-limit.
-  final bool? isSubLimit;
 
   @override
   Widget build(BuildContext context) {
@@ -393,7 +390,6 @@ class AddFacilitySubLimitBox extends StatelessWidget {
                                         showCreateFacilityForm: true,
                                       ),
                                       "pageMode": viewModel.amendPagemode,
-                                      "sublimitValidation": isSubLimit,
                                     },
                                   );
                                 }

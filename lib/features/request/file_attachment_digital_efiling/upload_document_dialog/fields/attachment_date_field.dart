@@ -1,3 +1,4 @@
+import "package:easy_localization/easy_localization.dart";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:wcas_frontend/core/components/datepicker.dart";
@@ -27,9 +28,9 @@ class AttachmentDateField extends StatelessWidget {
       label: label,
       isRequired: true,
       child: CustomDatePicker(
-        labelText: viewModel.selectedDate.toString(),
         width: 250.w,
         initialDateTime: viewModel.selectedDate,
+        semanticLabel: label,
         onSubmit: (value) {
           if (value != null) {
             final DateFormat format = DateFormat("dd/MM/yyyy");

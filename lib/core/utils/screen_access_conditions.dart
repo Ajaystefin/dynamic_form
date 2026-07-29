@@ -863,19 +863,27 @@ class ScreenAccessConditions {
             UserRole.creditCommitteeProxy,
             UserRole.boardDirectorProxy,
           ];
-          final UserRole? userRole = Globals.user?.currentRole?.userRole;
-          final bool isRiskRatingApp =
-              Utils.checkApplicationType(ApplicationType.riskRatingChange);
 
-          // Only these three roles are restricted client-side (editable
-          // only on risk-rating apps). Every other role — including
-          // RO/RM/RM-Business — is governed entirely by whatever the admin
-          // configures in /admin-role-right; this case does not gate them.
+          final UserRole? userRole = Globals.user?.currentRole?.userRole;
+
+          // Only these three roles are restricted client-side.
+          // Every other role, including RO/RM/RM-Business/CCOOD, is governed
+          // entirely by the configuration in /admin-role-right.
           if (conditionalEditRoles.contains(userRole)) {
-            if (isRiskRatingApp &&
-                (isAssignedToCurrentUser() || Globals.checkIsInitiated())) {
+            final bool isAssigned = isAssignedToCurrentUser();
+            final bool isInitiatedByCurrentUser = Globals.checkIsInitiated();
+
+            // CA can edit if the current CA initiated the application
+            // or if the application is assigned to the current CA.
+            if (userRole == UserRole.creditAnalyst &&
+                (isInitiatedByCurrentUser || isAssigned)) {
               return AccessType.edit;
-            } else if (!isRiskRatingApp && Globals.checkIsInitiated()) {
+            }
+
+            // CCP and BDP can edit only when assigned to them.
+            if ((userRole == UserRole.creditCommitteeProxy ||
+                    userRole == UserRole.boardDirectorProxy) &&
+                isAssigned) {
               return AccessType.edit;
             }
           } else if ((isAssignedToCurrentUser() ||
@@ -883,14 +891,18 @@ class ScreenAccessConditions {
               conditionalEditRoles.contains(userRole)) {
             return AccessType.edit;
           } else {
+            // All other roles remain unaffected.
             return serverGranted;
           }
         }
+
         // Standard task-assignment / lifecycle-status read-only check.
         _cachedIsReadOnly ??= _checkIfReadOnly();
+
         if (_cachedIsReadOnly!) {
           return AccessType.view;
         }
+
         return serverGranted;
       // -----------------------------------------------------------------------
       // Default: applied to ALL screens with no case above.

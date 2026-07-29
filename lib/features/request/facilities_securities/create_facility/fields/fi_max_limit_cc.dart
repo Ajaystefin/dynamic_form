@@ -55,28 +55,27 @@ class FiExcessMaxLimitCC extends StatelessWidget {
             )
           : "",
       onChanged: (String? value) {
-        if (value != null && value.isNotEmpty) {
-          final String cleaned = value.replaceAll(",", "");
-          final double amount = double.tryParse(cleaned) ?? 0;
-          viewModel.getFacility.excessOverMaxLimitAllowanceByCredit = amount;
-          final Reference? selected =
-              viewModel.getFacility.excessOverMaxLimitAllowanceCurrencyByCredit;
-          final String? selectedCode = selected?.name?.toUpperCase();
+        // An empty box is an amount of 0, and has to reach the conversion below
+        // like any other edit — otherwise the AED box keeps its last value.
+        final String cleaned = (value ?? "").replaceAll(",", "");
+        final double amount = double.tryParse(cleaned) ?? 0;
+        viewModel.getFacility.excessOverMaxLimitAllowanceByCredit = amount;
+        final Reference? selected =
+            viewModel.getFacility.excessOverMaxLimitAllowanceCurrencyByCredit;
+        final String? selectedCode = selected?.name?.toUpperCase();
 
-          if (selectedCode != ServerConstants.aedCurrency) {
-            viewModel.getCurrencyRatesDebounced(
-              selected,
-              CurrencyField.excessOverMaxLimitAllowanceRecommendedByCredit,
-            );
-          } else {
-            final String formatted = formatter.format(amount);
-            viewModel
-                .newExcessOverMaxLimitAllowanceRecommendedByCreditController
-                .value = TextEditingValue(
-              text: formatted,
-              selection: TextSelection.collapsed(offset: formatted.length),
-            );
-          }
+        if (selectedCode != ServerConstants.aedCurrency) {
+          viewModel.getCurrencyRatesDebounced(
+            selected,
+            CurrencyField.excessOverMaxLimitAllowanceRecommendedByCredit,
+          );
+        } else {
+          final String formatted = formatter.format(amount);
+          viewModel.newExcessOverMaxLimitAllowanceRecommendedByCreditController
+              .value = TextEditingValue(
+            text: formatted,
+            selection: TextSelection.collapsed(offset: formatted.length),
+          );
         }
       },
       onSaved: (amount) {

@@ -32,8 +32,7 @@ class FacilityProjectName extends StatelessWidget {
             ? "common.validation.emptyField".tr()
             : null,
         showClearIcon: false,
-        isEnabled:
-            !viewModel.isSublimitValidation! && viewModel.isProjectNameEnabled,
+        isEnabled: viewModel.isProjectNameEnabled,
         items: items,
         selectedItems: viewModel.projectNameSelectedForUi,
         onSelected: (selectedValue) {

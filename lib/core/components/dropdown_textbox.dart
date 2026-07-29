@@ -20,6 +20,7 @@ class CustomDropdownTextbox extends StatefulWidget {
     this.validator,
     this.onChanged,
     this.maxLength,
+    this.textReadOnly = false,
   });
 
   /// Text editing controller.
@@ -51,7 +52,7 @@ class CustomDropdownTextbox extends StatefulWidget {
 
   /// Maximum input length.
   final int? maxLength;
-
+  final bool textReadOnly;
   @override
   State<CustomDropdownTextbox> createState() => _CustomDropdownTextboxState();
 }
@@ -151,6 +152,7 @@ class _CustomDropdownTextboxState extends State<CustomDropdownTextbox> {
                 // Notify parent of text field change
                 _notifyChange();
               },
+              readOnly: widget.textReadOnly,
             ),
           ),
         ],

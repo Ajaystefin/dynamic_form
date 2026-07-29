@@ -3951,6 +3951,8 @@ void main() {
           .thenThrow(Exception("Network error"));
       when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
 
+      // A rate is only fetched for a non-zero amount.
+      viewModel.security = Security(presentSecurityAmount: 100);
       await viewModel.getCurrencyRates(aed, isPresentSecurityAmount: true);
 
       verify(() => mockAlertManager.showFailureToast(any())).called(1);
@@ -3962,6 +3964,8 @@ void main() {
       when(() => mockSecurityRepository.getCurrencyRates(null))
           .thenAnswer((_) async => const CurrencyRates(rates: {"USD": 3.0}));
 
+      // A rate is only fetched for a non-zero amount.
+      viewModel.security = Security(presentSecurityAmount: 100);
       await viewModel.getCurrencyRates(null, isPresentSecurityAmount: true);
 
       expect(viewModel.exchangeRate, 0); // null → "" key → rate not found

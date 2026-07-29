@@ -338,7 +338,6 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
   PageMode? pageMode;
 
   /// Indicates whether sub-limit validation is enabled.
-  bool? isSublimitValidation;
 
   /// Returns whether the current page is in edit mode.
   bool get canEdit => pageMode == PageMode.edit;
@@ -986,7 +985,6 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     required bool showCreateForm,
     Facility? selectedFacility,
     PageMode? pageModeFromArgs,
-    bool? sublimitValidation,
   }) async {
     emit(
       state.copyWith(
@@ -995,7 +993,6 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       ),
     );
     try {
-      isSublimitValidation = sublimitValidation ?? false;
       repository = FacilitySecurityRepository.instance;
 
       pageMode = pageModeFromArgs ??
@@ -2941,8 +2938,13 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
         // amount, show it as-is rather than recomputing it live — a fresh
         // conversion can disagree with the value the backend saved. The live
         // path takes over as soon as the user edits the amount or the currency.
-        if (apiAedAmount != null && apiAedAmount > 0) {
-          convertedCtrl.text = formatter.format(apiAedAmount.round());
+        //
+        // An empty field is short-circuited too: converting it can only ever
+        // produce the same 0, so the rate call buys nothing. A stored AED of 0
+        // against a non-zero amount is a different matter — the backend has not
+        // computed it yet, hence `> 0` rather than a null check.
+        if (amount == 0 || (apiAedAmount != null && apiAedAmount > 0)) {
+          convertedCtrl.text = formatter.format((apiAedAmount ?? 0).round());
           shortCircuitedCurrency = currency;
         } else {
           // Initial conversion flow
@@ -2982,6 +2984,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       setVisibilityFlag: ({bool? value}) =>
           showNewCbdEquityTier325PercentAmount = value ?? false,
       currencyField: CurrencyField.cbdEquityTier325Percent,
+      apiAedAmount: detail.cbdEquityTier325PercentAED,
     );
 
     // 2. Counterparty Equity 5%
@@ -2995,6 +2998,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       setVisibilityFlag: ({bool? value}) =>
           showNewCounterpartyEquity5PercentAmount = value ?? false,
       currencyField: CurrencyField.counterpartyEquity5Percent,
+      apiAedAmount: detail.counterpartyEquity5PercentAED,
     );
 
     // 3. Counterparty Total Assets 2%
@@ -3009,6 +3013,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       setVisibilityFlag: ({bool? value}) =>
           showNewCounterpartyTotalAssets2PercentAmount = value ?? false,
       currencyField: CurrencyField.counterpartyTotalAssets2Percent,
+      apiAedAmount: detail.counterpartyTotalAssets2PercentAED,
     );
 
     // 4. Proposed Limit (FI flow case)
@@ -3068,6 +3073,8 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       setVisibilityFlag: ({bool? value}) =>
           showNewRevisedBankLimitRecommendedByCreditAmount = value ?? false,
       currencyField: CurrencyField.revisedBankLimitRecommendedByCredit,
+      // Shares proposedByccController / newProposedByccController with #10.
+      apiAedAmount: detail.proposedByCcAED,
     );
 
     // 8. Excess Over Max Limit (FI Proposed)
@@ -3082,6 +3089,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       setVisibilityFlag: ({bool? value}) =>
           showNewExcessOverMaxLimitAllowanceProposedByFiAmount = value ?? false,
       currencyField: CurrencyField.excessOverMaxLimitAllowanceProposedByFi,
+      apiAedAmount: detail.excessOverMaxLimitAllowanceByFiAED,
     );
 
     // 9. Excess Over Max Limit (Credit Recommended)
@@ -3099,6 +3107,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
               value ?? false,
       currencyField:
           CurrencyField.excessOverMaxLimitAllowanceRecommendedByCredit,
+      apiAedAmount: detail.excessOverMaxLimitAllowanceByCreditAED,
     );
 
     //10 ProposedBy CC
@@ -3112,14 +3121,19 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       setVisibilityFlag: ({bool? value}) =>
           showNewProposedByCCAmount = value ?? false,
       currencyField: CurrencyField.proposedBycc,
+      // Shares proposedByccController / newProposedByccController with #7.
+      apiAedAmount: detail.proposedByCcAED,
     );
 
     // Fields that showed their stored AED amount skipped the rate fetch, but
     // exceedsParentLimit and maxInputInSelectedCurrency read exchangeRate. One
-    // warm-up call keeps sub-limit validation behaving as it does today; it is
-    // skipped entirely when every field converted normally.
+    // warm-up call keeps sub-limit validation behaving as it does today.
+    //
+    // Only a sub-limit with a parent cap needs it: exceedsParentLimit returns
+    // false outright when parentLimitAED is 0, and validateProposedLimit is the
+    // only caller. A main limit therefore loads without any rate call at all.
     final Reference? warmCurrency = shortCircuitedCurrency;
-    if (warmCurrency != null) {
+    if (warmCurrency != null && isSubLimitMode && parentLimitAED > 0) {
       unawaited(warmCurrencyRate(warmCurrency));
     }
 
@@ -3148,10 +3162,11 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
   /// Fetches the rate for [selectedCurrency] into [exchangeRate] and does
   /// nothing else — no conversion, no controller write.
   ///
-  /// Used on load by [applyInitialCurrencyVisibility] for fields that display a
-  /// stored AED amount instead of converting. Those fields no longer fetch a
-  /// rate, but [maxInputInSelectedCurrency] and [exceedsParentLimit] read
-  /// [exchangeRate], so it still has to be populated for sub-limit validation.
+  /// Called on load by [applyInitialCurrencyVisibility], and only for a
+  /// sub-limit with a parent cap. The amount fields display the AED value the
+  /// API supplies rather than converting, so nothing else populates
+  /// [exchangeRate] — and [maxInputInSelectedCurrency] and [exceedsParentLimit]
+  /// need it before the user has touched anything.
   Future<void> warmCurrencyRate(Reference? selectedCurrency) async {
     try {
       final CurrencyRates rates =
@@ -3193,6 +3208,48 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
         requestId == null ||
         (_rateDebouncers[currencyField]?.isCurrent(requestId) ?? true);
 
+    final NumberFormat formatter = NumberFormat("#,###");
+
+    // 1️ Determine source amount (IMPORTANT FIX)
+    num rawAmount;
+    switch (currencyField) {
+      case CurrencyField.revisedBankLimitProposedByFi:
+        rawAmount = getFacility.proposedLimit ?? 0;
+
+      case CurrencyField.proposedBycc:
+        rawAmount = getFacility.proposedByCc ?? 0;
+
+      case CurrencyField.revisedBankLimitRecommendedByCredit:
+        rawAmount = getFacility.proposedByCc ?? 0;
+
+      case CurrencyField.proposedLimit:
+        rawAmount = getFacility.proposedLimit ?? 0;
+
+      case CurrencyField.presentOutstanding:
+        rawAmount = getFacility.presentOutstandingAmount ?? 0;
+
+      default:
+        rawAmount = _currencySourceAmount(currencyField);
+    }
+
+    final TextEditingController? ctrl = _currencyController(currencyField);
+
+    if (ctrl == null) {
+      return;
+    }
+
+    // Nothing to convert — 0 is 0 AED at any rate, so the field is filled in
+    // directly and no rate is fetched. This is the path an amount box cleared
+    // to empty takes.
+    if (rawAmount == 0) {
+      final String zero = formatter.format(0);
+      ctrl.value = TextEditingValue(
+        text: zero,
+        selection: TextSelection.collapsed(offset: zero.length),
+      );
+      return;
+    }
+
     try {
       final CurrencyRates rates =
           await repository.getCurrencyRates(selectedCurrency);
@@ -3204,36 +3261,6 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       final num rate = rates.rates[selectedCurrency?.name] ?? 0;
 
       exchangeRate = rate;
-
-      final NumberFormat formatter = NumberFormat("#,###");
-
-      // 1️ Determine source amount (IMPORTANT FIX)
-      num rawAmount;
-      switch (currencyField) {
-        case CurrencyField.revisedBankLimitProposedByFi:
-          rawAmount = getFacility.proposedLimit ?? 0;
-
-        case CurrencyField.proposedBycc:
-          rawAmount = getFacility.proposedByCc ?? 0;
-
-        case CurrencyField.revisedBankLimitRecommendedByCredit:
-          rawAmount = getFacility.proposedByCc ?? 0;
-
-        case CurrencyField.proposedLimit:
-          rawAmount = getFacility.proposedLimit ?? 0;
-
-        case CurrencyField.presentOutstanding:
-          rawAmount = getFacility.presentOutstandingAmount ?? 0;
-
-        default:
-          rawAmount = _currencySourceAmount(currencyField);
-      }
-
-      final TextEditingController? ctrl = _currencyController(currencyField);
-
-      if (ctrl == null) {
-        return;
-      }
 
       final String currencyCode = selectedCurrency?.name?.toUpperCase() ?? "";
 
@@ -6067,8 +6094,12 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
         final String selVal = (value.containsKey("tenorValue"))
             ? (value["tenorValue"]?.toString() ?? "")
             : (value.values.first?.toString() ?? "");
+
         getFacility.tenorUnit = Reference(name: selUnit);
-        getFacility.tenorValue = int.tryParse(selVal);
+        // pass tenor value as null if tenor unit selected as "On demand "
+        getFacility.tenorValue = selUnit == ServerConstants.tenorOnDemandUnit
+            ? null
+            : int.tryParse(selVal);
         // Always send the user's numeric input for On Demand as well.
         // (No special string override.)
         form?.updateFieldValue(fieldKey, {

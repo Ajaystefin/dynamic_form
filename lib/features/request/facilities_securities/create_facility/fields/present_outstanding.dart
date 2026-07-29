@@ -36,6 +36,7 @@ class PresentOutstanding extends StatelessWidget {
     final NumberFormat formatter = NumberFormat("#,###");
     return CurrencyAmountField(
       label: "facilities.createFacility.presentOutstanding".tr(),
+      readOnly: true,
       isLabelEnabled:
           Globals.request?.applicationSubType == ServerConstants.manualEntry,
       isLabelRequired: isRequired,
@@ -63,29 +64,29 @@ class PresentOutstanding extends StatelessWidget {
       initialValue:
           formatter.format(viewModel.getFacility.presentOutstandingAmount ?? 0),
       onChanged: (value) {
-        if (value.isNotEmpty) {
-          final int amount = int.tryParse(value.replaceAll(",", "")) ?? 0;
+        // An empty box is an amount of 0, and has to reach the conversion below
+        // like any other edit — otherwise the AED box keeps its last value.
+        final int amount = int.tryParse(value.replaceAll(",", "")) ?? 0;
 
-          viewModel.getFacility.presentOutstandingAmount = amount;
+        viewModel.getFacility.presentOutstandingAmount = amount;
 
-          final Reference? curr =
-              viewModel.getFacility.presentOutstandingCurrency;
-          final String code =
-              curr?.name?.toUpperCase() ?? ServerConstants.aedCurrency;
+        final Reference? curr =
+            viewModel.getFacility.presentOutstandingCurrency;
+        final String code =
+            curr?.name?.toUpperCase() ?? ServerConstants.aedCurrency;
 
-          if (code != ServerConstants.aedCurrency) {
-            viewModel.getCurrencyRatesDebounced(
-              curr,
-              CurrencyField.presentOutstanding,
-            );
-          } else {
-            viewModel.newPresentOutStandingController.value = TextEditingValue(
-              text: formatter.format(amount),
-              selection: TextSelection.collapsed(
-                offset: formatter.format(amount).length,
-              ),
-            );
-          }
+        if (code != ServerConstants.aedCurrency) {
+          viewModel.getCurrencyRatesDebounced(
+            curr,
+            CurrencyField.presentOutstanding,
+          );
+        } else {
+          viewModel.newPresentOutStandingController.value = TextEditingValue(
+            text: formatter.format(amount),
+            selection: TextSelection.collapsed(
+              offset: formatter.format(amount).length,
+            ),
+          );
         }
       },
       onSaved: (String? value) {

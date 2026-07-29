@@ -104,95 +104,93 @@ class ProposedLimit extends StatelessWidget {
               return req;
             },
       onChanged: (String? value) {
-        if (value != null && value.isNotEmpty) {
-          final String cleaned = value.replaceAll(",", "");
-          final int amount = int.tryParse(cleaned) ?? 0;
+        // An empty box is an amount of 0, and has to reach the conversion below
+        // like any other edit — otherwise the AED box keeps its last value. The
+        // cap checks are unaffected: 0 never exceeds a cap.
+        final String cleaned = (value ?? "").replaceAll(",", "");
+        final int amount = int.tryParse(cleaned) ?? 0;
 
-          //   Source amount (same as PresentOutstanding)
-          viewModel.getFacility.proposedLimit = amount;
+        //   Source amount (same as PresentOutstanding)
+        viewModel.getFacility.proposedLimit = amount;
 
-          final Reference? selected = viewModel.getFacility.proposedLimitValue;
-          final String? selectedCode = selected?.name?.toUpperCase();
-          final String parentCLN =
-              (viewModel.parentControlliingNumber ?? "").trim().toUpperCase();
+        final Reference? selected = viewModel.getFacility.proposedLimitValue;
+        final String? selectedCode = selected?.name?.toUpperCase();
+        final String parentCLN =
+            (viewModel.parentControlliingNumber ?? "").trim().toUpperCase();
 
-          final bool isPSBLParent = parentCLN.contains("PSBL");
-          final bool isStandbyGroup = viewModel.getFacility.limitGroup ==
-              ServerConstants.projectStandByLimitID;
-          final bool isSpecificGroup = viewModel.getFacility.limitGroup ==
-              ServerConstants.projectSpecificLimitsID;
-          final bool isPSPLParent = parentCLN.contains("PSPL");
-          final bool hasControlling =
-              (viewModel.parentControlliingNumber ?? "").trim().isNotEmpty;
-          final bool isSubLimit =
-              (viewModel.getFacility.isMainLimit == false) && hasControlling;
-          // ------------------ CURRENCY HANDLING (FIX) ------------------
-          if (selectedCode != ServerConstants.aedCurrency) {
-            //   DO NOT touch proposedLimitAED directly
-            viewModel.getCurrencyRatesDebounced(
-              selected,
-              CurrencyField.proposedLimit,
-            );
-          } else {
-            final String formatted = formatter.format(amount);
-            viewModel.newProposedLimitController.value = TextEditingValue(
-              text: formatted,
-              selection: TextSelection.collapsed(offset: formatted.length),
-            );
+        final bool isPSBLParent = parentCLN.contains("PSBL");
+        final bool isStandbyGroup = viewModel.getFacility.limitGroup ==
+            ServerConstants.projectStandByLimitID;
+        final bool isSpecificGroup = viewModel.getFacility.limitGroup ==
+            ServerConstants.projectSpecificLimitsID;
+        final bool isPSPLParent = parentCLN.contains("PSPL");
+        final bool hasControlling =
+            (viewModel.parentControlliingNumber ?? "").trim().isNotEmpty;
+        final bool isSubLimit =
+            (viewModel.getFacility.isMainLimit == false) && hasControlling;
+        // ------------------ CURRENCY HANDLING (FIX) ------------------
+        if (selectedCode != ServerConstants.aedCurrency) {
+          //   DO NOT touch proposedLimitAED directly
+          viewModel.getCurrencyRatesDebounced(
+            selected,
+            CurrencyField.proposedLimit,
+          );
+        } else {
+          final String formatted = formatter.format(amount);
+          viewModel.newProposedLimitController.value = TextEditingValue(
+            text: formatted,
+            selection: TextSelection.collapsed(offset: formatted.length),
+          );
+        }
+        String proposedLimitExceedMessage() {
+          if (isSpecificGroup && isPSPLParent) {
+            return "facilities.facilitySummary.exceedProjectSpecificlimit".tr();
           }
-          String proposedLimitExceedMessage() {
-            if (isSpecificGroup && isPSPLParent) {
-              return "facilities.facilitySummary.exceedProjectSpecificlimit"
-                  .tr();
-            }
-            if (isStandbyGroup && isPSBLParent) {
-              return "facilities.facilitySummary.exceedProjectStandbylimit"
-                  .tr();
-            }
-            return "facilities.facilitySummary.subLimitProposedLimitExceed"
-                .tr();
+          if (isStandbyGroup && isPSBLParent) {
+            return "facilities.facilitySummary.exceedProjectStandbylimit".tr();
           }
+          return "facilities.facilitySummary.subLimitProposedLimitExceed".tr();
+        }
 
-          // ------------------ VALIDATION ------------------
-          if (isSubLimit && !isStandbyGroup) {
-            final int cap = viewModel.getFacility.totalProposedLimit ?? 0;
-            if (amount > cap &&
-                viewModel.shouldShowProposedLimitToastOnce(amount)) {
-              AlertManager().showFailureToast(proposedLimitExceedMessage());
-            }
-          } else if (isSubLimit &&
-              (viewModel.isStanbySublimitValidation ?? false) &&
-              isStandbyGroup) {
-            final int cap = viewModel.getFacility.totalProposedLimit ?? 0;
-            if (amount > cap &&
-                viewModel.shouldShowProposedLimitToastOnce(amount)) {
-              AlertManager().showFailureToast(proposedLimitExceedMessage());
-            }
-          } else {
-            if (viewModel.getFacility.totalProposedLimit == null) {
-              return;
-            }
-            final int cap = viewModel.getFacility.totalProposedLimit ?? 0;
-            if (amount > cap &&
-                viewModel.shouldShowProposedLimitToastOnce(amount)) {
-              final bool isNewStandbyFacility = isStandbyGroup &&
-                  isSubLimit &&
-                  !(viewModel.isStanbySublimitValidation ?? false) &&
-                  parentCLN.isEmpty;
-              final bool isExistingStandbyPSBL =
-                  isStandbyGroup && isSubLimit && isPSBLParent;
-              final bool isExistingSpecificPSPL =
-                  isSpecificGroup && isSubLimit && isPSPLParent;
+        // ------------------ VALIDATION ------------------
+        if (isSubLimit && !isStandbyGroup) {
+          final int cap = viewModel.getFacility.totalProposedLimit ?? 0;
+          if (amount > cap &&
+              viewModel.shouldShowProposedLimitToastOnce(amount)) {
+            AlertManager().showFailureToast(proposedLimitExceedMessage());
+          }
+        } else if (isSubLimit &&
+            (viewModel.isStanbySublimitValidation ?? false) &&
+            isStandbyGroup) {
+          final int cap = viewModel.getFacility.totalProposedLimit ?? 0;
+          if (amount > cap &&
+              viewModel.shouldShowProposedLimitToastOnce(amount)) {
+            AlertManager().showFailureToast(proposedLimitExceedMessage());
+          }
+        } else {
+          if (viewModel.getFacility.totalProposedLimit == null) {
+            return;
+          }
+          final int cap = viewModel.getFacility.totalProposedLimit ?? 0;
+          if (amount > cap &&
+              viewModel.shouldShowProposedLimitToastOnce(amount)) {
+            final bool isNewStandbyFacility = isStandbyGroup &&
+                isSubLimit &&
+                !(viewModel.isStanbySublimitValidation ?? false) &&
+                parentCLN.isEmpty;
+            final bool isExistingStandbyPSBL =
+                isStandbyGroup && isSubLimit && isPSBLParent;
+            final bool isExistingSpecificPSPL =
+                isSpecificGroup && isSubLimit && isPSPLParent;
 
-              AlertManager().showFailureToast(
-                (isNewStandbyFacility ||
-                        isExistingStandbyPSBL ||
-                        isExistingSpecificPSPL)
-                    ? proposedLimitExceedMessage()
-                    : "facilities.facilitySummary.subLimitProposedLimitExceed"
-                        .tr(),
-              );
-            }
+            AlertManager().showFailureToast(
+              (isNewStandbyFacility ||
+                      isExistingStandbyPSBL ||
+                      isExistingSpecificPSPL)
+                  ? proposedLimitExceedMessage()
+                  : "facilities.facilitySummary.subLimitProposedLimitExceed"
+                      .tr(),
+            );
           }
         }
       },

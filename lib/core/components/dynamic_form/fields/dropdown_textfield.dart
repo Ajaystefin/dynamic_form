@@ -3,6 +3,7 @@ import "package:flutter/services.dart";
 import "package:wcas_frontend/core/components/dropdown_textbox.dart";
 import "package:wcas_frontend/core/components/dynamic_form/models/field.dart";
 import "package:wcas_frontend/core/components/label.dart";
+import "package:wcas_frontend/core/constants/_server_constants.dart";
 
 /// Dynamic dropdown and text field form field.
 class DynamicFormDropdownTextfield extends StatefulWidget {
@@ -145,6 +146,7 @@ class _DynamicFormDropdownTextfieldState
       controller: _textController,
       options: widget.fieldData.optionList ?? [],
       initialOption: _selectedUnit,
+      textReadOnly: _selectedUnit == ServerConstants.tenorOnDemandUnit,
       maxLength: widget.fieldData.maxLength,
       inputFormatters:
           (widget.fieldData.enableLimiterValidation && limiterFormatter != null)

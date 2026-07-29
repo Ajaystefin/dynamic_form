@@ -81,7 +81,6 @@ class AddSublimitButton extends StatelessWidget {
                     selectedRim: selectedRim,
                     projectName: projectName,
                     isMainLimit: isMainLimit,
-                    isSubLimit: true,
                   ),
                 ),
                 context: context,

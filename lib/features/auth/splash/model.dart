@@ -102,7 +102,7 @@ class SplashViewModel extends SafeCubit<SplashState> {
       if (hasRoles) {
         AlertManager().showSuccessToast("auth.login.success".tr());
         if (Globals.user?.availableRoles?.length == 1) {
-          router.go(Routes.home);
+          await AuthRepository.instance.goToLandingScreen();
         } else {
           router.go(Routes.selectRole);
         }

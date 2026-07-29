@@ -79,7 +79,6 @@ class Security {
     this.facilityNoList,
     this.selectedFacilitiesByRim,
     this.selectedFacilityNoList,
-    this.coRemarksFi,
   });
 
   /// Creates a [Security] instance from a JSON map.
@@ -312,9 +311,6 @@ class Security {
   /// Indicates whether record can be deleted.
   bool? isDeletable;
 
-  /// Credit officer remarks for FI.
-  String? coRemarksFi;
-
   /// Selected cash collateral value.
   Reference? selectedCashCollateralValue;
 
@@ -414,7 +410,7 @@ class Security {
     data["rimNo"] = rim ?? Globals.request?.customerRimNo;
     if (Utils.checkBusinessSegment(BusinessSegment.financialInstitution)) {
       data["remarksFi"] = remarks;
-      data["coRemarksFi"] = cmoRemark;
+      data["cmoRemarksFi"] = cmoRemark;
       data["securityCodeFi"] = securityType
           ?.name; // Other Security Type Description manually entered by user
     } else {

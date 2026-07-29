@@ -60,7 +60,7 @@ class LoginViewModel extends SafeCubit<LoginState> {
         if (!hasNoRoles!) {
           AlertManager().showSuccessToast(result ?? "");
           if (Globals.user?.availableRoles?.length == 1) {
-            router.go(Routes.home);
+            await repository.goToLandingScreen();
           } else {
             router.go(Routes.selectRole);
           }

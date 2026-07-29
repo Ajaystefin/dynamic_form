@@ -64,25 +64,28 @@ class PresentSecurityAmount extends StatelessWidget {
             amountForEmit(value, originalAmount);
       },
       onChanged: (String? value) {
-        if (value != null && value.isNotEmpty) {
-          final String cleaned = value.replaceAll(",", "");
-          final double amount = double.tryParse(cleaned) ?? 0;
+        // An empty box is an amount of 0, and has to reach the conversion below
+        // like any other edit — otherwise the AED box keeps its last value.
+        final String cleaned = (value ?? "").replaceAll(",", "");
+        final double amount = double.tryParse(cleaned) ?? 0;
 
-          viewModel.security.presentSecurityAmount = amount;
+        viewModel.security.presentSecurityAmount = amount;
 
-          // Format entered amount
+        // Format entered amount. Skipped for an empty box: reformatting would
+        // write a "0" back into it and the field could never be cleared.
+        if (cleaned.isNotEmpty) {
           final String formatted = formatter.format(amount.round());
           viewModel.presentSecurityAmountController.value = TextEditingValue(
             text: formatted,
             selection: TextSelection.collapsed(offset: formatted.length),
           );
-
-          //  Trigger conversion update
-          viewModel.getCurrencyRatesDebounced(
-            viewModel.security.presentSecurityAmtCurrency,
-            isPresentSecurityAmount: true,
-          );
         }
+
+        //  Trigger conversion update
+        viewModel.getCurrencyRatesDebounced(
+          viewModel.security.presentSecurityAmtCurrency,
+          isPresentSecurityAmount: true,
+        );
       },
       textStyle: const TextStyle(fontSize: 14),
       // isDropdownEnabled: false,

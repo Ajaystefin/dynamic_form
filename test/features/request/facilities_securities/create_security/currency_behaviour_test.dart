@@ -114,6 +114,58 @@ void main() {
     });
   });
 
+  group("clearing an amount", () {
+    test("a cleared amount shows 0 and fetches no rate", () async {
+      stubRates({"USD": 3.67});
+      // What the field widget leaves behind when the box is emptied.
+      viewModel.security = Security(proposedSecurityAmount: 0);
+
+      await viewModel.getCurrencyRatesDebounced(
+        Reference(name: "USD"),
+        isPresentSecurityAmount: false,
+        proposedAmount: 0,
+      );
+
+      verifyNever(() => mockRepository.getCurrencyRates(any()));
+      expect(viewModel.newProposedSecurityAmountController.text, "0");
+      expect(viewModel.security.aedProposedSecurity, 0);
+    });
+
+    test("a rate already in flight cannot overwrite the cleared box", () async {
+      final Completer<CurrencyRates> inFlight = Completer<CurrencyRates>();
+      when(() => mockRepository.getCurrencyRates(any()))
+          .thenAnswer((_) => inFlight.future);
+
+      final Reference usd = Reference(name: "USD");
+      viewModel.security = Security(proposedSecurityAmount: 100);
+
+      unawaited(
+        viewModel.getCurrencyRatesDebounced(
+          usd,
+          isPresentSecurityAmount: false,
+          proposedAmount: 100,
+        ),
+      );
+      // Past the debounce, so the request is out and waiting on the response.
+      await Future<void>.delayed(const Duration(milliseconds: 400));
+
+      // The user clears the box while that response is still travelling.
+      viewModel.security.proposedSecurityAmount = 0;
+      await viewModel.getCurrencyRatesDebounced(
+        usd,
+        isPresentSecurityAmount: false,
+        proposedAmount: 0,
+      );
+      expect(viewModel.newProposedSecurityAmountController.text, "0");
+
+      inFlight.complete(const CurrencyRates(rates: {"USD": 3.67}));
+      await Future<void>.delayed(Duration.zero);
+
+      // Not "367": the superseded response is discarded.
+      expect(viewModel.newProposedSecurityAmountController.text, "0");
+    });
+  });
+
   group("rounding", () {
     test("converted AED is rounded, not truncated", () async {
       stubRates({"USD": 1.0});

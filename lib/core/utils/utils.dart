@@ -275,6 +275,9 @@ enum CustomerType {
 
   /// Request for FOL customer.
   requestForFOL,
+
+  /// Bank for Legacy Data customer.
+  bank,
 }
 
 /// Comments Type

@@ -27,7 +27,7 @@ class CmoRemarks extends StatelessWidget {
           ? UnifiedTextEditor(
               ignoreProvider: viewModel.isCmoUpdate(),
               controller: viewModel.cmoRemarksController,
-              initialText: viewModel.security.cmoRemark ?? "",
+              initialText: viewModel.security.cmoRemarksFi ?? "",
               disable: viewModel.isApproved || viewModel.isCmoUpdate(),
               // height: 400,
               editorId: "security_cmo_remarks_"

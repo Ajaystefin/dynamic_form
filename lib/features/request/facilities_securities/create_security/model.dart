@@ -762,6 +762,27 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
         (_rateDebouncers[isPresentSecurityAmount]?.isCurrent(requestId) ??
             true);
 
+    // Pick the correct amount based on the flag
+    final double amount = isPresentSecurityAmount
+        ? (security.presentSecurityAmount ?? 0)
+        : (security.proposedSecurityAmount ?? 0);
+
+    // Nothing to convert — 0 is 0 AED at any rate, so the field is filled in
+    // directly and no rate is fetched. This is the path an amount box cleared
+    // to empty takes; the LTV values it feeds are zeroed with it.
+    if (amount == 0) {
+      _applyConvertedSecurityAmount(
+        0,
+        isPresentSecurityAmount: isPresentSecurityAmount,
+      );
+      _pushLTVSecurityValue(
+        selectedCurrency?.name ?? "",
+        proposedAmount: proposedAmount,
+      );
+      emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
+      return;
+    }
+
     try {
       final CurrencyRates currencyRates =
           await securityRepository.getCurrencyRates(selectedCurrency);
@@ -776,45 +797,55 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
       // Get exchange rate for the selected currency
       exchangeRate = currencyRates.rates[selectedCode] ?? 0;
 
-      // Pick the correct amount based on the flag
-      final double amount = isPresentSecurityAmount
-          ? (security.presentSecurityAmount ?? 0)
-          : (security.proposedSecurityAmount ?? 0);
-
-      // Convert
-      final double convertedValue = amount * exchangeRate;
-
-      // Format values. Rounded, not truncated: a converted 7.6 must show as 8.
-      final formatter = NumberFormat("#,###");
-      final String formattedAED = formatter.format(convertedValue.round());
-
-      // Update the correct controller (present vs proposed)
-      if (isPresentSecurityAmount) {
-        newPresentSecurityAmountController.value = TextEditingValue(
-          text: formattedAED,
-          selection: TextSelection.collapsed(offset: formattedAED.length),
-        );
-        security.aedPresentSecurity = convertedValue;
-      } else {
-        newProposedSecurityAmountController.value = TextEditingValue(
-          text: formattedAED,
-          selection: TextSelection.collapsed(offset: formattedAED.length),
-        );
-        security.aedProposedSecurity = convertedValue;
-      }
-
-      final double adjustedVal = (proposedAmount ?? 1) * (loanToValue ?? 1);
-      final Map<String, dynamic> securityvalueadjustedtoLTV = {
-        "fromCurrency": selectedCode,
-        "fromVal": adjustedVal.round(),
-        "aedEquivalent": (adjustedVal * exchangeRate).round(),
-      };
-      _updateLTVSecurityValue(securityvalueadjustedtoLTV);
-      logger.i(securityvalueadjustedtoLTV);
+      _applyConvertedSecurityAmount(
+        amount * exchangeRate,
+        isPresentSecurityAmount: isPresentSecurityAmount,
+      );
+      _pushLTVSecurityValue(selectedCode, proposedAmount: proposedAmount);
     } on Object catch (error) {
       AlertManager().showFailureToast(error.toString());
     }
     emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
+  }
+
+  /// Shows [convertedValue] in the AED box and stores it on the model.
+  ///
+  /// Shared by the converted and the nothing-to-convert paths of
+  /// [_fetchAndApplyRates] so both write the same two places.
+  void _applyConvertedSecurityAmount(
+    double convertedValue, {
+    required bool isPresentSecurityAmount,
+  }) {
+    // Rounded, not truncated: a converted 7.6 must show as 8.
+    final String formattedAED =
+        NumberFormat("#,###").format(convertedValue.round());
+    final TextEditingValue value = TextEditingValue(
+      text: formattedAED,
+      selection: TextSelection.collapsed(offset: formattedAED.length),
+    );
+
+    if (isPresentSecurityAmount) {
+      newPresentSecurityAmountController.value = value;
+      security.aedPresentSecurity = convertedValue;
+    } else {
+      newProposedSecurityAmountController.value = value;
+      security.aedProposedSecurity = convertedValue;
+    }
+  }
+
+  /// Pushes the LTV-adjusted security value into the dynamic form.
+  void _pushLTVSecurityValue(
+    String selectedCode, {
+    required double? proposedAmount,
+  }) {
+    final double adjustedVal = (proposedAmount ?? 1) * (loanToValue ?? 1);
+    final Map<String, dynamic> securityvalueadjustedtoLTV = {
+      "fromCurrency": selectedCode,
+      "fromVal": adjustedVal.round(),
+      "aedEquivalent": (adjustedVal * exchangeRate).round(),
+    };
+    _updateLTVSecurityValue(securityvalueadjustedtoLTV);
+    logger.i(securityvalueadjustedtoLTV);
   }
 
   void _updateLTVSecurityValue(Map<String, dynamic> payload) {

@@ -2071,7 +2071,9 @@ void main() {
     test("getCurrencyRates error path shows toast (success path optional)",
         () async {
       when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
-      // Calling will attempt singleton repo; rely on catch to be exercised
+      // Calling will attempt singleton repo; rely on catch to be exercised.
+      // A rate is only fetched for a non-zero amount.
+      viewModel.getFacility.proposedLimit = 100;
       await viewModel.getCurrencyRates(
         Reference(name: "USD"),
         CurrencyField.proposedLimit,
