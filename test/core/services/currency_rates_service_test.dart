@@ -2,7 +2,6 @@ import "package:flutter_test/flutter_test.dart";
 import "package:mocktail/mocktail.dart";
 import "package:wcas_frontend/core/services/currency_rates_service.dart";
 import "package:wcas_frontend/models/admin/reference.dart";
-import "package:wcas_frontend/models/request/facility_security/exchange_rate.dart";
 import "package:wcas_frontend/repositories/facility_security_repository.dart";
 
 class MockFacilitySecurityRepository extends Mock
@@ -32,7 +31,7 @@ void main() {
   group("CurrencyRatesService.getRates", () {
     test("fetches from the repository on the first call", () async {
       when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => const CurrencyRates(rates: {"USD": 3.67, "AED": 1}),
+        (_) async => {"USD": 3.67, "AED": 1},
       );
 
       final rates = await service.getRates();
@@ -43,7 +42,7 @@ void main() {
 
     test("reuses the cached table on subsequent calls", () async {
       when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => const CurrencyRates(rates: {"USD": 3.67}),
+        (_) async => {"USD": 3.67},
       );
 
       final first = await service.getRates();
@@ -58,7 +57,7 @@ void main() {
       when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
         (_) async {
           await Future<void>.delayed(const Duration(milliseconds: 20));
-          return const CurrencyRates(rates: {"USD": 3.67});
+          return {"USD": 3.67};
         },
       );
 
@@ -74,7 +73,7 @@ void main() {
 
     test("clearCache forces the next call to re-fetch", () async {
       when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => const CurrencyRates(rates: {"USD": 3.67}),
+        (_) async => {"USD": 3.67},
       );
 
       await service.getRates();
@@ -96,7 +95,7 @@ void main() {
 
     test("getRate returns the rate for a known code", () async {
       when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => const CurrencyRates(rates: {"EUR": 4.0}),
+        (_) async => {"EUR": 4.0},
       );
 
       expect(await service.getRate("EUR"), 4.0);
@@ -105,7 +104,7 @@ void main() {
 
     test("getRateFor resolves the rate from a Reference", () async {
       when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => const CurrencyRates(rates: {"USD": 3.67}),
+        (_) async => {"USD": 3.67},
       );
 
       expect(await service.getRateFor(Reference(name: "USD")), 3.67);

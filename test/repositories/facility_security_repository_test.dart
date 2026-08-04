@@ -17,7 +17,6 @@ import "package:wcas_frontend/core/utils/utils.dart";
 import "package:wcas_frontend/models/admin/reference.dart";
 import "package:wcas_frontend/models/login/role.dart";
 import "package:wcas_frontend/models/login/user.dart";
-import "package:wcas_frontend/models/request/facility_security/exchange_rate.dart";
 import "package:wcas_frontend/models/request/facility_security/facility.dart";
 import "package:wcas_frontend/models/request/facility_security/facility_condition_list.dart";
 import "package:wcas_frontend/models/request/facility_security/facility_detail.dart";
@@ -2186,7 +2185,7 @@ void main() {
   // =========================================================================
 
   group("getAllCurrencyRates", () {
-    test("returns CurrencyRates on success", () async {
+    test("returns exchange rates map on success", () async {
       when(() => mockApiManager.post(APIEndpoints.getCurrencyRateList, any()))
           .thenAnswer(
         (_) async => _successResponse({
@@ -2196,7 +2195,7 @@ void main() {
 
       expect(
         await repository.getAllCurrencyRates(),
-        isA<CurrencyRates>(),
+        {"USD": 3.692, "AED": 1},
       );
     });
 
@@ -2204,7 +2203,7 @@ void main() {
       when(() => mockApiManager.post(APIEndpoints.getCurrencyRateList, any()))
           .thenAnswer((_) async => _successResponse({"responseData": null}));
 
-      expect(await repository.getAllCurrencyRates(), isA<CurrencyRates>());
+      expect(await repository.getAllCurrencyRates(), isEmpty);
     });
   });
 

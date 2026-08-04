@@ -19,7 +19,6 @@ import "package:wcas_frontend/core/utils/screen_access_conditions.dart";
 import "package:wcas_frontend/core/utils/utils.dart";
 import "package:wcas_frontend/models/admin/reference.dart";
 import "package:wcas_frontend/models/request/facility_security/borrower_facility.dart";
-import "package:wcas_frontend/models/request/facility_security/exchange_rate.dart";
 import "package:wcas_frontend/models/request/facility_security/facility.dart";
 import "package:wcas_frontend/models/request/facility_security/facility_condition_list.dart";
 import "package:wcas_frontend/models/request/facility_security/facility_detail.dart";
@@ -1434,10 +1433,9 @@ class FacilitySecurityRepository {
 
   /// Retrieves exchange rate information for all currencies.
   ///
-  /// Returns a [CurrencyRates] object containing the exchange rate data for
-  /// every supported currency, keyed by ISO currency code. If no exchange
-  /// rate data is available, an empty [CurrencyRates] model is returned.
-  Future<CurrencyRates> getAllCurrencyRates() async {
+  /// Returns a map of exchange rates keyed by ISO currency code. If no
+  /// exchange rate data is available, an empty map is returned.
+  Future<Map<String, num>> getAllCurrencyRates() async {
     final payload = BaseRequest.baseRequest({});
 
     final res =
@@ -1446,7 +1444,18 @@ class FacilitySecurityRepository {
     final Map<String, dynamic> data =
         (res.body?["responseData"] as Map<String, dynamic>?) ?? const {};
 
-    return CurrencyRates.fromJson(data);
+    final rates = <String, num>{};
+    data.forEach((currencyCode, rateValue) {
+      if (rateValue is num) {
+        rates[currencyCode] = rateValue;
+      } else if (rateValue is String) {
+        final parsed = num.tryParse(rateValue);
+        if (parsed != null) {
+          rates[currencyCode] = parsed;
+        }
+      }
+    });
+    return rates;
   }
 
   /// Retrieves detailed facility information for the specified facility

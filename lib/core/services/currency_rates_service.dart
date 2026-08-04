@@ -40,8 +40,7 @@ class CurrencyRatesService {
 
   Future<Map<String, num>> _fetch() async {
     try {
-      final result = await _repo.getAllCurrencyRates();
-      _rates = result.rates;
+      _rates = await _repo.getAllCurrencyRates();
       return _rates!;
     } finally {
       _inFlight = null;

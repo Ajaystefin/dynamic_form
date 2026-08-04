@@ -27,7 +27,6 @@ import "package:wcas_frontend/models/admin/reference.dart";
 import "package:wcas_frontend/models/request/country.dart";
 import "package:wcas_frontend/models/request/customer.dart";
 import "package:wcas_frontend/models/request/facility_security/borrower_facility.dart";
-import "package:wcas_frontend/models/request/facility_security/exchange_rate.dart";
 import "package:wcas_frontend/models/request/facility_security/facility.dart";
 import "package:wcas_frontend/models/request/facility_security/facility_condition_list.dart";
 import "package:wcas_frontend/models/request/facility_security/facility_detail.dart";
@@ -937,7 +936,7 @@ void main() {
         ..setSubLimitMarginSign(0, "+")
         ..setSubLimitMarginValue(0, 2.5);
       when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => const CurrencyRates(rates: {"USD": 3.67}),
+        (_) async => {"USD": 3.67},
       );
 
       await viewModel.getSubTypeCurrencyRate(0, Reference(name: "USD"));
@@ -5820,7 +5819,7 @@ void main() {
         "applyInitialCurrencyVisibility converts non-AED present outstanding and proposed limit",
         () async {
       when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => const CurrencyRates(rates: {"USD": 3.67}),
+        (_) async => {"USD": 3.67},
       );
 
       seedApplyInitialCurrencyVisibilitySafeState(
@@ -5851,7 +5850,7 @@ void main() {
         "applyInitialCurrencyVisibility converts FI currency fields and toggles visibility flags",
         () async {
       when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => const CurrencyRates(rates: {"USD": 3.67}),
+        (_) async => {"USD": 3.67},
       );
 
       final detail = seededCurrencyDetail(

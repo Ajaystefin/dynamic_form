@@ -18,7 +18,6 @@ import "package:wcas_frontend/features/request/facilities_securities/facilities_
 import "package:wcas_frontend/features/request/facilities_securities/facilities_summary/model.dart";
 import "package:wcas_frontend/models/admin/reference.dart";
 import "package:wcas_frontend/models/request/application_details.dart";
-import "package:wcas_frontend/models/request/facility_security/exchange_rate.dart";
 import "package:wcas_frontend/models/request/facility_security/facility.dart";
 import "package:wcas_frontend/models/request/facility_security/facility_summary_list.dart";
 import "package:wcas_frontend/models/request/facility_security/limits_facilities_response.dart";
@@ -494,7 +493,7 @@ void main() {
 
     test("getCurrencyRates success calls repository", () async {
       when(() => mockFacilityRepo.getAllCurrencyRates()).thenAnswer(
-        (_) async => const CurrencyRates(rates: {"USD": 3.67}),
+        (_) async => {"USD": 3.67},
       );
 
       await viewModel.getCurrencyRates(Reference(name: "USD"));
@@ -2860,7 +2859,7 @@ void main() {
     test("convertToAed covers AED, non-AED success, zero-rate and exception",
         () async {
       when(() => mockFacilityRepo.getAllCurrencyRates()).thenAnswer(
-        (_) async => const CurrencyRates(rates: {"USD": 3.67, "EUR": 0}),
+        (_) async => {"USD": 3.67, "EUR": 0},
       );
       expect(
         await viewModel.convertToAed(

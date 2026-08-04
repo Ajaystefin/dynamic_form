@@ -8,7 +8,6 @@ import "package:wcas_frontend/core/utils/alert_manager.dart";
 import "package:wcas_frontend/features/request/facilities_securities/create_facility/model.dart";
 import "package:wcas_frontend/features/request/facilities_securities/create_facility/state.dart";
 import "package:wcas_frontend/models/admin/reference.dart";
-import "package:wcas_frontend/models/request/facility_security/exchange_rate.dart";
 import "package:wcas_frontend/models/request/facility_security/facility_detail.dart";
 import "package:wcas_frontend/repositories/facility_security_repository.dart";
 
@@ -48,7 +47,7 @@ void main() {
 
   void stubRates(Map<String, num> rates) {
     when(() => mockRepository.getAllCurrencyRates())
-        .thenAnswer((_) async => CurrencyRates(rates: rates));
+        .thenAnswer((_) async => rates);
   }
 
   /// Seeds the minimum state `applyInitialCurrencyVisibility` reads.
@@ -189,7 +188,7 @@ void main() {
     });
 
     test("a rate already in flight cannot overwrite the cleared box", () async {
-      final Completer<CurrencyRates> inFlight = Completer<CurrencyRates>();
+      final Completer<Map<String, num>> inFlight = Completer<Map<String, num>>();
       when(() => mockRepository.getAllCurrencyRates())
           .thenAnswer((_) => inFlight.future);
 
@@ -210,7 +209,7 @@ void main() {
       );
       expect(viewModel.newPresentLimitController.text, "0");
 
-      inFlight.complete(const CurrencyRates(rates: {"USD": 3.67}));
+      inFlight.complete({"USD": 3.67});
       await Future<void>.delayed(Duration.zero);
 
       // Not "367": the superseded response is discarded.

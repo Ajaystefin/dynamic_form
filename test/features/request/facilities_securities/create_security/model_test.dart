@@ -25,7 +25,6 @@ import "package:wcas_frontend/models/login/role.dart";
 import "package:wcas_frontend/models/login/user.dart";
 import "package:wcas_frontend/models/request/country.dart";
 import "package:wcas_frontend/models/request/customer.dart";
-import "package:wcas_frontend/models/request/facility_security/exchange_rate.dart";
 import "package:wcas_frontend/models/request/facility_security/limit_facilities.dart";
 import "package:wcas_frontend/models/request/facility_security/security.dart";
 import "package:wcas_frontend/models/request/request.dart";
@@ -1136,7 +1135,7 @@ void main() {
           final aed = Reference(name: "AED");
 
           when(() => mockSecurityRepository.getAllCurrencyRates())
-              .thenAnswer((_) async => const CurrencyRates(rates: {"AED": 0}));
+              .thenAnswer((_) async => {"AED": 0});
 
           // Act
           await viewModel.getCurrencyRates(aed, isPresentSecurityAmount: true);
@@ -1156,7 +1155,7 @@ void main() {
           final eur = Reference(name: "EUR");
 
           when(() => mockSecurityRepository.getAllCurrencyRates()).thenAnswer(
-            (_) async => const CurrencyRates(rates: {"USD": 3.673}),
+            (_) async => {"USD": 3.673},
           ); // AED missing
 
           // Act
@@ -1466,7 +1465,7 @@ void main() {
           final eur = Reference(name: "EUR");
 
           when(() => mockSecurityRepository.getAllCurrencyRates())
-              .thenAnswer((_) async => const CurrencyRates(rates: {"EUR": 0}));
+              .thenAnswer((_) async => {"EUR": 0});
 
           await viewModel.getCurrencyRates(eur, isPresentSecurityAmount: false);
 
@@ -1881,7 +1880,7 @@ void main() {
   );
   test("getCurrencyRates – present amount", () async {
     final vm = SpyCreateSecurityViewModel(
-      const CurrencyRates(rates: {"USD": 3.67}),
+      const {"USD": 3.67},
     );
 
     await (vm..security = Security(presentSecurityAmount: 1000))
@@ -2794,7 +2793,7 @@ void main() {
         (_) async => Security(remarks: "RTE Remark", cmoRemark: "RTE CMO"),
       );
       when(() => mockSecRepo.getAllCurrencyRates())
-          .thenAnswer((_) async => const CurrencyRates(rates: {}));
+          .thenAnswer((_) async => {});
 
       // Act
       await viewModel.getSecurity(null);
@@ -3922,7 +3921,7 @@ void main() {
       viewModel.security = Security(presentSecurityAmount: 1000);
       final usd = Reference(name: "USD");
       when(() => mockSecurityRepository.getAllCurrencyRates())
-          .thenAnswer((_) async => const CurrencyRates(rates: {"USD": 3.673}));
+          .thenAnswer((_) async => {"USD": 3.673});
 
       await viewModel.getCurrencyRates(usd, isPresentSecurityAmount: true);
 
@@ -3939,7 +3938,7 @@ void main() {
       viewModel.security = Security(proposedSecurityAmount: 500);
       final eur = Reference(name: "EUR");
       when(() => mockSecurityRepository.getAllCurrencyRates())
-          .thenAnswer((_) async => const CurrencyRates(rates: {"EUR": 4.0}));
+          .thenAnswer((_) async => {"EUR": 4.0});
 
       await viewModel.getCurrencyRates(
         eur,
@@ -3969,7 +3968,7 @@ void main() {
     test("null selectedCurrency: uses empty key and falls back to rate 0",
         () async {
       when(() => mockSecurityRepository.getAllCurrencyRates())
-          .thenAnswer((_) async => const CurrencyRates(rates: {"USD": 3.0}));
+          .thenAnswer((_) async => {"USD": 3.0});
 
       // A rate is only fetched for a non-zero amount.
       viewModel.security = Security(presentSecurityAmount: 100);
@@ -4118,7 +4117,7 @@ void main() {
         ),
       ).thenAnswer((_) async => fetched);
       when(() => mockSecurityRepository.getAllCurrencyRates())
-          .thenAnswer((_) async => const CurrencyRates(rates: {}));
+          .thenAnswer((_) async => {});
       await viewModel.getSecurity(Security(securityId: 1));
       expect(viewModel.isNaturalPersonProvider, true);
       expect(viewModel.securityProviderCbdCustomer, false);
@@ -4237,7 +4236,7 @@ class _FakeUnifiedEditorController implements UnifiedEditorController {
 
 class SpyCreateSecurityViewModel extends CreateSecurityViewModel {
   SpyCreateSecurityViewModel(this.rates);
-  final CurrencyRates rates;
+  final Map<String, num> rates;
 
   @override
   Future<void> getCurrencyRates(
@@ -4246,7 +4245,7 @@ class SpyCreateSecurityViewModel extends CreateSecurityViewModel {
     double? proposedAmount,
   }) async {
     final selectedCode = selectedCurrency?.name ?? "";
-    exchangeRate = rates.rates[selectedCode] ?? 0;
+    exchangeRate = rates[selectedCode] ?? 0;
 
     final amount = isPresentSecurityAmount
         ? (security.presentSecurityAmount ?? 0)
