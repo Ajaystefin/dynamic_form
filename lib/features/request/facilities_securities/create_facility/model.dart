@@ -3900,7 +3900,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
   /// prepares currency options for the dynamic form.
   Future<void> getCurrencyCodes() async {
     try {
-      currencyCodes = await repository.getcurrencyCode();
+      currencyCodes = await CurrencyRatesService().getCurrencies();
       currencyCodes.sort((a, b) {
         final bool aIsAed =
             (a.name ?? "").toUpperCase() == ServerConstants.aedCurrency;

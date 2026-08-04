@@ -250,71 +250,95 @@ void main() {
   });
 
   // =========================================================================
-  // getcurrencyCode
+  // getCurrencyList
   // =========================================================================
 
-  group("getcurrencyCode", () {
-    test("returns list of References on success", () async {
-      when(() => mockApiManager.post(APIEndpoints.getCurrencyCode, any()))
+  group("getCurrencyList", () {
+    test("parses currencies and rates from one flat map on success",
+        () async {
+      when(() => mockApiManager.post(APIEndpoints.getCurrencyRateList, any()))
           .thenAnswer(
         (_) async => _successResponse({
-          "responseData": [
-            {"isoCode": "USD", "description": "US Dollar"},
-            {"isoCode": "MYR", "description": "Malaysian Ringgit"},
-          ],
+          "responseData": {"USD": 3.692, "AED": 1},
         }),
       );
 
-      final result = await repository.getcurrencyCode();
-      expect(result.length, 2);
-      expect(result.first.name, "USD");
-      expect(result.first.reference4, "US Dollar");
+      final result = await repository.getCurrencyList();
+
+      expect(result.currencies.map((c) => c.name), ["USD", "AED"]);
+      expect(result.rates, {"USD": 3.692, "AED": 1});
     });
 
-    test("returns empty list when responseData is not a List", () async {
-      when(() => mockApiManager.post(APIEndpoints.getCurrencyCode, any()))
-          .thenAnswer(
-        (_) async => _successResponse({"responseData": "not-a-list"}),
-      );
-
-      expect(await repository.getcurrencyCode(), isEmpty);
-    });
-
-    test("skips entries where isoCode is blank/whitespace", () async {
-      when(() => mockApiManager.post(APIEndpoints.getCurrencyCode, any()))
+    test("skips a key whose value isn't a parseable num", () async {
+      when(() => mockApiManager.post(APIEndpoints.getCurrencyRateList, any()))
           .thenAnswer(
         (_) async => _successResponse({
-          "responseData": [
-            {"isoCode": "  ", "description": "Blank"},
-            {"isoCode": "EUR", "description": "Euro"},
-          ],
+          "responseData": {"USD": 3.692, "AED": "not-a-number"},
         }),
       );
 
-      final result = await repository.getcurrencyCode();
-      expect(result.length, 1);
-      expect(result.first.name, "EUR");
+      final result = await repository.getCurrencyList();
+
+      expect(result.currencies.map((c) => c.name), ["USD"]);
+      expect(result.rates, {"USD": 3.692});
     });
 
-    test("skips non-map entries in responseData", () async {
-      when(() => mockApiManager.post(APIEndpoints.getCurrencyCode, any()))
+    test("skips a blank/whitespace-only key", () async {
+      when(() => mockApiManager.post(APIEndpoints.getCurrencyRateList, any()))
           .thenAnswer(
         (_) async => _successResponse({
-          "responseData": ["not-a-map", 42, null],
+          "responseData": {"  ": 5, "EUR": 4.5},
         }),
       );
 
-      expect(await repository.getcurrencyCode(), isEmpty);
+      final result = await repository.getCurrencyList();
+
+      expect(result.currencies.map((c) => c.name), ["EUR"]);
+      expect(result.rates, {"EUR": 4.5});
     });
 
-    // NEW: error response → showFailureToast + return []
-    // Uses MockAlertManager to suppress the toast singleton crash.
-    test("returns empty list and shows toast on error response", () async {
-      AlertManager.overrideInstance = MockAlertManager();
-      when(() => mockApiManager.post(APIEndpoints.getCurrencyCode, any()))
+    test("returns empty currencies and rates when responseData is not a Map",
+        () async {
+      when(() => mockApiManager.post(APIEndpoints.getCurrencyRateList, any()))
+          .thenAnswer(
+        (_) async => _successResponse({"responseData": "not-a-map"}),
+      );
+
+      final result = await repository.getCurrencyList();
+
+      expect(result.currencies, isEmpty);
+      expect(result.rates, isEmpty);
+    });
+
+    test("returns empty currencies and rates when responseData is a List",
+        () async {
+      when(() => mockApiManager.post(APIEndpoints.getCurrencyRateList, any()))
+          .thenAnswer(
+        (_) async => _successResponse({
+          "responseData": ["USD", "AED"],
+        }),
+      );
+
+      final result = await repository.getCurrencyList();
+
+      expect(result.currencies, isEmpty);
+      expect(result.rates, isEmpty);
+    });
+
+    test("shows a failure toast and returns empty currencies/rates on error",
+        () async {
+      final mockAlertManager = MockAlertManager();
+      AlertManager.overrideInstance = mockAlertManager;
+      when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
+      when(() => mockApiManager.post(APIEndpoints.getCurrencyRateList, any()))
           .thenAnswer((_) async => _errorResponse(message: "Currency error"));
 
-      expect(await repository.getcurrencyCode(), isEmpty);
+      final result = await repository.getCurrencyList();
+
+      expect(result.currencies, isEmpty);
+      expect(result.rates, isEmpty);
+      verify(() => mockAlertManager.showFailureToast("Currency error"))
+          .called(1);
     });
   });
 
@@ -2177,33 +2201,6 @@ void main() {
         ),
         throwsExceptionWithMessage("GBFail"),
       );
-    });
-  });
-
-  // =========================================================================
-  // getAllCurrencyRates
-  // =========================================================================
-
-  group("getAllCurrencyRates", () {
-    test("returns exchange rates map on success", () async {
-      when(() => mockApiManager.post(APIEndpoints.getCurrencyRateList, any()))
-          .thenAnswer(
-        (_) async => _successResponse({
-          "responseData": {"USD": 3.692, "AED": 1},
-        }),
-      );
-
-      expect(
-        await repository.getAllCurrencyRates(),
-        {"USD": 3.692, "AED": 1},
-      );
-    });
-
-    test("handles null responseData gracefully", () async {
-      when(() => mockApiManager.post(APIEndpoints.getCurrencyRateList, any()))
-          .thenAnswer((_) async => _successResponse({"responseData": null}));
-
-      expect(await repository.getAllCurrencyRates(), isEmpty);
     });
   });
 

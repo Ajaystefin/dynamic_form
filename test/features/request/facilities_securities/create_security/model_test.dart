@@ -1134,8 +1134,12 @@ void main() {
           viewModel.security = Security(proposedSecurityAmount: 1000);
           final aed = Reference(name: "AED");
 
-          when(() => mockSecurityRepository.getAllCurrencyRates())
-              .thenAnswer((_) async => {"AED": 0});
+          when(() => mockSecurityRepository.getCurrencyList()).thenAnswer(
+            (_) async => (
+              currencies: <Reference>[Reference(name: "AED")],
+              rates: {"AED": 0},
+            ),
+          );
 
           // Act
           await viewModel.getCurrencyRates(aed, isPresentSecurityAmount: true);
@@ -1154,8 +1158,11 @@ void main() {
           viewModel.security = Security(proposedSecurityAmount: 500);
           final eur = Reference(name: "EUR");
 
-          when(() => mockSecurityRepository.getAllCurrencyRates()).thenAnswer(
-            (_) async => {"USD": 3.673},
+          when(() => mockSecurityRepository.getCurrencyList()).thenAnswer(
+            (_) async => (
+              currencies: <Reference>[Reference(name: "USD")],
+              rates: {"USD": 3.673},
+            ),
           ); // AED missing
 
           // Act
@@ -1464,8 +1471,12 @@ void main() {
           viewModel.security = Security(proposedSecurityAmount: 1500);
           final eur = Reference(name: "EUR");
 
-          when(() => mockSecurityRepository.getAllCurrencyRates())
-              .thenAnswer((_) async => {"EUR": 0});
+          when(() => mockSecurityRepository.getCurrencyList()).thenAnswer(
+            (_) async => (
+              currencies: <Reference>[Reference(name: "EUR")],
+              rates: {"EUR": 0},
+            ),
+          );
 
           await viewModel.getCurrencyRates(eur, isPresentSecurityAmount: false);
 
@@ -2792,8 +2803,9 @@ void main() {
       ).thenAnswer(
         (_) async => Security(remarks: "RTE Remark", cmoRemark: "RTE CMO"),
       );
-      when(() => mockSecRepo.getAllCurrencyRates())
-          .thenAnswer((_) async => {});
+      when(() => mockSecRepo.getCurrencyList()).thenAnswer(
+        (_) async => (currencies: <Reference>[], rates: <String, num>{}),
+      );
 
       // Act
       await viewModel.getSecurity(null);
@@ -3920,8 +3932,12 @@ void main() {
     test("present amount: sets exchangeRate and updates controller", () async {
       viewModel.security = Security(presentSecurityAmount: 1000);
       final usd = Reference(name: "USD");
-      when(() => mockSecurityRepository.getAllCurrencyRates())
-          .thenAnswer((_) async => {"USD": 3.673});
+      when(() => mockSecurityRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD")],
+          rates: {"USD": 3.673},
+        ),
+      );
 
       await viewModel.getCurrencyRates(usd, isPresentSecurityAmount: true);
 
@@ -3937,8 +3953,12 @@ void main() {
         () async {
       viewModel.security = Security(proposedSecurityAmount: 500);
       final eur = Reference(name: "EUR");
-      when(() => mockSecurityRepository.getAllCurrencyRates())
-          .thenAnswer((_) async => {"EUR": 4.0});
+      when(() => mockSecurityRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "EUR")],
+          rates: {"EUR": 4.0},
+        ),
+      );
 
       await viewModel.getCurrencyRates(
         eur,
@@ -3953,7 +3973,7 @@ void main() {
 
     test("getCurrencyRates exception shows failure toast", () async {
       final aed = Reference(name: "AED");
-      when(() => mockSecurityRepository.getAllCurrencyRates())
+      when(() => mockSecurityRepository.getCurrencyList())
           .thenThrow(Exception("Network error"));
       when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
 
@@ -3967,8 +3987,12 @@ void main() {
 
     test("null selectedCurrency: uses empty key and falls back to rate 0",
         () async {
-      when(() => mockSecurityRepository.getAllCurrencyRates())
-          .thenAnswer((_) async => {"USD": 3.0});
+      when(() => mockSecurityRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD")],
+          rates: {"USD": 3.0},
+        ),
+      );
 
       // A rate is only fetched for a non-zero amount.
       viewModel.security = Security(presentSecurityAmount: 100);
@@ -4116,8 +4140,9 @@ void main() {
           countries: any(named: "countries"),
         ),
       ).thenAnswer((_) async => fetched);
-      when(() => mockSecurityRepository.getAllCurrencyRates())
-          .thenAnswer((_) async => {});
+      when(() => mockSecurityRepository.getCurrencyList()).thenAnswer(
+        (_) async => (currencies: <Reference>[], rates: <String, num>{}),
+      );
       await viewModel.getSecurity(Security(securityId: 1));
       expect(viewModel.isNaturalPersonProvider, true);
       expect(viewModel.securityProviderCbdCustomer, false);

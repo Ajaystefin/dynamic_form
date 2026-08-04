@@ -45,8 +45,12 @@ void main() {
   });
 
   void stubRates(Map<String, num> rates) {
-    when(() => mockRepository.getAllCurrencyRates())
-        .thenAnswer((_) async => rates);
+    when(() => mockRepository.getCurrencyList()).thenAnswer(
+      (_) async => (
+        currencies: rates.keys.map((code) => Reference(name: code)).toList(),
+        rates: rates,
+      ),
+    );
   }
 
   group("getCurrencyRatesDebounced", () {
@@ -72,7 +76,7 @@ void main() {
         isPresentSecurityAmount: false,
       );
 
-      verify(() => mockRepository.getAllCurrencyRates()).called(1);
+      verify(() => mockRepository.getCurrencyList()).called(1);
       expect(viewModel.exchangeRate, 3.67);
       expect(viewModel.newProposedSecurityAmountController.text, "367");
     });
@@ -99,7 +103,7 @@ void main() {
       // Both amounts resolve to the same currency around the same time, so
       // CurrencyRatesService's cache/in-flight de-dupe collapses this to a
       // single underlying repository call.
-      verify(() => mockRepository.getAllCurrencyRates()).called(1);
+      verify(() => mockRepository.getCurrencyList()).called(1);
       expect(viewModel.newPresentSecurityAmountController.text, "20");
       expect(viewModel.newProposedSecurityAmountController.text, "40");
     });
@@ -134,14 +138,15 @@ void main() {
         proposedAmount: 0,
       );
 
-      verifyNever(() => mockRepository.getAllCurrencyRates());
+      verifyNever(() => mockRepository.getCurrencyList());
       expect(viewModel.newProposedSecurityAmountController.text, "0");
       expect(viewModel.security.aedProposedSecurity, 0);
     });
 
     test("a rate already in flight cannot overwrite the cleared box", () async {
-      final Completer<Map<String, num>> inFlight = Completer<Map<String, num>>();
-      when(() => mockRepository.getAllCurrencyRates())
+      final Completer<CurrencyListResult> inFlight =
+          Completer<CurrencyListResult>();
+      when(() => mockRepository.getCurrencyList())
           .thenAnswer((_) => inFlight.future);
 
       final Reference usd = Reference(name: "USD");
@@ -166,7 +171,9 @@ void main() {
       );
       expect(viewModel.newProposedSecurityAmountController.text, "0");
 
-      inFlight.complete({"USD": 3.67});
+      inFlight.complete(
+        (currencies: <Reference>[Reference(name: "USD")], rates: {"USD": 3.67}),
+      );
       await Future<void>.delayed(Duration.zero);
 
       // Not "367": the superseded response is discarded.
@@ -222,7 +229,7 @@ void main() {
 
       await viewModel.applyInitialSecurityCurrency();
 
-      verifyNever(() => mockRepository.getAllCurrencyRates());
+      verifyNever(() => mockRepository.getCurrencyList());
       // The rate is only fetched once the user edits a field.
       expect(viewModel.exchangeRate, 0);
     });
@@ -240,7 +247,7 @@ void main() {
 
       await viewModel.applyInitialSecurityCurrency();
 
-      verifyNever(() => mockRepository.getAllCurrencyRates());
+      verifyNever(() => mockRepository.getCurrencyList());
       expect(viewModel.newPresentSecurityAmountController.text, "0");
       expect(viewModel.newProposedSecurityAmountController.text, "578");
     });
@@ -255,7 +262,7 @@ void main() {
 
       await viewModel.applyInitialSecurityCurrency();
 
-      verify(() => mockRepository.getAllCurrencyRates()).called(1);
+      verify(() => mockRepository.getCurrencyList()).called(1);
       expect(viewModel.newProposedSecurityAmountController.text, "600");
     });
   });

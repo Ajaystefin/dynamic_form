@@ -30,34 +30,43 @@ void main() {
 
   group("CurrencyRatesService.getRates", () {
     test("fetches from the repository on the first call", () async {
-      when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => {"USD": 3.67, "AED": 1},
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD"), Reference(name: "AED")],
+          rates: {"USD": 3.67, "AED": 1},
+        ),
       );
 
       final rates = await service.getRates();
 
       expect(rates, {"USD": 3.67, "AED": 1});
-      verify(() => mockRepository.getAllCurrencyRates()).called(1);
+      verify(() => mockRepository.getCurrencyList()).called(1);
     });
 
     test("reuses the cached table on subsequent calls", () async {
-      when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => {"USD": 3.67},
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD")],
+          rates: {"USD": 3.67},
+        ),
       );
 
       final first = await service.getRates();
       final second = await service.getRates();
 
       expect(first, same(second));
-      verify(() => mockRepository.getAllCurrencyRates()).called(1);
+      verify(() => mockRepository.getCurrencyList()).called(1);
     });
 
     test("de-dupes concurrent first callers into a single repository call",
         () async {
-      when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
         (_) async {
           await Future<void>.delayed(const Duration(milliseconds: 20));
-          return {"USD": 3.67};
+          return (
+            currencies: <Reference>[Reference(name: "USD")],
+            rates: {"USD": 3.67},
+          );
         },
       );
 
@@ -68,19 +77,85 @@ void main() {
       ]);
 
       expect(results, everyElement({"USD": 3.67}));
-      verify(() => mockRepository.getAllCurrencyRates()).called(1);
+      verify(() => mockRepository.getCurrencyList()).called(1);
     });
 
     test("clearCache forces the next call to re-fetch", () async {
-      when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => {"USD": 3.67},
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD")],
+          rates: {"USD": 3.67},
+        ),
       );
 
       await service.getRates();
       service.clearCache();
       await service.getRates();
 
-      verify(() => mockRepository.getAllCurrencyRates()).called(2);
+      verify(() => mockRepository.getCurrencyList()).called(2);
+    });
+  });
+
+  group("CurrencyRatesService.getCurrencies", () {
+    test("fetches from the repository on the first call", () async {
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD"), Reference(name: "AED")],
+          rates: {"USD": 3.67, "AED": 1},
+        ),
+      );
+
+      final currencies = await service.getCurrencies();
+
+      expect(currencies.map((c) => c.name), ["USD", "AED"]);
+      verify(() => mockRepository.getCurrencyList()).called(1);
+    });
+
+    test("reuses the cached list on subsequent calls", () async {
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD")],
+          rates: {"USD": 3.67},
+        ),
+      );
+
+      final first = await service.getCurrencies();
+      final second = await service.getCurrencies();
+
+      expect(first, same(second));
+      verify(() => mockRepository.getCurrencyList()).called(1);
+    });
+
+    test("clearCache forces the next call to re-fetch", () async {
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD")],
+          rates: {"USD": 3.67},
+        ),
+      );
+
+      await service.getCurrencies();
+      service.clearCache();
+      await service.getCurrencies();
+
+      verify(() => mockRepository.getCurrencyList()).called(2);
+    });
+
+    test("getCurrencies and getRates share a single underlying fetch",
+        () async {
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD")],
+          rates: {"USD": 3.67},
+        ),
+      );
+
+      final currencies = await service.getCurrencies();
+      final rates = await service.getRates();
+
+      expect(currencies.map((c) => c.name), ["USD"]);
+      expect(rates, {"USD": 3.67});
+      verify(() => mockRepository.getCurrencyList()).called(1);
     });
   });
 
@@ -90,12 +165,15 @@ void main() {
       final rate = await service.getRate(null);
 
       expect(rate, isNull);
-      verifyNever(() => mockRepository.getAllCurrencyRates());
+      verifyNever(() => mockRepository.getCurrencyList());
     });
 
     test("getRate returns the rate for a known code", () async {
-      when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => {"EUR": 4.0},
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "EUR")],
+          rates: {"EUR": 4.0},
+        ),
       );
 
       expect(await service.getRate("EUR"), 4.0);
@@ -103,8 +181,11 @@ void main() {
     });
 
     test("getRateFor resolves the rate from a Reference", () async {
-      when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => {"USD": 3.67},
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD")],
+          rates: {"USD": 3.67},
+        ),
       );
 
       expect(await service.getRateFor(Reference(name: "USD")), 3.67);

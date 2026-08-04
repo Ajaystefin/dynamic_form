@@ -21,10 +21,7 @@ class APIEndpoints {
   /// Endpoint used to save review comments.
   static String saveReviewComments = "reviewComment/saveReviewComments";
 
-  /// Endpoint used to retrieve currency codes.
-  static String getCurrencyCode = "rating/getCurrencyList";
-
-  /// Endpoint used to retrieve exchange rates for all currencies.
+  /// Endpoint used to retrieve currency codes and exchange rates.
   static String getCurrencyRateList = "rating/getCurrencyList";
 
   /// Base mock API path.
@@ -802,7 +799,7 @@ void testEndpoints() {
     APIEndpoints.getLinkedFacilities,
 
     APIEndpoints.getSecurityDynamicForm,
-    APIEndpoints.getCurrencyCode,
+    APIEndpoints.getCurrencyRateList,
     APIEndpoints.getFacilitiesDynamicForm,
 
     APIEndpoints.saveProjectDetails,

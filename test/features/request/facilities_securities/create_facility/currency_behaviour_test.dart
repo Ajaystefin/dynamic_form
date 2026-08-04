@@ -46,8 +46,12 @@ void main() {
   });
 
   void stubRates(Map<String, num> rates) {
-    when(() => mockRepository.getAllCurrencyRates())
-        .thenAnswer((_) async => rates);
+    when(() => mockRepository.getCurrencyList()).thenAnswer(
+      (_) async => (
+        currencies: rates.keys.map((code) => Reference(name: code)).toList(),
+        rates: rates,
+      ),
+    );
   }
 
   /// Seeds the minimum state `applyInitialCurrencyVisibility` reads.
@@ -126,7 +130,7 @@ void main() {
         CurrencyField.presentLimit,
       );
 
-      verify(() => mockRepository.getAllCurrencyRates()).called(1);
+      verify(() => mockRepository.getCurrencyList()).called(1);
       expect(viewModel.exchangeRate, 3.67);
       expect(viewModel.newPresentLimitController.text, "367");
     });
@@ -149,7 +153,7 @@ void main() {
       // Both fields resolve to the same currency around the same time, so
       // CurrencyRatesService's cache/in-flight de-dupe collapses this to a
       // single underlying repository call.
-      verify(() => mockRepository.getAllCurrencyRates()).called(1);
+      verify(() => mockRepository.getCurrencyList()).called(1);
       expect(viewModel.newPresentLimitController.text, "20");
       expect(viewModel.newPresentOutStandingController.text, "40");
     });
@@ -183,13 +187,14 @@ void main() {
         CurrencyField.presentLimit,
       );
 
-      verifyNever(() => mockRepository.getAllCurrencyRates());
+      verifyNever(() => mockRepository.getCurrencyList());
       expect(viewModel.newPresentLimitController.text, "0");
     });
 
     test("a rate already in flight cannot overwrite the cleared box", () async {
-      final Completer<Map<String, num>> inFlight = Completer<Map<String, num>>();
-      when(() => mockRepository.getAllCurrencyRates())
+      final Completer<CurrencyListResult> inFlight =
+          Completer<CurrencyListResult>();
+      when(() => mockRepository.getCurrencyList())
           .thenAnswer((_) => inFlight.future);
 
       final Reference usd = Reference(name: "USD");
@@ -209,7 +214,9 @@ void main() {
       );
       expect(viewModel.newPresentLimitController.text, "0");
 
-      inFlight.complete({"USD": 3.67});
+      inFlight.complete(
+        (currencies: <Reference>[Reference(name: "USD")], rates: {"USD": 3.67}),
+      );
       await Future<void>.delayed(Duration.zero);
 
       // Not "367": the superseded response is discarded.
@@ -291,7 +298,7 @@ void main() {
       );
       expect(viewModel.newProposedByccController.text, "459");
 
-      verifyNever(() => mockRepository.getAllCurrencyRates());
+      verifyNever(() => mockRepository.getCurrencyList());
     });
 
     test("a main limit loads without warming the rate at all", () async {
@@ -308,7 +315,7 @@ void main() {
       // The warm-up would be fire-and-forget; give it the chance to land.
       await Future<void>.delayed(Duration.zero);
 
-      verifyNever(() => mockRepository.getAllCurrencyRates());
+      verifyNever(() => mockRepository.getCurrencyList());
       // The rate is only fetched once the user edits a field.
       expect(viewModel.exchangeRate, 0);
     });
@@ -333,7 +340,7 @@ void main() {
       // Without the warm-up this would stay 0 and exceedsParentLimit would
       // start treating entered amounts as already-AED.
       expect(viewModel.exchangeRate, 3.67);
-      verify(() => mockRepository.getAllCurrencyRates()).called(1);
+      verify(() => mockRepository.getCurrencyList()).called(1);
     });
 
     test("falls back to the live conversion when no AED value is stored",
@@ -347,7 +354,7 @@ void main() {
 
       expect(viewModel.newPresentOutStandingController.text, "240");
       // Only that one field converts; the empty ones need no rate.
-      verify(() => mockRepository.getAllCurrencyRates()).called(1);
+      verify(() => mockRepository.getCurrencyList()).called(1);
     });
 
     test("an empty amount shows 0 without fetching a rate", () async {
@@ -360,7 +367,7 @@ void main() {
 
       expect(viewModel.newPresentOutStandingController.text, "0");
       expect(viewModel.newCbdEquityTier325PercentController.text, "0");
-      verifyNever(() => mockRepository.getAllCurrencyRates());
+      verifyNever(() => mockRepository.getCurrencyList());
     });
 
     test("AED currencies never short-circuit and never fetch", () {
@@ -378,7 +385,7 @@ void main() {
       expect(viewModel.newPresentLimitController.text, "999");
       expect(viewModel.newPresentOutStandingController.text, "80");
       expect(viewModel.showNewPresentLimitAmount, isFalse);
-      verifyNever(() => mockRepository.getAllCurrencyRates());
+      verifyNever(() => mockRepository.getCurrencyList());
     });
   });
 
@@ -393,7 +400,7 @@ void main() {
     });
 
     test("shows a toast and leaves the rate alone on failure", () async {
-      when(() => mockRepository.getAllCurrencyRates())
+      when(() => mockRepository.getCurrencyList())
           .thenThrow(Exception("boom"));
       when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
 

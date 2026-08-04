@@ -935,8 +935,11 @@ void main() {
         ..setSubLimitIndex(0, "SOFR")
         ..setSubLimitMarginSign(0, "+")
         ..setSubLimitMarginValue(0, 2.5);
-      when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => {"USD": 3.67},
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD")],
+          rates: {"USD": 3.67},
+        ),
       );
 
       await viewModel.getSubTypeCurrencyRate(0, Reference(name: "USD"));
@@ -2051,12 +2054,15 @@ void main() {
   // Currency + country fetch behavior
   // ------------------------------------------------
   group("Currency + country fetch behavior", () {
-    test("getcurrencyCode success sets AED default & flags", () async {
-      when(() => mockRepository.getcurrencyCode()).thenAnswer(
-        (_) async => [
-          Reference(name: "AED"),
-          Reference(name: "USD"),
-        ],
+    test("getCurrencyCodes success sets AED default & flags", () async {
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[
+            Reference(name: "AED"),
+            Reference(name: "USD"),
+          ],
+          rates: {"AED": 1, "USD": 3.67},
+        ),
       );
       await viewModel.getCurrencyCodes();
       expect(viewModel.currencyCodes.map((e) => e.name), contains("AED"));
@@ -2065,8 +2071,8 @@ void main() {
       expect(viewModel.showNewProposedLimitAmount, false);
     });
 
-    test("getcurrencyCode handles exception", () async {
-      when(() => mockRepository.getcurrencyCode())
+    test("getCurrencyCodes handles exception", () async {
+      when(() => mockRepository.getCurrencyList())
           .thenThrow(Exception("Country code fetch failed"));
       when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
       await viewModel.getCurrencyCodes();
@@ -5818,8 +5824,11 @@ void main() {
     test(
         "applyInitialCurrencyVisibility converts non-AED present outstanding and proposed limit",
         () async {
-      when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => {"USD": 3.67},
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD")],
+          rates: {"USD": 3.67},
+        ),
       );
 
       seedApplyInitialCurrencyVisibilitySafeState(
@@ -5849,8 +5858,11 @@ void main() {
     test(
         "applyInitialCurrencyVisibility converts FI currency fields and toggles visibility flags",
         () async {
-      when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
-        (_) async => {"USD": 3.67},
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD")],
+          rates: {"USD": 3.67},
+        ),
       );
 
       final detail = seededCurrencyDetail(

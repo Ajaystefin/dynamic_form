@@ -28,6 +28,12 @@ import "package:wcas_frontend/models/request/facility_security/limits_facilities
 import "package:wcas_frontend/models/request/facility_security/project_list.dart";
 import "package:wcas_frontend/models/request/facility_security/security.dart";
 
+/// Currency dropdown entries and their AED exchange rates.
+typedef CurrencyListResult = ({
+  List<Reference> currencies,
+  Map<String, num> rates,
+});
+
 /// Repository responsible for facility and security-related data
 /// operations and API interactions.
 class FacilitySecurityRepository {
@@ -46,48 +52,49 @@ class FacilitySecurityRepository {
 
   final APIManager _apiManager;
 
-  /// Retrieves the list of available currency codes.
+  /// Retrieves the list of available currencies and their exchange rates.
   ///
-  /// Returns a list of [Reference] objects where:
-  /// - [Reference.name] contains the currency ISO code.
-  /// - [Reference.reference4] contains the currency description.
-  ///
-  /// Returns an empty list if the request fails or the response data is
-  /// not in the expected format.
-  Future<List<Reference>> getcurrencyCode() async {
+  /// The response is a flat map of currency code to AED-per-unit rate; the
+  /// currency list is built from the same keys.
+  Future<CurrencyListResult> getCurrencyList() async {
     final Map<String, dynamic> data = BaseRequest.baseRequest({});
     final AppResponse response =
-        await _apiManager.post(APIEndpoints.getCurrencyCode, data);
+        await _apiManager.post(APIEndpoints.getCurrencyRateList, data);
 
     if (response.status != ResponseStatus.success) {
       AlertManager().showFailureToast(response.message);
-
-      return <Reference>[]; // Return empty list on error instead of throwing
+      return (currencies: <Reference>[], rates: <String, num>{});
     }
 
     final dynamic raw = response.body["responseData"];
-
-    if (raw is! List) {
-      return <Reference>[];
+    if (raw is! Map) {
+      return (currencies: <Reference>[], rates: <String, num>{});
     }
 
-    // Map isoCode -> name, description -> reference4
-    return raw
-        .whereType<Map<String, dynamic>>() // keep only proper map entries
-        .map((e) {
-          final String iso = e["isoCode"];
-          final String desc = e["description"];
+    final currencies = <Reference>[];
+    final rates = <String, num>{};
 
-          if (iso.trim().isNotEmpty) {
-            return Reference(
-              name: iso.trim(),
-              reference4: desc.trim(),
-            );
-          }
-          return null; // skip invalid rows
-        })
-        .whereType<Reference>()
-        .toList();
+    raw.forEach((key, value) {
+      final String iso = key.toString().trim();
+      if (iso.isEmpty) {
+        return;
+      }
+
+      num? rate;
+      if (value is num) {
+        rate = value;
+      } else if (value is String) {
+        rate = num.tryParse(value);
+      }
+      if (rate == null) {
+        return;
+      }
+
+      currencies.add(Reference(name: iso));
+      rates[iso] = rate;
+    });
+
+    return (currencies: currencies, rates: rates);
   }
 
   /// Retrieves the dynamic security form definition for the specified
@@ -1429,33 +1436,6 @@ class FacilitySecurityRepository {
         ? (body["responseData"] as Map<String, dynamic>? ?? const {})
         : const {};
     return LimitsFacilityResponse.fromJson(raw);
-  }
-
-  /// Retrieves exchange rate information for all currencies.
-  ///
-  /// Returns a map of exchange rates keyed by ISO currency code. If no
-  /// exchange rate data is available, an empty map is returned.
-  Future<Map<String, num>> getAllCurrencyRates() async {
-    final payload = BaseRequest.baseRequest({});
-
-    final res =
-        await _apiManager.post(APIEndpoints.getCurrencyRateList, payload);
-
-    final Map<String, dynamic> data =
-        (res.body?["responseData"] as Map<String, dynamic>?) ?? const {};
-
-    final rates = <String, num>{};
-    data.forEach((currencyCode, rateValue) {
-      if (rateValue is num) {
-        rates[currencyCode] = rateValue;
-      } else if (rateValue is String) {
-        final parsed = num.tryParse(rateValue);
-        if (parsed != null) {
-          rates[currencyCode] = parsed;
-        }
-      }
-    });
-    return rates;
   }
 
   /// Retrieves detailed facility information for the specified facility

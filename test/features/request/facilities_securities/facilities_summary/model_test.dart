@@ -492,18 +492,21 @@ void main() {
     });
 
     test("getCurrencyRates success calls repository", () async {
-      when(() => mockFacilityRepo.getAllCurrencyRates()).thenAnswer(
-        (_) async => {"USD": 3.67},
+      when(() => mockFacilityRepo.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD")],
+          rates: {"USD": 3.67},
+        ),
       );
 
       await viewModel.getCurrencyRates(Reference(name: "USD"));
 
-      verify(() => mockFacilityRepo.getAllCurrencyRates()).called(1);
+      verify(() => mockFacilityRepo.getCurrencyList()).called(1);
       verifyNever(() => mockAlertManager.showFailureToast(any()));
     });
 
     test("getCurrencyRates failure shows toast", () async {
-      when(() => mockFacilityRepo.getAllCurrencyRates())
+      when(() => mockFacilityRepo.getCurrencyList())
           .thenThrow(Exception("bad-rate"));
 
       await viewModel.getCurrencyRates(Reference(name: "USD"));
@@ -2858,8 +2861,11 @@ void main() {
 
     test("convertToAed covers AED, non-AED success, zero-rate and exception",
         () async {
-      when(() => mockFacilityRepo.getAllCurrencyRates()).thenAnswer(
-        (_) async => {"USD": 3.67, "EUR": 0},
+      when(() => mockFacilityRepo.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "USD"), Reference(name: "EUR")],
+          rates: {"USD": 3.67, "EUR": 0},
+        ),
       );
       expect(
         await viewModel.convertToAed(
@@ -2889,7 +2895,7 @@ void main() {
       // exercises the exception path (a real re-fetch) rather than serving
       // the cached table, where "GBP" would already be resolved to 0.
       CurrencyRatesService().clearCache();
-      when(() => mockFacilityRepo.getAllCurrencyRates())
+      when(() => mockFacilityRepo.getCurrencyList())
           .thenThrow(Exception("rate-error"));
       expect(
         await viewModel.convertToAed(

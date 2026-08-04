@@ -784,7 +784,7 @@ class RequestRepository {
   Future<List<Reference>> getCurrencyCodes() async {
     final Map<String, dynamic> data = BaseRequest.baseRequest({});
     final AppResponse response =
-        await _apiManager.post(APIEndpoints.getCurrencyCode, data);
+        await _apiManager.post(APIEndpoints.getCurrencyRateList, data);
 
     if (response.status != ResponseStatus.success) {
       // throw Exception(response.message);
