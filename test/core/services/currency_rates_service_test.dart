@@ -107,7 +107,7 @@ void main() {
 
       final currencies = await service.getCurrencies();
 
-      expect(currencies.map((c) => c.name), ["USD", "AED"]);
+      expect(currencies.map((c) => c.name), ["AED", "USD"]);
       verify(() => mockRepository.getCurrencyList()).called(1);
     });
 
@@ -122,7 +122,9 @@ void main() {
       final first = await service.getCurrencies();
       final second = await service.getCurrencies();
 
-      expect(first, same(second));
+      // Each call returns a defensive copy, so contents match but the list
+      // instances are not identical.
+      expect(first, equals(second));
       verify(() => mockRepository.getCurrencyList()).called(1);
     });
 
@@ -139,6 +141,41 @@ void main() {
       await service.getCurrencies();
 
       verify(() => mockRepository.getCurrencyList()).called(2);
+    });
+
+    test("puts AED first wherever it appears in the response", () async {
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[
+            Reference(name: "USD"),
+            Reference(name: "EUR"),
+            Reference(name: "AED"),
+            Reference(name: "GBP"),
+          ],
+          rates: {"USD": 3.67, "EUR": 4.41, "AED": 1, "GBP": 5.0},
+        ),
+      );
+
+      final currencies = await service.getCurrencies();
+
+      // AED leads; the rest keep their API order.
+      expect(currencies.map((c) => c.name), ["AED", "USD", "EUR", "GBP"]);
+    });
+
+    test("mutating a returned list does not corrupt the cache", () async {
+      when(() => mockRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "AED"), Reference(name: "USD")],
+          rates: {"AED": 1, "USD": 3.67},
+        ),
+      );
+
+      (await service.getCurrencies())
+        ..clear()
+        ..add(Reference(name: "JPY"));
+
+      expect((await service.getCurrencies()).map((c) => c.name), ["AED", "USD"]);
+      verify(() => mockRepository.getCurrencyList()).called(1);
     });
 
     test("getCurrencies and getRates share a single underlying fetch",

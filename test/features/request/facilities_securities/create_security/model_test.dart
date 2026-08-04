@@ -562,17 +562,18 @@ void main() {
 
   group("CreateSecurityViewModel getCurrencyCodes", () {
     test("getCurrencyCodes should fetch currencies", () async {
-      when(() => mockRequestRepository.getCurrencyCodes())
-          .thenAnswer((_) async => [Reference(name: "USD")]);
+      when(() => mockSecurityRepository.getCurrencyList()).thenAnswer(
+        (_) async => (currencies: <Reference>[Reference(name: "USD")], rates: <String, num>{}),
+      );
 
       await viewModel.getCurrencyCodes();
 
       expect(viewModel.currencyCodes.length, 1);
-      verify(() => mockRequestRepository.getCurrencyCodes()).called(1);
+      verify(() => mockSecurityRepository.getCurrencyList()).called(1);
     });
 
     test("getCurrencyCodes should handle errors", () async {
-      when(() => mockRequestRepository.getCurrencyCodes())
+      when(() => mockSecurityRepository.getCurrencyList())
           .thenThrow(Exception("Failed to fetch currencies"));
       when(() => mockAlertManager.showFailureToast(any())).thenReturn(null);
 
@@ -703,9 +704,14 @@ void main() {
         "countries, dynamic "
         "form and sets globals then emits loaded", () async {
       // Arrange: Stub repository calls
-      when(() => mockRequestRepository.getCurrencyCodes()).thenAnswer(
-        (_) async =>
-            [Reference(id: 1, name: "USD"), Reference(id: 2, name: "AED")],
+      when(() => mockSecurityRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[
+            Reference(id: 1, name: "USD"),
+            Reference(id: 2, name: "AED"),
+          ],
+          rates: <String, num>{},
+        ),
       );
 
       // Countries are fetched via CustomerRepository() inside the VM.
@@ -738,7 +744,7 @@ void main() {
 
       // State transitions
       expect(viewModel.state.securityTypeStatus, LoadingStatus.loaded);
-      verify(() => mockRequestRepository.getCurrencyCodes()).called(1);
+      verify(() => mockSecurityRepository.getCurrencyList()).called(1);
       verify(
         () => mockSecurityRepository.getSecurityDynamicForm(
           typeID: ServerConstants.dynamicFormSecurityID,
@@ -812,11 +818,14 @@ void main() {
             "loads currency codes, countries, dynamic "
             "form and sets globals then emits loaded", () async {
           // Arrange: Stub repository calls
-          when(() => mockRequestRepository.getCurrencyCodes()).thenAnswer(
-            (_) async => [
-              Reference(id: 1, name: "USD"),
-              Reference(id: 2, name: "AED"),
-            ],
+          when(() => mockSecurityRepository.getCurrencyList()).thenAnswer(
+            (_) async => (
+              currencies: <Reference>[
+                Reference(id: 1, name: "USD"),
+                Reference(id: 2, name: "AED"),
+              ],
+              rates: <String, num>{},
+            ),
           );
 
           // Countries are fetched via CustomerRepository() inside the VM.
@@ -850,7 +859,7 @@ void main() {
 
           // State transitions
           expect(viewModel.state.securityTypeStatus, LoadingStatus.loaded);
-          verify(() => mockRequestRepository.getCurrencyCodes()).called(1);
+          verify(() => mockSecurityRepository.getCurrencyList()).called(1);
           verify(
             () => mockSecurityRepository.getSecurityDynamicForm(
               typeID: ServerConstants.dynamicFormSecurityID,
@@ -979,11 +988,14 @@ void main() {
     group("CreateSecurityViewModel getCurrencyCodes (empty & default AED)", () {
       test("list contains AED → defaults to AED and toggles correctly",
           () async {
-        when(() => mockRequestRepository.getCurrencyCodes()).thenAnswer(
-          (_) async => [
-            Reference(id: 1, name: "AED"),
-            Reference(id: 2, name: "USD"),
-          ],
+        when(() => mockSecurityRepository.getCurrencyList()).thenAnswer(
+          (_) async => (
+            currencies: <Reference>[
+              Reference(id: 1, name: "AED"),
+              Reference(id: 2, name: "USD"),
+            ],
+            rates: <String, num>{},
+          ),
         );
 
         await viewModel.getCurrencyCodes();
@@ -1519,8 +1531,9 @@ void main() {
           subTypeID: any(named: "subTypeID"),
         ),
       ).thenAnswer((_) async => []);
-      when(() => mockRequestRepository.getCurrencyCodes())
-          .thenAnswer((_) async => []);
+      when(() => mockSecurityRepository.getCurrencyList()).thenAnswer(
+        (_) async => (currencies: <Reference>[], rates: <String, num>{}),
+      );
 
       await viewModel.init(sec);
 
@@ -4158,8 +4171,9 @@ void main() {
     });
 
     test("getCurrencyCodes empty result falls back to AED refs", () async {
-      when(() => mockRequestRepository.getCurrencyCodes())
-          .thenAnswer((_) async => <Reference>[]);
+      when(() => mockSecurityRepository.getCurrencyList()).thenAnswer(
+        (_) async => (currencies: <Reference>[], rates: <String, num>{}),
+      );
       await viewModel.getCurrencyCodes();
       expect(viewModel.currencyCodes, isEmpty);
       expect(

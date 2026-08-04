@@ -1,6 +1,5 @@
 import "dart:convert";
 
-import "package:collection/collection.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:wcas_frontend/core/constants/constants.dart";
 import "package:wcas_frontend/core/env_config.dart";
@@ -741,66 +740,6 @@ void main() {
 
         expect(
           () => projectRepository.saveContractDetails({"x": "y"}),
-          throwsExceptionWithMessage("Service unavailable"),
-        );
-      });
-    });
-
-    group("getcountryCode", () {
-      test("success | maps isoCode->name and description->reference4",
-          () async {
-        mockAPIManager.setMockResponse(
-          AppResponse(
-            message: "ok",
-            body: {
-              "responseData": [
-                {"isoCode": "AED", "description": "UAE Dirham"},
-                {"isoCode": " USD ", "description": "US Dollar"},
-                {"isoCode": "", "description": "Skip this"},
-                {"wrongKey": "X", "description": "Skip"},
-              ],
-            },
-            code: 200,
-            status: ResponseStatus.success,
-          ),
-        );
-
-        final list = await projectRepository.getcountryCode();
-        expect(list.length, 2);
-        final aed = list.firstWhereOrNull((e) => e.name == "AED");
-        final usd = list.firstWhereOrNull((e) => e.name == "USD");
-        expect(aed?.reference4, "UAE Dirham");
-        expect(usd?.reference4, "US Dollar");
-      });
-
-      test("success | non-list responseData returns []", () async {
-        mockAPIManager.setMockResponse(
-          AppResponse(
-            message: "ok",
-            body: {
-              "responseData": {"unexpected": "shape"},
-            },
-            code: 200,
-            status: ResponseStatus.success,
-          ),
-        );
-
-        final list = await projectRepository.getcountryCode();
-        expect(list, isEmpty);
-      });
-
-      test("error | throws response.message", () async {
-        mockAPIManager.setMockResponse(
-          AppResponse(
-            message: "Service unavailable",
-            body: {"error": "External service down"},
-            code: 503,
-            status: ResponseStatus.error,
-          ),
-        );
-
-        expect(
-          () => projectRepository.getcountryCode(),
           throwsExceptionWithMessage("Service unavailable"),
         );
       });

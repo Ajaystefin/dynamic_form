@@ -1516,67 +1516,6 @@ void main() {
     });
   });
 
-  group("getCurrencyCodes", () {
-    test("should return mapped currency codes when responseData is list",
-        () async {
-      final mockResponse = AppResponse(
-        message: "Success",
-        body: {
-          "responseData": [
-            {"isoCode": "AED", "description": "UAE Dirham"},
-            {"isoCode": "USD", "description": "US Dollar"},
-            {"isoCode": "  ", "description": "Invalid"},
-          ],
-        },
-        code: 200,
-        status: ResponseStatus.success,
-      );
-
-      mockAPIManager.setMockResponse(mockResponse);
-
-      final result = await requestRepository.getCurrencyCodes();
-
-      expect(result, isA<List<Reference>>());
-      expect(result.length, equals(2));
-      expect(result[0].name, equals("AED"));
-      expect(result[0].reference4, equals("UAE Dirham"));
-      expect(result[1].name, equals("USD"));
-      expect(result[1].reference4, equals("US Dollar"));
-    });
-
-    test("should return empty list when responseData is not a list", () async {
-      final mockResponse = AppResponse(
-        message: "Success",
-        body: {
-          "responseData": {"isoCode": "AED"},
-        },
-        code: 200,
-        status: ResponseStatus.success,
-      );
-
-      mockAPIManager.setMockResponse(mockResponse);
-
-      final result = await requestRepository.getCurrencyCodes();
-      expect(result, isEmpty);
-    });
-
-    test("should throw exception when API status is error", () async {
-      final mockResponse = AppResponse(
-        message: "Currency fetch failed",
-        body: {},
-        code: 500,
-        status: ResponseStatus.error,
-      );
-
-      mockAPIManager.setMockResponse(mockResponse);
-
-      expect(
-        () async => requestRepository.getCurrencyCodes(),
-        throwsExceptionWithMessage("Currency fetch failed"),
-      );
-    });
-  });
-
   group("saveRemarkStrategyData", () {
     test("should successfully save remark strategy data", () async {
       Globals.user = buildUser();

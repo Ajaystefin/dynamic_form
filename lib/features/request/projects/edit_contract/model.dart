@@ -296,20 +296,7 @@ class EditContractViewModel extends SafeCubit<EditContractState>
   /// Loads supported country/currency codes.
   Future<void> getcountryCode() async {
     try {
-      countryCodes = await repository.getcountryCode();
-      //sorting for make AED in first
-      countryCodes.sort(
-        (a, b) =>
-            (b.name?.toUpperCase() == ReferenceDataKeys.currencyAED ? 1 : 0) -
-            (a.name?.toUpperCase() == ReferenceDataKeys.currencyAED ? 1 : 0),
-      );
-      // final Reference aed = countryCodes.firstWhere(
-      //   (r) => (r.name ?? r.name)?.toUpperCase() ==
-      // ServerConstants.aedCurrency,
-      //   orElse: () =>
-      //       countryCodes.isNotEmpty ? countryCodes.first : Reference(),
-      // );
-      // aed;
+      countryCodes = await CurrencyRatesService().getCurrencies();
 
       selectedContractValueCurrency = null;
       if (contract.contractCurrency != null) {

@@ -11,7 +11,6 @@ import "package:wcas_frontend/core/services/api_service/api_manager.dart";
 import "package:wcas_frontend/core/services/api_service/base_request.dart";
 import "package:wcas_frontend/core/utils/api_exception.dart";
 import "package:wcas_frontend/core/utils/utils.dart";
-import "package:wcas_frontend/models/admin/reference.dart";
 import "package:wcas_frontend/models/request/comment.dart";
 import "package:wcas_frontend/models/request/customer.dart";
 import "package:wcas_frontend/models/request/project/contract.dart";
@@ -464,51 +463,6 @@ class ProjectRepository {
       //throw Exception(response.message);
       throw ApiException(response.message);
     }
-  }
-
-  /// Retrieves the list of country/currency codes from the backend.
-  ///
-  /// Returns a list of [Reference] objects where:
-  /// - [Reference.name] contains the ISO code.
-  /// - [Reference.reference4] contains the corresponding description.
-  ///
-  /// Returns an empty list when the response data is not in the expected
-  /// format.
-  ///
-  /// Throws an [ApiException] if the API call fails.
-  Future<List<Reference>> getcountryCode() async {
-    final Map<String, dynamic> data = BaseRequest.baseRequest({});
-    final AppResponse response =
-        await _apiManager.post(APIEndpoints.getCurrencyRateList, data);
-
-    if (response.status != ResponseStatus.success) {
-      //throw Exception(response.message);
-      throw ApiException(response.message);
-    }
-
-    final dynamic currencyList = response.body["responseData"];
-
-    if (currencyList is! List) {
-      return <Reference>[];
-    }
-
-    // Map isoCode -> name, description -> reference4
-    return currencyList
-        .whereType<Map<String, dynamic>>() // keep only proper map entries
-        .map((e) {
-          final iso = e["isoCode"];
-          final desc = e["description"];
-
-          if (iso is String && iso.trim().isNotEmpty) {
-            return Reference(
-              name: iso.trim(),
-              reference4: (desc is String) ? desc.trim() : null,
-            );
-          }
-          return null;
-        })
-        .whereType<Reference>()
-        .toList();
   }
 
   /// Generates and downloads the Project Exposure Summary report.

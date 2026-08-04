@@ -217,64 +217,6 @@ void main() {
       });
     });
 
-    group("getCurrencyCodes", () {
-      test("success | maps isoCode and description (skips empties)", () async {
-        mock.setMockResponse(
-          AppResponse(
-            message: "ok",
-            body: {
-              "responseData": [
-                {"isoCode": "AED", "description": "UAE Dirham"},
-                {"isoCode": " USD ", "description": "US Dollar"},
-                {"isoCode": "", "description": "Should skip"},
-                {"isoCode": "JPY", "description": ""},
-              ],
-            },
-            code: 200,
-            status: ResponseStatus.success,
-          ),
-        );
-
-        final list = await repo.getCurrencyCodes();
-        expect(list.length, 3);
-        expect(list.first.name, "AED");
-        expect(list[1].name, "USD");
-        expect(list[2].name, "JPY");
-      });
-
-      test("success | non-list responseData returns []", () async {
-        mock.setMockResponse(
-          AppResponse(
-            message: "ok",
-            body: {
-              "responseData": {"unexpected": true},
-            },
-            code: 200,
-            status: ResponseStatus.success,
-          ),
-        );
-
-        final list = await repo.getCurrencyCodes();
-        expect(list, isEmpty);
-      });
-
-      test("error | throws response.message", () async {
-        mock.setMockResponse(
-          AppResponse(
-            message: "Service unavailable",
-            body: {},
-            code: 503,
-            status: ResponseStatus.error,
-          ),
-        );
-
-        expect(
-          () => repo.getCurrencyCodes(),
-          throwsExceptionWithMessage("Service unavailable"),
-        );
-      });
-    });
-
     group("searchCustomerProfile", () {
       test("success | list payload -> returns all (groupName == null)",
           () async {

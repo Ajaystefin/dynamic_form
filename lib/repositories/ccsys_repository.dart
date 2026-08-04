@@ -7,7 +7,6 @@ import "package:wcas_frontend/core/services/api_service/base_request.dart";
 import "package:wcas_frontend/core/utils/alert_manager.dart";
 import "package:wcas_frontend/core/utils/api_exception.dart";
 import "package:wcas_frontend/core/utils/logger.dart";
-import "package:wcas_frontend/models/admin/reference.dart";
 import "package:wcas_frontend/models/login/role.dart";
 import "package:wcas_frontend/models/request/application_details.dart";
 import "package:wcas_frontend/models/request/ccsys/ccsys_approval.dart";
@@ -121,53 +120,6 @@ class CcsysRepository {
       //throw Exception(response.message);
       throw ApiException(response.message);
     }
-  }
-
-  /// Retrieves the list of available currency codes.
-  ///
-  /// Returns a collection of [Reference] objects where:
-  /// - [Reference.name] contains the currency ISO code.
-  /// - [Reference.reference4] contains the currency description.
-  ///
-  /// Invalid or incomplete currency records are ignored.
-  ///
-  /// Returns an empty list when no valid currency data is available.
-  ///
-  /// Throws an [ApiException] if the request fails.
-  Future<List<Reference>> getCurrencyCodes() async {
-    final Map<String, dynamic> data = BaseRequest.baseRequest({});
-    final AppResponse response =
-        await _apiManager.post(APIEndpoints.getCurrencyRateList, data);
-
-    if (response.status != ResponseStatus.success) {
-      // throw Exception(response.message);
-      throw ApiException(response.message);
-    }
-
-    final dynamic currencyList = response.body["responseData"];
-
-    // Ensure it's a list
-    if (currencyList is! List) {
-      return <Reference>[];
-    }
-
-    // Map isoCode -> name, description -> reference4
-    return currencyList
-        .whereType<Map<String, dynamic>>() // keep only proper map entries
-        .map((e) {
-          final String iso = e["isoCode"];
-          final String desc = e["description"];
-
-          if (iso.trim().isNotEmpty) {
-            return Reference(
-              name: iso.trim(),
-              reference4: desc.trim(),
-            );
-          }
-          return null; // skip invalid rows
-        })
-        .whereType<Reference>()
-        .toList();
   }
 
   /// Searches CCSYS customer profiles using customer and group search

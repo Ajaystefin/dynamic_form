@@ -1,4 +1,5 @@
 import "package:flutter/foundation.dart";
+import "package:wcas_frontend/core/constants/_server_constants.dart";
 import "package:wcas_frontend/models/admin/reference.dart";
 import "package:wcas_frontend/repositories/facility_security_repository.dart";
 
@@ -41,18 +42,34 @@ class CurrencyRatesService {
   Future<CurrencyListResult> _fetch() async {
     try {
       final result = await _repo.getCurrencyList();
-      _currencies = result.currencies;
+      _currencies = _aedFirst(result.currencies);
       _rates = result.rates;
-      return result;
+      return (currencies: _currencies!, rates: _rates!);
     } finally {
       _inFlight = null;
     }
   }
 
-  /// Returns the cached currency list, fetching it from the API on the
-  /// first call of the session and reusing it afterwards.
+  /// Orders the currency list so AED comes first, preserving the API order
+  /// for everything else.
+  List<Reference> _aedFirst(List<Reference> currencies) {
+    return List<Reference>.of(currencies)
+      ..sort((a, b) {
+        final bool aIsAed =
+            (a.name ?? "").toUpperCase() == ServerConstants.aedCurrency;
+        final bool bIsAed =
+            (b.name ?? "").toUpperCase() == ServerConstants.aedCurrency;
+        return (bIsAed ? 1 : 0) - (aIsAed ? 1 : 0);
+      });
+  }
+
+  /// Returns the cached currency list with AED first, fetching it from the
+  /// API on the first call of the session and reusing it afterwards.
+  ///
+  /// Returns a copy so callers can sort or filter it without corrupting the
+  /// cached list every other caller shares.
   Future<List<Reference>> getCurrencies() async =>
-      (await _fetchOrCached()).currencies;
+      List<Reference>.of((await _fetchOrCached()).currencies);
 
   /// Returns the cached exchange rate table, fetching it from the API on
   /// the first call of the session and reusing it afterwards.

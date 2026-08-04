@@ -6,6 +6,7 @@ import "package:mocktail/mocktail.dart";
 import "package:wcas_frontend/core/constants/_reference_data_keys.dart";
 import "package:wcas_frontend/core/constants/_server_constants.dart";
 import "package:wcas_frontend/core/globals.dart";
+import "package:wcas_frontend/core/services/currency_rates_service.dart";
 import "package:wcas_frontend/core/services/local_storage_service.dart";
 import "package:wcas_frontend/core/services/reference_data_service.dart";
 import "package:wcas_frontend/core/utils/alert_manager.dart";
@@ -19,9 +20,13 @@ import "package:wcas_frontend/models/request/customer.dart";
 import "package:wcas_frontend/models/request/project/contract.dart";
 import "package:wcas_frontend/models/request/project/project.dart";
 import "package:wcas_frontend/models/request/request.dart";
+import "package:wcas_frontend/repositories/facility_security_repository.dart";
 import "package:wcas_frontend/repositories/project_repository.dart";
 
 class MockProjectRepository extends Mock implements ProjectRepository {}
+
+class MockFacilitySecurityRepository extends Mock
+    implements FacilitySecurityRepository {}
 
 class MockReferenceDataService extends Mock implements ReferenceDataService {}
 
@@ -78,6 +83,7 @@ void main() {
 
   late TestLinkContractViewModel vm;
   late MockProjectRepository mockProjectRepository;
+  late MockFacilitySecurityRepository mockFacilityRepository;
   late MockReferenceDataService mockReferenceDataService;
   late MockAlertManager mockAlertManager;
 
@@ -113,12 +119,17 @@ void main() {
 
   setUp(() {
     mockProjectRepository = MockProjectRepository();
+    mockFacilityRepository = MockFacilitySecurityRepository();
     mockReferenceDataService = MockReferenceDataService();
     mockAlertManager = MockAlertManager();
 
     ReferenceDataService.overrideInstance = mockReferenceDataService;
     AlertManager.overrideInstance = mockAlertManager;
     LocalStorageService().getStorage = MockLocalStorageService();
+
+    CurrencyRatesService()
+      ..clearCache()
+      ..repository = mockFacilityRepository;
 
     Globals.request = Request(applicationRefNo: "APP-001");
     Globals.user = User(
@@ -137,6 +148,10 @@ void main() {
         ..projectCode = "PRJ-001"
         ..projectName = "Alpha Project"
         ..projectUltimateOwnerName = "Ultimate Owner");
+  });
+
+  tearDown(() {
+    CurrencyRatesService().clearCache();
   });
 
   tearDownAll(() async {
@@ -243,12 +258,15 @@ void main() {
 
   group("getcountryCode", () {
     test("success loads and sorts AED first", () async {
-      when(() => mockProjectRepository.getcountryCode()).thenAnswer(
-        (_) async => [
-          Reference(name: "USD"),
-          Reference(name: ReferenceDataKeys.currencyAED),
-          Reference(name: "EUR"),
-        ],
+      when(() => mockFacilityRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[
+            Reference(name: "USD"),
+            Reference(name: ReferenceDataKeys.currencyAED),
+            Reference(name: "EUR"),
+          ],
+          rates: <String, num>{},
+        ),
       );
 
       await vm.getcountryCode();
@@ -258,8 +276,9 @@ void main() {
     });
 
     test("success handles empty list", () async {
-      when(() => mockProjectRepository.getcountryCode())
-          .thenAnswer((_) async => []);
+      when(() => mockFacilityRepository.getCurrencyList()).thenAnswer(
+        (_) async => (currencies: <Reference>[], rates: <String, num>{}),
+      );
 
       await vm.getcountryCode();
 
@@ -267,7 +286,7 @@ void main() {
     });
 
     test("failure shows toast", () async {
-      when(() => mockProjectRepository.getcountryCode())
+      when(() => mockFacilityRepository.getCurrencyList())
           .thenThrow(Exception("oops"));
 
       await vm.getcountryCode();

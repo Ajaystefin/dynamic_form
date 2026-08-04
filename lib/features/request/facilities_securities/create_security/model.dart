@@ -1371,16 +1371,7 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
   /// updates currency-dependent visibility flags, and refreshes the UI.
   Future<void> getCurrencyCodes() async {
     try {
-      currencyCodes = await repository.getCurrencyCodes();
-
-      // Sort to make AED come first (stable, case-insensitive)
-      currencyCodes.sort((a, b) {
-        final aIsAed =
-            (a.name ?? "").toUpperCase() == ServerConstants.aedCurrency;
-        final bIsAed =
-            (b.name ?? "").toUpperCase() == ServerConstants.aedCurrency;
-        return (bIsAed ? 1 : 0) - (aIsAed ? 1 : 0);
-      });
+      currencyCodes = await CurrencyRatesService().getCurrencies();
 
       // Resolve AED reference (fallback to first if list empty)
       final Reference aed = currencyCodes.firstWhere(

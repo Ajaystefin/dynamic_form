@@ -3901,13 +3901,6 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
   Future<void> getCurrencyCodes() async {
     try {
       currencyCodes = await CurrencyRatesService().getCurrencies();
-      currencyCodes.sort((a, b) {
-        final bool aIsAed =
-            (a.name ?? "").toUpperCase() == ServerConstants.aedCurrency;
-        final bool bIsAed =
-            (b.name ?? "").toUpperCase() == ServerConstants.aedCurrency;
-        return (bIsAed ? 1 : 0) - (aIsAed ? 1 : 0);
-      });
       final Reference aed = currencyCodes.firstWhere(
         (r) => (r.name ?? r.name)?.toUpperCase() == ServerConstants.aedCurrency,
         orElse: () =>

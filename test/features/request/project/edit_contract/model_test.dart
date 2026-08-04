@@ -12,6 +12,7 @@ import "package:wcas_frontend/core/constants/_server_constants.dart";
 import "package:wcas_frontend/core/constants/constants.dart";
 import "package:wcas_frontend/core/env_config.dart";
 import "package:wcas_frontend/core/globals.dart";
+import "package:wcas_frontend/core/services/currency_rates_service.dart";
 import "package:wcas_frontend/core/services/local_storage_service.dart";
 import "package:wcas_frontend/core/services/reference_data_service.dart";
 import "package:wcas_frontend/core/utils/alert_manager.dart";
@@ -27,11 +28,15 @@ import "package:wcas_frontend/models/request/project/link_commitment_number.dart
 import "package:wcas_frontend/models/request/project/ppc.dart";
 import "package:wcas_frontend/models/request/project/project.dart";
 import "package:wcas_frontend/models/request/request.dart";
+import "package:wcas_frontend/repositories/facility_security_repository.dart";
 import "package:wcas_frontend/repositories/project_repository.dart";
 
 import "../../../../test_config.dart";
 
 class MockProjectRepository extends Mock implements ProjectRepository {}
+
+class MockFacilitySecurityRepository extends Mock
+    implements FacilitySecurityRepository {}
 
 class MockAlertManager extends Mock implements AlertManager {}
 
@@ -227,12 +232,18 @@ void stubAlerts(MockAlertManager alert) {
   when(() => alert.showInfoToast(any())).thenReturn(null);
 }
 
-void stubRepoDefaults(MockProjectRepository repo) {
-  when(() => repo.getcountryCode()).thenAnswer(
-    (_) async => <Reference>[
-      Reference(id: 1, name: "AED"),
-      Reference(id: 2, name: "USD"),
-    ],
+void stubRepoDefaults(
+  MockProjectRepository repo,
+  MockFacilitySecurityRepository facilityRepo,
+) {
+  when(() => facilityRepo.getCurrencyList()).thenAnswer(
+    (_) async => (
+      currencies: <Reference>[
+        Reference(id: 1, name: "AED"),
+        Reference(id: 2, name: "USD"),
+      ],
+      rates: <String, num>{},
+    ),
   );
 
   when(
@@ -283,6 +294,7 @@ void main() {
   late TestEditContractViewModel vm;
   late EditContractViewModel viewModel;
   late MockProjectRepository mockRepository;
+  late MockFacilitySecurityRepository mockFacilityRepository;
   late MockAlertManager mockAlertManager;
   late MockReferenceDataService mockRefSvc;
 
@@ -326,14 +338,19 @@ void main() {
 
   setUp(() {
     mockRepository = MockProjectRepository();
+    mockFacilityRepository = MockFacilitySecurityRepository();
     mockAlertManager = MockAlertManager();
     mockRefSvc = MockReferenceDataService();
 
     AlertManager.overrideInstance = mockAlertManager;
     LocalStorageService().getStorage = MockLocalStorageService();
 
+    CurrencyRatesService()
+      ..clearCache()
+      ..repository = mockFacilityRepository;
+
     stubAlerts(mockAlertManager);
-    stubRepoDefaults(mockRepository);
+    stubRepoDefaults(mockRepository, mockFacilityRepository);
 
     Globals.request = Request(applicationRefNo: "APP-001");
     Globals.onAutoSave = null;
@@ -370,6 +387,7 @@ void main() {
   });
 
   tearDown(() {
+    CurrencyRatesService().clearCache();
     Globals.onAutoSave = null;
     Globals.request = null;
     try {
@@ -795,12 +813,15 @@ void main() {
     test("sorts AED first and selects current currency", () async {
       vm.contract.contractCurrency = "USD";
 
-      when(() => mockRepository.getcountryCode()).thenAnswer(
-        (_) async => <Reference>[
-          Reference(id: 1, name: "INR"),
-          Reference(id: 2, name: "AED"),
-          Reference(id: 3, name: "USD"),
-        ],
+      when(() => mockFacilityRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[
+            Reference(id: 1, name: "INR"),
+            Reference(id: 2, name: "AED"),
+            Reference(id: 3, name: "USD"),
+          ],
+          rates: <String, num>{},
+        ),
       );
 
       await vm.getcountryCode();
@@ -813,10 +834,13 @@ void main() {
     test("contract currency unknown creates fallback reference", () async {
       vm.contract.contractCurrency = "ZZZ";
 
-      when(() => mockRepository.getcountryCode()).thenAnswer(
-        (_) async => <Reference>[
-          Reference(id: 1, name: "AED"),
-        ],
+      when(() => mockFacilityRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[
+            Reference(id: 1, name: "AED"),
+          ],
+          rates: <String, num>{},
+        ),
       );
 
       await vm.getcountryCode();
@@ -828,11 +852,14 @@ void main() {
         () async {
       vm.contract.contractCurrency = null;
 
-      when(() => mockRepository.getcountryCode()).thenAnswer(
-        (_) async => <Reference>[
-          Reference(id: 1, name: "AED"),
-          Reference(id: 2, name: "USD"),
-        ],
+      when(() => mockFacilityRepository.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[
+            Reference(id: 1, name: "AED"),
+            Reference(id: 2, name: "USD"),
+          ],
+          rates: <String, num>{},
+        ),
       );
 
       await vm.getcountryCode();
@@ -841,7 +868,8 @@ void main() {
     });
 
     test("rethrows repository errors", () async {
-      when(() => mockRepository.getcountryCode()).thenThrow(Exception("fail"));
+      when(() => mockFacilityRepository.getCurrencyList())
+          .thenThrow(Exception("fail"));
 
       expect(vm.getcountryCode, throwsA(isA<Exception>()));
     });

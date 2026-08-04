@@ -1187,7 +1187,7 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
   /// Fetches the list of currency codes from the repository.
   Future<void> getCurrencyCodes() async {
     try {
-      currencyCodes = await repository.getCurrencyCodes();
+      currencyCodes = await CurrencyRatesService().getCurrencies();
     } on Object catch (e) {
       AlertManager().showFailureToast(e.toString());
     }

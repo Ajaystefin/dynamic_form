@@ -775,48 +775,6 @@ class RequestRepository {
     }
   }
 
-  /// Retrieves the list of available currency codes from the backend.
-  ///
-  /// Parses the response data into a list of [Reference] objects, mapping
-  /// ISO codes to name and descriptions appropriately.
-  /// Returns an empty list if the response data is not in the expected format.
-  /// Throws [ApiException] if the API call fails.
-  Future<List<Reference>> getCurrencyCodes() async {
-    final Map<String, dynamic> data = BaseRequest.baseRequest({});
-    final AppResponse response =
-        await _apiManager.post(APIEndpoints.getCurrencyRateList, data);
-
-    if (response.status != ResponseStatus.success) {
-      // throw Exception(response.message);
-      throw ApiException(response.message);
-    }
-
-    final dynamic currencyList = response.body["responseData"];
-
-    // Ensure it's a list
-    if (currencyList is! List) {
-      return <Reference>[];
-    }
-
-    // Map isoCode -> name, description -> reference4
-    return currencyList
-        .whereType<Map<String, dynamic>>() // keep only proper map entries
-        .map((e) {
-          final String iso = e["isoCode"];
-          final String desc = e["description"];
-
-          if (iso.trim().isNotEmpty) {
-            return Reference(
-              name: iso.trim(),
-              reference4: desc.trim(),
-            );
-          }
-          return null; // skip invalid rows
-        })
-        .whereType<Reference>()
-        .toList();
-  }
-
   /// Cancels prior validation for the provided application customer information.
   ///
   /// Sends the cancellation request to the backend using the serialized

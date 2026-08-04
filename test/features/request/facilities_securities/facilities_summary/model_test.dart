@@ -347,8 +347,11 @@ void main() {
 
   group("Data loading methods", () {
     test("getCurrencyCodes success populates list", () async {
-      when(() => mockRequestRepo.getCurrencyCodes()).thenAnswer(
-        (_) async => [Reference(name: "AED"), Reference(name: "USD")],
+      when(() => mockFacilityRepo.getCurrencyList()).thenAnswer(
+        (_) async => (
+          currencies: <Reference>[Reference(name: "AED"), Reference(name: "USD")],
+          rates: <String, num>{},
+        ),
       );
 
       await viewModel.getCurrencyCodes();
@@ -360,8 +363,9 @@ void main() {
     });
 
     test("getCurrencyCodes empty list handled safely", () async {
-      when(() => mockRequestRepo.getCurrencyCodes())
-          .thenAnswer((_) async => <Reference>[]);
+      when(() => mockFacilityRepo.getCurrencyList()).thenAnswer(
+        (_) async => (currencies: <Reference>[], rates: <String, num>{}),
+      );
 
       await viewModel.getCurrencyCodes();
 
@@ -370,7 +374,7 @@ void main() {
     });
 
     test("getCurrencyCodes failure shows toast", () async {
-      when(() => mockRequestRepo.getCurrencyCodes())
+      when(() => mockFacilityRepo.getCurrencyList())
           .thenThrow(Exception("currency-error"));
 
       await viewModel.getCurrencyCodes();
