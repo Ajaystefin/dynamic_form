@@ -10,6 +10,7 @@ import "package:wcas_frontend/core/constants/_reference_data_keys.dart";
 import "package:wcas_frontend/core/constants/_server_constants.dart";
 import "package:wcas_frontend/core/constants/constants.dart";
 import "package:wcas_frontend/core/globals.dart";
+import "package:wcas_frontend/core/services/currency_rates_service.dart";
 import "package:wcas_frontend/core/services/reference_data_service.dart";
 import "package:wcas_frontend/core/utils/alert_manager.dart";
 import "package:wcas_frontend/core/utils/utils.dart";
@@ -131,6 +132,10 @@ void main() {
       ..facilitySecurityRepository = mockFacilityRepo
       ..referenceDataService = mockReferenceService;
 
+    CurrencyRatesService()
+      ..clearCache()
+      ..repository = mockFacilityRepo;
+
     AlertManager.overrideInstance = mockAlertManager;
 
     // Safe defaults used by a lot of tests.
@@ -164,6 +169,10 @@ void main() {
         Reference(id: 12, name: "Social"),
         Reference(id: 13, name: "Transition"),
       ];
+  });
+
+  tearDown(() {
+    CurrencyRatesService().clearCache();
   });
 
   group("Draft + primitive getters", () {
@@ -484,18 +493,18 @@ void main() {
     });
 
     test("getCurrencyRates success calls repository", () async {
-      when(() => mockFacilityRepo.getCurrencyRates(any())).thenAnswer(
+      when(() => mockFacilityRepo.getAllCurrencyRates()).thenAnswer(
         (_) async => const CurrencyRates(rates: {"USD": 3.67}),
       );
 
       await viewModel.getCurrencyRates(Reference(name: "USD"));
 
-      verify(() => mockFacilityRepo.getCurrencyRates(any())).called(1);
+      verify(() => mockFacilityRepo.getAllCurrencyRates()).called(1);
       verifyNever(() => mockAlertManager.showFailureToast(any()));
     });
 
     test("getCurrencyRates failure shows toast", () async {
-      when(() => mockFacilityRepo.getCurrencyRates(any()))
+      when(() => mockFacilityRepo.getAllCurrencyRates())
           .thenThrow(Exception("bad-rate"));
 
       await viewModel.getCurrencyRates(Reference(name: "USD"));
@@ -2850,7 +2859,7 @@ void main() {
 
     test("convertToAed covers AED, non-AED success, zero-rate and exception",
         () async {
-      when(() => mockFacilityRepo.getCurrencyRates(any())).thenAnswer(
+      when(() => mockFacilityRepo.getAllCurrencyRates()).thenAnswer(
         (_) async => const CurrencyRates(rates: {"USD": 3.67, "EUR": 0}),
       );
       expect(
@@ -2877,7 +2886,11 @@ void main() {
         ),
         "1,000",
       );
-      when(() => mockFacilityRepo.getCurrencyRates(any()))
+      // Cache was warmed by the earlier calls above; clear it so this
+      // exercises the exception path (a real re-fetch) rather than serving
+      // the cached table, where "GBP" would already be resolved to 0.
+      CurrencyRatesService().clearCache();
+      when(() => mockFacilityRepo.getAllCurrencyRates())
           .thenThrow(Exception("rate-error"));
       expect(
         await viewModel.convertToAed(

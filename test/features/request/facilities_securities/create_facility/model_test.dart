@@ -13,6 +13,7 @@ import "package:wcas_frontend/core/constants/_server_constants.dart";
 import "package:wcas_frontend/core/constants/constants.dart";
 import "package:wcas_frontend/core/env_config.dart";
 import "package:wcas_frontend/core/globals.dart";
+import "package:wcas_frontend/core/services/currency_rates_service.dart";
 import "package:wcas_frontend/core/services/draft/draft_handler_base.dart";
 import "package:wcas_frontend/core/services/local_storage_service.dart";
 import "package:wcas_frontend/core/services/reference_data_service.dart";
@@ -267,6 +268,10 @@ void main() {
     // Inject the repo (for all methods that use viewModel.repository)
     viewModel = CreateFacilityViewModel()..repository = mockRepository;
 
+    CurrencyRatesService()
+      ..clearCache()
+      ..repository = mockRepository;
+
     mockLocalStorageService = MockLocalStorageService();
     LocalStorageService().getStorage = mockLocalStorageService;
 
@@ -290,6 +295,7 @@ void main() {
 
   tearDown(() {
     viewModel.close();
+    CurrencyRatesService().clearCache();
   });
 
   Future<void> pumpFormForVm(WidgetTester tester) async {
@@ -930,7 +936,7 @@ void main() {
         ..setSubLimitIndex(0, "SOFR")
         ..setSubLimitMarginSign(0, "+")
         ..setSubLimitMarginValue(0, 2.5);
-      when(() => mockRepository.getCurrencyRates(any())).thenAnswer(
+      when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
         (_) async => const CurrencyRates(rates: {"USD": 3.67}),
       );
 
@@ -5813,7 +5819,7 @@ void main() {
     test(
         "applyInitialCurrencyVisibility converts non-AED present outstanding and proposed limit",
         () async {
-      when(() => mockRepository.getCurrencyRates(any())).thenAnswer(
+      when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
         (_) async => const CurrencyRates(rates: {"USD": 3.67}),
       );
 
@@ -5844,7 +5850,7 @@ void main() {
     test(
         "applyInitialCurrencyVisibility converts FI currency fields and toggles visibility flags",
         () async {
-      when(() => mockRepository.getCurrencyRates(any())).thenAnswer(
+      when(() => mockRepository.getAllCurrencyRates()).thenAnswer(
         (_) async => const CurrencyRates(rates: {"USD": 3.67}),
       );
 
@@ -6171,6 +6177,34 @@ void main() {
       expect(viewModel.presentOutstandingController.text, "0");
       expect(viewModel.newPresentOutStandingController.text, "0");
       expect(viewModel.presentOutStandingReadOnly, isTrue);
+    });
+
+    test(
+        "setCommitmentAccNumber NEW branch reverts currency to AED"
+        " after a prior non-AED account match", () async {
+      final Reference aedRef = Reference(name: "AED");
+      viewModel
+        ..currencyCodes = [aedRef, Reference(name: "USD")]
+        ..limits = const [
+          LimitsResponse(
+            commitmentAccountNumber: "ACC-USD",
+            limitCurrency: "USD",
+            outstandingAmount: 500,
+          ),
+        ];
+
+      await viewModel.setCommitmentAccNumber("ACC-USD");
+      expect(viewModel.getFacility.presentOutstandingCurrency?.name, "USD");
+
+      await viewModel.setCommitmentAccNumber("NEW");
+
+      expect(viewModel.getFacility.presentOutstandingAmount, 0);
+      expect(viewModel.getFacility.presentOutstandingCurrency?.name, "AED");
+      expect(
+        identical(viewModel.getFacility.presentOutstandingCurrency, aedRef),
+        isTrue,
+      );
+      expect(viewModel.showNewPresentOutStandingLimit, isFalse);
     });
 
     testWidgets(

@@ -112,13 +112,15 @@ class SecurityPerfectionTable extends StatelessWidget {
                 onSubmit2: (date) {
                   info.dateDeferral = date;
                 },
-                validator: (value) {
-                  if (info.selected =
-                      true && (value == null || value.isEmpty)) {
-                    return "common.validation.emptyDate".tr();
-                  }
-                  return null;
-                },
+                validator: (!viewModel.isFI)
+                    ? (value) {
+                        if (info.selected =
+                            true && (value == null || value.isEmpty)) {
+                          return "common.validation.emptyDate".tr();
+                        }
+                        return null;
+                      }
+                    : null,
               )
             else
               const CustomTextField(

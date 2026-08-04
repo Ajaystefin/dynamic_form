@@ -11,6 +11,7 @@ import "package:wcas_frontend/core/constants/_reference_data_keys.dart";
 import "package:wcas_frontend/core/constants/_server_constants.dart";
 import "package:wcas_frontend/core/constants/constants.dart";
 import "package:wcas_frontend/core/globals.dart";
+import "package:wcas_frontend/core/services/currency_rates_service.dart";
 import "package:wcas_frontend/core/services/draft/draft_handler_base.dart";
 import "package:wcas_frontend/core/services/draft/draft_mixin.dart";
 import "package:wcas_frontend/core/services/reference_data_service.dart";
@@ -27,7 +28,6 @@ import "package:wcas_frontend/features/request/facilities_securities/create_secu
 import "package:wcas_frontend/models/admin/reference.dart";
 import "package:wcas_frontend/models/request/country.dart";
 import "package:wcas_frontend/models/request/customer.dart";
-import "package:wcas_frontend/models/request/facility_security/exchange_rate.dart";
 import "package:wcas_frontend/models/request/facility_security/limit_facilities.dart";
 import "package:wcas_frontend/models/request/facility_security/security.dart";
 import "package:wcas_frontend/models/request/request.dart";
@@ -97,9 +97,6 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
 
   /// Indicates whether the country of security is the UAE.
   bool isCountrySecurityUAE = false;
-
-  /// Indicates whether the current security has been approved.
-  bool isApproved = false;
 
   /// Repository for handling facility security-related operations.
   FacilitySecurityRepository securityRepository =
@@ -321,7 +318,7 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
     PageMode? pageModeFromArgs,
   }) async {
     request = Globals.request ?? Request();
-    isApproved = selectedSecurity != null;
+
     pageMode = pageModeFromArgs ??
         AuthRepository.getPageMode(RightConstants.createSecurity);
 
@@ -333,7 +330,9 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
 
     await getReferenceDatas();
     await getLimitsandFacilities(
-      Globals.request?.groupOwner ?? Globals.request?.customerRimNo,
+      (Globals.request?.groupOwner ?? 0) > 0
+          ? Globals.request?.groupOwner
+          : Globals.request?.customerRimNo,
     );
     if (selectedSecurity != null && selectedSecurity.securityId != null) {
       //For Update/View Security Flow
@@ -518,7 +517,8 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
           .map((String s) => Reference(name: s))
           .toList();
     } on Object catch (error) {
-      AlertManager().showFailureToast(error.toString());
+      debugPrint(error.toString());
+      // AlertManager().showFailureToast(error.toString());
     }
   }
 
@@ -559,6 +559,13 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
           formState,
           selectedSecurity,
           securityTypeId: ServerConstants.bankGuaranteeId,
+          agencyFieldKey: "ratingConductedBy",
+          targetFieldKey: "externalRatingBank",
+        ),
+        setExternalRatingByAgency(
+          formState,
+          selectedSecurity,
+          securityTypeId: ServerConstants.financialGuranteeID,
           agencyFieldKey: "ratingConductedBy",
           targetFieldKey: "externalRatingBank",
         ),
@@ -784,8 +791,7 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
     }
 
     try {
-      final CurrencyRates currencyRates =
-          await securityRepository.getCurrencyRates(selectedCurrency);
+      final Map<String, num> rates = await CurrencyRatesService().getRates();
 
       if (!isCurrent()) {
         return;
@@ -795,7 +801,7 @@ class CreateSecurityViewModel extends SafeCubit<CreateSecurityState>
       final String selectedCode = selectedCurrency?.name ?? "";
 
       // Get exchange rate for the selected currency
-      exchangeRate = currencyRates.rates[selectedCode] ?? 0;
+      exchangeRate = rates[selectedCode] ?? 0;
 
       _applyConvertedSecurityAmount(
         amount * exchangeRate,

@@ -188,16 +188,18 @@ class SecurityPerfectionViewModel extends SafeCubit<SecurityPerfectionState>
         ...validateSecurity(),
       ];
 
-      if (tableErrors.isNotEmpty) {
-        emit(state.copyWith(isButtonLoading: false));
+      if (!isFI) {
+        if (tableErrors.isNotEmpty) {
+          emit(state.copyWith(isButtonLoading: false));
 
-        // Show first error (recommended)
-        //AlertManager().showFailureToast(tableErrors.first);
+          // Show first error (recommended)
+          //AlertManager().showFailureToast(tableErrors.first);
 
-        // OR show all errors
-        AlertManager().showFailureToast(tableErrors.join("\n"));
+          // OR show all errors
+          AlertManager().showFailureToast(tableErrors.join("\n"));
 
-        return;
+          return;
+        }
       }
 
       if (!isValid) {
@@ -406,5 +408,15 @@ class SecurityPerfectionViewModel extends SafeCubit<SecurityPerfectionState>
       }
     }
     return errors;
+  }
+
+  double getRowHeight(String description) {
+    const double minHeight = 40;
+    const int charsPerLine = 40;
+
+    final int lines = (description.length / charsPerLine).ceil();
+    final double height = lines * 12.0 + 8; // line height + padding
+
+    return height < minHeight ? minHeight : height;
   }
 }

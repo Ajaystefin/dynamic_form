@@ -10,11 +10,10 @@ import "package:wcas_frontend/core/components/label.dart";
 import "package:wcas_frontend/core/components/textfield.dart";
 import "package:wcas_frontend/core/constants/_server_constants.dart";
 import "package:wcas_frontend/core/constants/constants.dart";
+import "package:wcas_frontend/core/services/currency_rates_service.dart";
 import "package:wcas_frontend/core/utils/alert_manager.dart";
 import "package:wcas_frontend/core/utils/text_utils.dart";
 import "package:wcas_frontend/models/admin/reference.dart";
-import "package:wcas_frontend/models/request/facility_security/exchange_rate.dart";
-import "package:wcas_frontend/repositories/facility_security_repository.dart";
 
 /// Dynamic currency dropdown and text field form field.
 class DynamicFormCurrencyDropdownTextfield extends StatefulWidget {
@@ -681,16 +680,13 @@ class _CurrencyDropdownState extends State<CurrencyDropdown> {
         mounted && (requestId == null || requestId == _rateRequestId);
 
     try {
-      final CurrencyRates currencyRates = await FacilitySecurityRepository
-          .instance
-          .getCurrencyRates(selectedCurrency);
+      final Map<String, num> rates = await CurrencyRatesService().getRates();
 
       if (!isCurrent()) {
         return;
       }
 
-      exchangeRate =
-          (currencyRates.rates[selectedCurrency?.name] ?? 0).toDouble();
+      exchangeRate = (rates[selectedCurrency?.name] ?? 0).toDouble();
 
       // Get user-entered amount
       final double amount = _amountForEmit();

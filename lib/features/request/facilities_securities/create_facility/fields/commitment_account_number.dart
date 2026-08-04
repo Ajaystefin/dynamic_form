@@ -4,6 +4,7 @@ import "package:flutter/services.dart";
 import "package:wcas_frontend/core/components/dropdown/dropdown.dart";
 import "package:wcas_frontend/core/components/dropdown/multi_select_dropdown.dart";
 import "package:wcas_frontend/core/components/label.dart";
+import "package:wcas_frontend/core/utils/utils.dart";
 import "package:wcas_frontend/features/request/facilities_securities/create_facility/model.dart";
 
 /// Widget for selecting a commitment account number.
@@ -41,6 +42,8 @@ class CommitmentAccountNumber extends StatelessWidget {
         semanticLabel: "facilities.createFacility.commitmentAccountNumber".tr(),
         items: viewModel.commitmentAccountNumberItemsForUi,
         selectedItems: viewModel.commitmentAccSelectedForUi,
+        isLoading:
+            viewModel.commitmentAccountRateStatus == LoadingStatus.loading,
         onSelected: (selectedValue) async {
           if (selectedValue.isNotEmpty) {
             await viewModel.setCommitmentAccNumber(selectedValue.first);

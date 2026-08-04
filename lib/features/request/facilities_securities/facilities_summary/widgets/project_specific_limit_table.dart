@@ -195,15 +195,39 @@ class _ProjectSpecificLimitTableState extends State<ProjectSpecificLimitTable> {
     );
   }
 
+  Widget _filter(String scopeKey, FacilityFilterField field) =>
+      FilterTableWidget.forField(
+        viewModel: widget.viewModel,
+        scopeKey: scopeKey,
+        field: field,
+      );
+
   List<List<Widget>> getTableRows(BuildContext context) {
+    final RimSummary? rim = (widget.customer.rims?.isNotEmpty ?? false)
+        ? widget.customer.rims!.first
+        : null;
+    final List<RimGroup> groups = rim?.groups ?? const <RimGroup>[];
+
+    final RimGroup? selectedGroup = (widget.groupIndex != null &&
+            widget.groupIndex! >= 0 &&
+            widget.groupIndex! < groups.length)
+        ? groups[widget.groupIndex!]
+        : null;
+
+    final int? selectedRim = widget.viewModel.extractRimId(rim?.rimName);
+    final String scopeKey = widget.viewModel.groupFilterKey(
+      ServerConstants.projectSpecificLimitsID,
+      selectedRim,
+    );
+
     final filterRows = <Widget>[
       const SizedBox.shrink(),
       const SizedBox.shrink(),
-      const FilterTableWidget(),
-      const FilterTableWidget(),
-      const FilterTableWidget(),
+      _filter(scopeKey, FacilityFilterField.projectName),
+      _filter(scopeKey, FacilityFilterField.limitNo),
+      _filter(scopeKey, FacilityFilterField.controllingLimitNo),
       const SizedBox.shrink(),
-      const FilterTableWidget(),
+      _filter(scopeKey, FacilityFilterField.limitDescription),
       const SizedBox.shrink(),
       const SizedBox.shrink(),
       const SizedBox.shrink(),
@@ -217,36 +241,16 @@ class _ProjectSpecificLimitTableState extends State<ProjectSpecificLimitTable> {
 
     final List<List<Widget>> tableRows = <List<Widget>>[filterRows];
 
-    final RimSummary? rim = (widget.customer.rims?.isNotEmpty ?? false)
-        ? widget.customer.rims!.first
-        : null;
-    final List<RimGroup> groups = rim?.groups ?? const <RimGroup>[];
+    // Header rows (order '0') are rendered by the separate project table above.
+    // Parent lookups below resolve against the unfiltered list so a filtered
+    // out parent does not change a visible row's controlling limit cap.
+    final List<FacilityDis> groupDisList = widget.viewModel
+        .filteredSortedDisList(selectedGroup)
+        .where((d) => (d.order ?? "").trim() != "0")
+        .toList();
+    final List<FacilityDis> apiDisList =
+        widget.viewModel.applyFacilityFilters(scopeKey, groupDisList);
 
-    final RimGroup? selectedGroup = (widget.groupIndex != null &&
-            widget.groupIndex! >= 0 &&
-            widget.groupIndex! < groups.length)
-        ? groups[widget.groupIndex!]
-        : null;
-
-    final List<FacilityDis> apiDisList = List<FacilityDis>.from(
-      selectedGroup?.facilityLimits ?? const <FacilityDis>[],
-    ).where((d) {
-      // keep non-header rows only means remove order '0' row
-      if ((d.order ?? "").trim() == "0") {
-        return false;
-      }
-      final FacilitySummaryNew? f = d.facility;
-      if (f == null) {
-        return false;
-      }
-      final String? ld = f.limitDescription?.toString();
-      final String pc = (f.productCode ?? "").trim().toUpperCase();
-      // exclude: Limit Caps (935) or product code CLT
-      return ld != "935" && pc != "CLT";
-    }).toList()
-      ..sort((a, b) => (a.order ?? "").compareTo(b.order ?? ""));
-
-    final int? selectedRim = widget.viewModel.extractRimId(rim?.rimName);
     final GroupAmounts totals = selectedGroup?.amounts ?? GroupAmounts();
     for (final FacilityDis dis in apiDisList) {
       final FacilitySummaryNew? f = dis.facility;
@@ -286,7 +290,7 @@ class _ProjectSpecificLimitTableState extends State<ProjectSpecificLimitTable> {
 
       if (cln.isNotEmpty) {
         //Try parent from non-header list (existing behavior)
-        final FacilitySummaryNew parent = apiDisList
+        final FacilitySummaryNew parent = groupDisList
             .map((d) => d.facility)
             .whereType<FacilitySummaryNew>()
             .firstWhere(

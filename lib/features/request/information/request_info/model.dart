@@ -947,7 +947,7 @@ class RequestInfoViewModel extends SafeCubit<RequestInfoState>
     if (otherRolesCheck() &&
         !Utils.checkApplicationType(ApplicationType.cancellation)) {
       try {
-        if (canEdit) {
+        if (canEdit || otherRolesCheck()) {
           ultimateRawValue = await getValidatedText(
             controller: controllerUltimate,
             errorKey: "requestInformation.requestInformation.requiredOwnership",

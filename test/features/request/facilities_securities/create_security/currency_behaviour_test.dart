@@ -3,6 +3,7 @@ import "dart:async";
 import "package:flutter_test/flutter_test.dart";
 import "package:mocktail/mocktail.dart";
 import "package:wcas_frontend/core/env_config.dart";
+import "package:wcas_frontend/core/services/currency_rates_service.dart";
 import "package:wcas_frontend/core/utils/alert_manager.dart";
 import "package:wcas_frontend/features/request/facilities_securities/create_security/model.dart";
 import "package:wcas_frontend/models/admin/reference.dart";
@@ -33,14 +34,19 @@ void main() {
     AlertManager.overrideInstance = mockAlertManager;
 
     viewModel = CreateSecurityViewModel()..securityRepository = mockRepository;
+
+    CurrencyRatesService()
+      ..clearCache()
+      ..repository = mockRepository;
   });
 
   tearDown(() async {
     await viewModel.close();
+    CurrencyRatesService().clearCache();
   });
 
   void stubRates(Map<String, num> rates) {
-    when(() => mockRepository.getCurrencyRates(any()))
+    when(() => mockRepository.getAllCurrencyRates())
         .thenAnswer((_) async => CurrencyRates(rates: rates));
   }
 
@@ -67,7 +73,7 @@ void main() {
         isPresentSecurityAmount: false,
       );
 
-      verify(() => mockRepository.getCurrencyRates(any())).called(1);
+      verify(() => mockRepository.getAllCurrencyRates()).called(1);
       expect(viewModel.exchangeRate, 3.67);
       expect(viewModel.newProposedSecurityAmountController.text, "367");
     });
@@ -91,7 +97,10 @@ void main() {
         ),
       ]);
 
-      verify(() => mockRepository.getCurrencyRates(any())).called(2);
+      // Both amounts resolve to the same currency around the same time, so
+      // CurrencyRatesService's cache/in-flight de-dupe collapses this to a
+      // single underlying repository call.
+      verify(() => mockRepository.getAllCurrencyRates()).called(1);
       expect(viewModel.newPresentSecurityAmountController.text, "20");
       expect(viewModel.newProposedSecurityAmountController.text, "40");
     });
@@ -126,14 +135,14 @@ void main() {
         proposedAmount: 0,
       );
 
-      verifyNever(() => mockRepository.getCurrencyRates(any()));
+      verifyNever(() => mockRepository.getAllCurrencyRates());
       expect(viewModel.newProposedSecurityAmountController.text, "0");
       expect(viewModel.security.aedProposedSecurity, 0);
     });
 
     test("a rate already in flight cannot overwrite the cleared box", () async {
       final Completer<CurrencyRates> inFlight = Completer<CurrencyRates>();
-      when(() => mockRepository.getCurrencyRates(any()))
+      when(() => mockRepository.getAllCurrencyRates())
           .thenAnswer((_) => inFlight.future);
 
       final Reference usd = Reference(name: "USD");
@@ -214,7 +223,7 @@ void main() {
 
       await viewModel.applyInitialSecurityCurrency();
 
-      verifyNever(() => mockRepository.getCurrencyRates(any()));
+      verifyNever(() => mockRepository.getAllCurrencyRates());
       // The rate is only fetched once the user edits a field.
       expect(viewModel.exchangeRate, 0);
     });
@@ -232,7 +241,7 @@ void main() {
 
       await viewModel.applyInitialSecurityCurrency();
 
-      verifyNever(() => mockRepository.getCurrencyRates(any()));
+      verifyNever(() => mockRepository.getAllCurrencyRates());
       expect(viewModel.newPresentSecurityAmountController.text, "0");
       expect(viewModel.newProposedSecurityAmountController.text, "578");
     });
@@ -247,7 +256,7 @@ void main() {
 
       await viewModel.applyInitialSecurityCurrency();
 
-      verify(() => mockRepository.getCurrencyRates(any())).called(1);
+      verify(() => mockRepository.getAllCurrencyRates()).called(1);
       expect(viewModel.newProposedSecurityAmountController.text, "600");
     });
   });

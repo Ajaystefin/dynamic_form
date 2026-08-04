@@ -248,7 +248,7 @@ class FacilityDetail {
       presentLimit: _toIntOrNull(json["presentLimit"]),
       originalLimit: _toIntOrNull(json["originalLimit"]),
       proposedLimit: _toIntOrNull(json["proposedLimit"]),
-      presentOutstanding: _toIntOrNull(json["presentOutstanding"]),
+      presentOutstanding: _toDoubleOrNull(json["presentOutstanding"]),
       pastDues: _toIntOrNull(json["pastDues"]),
       isMainLimit: json["isMainLimit"] ?? false,
       facilitySubLimits: (json["facilitySubLimits"] as List? ?? [])
@@ -421,7 +421,7 @@ class FacilityDetail {
   final int? proposedByCc;
 
   /// Present outstanding amount.
-  final int? presentOutstanding;
+  final num? presentOutstanding;
 
   /// Present outstanding amount in AED.
   final num? presentOutstandingAED;

@@ -141,14 +141,14 @@ class _UnifiedTextEditorState extends State<UnifiedTextEditor> {
         "UnifiedEditorController wrapping HtmlEditorController",
       );
     }
-    final bool effectiveIsEnabled =
-        widget.ignoreProvider || !FormAccessProvider.of(context);
+    final bool effectiveIsEnabled = !widget.disable &&
+        (widget.ignoreProvider || !FormAccessProvider.of(context));
 
     return IgnorePointer(
       ignoring: !effectiveIsEnabled,
       child: CustomTextEditorWidget(
         controller: htmlController,
-        disable: !effectiveIsEnabled && disable,
+        disable: !effectiveIsEnabled,
         semanticLabel: widget.semanticLabel,
         characterLimit: widget.characterLimit,
         initialText: widget.initialText,

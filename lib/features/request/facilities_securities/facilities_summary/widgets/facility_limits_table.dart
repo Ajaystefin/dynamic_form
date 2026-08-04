@@ -91,7 +91,11 @@ class FacilityLimitsTable extends StatelessWidget {
     final String title = (group?.groupName ?? "").trim();
     final int? rimNo = viewModel.resolveRimNo(rim);
 
+    // Computed from the unfiltered group so a filter that matches nothing
+    // leaves the table (and its filter row) on screen instead of swapping in
+    // the "create facility" box.
     final bool hasApiLimits = viewModel.hasNonExcludedRows(group);
+    final String scopeKey = viewModel.groupFilterKey(groupId, rimNo);
 
     return CustomAccordion(
       isSubSection: true,
@@ -101,12 +105,18 @@ class FacilityLimitsTable extends StatelessWidget {
         const Gap(),
         if (hasApiLimits)
           CustomRawTable(
-            key: ValueKey("tbl-$groupId-${customer.hashCode}-$groupIndex"),
+            // The filter signature is part of the key so CustomRawTable, which
+            // only reads its rows in initState, remounts when the filter
+            // changes — and only then, preserving in-progress cell edits.
+            key: ValueKey(
+              "tbl-$groupId-${customer.hashCode}-$groupIndex"
+              "-${viewModel.facilityFilterSignature(scopeKey)}",
+            ),
             autoFitWidth: autoFitWidth,
             rowHeight: 46,
             isFilterTable: true,
             columns: _columns(),
-            rows: _rows(context, group, rimNo),
+            rows: _rows(context, group, rimNo, scopeKey),
           )
         else
           AddFacilitySubLimitBox(
@@ -195,14 +205,26 @@ class FacilityLimitsTable extends StatelessWidget {
     ];
   }
 
-  List<List<Widget>> _rows(BuildContext context, RimGroup? group, int? rimNo) {
+  Widget _filter(String scopeKey, FacilityFilterField field) =>
+      FilterTableWidget.forField(
+        viewModel: viewModel,
+        scopeKey: scopeKey,
+        field: field,
+      );
+
+  List<List<Widget>> _rows(
+    BuildContext context,
+    RimGroup? group,
+    int? rimNo,
+    String scopeKey,
+  ) {
     final List<List<Widget>> rows = <List<Widget>>[
       [
         const SizedBox.shrink(),
-        const FilterTableWidget(),
-        const FilterTableWidget(),
+        _filter(scopeKey, FacilityFilterField.limitNo),
+        _filter(scopeKey, FacilityFilterField.controllingLimitNo),
         const SizedBox.shrink(),
-        const FilterTableWidget(),
+        _filter(scopeKey, FacilityFilterField.limitDescription),
         const SizedBox.shrink(),
         const SizedBox.shrink(),
         const SizedBox.shrink(),
@@ -215,7 +237,12 @@ class FacilityLimitsTable extends StatelessWidget {
       ],
     ];
 
-    final List<FacilityDis> apiDisList = viewModel.filteredSortedDisList(group);
+    // Parent lookups resolve against the unfiltered list so a filtered out
+    // parent does not change a visible row's controlling limit cap.
+    final List<FacilityDis> groupDisList =
+        viewModel.filteredSortedDisList(group);
+    final List<FacilityDis> apiDisList =
+        viewModel.applyFacilityFilters(scopeKey, groupDisList);
     final GroupAmounts totals = group?.amounts ?? GroupAmounts();
     for (final FacilityDis facilityRow in apiDisList) {
       final FacilitySummaryNew? facilitySummary = facilityRow.facility;
@@ -236,7 +263,7 @@ class FacilityLimitsTable extends StatelessWidget {
       final bool isF = (facilitySummary.limitCategory?.toUpperCase() == "F");
       final int? parentCap = viewModel.resolveParentCap(
         facilitySummary.controllingLimitNo,
-        apiDisList,
+        groupDisList,
       );
 
 // Filter benchmark list by limitCategory (F / N) for this row

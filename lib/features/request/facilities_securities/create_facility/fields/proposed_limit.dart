@@ -94,7 +94,7 @@ class ProposedLimit extends StatelessWidget {
             CurrencyField.proposedLimit,
           );
       },
-      controller: viewModel.isFIFlow ? null : viewModel.proposedLimitController,
+      controller: viewModel.proposedLimitController,
       filled: viewModel.isFIFlow,
       keyboardType: TextInputType.number,
       validator: viewModel.isFIFlow

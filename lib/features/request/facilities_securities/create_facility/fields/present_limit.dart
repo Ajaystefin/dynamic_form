@@ -41,9 +41,8 @@ class PresentLimit extends StatelessWidget {
         (ServerConstants.bilateralLoanGroup ==
             viewModel.getFacility.facilityTypeSelectedValue?.id);
     return CurrencyAmountField(
-      readOnly: true,
-      isLabelEnabled:
-          Globals.request?.applicationSubType == ServerConstants.manualEntry,
+      readOnly: !(Globals.request?.applicationSubType ==
+          ServerConstants.manualEntry),
       // isEnabled: isEnable??false,
       label: "facilities.createFacility.presentLimit".tr(),
       isLabelRequired: isRequired,

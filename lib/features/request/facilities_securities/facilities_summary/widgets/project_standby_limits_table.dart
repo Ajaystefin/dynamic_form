@@ -195,15 +195,38 @@ class _ProjectStandbyLimitsTableState extends State<ProjectStandbyLimitsTable> {
     );
   }
 
+  Widget _filter(String scopeKey, FacilityFilterField field) =>
+      FilterTableWidget.forField(
+        viewModel: widget.viewModel,
+        scopeKey: scopeKey,
+        field: field,
+      );
+
   List<List<Widget>> getTableRows(BuildContext context) {
+    final rim = (widget.customer.rims?.isNotEmpty ?? false)
+        ? widget.customer.rims!.first
+        : null;
+    final groups = rim?.groups ?? const <RimGroup>[];
+
+    final RimGroup? selectedGroup = (widget.groupIndex != null &&
+            widget.groupIndex! >= 0 &&
+            widget.groupIndex! < groups.length)
+        ? groups[widget.groupIndex!]
+        : null;
+    final int? selectedRim = widget.viewModel.extractRimId(rim?.rimName);
+    final String scopeKey = widget.viewModel.groupFilterKey(
+      ServerConstants.projectStandByLimitID,
+      selectedRim,
+    );
+
     final filterRows = <Widget>[
       const SizedBox.shrink(),
       const SizedBox.shrink(),
-      const FilterTableWidget(),
-      const FilterTableWidget(),
-      const FilterTableWidget(),
+      _filter(scopeKey, FacilityFilterField.projectName),
+      _filter(scopeKey, FacilityFilterField.limitNo),
+      _filter(scopeKey, FacilityFilterField.controllingLimitNo),
       const SizedBox.shrink(),
-      const FilterTableWidget(),
+      _filter(scopeKey, FacilityFilterField.limitDescription),
       const SizedBox.shrink(),
       const SizedBox.shrink(),
       const SizedBox.shrink(),
@@ -217,36 +240,14 @@ class _ProjectStandbyLimitsTableState extends State<ProjectStandbyLimitsTable> {
 
     final tableRows = <List<Widget>>[filterRows];
 
-    final rim = (widget.customer.rims?.isNotEmpty ?? false)
-        ? widget.customer.rims!.first
-        : null;
-    final groups = rim?.groups ?? const <RimGroup>[];
-
-    final RimGroup? selectedGroup = (widget.groupIndex != null &&
-            widget.groupIndex! >= 0 &&
-            widget.groupIndex! < groups.length)
-        ? groups[widget.groupIndex!]
-        : null;
-    final int? selectedRim = widget.viewModel.extractRimId(rim?.rimName);
-
-    final List<FacilityDis> apiDisList = List<FacilityDis>.from(
-      selectedGroup?.facilityLimits ?? const <FacilityDis>[],
-    ).where((d) {
-      // keep non-header rows only means remove order '0' row
-      if ((d.order ?? "").trim() == "0") {
-        return false;
-      }
-      final f = d.facility;
-      if (f == null) {
-        return false;
-      }
-
-      final ld = f.limitDescription?.toString();
-      final pc = (f.productCode ?? "").trim().toUpperCase();
-      // exclude: Limit Caps (935) or product code CLT
-      return ld != "935" && pc != "CLT";
-    }).toList()
-      ..sort((a, b) => (a.order ?? "").compareTo(b.order ?? ""));
+    // Header rows (order '0') are rendered by the separate project table above.
+    final List<FacilityDis> apiDisList = widget.viewModel.applyFacilityFilters(
+      scopeKey,
+      widget.viewModel
+          .filteredSortedDisList(selectedGroup)
+          .where((d) => (d.order ?? "").trim() != "0")
+          .toList(),
+    );
     final GroupAmounts totals = selectedGroup?.amounts ?? GroupAmounts();
     for (final FacilityDis dis in apiDisList) {
       final FacilitySummaryNew? f = dis.facility;

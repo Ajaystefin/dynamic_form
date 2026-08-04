@@ -1,5 +1,6 @@
 import "package:easy_localization/easy_localization.dart";
 import "package:flutter/services.dart";
+import "package:wcas_frontend/core/constants/_server_constants.dart";
 
 /// Collection of reusable form validation utilities.
 class CustomValidator {
@@ -321,7 +322,7 @@ class DecimalInputFormatter extends TextInputFormatter {
 }
 
 /// Text input formatter that allows up to 21 integer digits
-/// and 2 decimal places.
+/// and 2 decimal places, return empty if text is 'Data Not Available'.
 class DecimalInputFormatterTwoDigit extends TextInputFormatter {
   final RegExp _regExp = RegExp(r"^\d{0,21}(\.\d{0,2})?$");
 
@@ -332,6 +333,9 @@ class DecimalInputFormatterTwoDigit extends TextInputFormatter {
   ) {
     if (_regExp.hasMatch(newValue.text)) {
       return newValue;
+    }
+    if (oldValue.text.toLowerCase() == ServerConstants.dataNotAvailable) {
+      return TextEditingValue.empty;
     }
     return oldValue;
   }

@@ -156,8 +156,6 @@ class RelationshipProfitabilitySummaryViewModel
       RightConstants.relationshipProfitabilitySummary,
     );
     repository = ProfitabilityRepository.instance;
-    summaryCommentsController.text = summaryComments ?? "";
-
     // If your repository needs Globals (auth/appRef), make sure they’re ready
     request = Globals.request;
     if (request == null) {
@@ -231,6 +229,8 @@ class RelationshipProfitabilitySummaryViewModel
             comments.isNotEmpty ? (comments.first.strategyComment ?? "") : "";
         summaryComments = existing;
       }
+
+      summaryCommentsController.text = summaryComments ?? "";
 
       emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
     } on Object catch (e, st) {

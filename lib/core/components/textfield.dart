@@ -333,8 +333,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     // Combine the widget's own readOnly flag with any ancestor
     // FormAccessProvider.
-    final bool isReadOnly = !widget.ignoreProvider &&
-        (widget.readOnly || FormAccessProvider.of(context));
+    final bool isReadOnly = widget.readOnly ||
+        (!widget.ignoreProvider && FormAccessProvider.of(context));
     return
         // Semantics( if Enable this check this Request Information issue
         //   label: widget.semanticLabel ?? widget.hintText ?? widget.labelText

@@ -2182,29 +2182,29 @@ void main() {
   });
 
   // =========================================================================
-  // getCurrencyRates
+  // getAllCurrencyRates
   // =========================================================================
 
-  group("getCurrencyRates", () {
+  group("getAllCurrencyRates", () {
     test("returns CurrencyRates on success", () async {
-      when(() => mockApiManager.post(APIEndpoints.getExchangeRate, any()))
+      when(() => mockApiManager.post(APIEndpoints.getCurrencyRateList, any()))
           .thenAnswer(
         (_) async => _successResponse({
-          "responseData": {"buyRate": 4.2, "sellRate": 4.3},
+          "responseData": {"USD": 3.692, "AED": 1},
         }),
       );
 
       expect(
-        await repository.getCurrencyRates(Reference(name: "USD")),
+        await repository.getAllCurrencyRates(),
         isA<CurrencyRates>(),
       );
     });
 
     test("handles null responseData gracefully", () async {
-      when(() => mockApiManager.post(APIEndpoints.getExchangeRate, any()))
+      when(() => mockApiManager.post(APIEndpoints.getCurrencyRateList, any()))
           .thenAnswer((_) async => _successResponse({"responseData": null}));
 
-      expect(await repository.getCurrencyRates(null), isA<CurrencyRates>());
+      expect(await repository.getAllCurrencyRates(), isA<CurrencyRates>());
     });
   });
 

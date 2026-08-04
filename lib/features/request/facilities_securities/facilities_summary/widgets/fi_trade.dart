@@ -171,6 +171,13 @@ class FiTradeTable extends StatelessWidget {
     ];
   }
 
+  Widget _filter(String scopeKey, FacilityFilterField field) =>
+      FilterTableWidget.forField(
+        viewModel: viewModel,
+        scopeKey: scopeKey,
+        field: field,
+      );
+
   /// Builds the table rows for the selected facility group.
   ///
   /// Generates facility rows, editable fields, summary totals, and
@@ -179,12 +186,18 @@ class FiTradeTable extends StatelessWidget {
     BuildContext context,
     RimGroup? selectedGroup,
   ) {
+    final RimSummary? rim =
+        (customer.rims?.isNotEmpty ?? false) ? customer.rims?.first : null;
+
+    final int? selectedRim = viewModel.extractRimId(rim?.rimName);
+    final String scopeKey = viewModel.groupFilterKey(limitGroup, selectedRim);
+
     final filterRows = <Widget>[
       const SizedBox.shrink(),
-      const FilterTableWidget(),
-      const FilterTableWidget(),
+      _filter(scopeKey, FacilityFilterField.limitNo),
+      _filter(scopeKey, FacilityFilterField.controllingLimitNo),
       const SizedBox.shrink(),
-      const FilterTableWidget(),
+      _filter(scopeKey, FacilityFilterField.limitDescription),
       const SizedBox.shrink(),
       const SizedBox.shrink(),
       const SizedBox.shrink(),
@@ -198,24 +211,12 @@ class FiTradeTable extends StatelessWidget {
 
     final List<List<Widget>> tableRows = <List<Widget>>[filterRows];
 
-    final RimSummary? rim =
-        (customer.rims?.isNotEmpty ?? false) ? customer.rims?.first : null;
-
-    final int? selectedRim = viewModel.extractRimId(rim?.rimName);
-
-    /// Exclude: Limit Caps (id 935) OR product code CLT
-    final List<FacilityDis> apiDisList = List<FacilityDis>.from(
-      selectedGroup?.facilityLimits ?? const <FacilityDis>[],
-    ).where((dis) {
-      final f = dis.facility;
-      if (f == null) {
-        return false;
-      }
-      final ld = f.limitDescription?.toString(); // numeric/string safe
-      final pc = (f.productCode ?? "").trim().toUpperCase();
-      return ld != "935" && pc != "CLT"; // keep everything else
-    }).toList()
-      ..sort((a, b) => (a.order ?? "").compareTo(b.order ?? ""));
+    // Excludes Limit Caps (id 935) and product code CLT, then applies the
+    // user's column filters.
+    final List<FacilityDis> apiDisList = viewModel.applyFacilityFilters(
+      scopeKey,
+      viewModel.filteredSortedDisList(selectedGroup),
+    );
 
     final GroupAmounts totals = selectedGroup?.amounts ?? GroupAmounts();
     for (final FacilityDis dis in apiDisList) {
@@ -272,6 +273,7 @@ class FiTradeTable extends StatelessWidget {
                   ),
                   showCreateFacilityForm: false,
                 ),
+                "pageMode": viewModel.amendPagemode,
               },
             );
           },
@@ -498,14 +500,15 @@ class FiTradeTable extends StatelessWidget {
             facilityDis.facilityInitFields?.marginValue,
           ),
           child: CustomTextField(
-            validator: (_) {
-              final signMissing = isF &&
-                  ((facilitySummaryDataItem.marginSign ?? "").trim().isEmpty);
-              final valMissing = (facilitySummaryDataItem.marginValue == null);
-              return (signMissing || valMissing)
-                  ? "Margin (sign & value) is required"
-                  : null;
-            },
+            // validator: (_) {
+            
+            //   final signMissing = isF &&
+            //       ((facilitySummaryDataItem.marginSign ?? "").trim().isEmpty);
+            //   final valMissing = (facilitySummaryDataItem.marginValue == null);
+            //   return (signMissing || valMissing)
+            //       ? "Margin (sign & value) is required"
+            //       : null;
+            // },
             width: 120.w,
             prefixIcon: facilitySummaryDataItem.limitCategory != "F"
                 ? null

@@ -1067,7 +1067,7 @@ void main() {
       await viewModel.doSearch();
 
       verify(() => mockAlertManager.showFailureToast(any())).called(1);
-      expect(viewModel.isSearched, isFalse);
+      expect(viewModel.isSearched, isTrue);
     });
 
     test("doSearch repository error catches", () async {

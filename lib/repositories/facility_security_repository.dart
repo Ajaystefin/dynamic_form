@@ -1432,18 +1432,16 @@ class FacilitySecurityRepository {
     return LimitsFacilityResponse.fromJson(raw);
   }
 
-  /// Retrieves exchange rate information for the specified currency.
+  /// Retrieves exchange rate information for all currencies.
   ///
-  /// Returns a [CurrencyRates] object containing the exchange rate data
-  /// associated with the selected currency. If no exchange rate data is
-  /// available, an empty [CurrencyRates] model is returned.
-  ///
-  /// Throws an [ApiException] if the request fails.
-  Future<CurrencyRates> getCurrencyRates(Reference? selectedCurrency) async {
-    final payload =
-        BaseRequest.baseRequest({"isoCode": selectedCurrency?.name});
+  /// Returns a [CurrencyRates] object containing the exchange rate data for
+  /// every supported currency, keyed by ISO currency code. If no exchange
+  /// rate data is available, an empty [CurrencyRates] model is returned.
+  Future<CurrencyRates> getAllCurrencyRates() async {
+    final payload = BaseRequest.baseRequest({});
 
-    final res = await _apiManager.post(APIEndpoints.getExchangeRate, payload);
+    final res =
+        await _apiManager.post(APIEndpoints.getCurrencyRateList, payload);
 
     final Map<String, dynamic> data =
         (res.body?["responseData"] as Map<String, dynamic>?) ?? const {};

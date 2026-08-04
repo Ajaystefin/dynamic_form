@@ -36,9 +36,8 @@ class PresentOutstanding extends StatelessWidget {
     final NumberFormat formatter = NumberFormat("#,###");
     return CurrencyAmountField(
       label: "facilities.createFacility.presentOutstanding".tr(),
-      readOnly: true,
-      isLabelEnabled:
-          Globals.request?.applicationSubType == ServerConstants.manualEntry,
+      readOnly: !(Globals.request?.applicationSubType ==
+          ServerConstants.manualEntry),
       isLabelRequired: isRequired,
       inputFormatters: currencyAmountFormatters(),
       validator: isRequired ? CustomValidator.requiredField : null,
@@ -88,13 +87,6 @@ class PresentOutstanding extends StatelessWidget {
             ),
           );
         }
-      },
-      onSaved: (String? value) {
-        viewModel.getFacility.presentOutstandingAmount =
-            int.tryParse(value?.replaceAll(",", "") ?? "0");
-        viewModel.getFacility.presentOutstandingAED = int.tryParse(
-          viewModel.newPresentOutStandingController.text.replaceAll(",", ""),
-        );
       },
     );
   }

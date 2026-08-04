@@ -247,13 +247,11 @@ class RiskRatingViewModel extends SafeCubit<RiskRatingState>
       isViewOnly = false;
     }
 
-    if (Utils.checkApplicationType(ApplicationType.riskRatingChange)) {
-      if (Utils.checkRoles([
-        UserRole.creditAnalyst,
-        UserRole.creditCordinator,
-      ])) {
-        isViewOnly = false;
-      }
+    if (Utils.checkApplicationType(ApplicationType.riskRatingChange) &&
+        Utils.checkRoles([UserRole.creditCordinator])) {
+      isViewOnly = false;
+    } else if (Utils.checkRoles([UserRole.creditAnalyst])) {
+      isViewOnly = !canEdit;
     }
   }
 

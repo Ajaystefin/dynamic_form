@@ -28,8 +28,7 @@ class CmoRemarks extends StatelessWidget {
               ignoreProvider: viewModel.isCmoUpdate(),
               controller: viewModel.cmoRemarksController,
               initialText: viewModel.security.cmoRemarksFi ?? "",
-              disable: viewModel.isApproved || viewModel.isCmoUpdate(),
-              // height: 400,
+              disable: !viewModel.isCmoUpdate(),
               editorId: "security_cmo_remarks_"
                   '${viewModel.security.securityId ?? 'new'}',
               scrollController: viewModel.scrollController,

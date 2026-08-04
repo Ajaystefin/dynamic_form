@@ -166,6 +166,7 @@ class LimitCapsSummary extends StatelessWidget {
                                   ),
                                   showCreateFacilityForm: true,
                                 ),
+                                "pageMode": viewModel.amendPagemode,
                               },
                             );
                           },
@@ -208,6 +209,13 @@ class LimitCapsSummary extends StatelessWidget {
     ];
   }
 
+  Widget _filter(String scopeKey, FacilityFilterField field) =>
+      FilterTableWidget.forField(
+        viewModel: viewModel,
+        scopeKey: scopeKey,
+        field: field,
+      );
+
   /// Builds the table rows for the limit caps summary.
   ///
   /// Uses the latest customer and RIM group data to generate facility
@@ -217,11 +225,19 @@ class LimitCapsSummary extends StatelessWidget {
     RimGroup? selectedGroup,
     FacilitySummaryList effectiveCustomer,
   ) {
+    // Work from refreshed rim/groups
+    final RimSummary? rim = (effectiveCustomer.rims?.isNotEmpty ?? false)
+        ? effectiveCustomer.rims!.first
+        : null;
+    final List<RimGroup> groups = rim?.groups ?? const <RimGroup>[];
+    final String scopeKey =
+        viewModel.limitCapsFilterKey(viewModel.extractRimId(rim?.rimName));
+
     final filterRows = <Widget>[
       const SizedBox.shrink(),
-      const FilterTableWidget(),
-      const FilterTableWidget(),
-      const FilterTableWidget(),
+      _filter(scopeKey, FacilityFilterField.limitNo),
+      _filter(scopeKey, FacilityFilterField.limitCapType),
+      _filter(scopeKey, FacilityFilterField.limitDescription),
       const SizedBox.shrink(),
       const SizedBox.shrink(),
       const SizedBox.shrink(),
@@ -232,14 +248,8 @@ class LimitCapsSummary extends StatelessWidget {
     int totalExistingLimit = 0;
     int totalProposedLimit = 0;
 
-    // Work from refreshed rim/groups
-    final RimSummary? rim = (effectiveCustomer.rims?.isNotEmpty ?? false)
-        ? effectiveCustomer.rims!.first
-        : null;
-    final List<RimGroup> groups = rim?.groups ?? const <RimGroup>[];
-
-    // Filter (935 OR CLT)
-    final List<FacilityDis> apiDisList = (groups
+    // Keep (935 OR CLT) — the inverse of the other group tables.
+    final List<FacilityDis> capDisList = (groups
             .expand((g) => g.facilityLimits ?? const <FacilityDis>[])
             .where((dis) {
       final f = dis.facility;
@@ -255,18 +265,24 @@ class LimitCapsSummary extends StatelessWidget {
             (a, b) => (a.order ?? "").compareTo(b.order ?? ""),
           );
 
-    for (int i = 0; i < apiDisList.length; i++) {
-      final FacilityDis dis = apiDisList[i];
+    // Totals cover the whole group; the user's filter only narrows what is
+    // rendered, so they are summed before the filter is applied.
+    for (final FacilityDis dis in capDisList) {
+      totalExistingLimit += (dis.facility?.presentLimit ?? 0).toInt();
+      totalProposedLimit += dis.facility?.proposedLimit ?? 0;
+    }
+
+    // Walk the unfiltered list so serial numbers keep their position while a
+    // filter is active, and render only the rows that match.
+    final Set<FacilityDis> visibleDis =
+        viewModel.applyFacilityFilters(scopeKey, capDisList).toSet();
+
+    for (int i = 0; i < capDisList.length; i++) {
+      final FacilityDis dis = capDisList[i];
       final FacilitySummaryNew? f = dis.facility;
-      if (f == null) {
+      if (f == null || !visibleDis.contains(dis)) {
         continue;
       }
-
-      final int existing = (f.presentLimit ?? 0).toInt();
-      final int proposed = f.proposedLimit ?? 0;
-
-      totalExistingLimit += existing;
-      totalProposedLimit += proposed;
 
       final int sNo = i + 1;
 
@@ -294,6 +310,7 @@ class LimitCapsSummary extends StatelessWidget {
                   ),
                   showCreateFacilityForm: false,
                 ),
+                "pageMode": viewModel.amendPagemode,
               },
             );
           },

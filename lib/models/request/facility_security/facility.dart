@@ -532,10 +532,10 @@ class Facility {
   Reference? presentOutstandingCurrency;
 
   /// Present outstanding amount.
-  int? presentOutstandingAmount;
+  num? presentOutstandingAmount;
 
   /// Present outstanding amount in AED.
-  int? presentOutstandingAED;
+  num? presentOutstandingAED;
 
   /// Limit type value.
   Reference? limitTypeValue;

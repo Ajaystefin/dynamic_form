@@ -113,6 +113,7 @@ class CustomRawTable extends StatefulWidget {
     this.columnHeaderHeight,
     this.stackedHeaderHeight,
     this.sortable = true,
+    this.rowTextMaxLineLimit = true,
   });
 
   ///[autoFitWidth] make the table width fits automatically to the respective
@@ -186,6 +187,9 @@ class CustomRawTable extends StatefulWidget {
 
   /// Page change callback.
   final Function(int)? onPageChange;
+
+  /// Row Text Max Line.
+  final bool rowTextMaxLineLimit;
 
   @override
   State<CustomRawTable> createState() => _CustomRawTableState();
@@ -288,17 +292,25 @@ class _CustomRawTableState extends State<CustomRawTable> {
     }
   }
 
-  Widget _cellWidget(Widget cell, int rowIndex, int colIndex) {
+  Widget _cellWidget(
+    Widget cell,
+    int rowIndex,
+    int colIndex, {
+    bool limitLines = true,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 4,
+        vertical: 2,
+      ),
       child: DefaultTextStyle.merge(
         textAlign: TextAlign.center,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
         style: const TextStyle(
           fontSize: AppStyle.fontSizeSmall,
           color: AppColors.tablefontColor,
         ),
+        maxLines: limitLines ? 2 : null,
+        overflow: limitLines ? TextOverflow.ellipsis : TextOverflow.visible,
         child: cell,
       ),
     );
@@ -748,12 +760,13 @@ class _CustomRawTableState extends State<CustomRawTable> {
                                               final cell = cellEntry.value;
                                               return DataCell(
                                                 _cellWidget(
-                                                  cell,
-                                                  _rowData.indexWhere(
-                                                    (r) => r.id == row.id,
-                                                  ),
-                                                  cellIndex,
-                                                ),
+                                                    cell,
+                                                    _rowData.indexWhere(
+                                                      (r) => r.id == row.id,
+                                                    ),
+                                                    cellIndex,
+                                                    limitLines: widget
+                                                        .rowTextMaxLineLimit,),
                                               );
                                             }),
                                           ],

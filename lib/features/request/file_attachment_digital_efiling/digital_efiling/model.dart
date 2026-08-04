@@ -508,7 +508,7 @@ class DigitalEfilingViewModel extends SafeCubit<DigitalEfilingState>
     if ((groupName ?? "").isNotEmpty && !isSearched && groupName!.length > 3) {
       groupNameLoadingStatus = LoadingStatus.loading;
       isGroupNameSelection = true;
-      isSearched = true;
+      // isSearched = true;
       groupId = null;
 
       await onCustomerSearchPressed(showDialog: showDialog, searchBy: 1);
@@ -523,7 +523,7 @@ class DigitalEfilingViewModel extends SafeCubit<DigitalEfilingState>
   Future<void> onGroupIdSearchPressed() async {
     if ((groupId ?? "").isNotEmpty && !isSearched) {
       groupIdLoadingStatus = LoadingStatus.loading;
-      isSearched = true;
+      // isSearched = true;
       await onCustomerSearchPressed(searchBy: 2);
     } else {
       AlertManager().showFailureToast(
@@ -536,7 +536,7 @@ class DigitalEfilingViewModel extends SafeCubit<DigitalEfilingState>
   Future<void> onCustomerRimNoSearchPressed() async {
     if ((customerRimNo ?? "").isNotEmpty && !isSearched) {
       customerRimNoLoadingStatus = LoadingStatus.loading;
-      isSearched = true;
+      // isSearched = true;
 
       await onCustomerSearchPressed(searchBy: 3);
     } else {
@@ -552,7 +552,7 @@ class DigitalEfilingViewModel extends SafeCubit<DigitalEfilingState>
         !isSearched &&
         customerName!.length > 3) {
       customerNameLoadingStatus = LoadingStatus.loading;
-      isSearched = true;
+      // isSearched = true;
 
       isGroupNameSelection = false;
 
@@ -932,7 +932,7 @@ class DigitalEfilingViewModel extends SafeCubit<DigitalEfilingState>
         customerNameLoadingStatus = LoadingStatus.loaded;
         groupIdLoadingStatus = LoadingStatus.loaded;
         groupNameLoadingStatus = LoadingStatus.loaded;
-        isSearched = false;
+        // isSearched = false;
         searchAllowed = true;
         emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
         AlertManager().showFailureToast("common.noUserFound".tr());
@@ -950,7 +950,7 @@ class DigitalEfilingViewModel extends SafeCubit<DigitalEfilingState>
           grpName = customer?.groups?.name;
         }
 
-        isSearched = false;
+        // isSearched = false;
         searchAllowed = true;
         stopAllLoaders();
         emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
@@ -1106,7 +1106,7 @@ class DigitalEfilingViewModel extends SafeCubit<DigitalEfilingState>
             searchLoaderStatus: LoadingStatus.loaded,
           ),
         );
-        isSearched = false;
+        // isSearched = false;
         // throw Exception("common.emptyState".tr());
         AlertManager().showFailureToast("common.emptyState".tr());
       }

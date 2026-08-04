@@ -11,6 +11,7 @@ import "package:wcas_frontend/core/constants/_reference_data_keys.dart";
 import "package:wcas_frontend/core/constants/_server_constants.dart";
 import "package:wcas_frontend/core/constants/constants.dart";
 import "package:wcas_frontend/core/globals.dart";
+import "package:wcas_frontend/core/services/currency_rates_service.dart";
 import "package:wcas_frontend/core/services/draft/draft_handler_base.dart";
 import "package:wcas_frontend/core/services/draft/draft_mixin.dart";
 import "package:wcas_frontend/core/services/reference_data_service.dart";
@@ -29,7 +30,6 @@ import "package:wcas_frontend/models/admin/reference_type.dart";
 import "package:wcas_frontend/models/request/country.dart";
 import "package:wcas_frontend/models/request/customer.dart";
 import "package:wcas_frontend/models/request/facility_security/borrower_facility.dart";
-import "package:wcas_frontend/models/request/facility_security/exchange_rate.dart";
 import "package:wcas_frontend/models/request/facility_security/facility.dart";
 import "package:wcas_frontend/models/request/facility_security/facility_condition_list.dart";
 import "package:wcas_frontend/models/request/facility_security/facility_detail.dart";
@@ -430,6 +430,9 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
 
   /// Indicates whether the present outstanding amount field is displayed.
   bool showNewPresentOutStandingLimit = false;
+
+  /// Drives the Commitment Account Number dropdown's spinner.
+  LoadingStatus commitmentAccountRateStatus = LoadingStatus.loaded;
 
   /// Indicates whether the revised bank limit proposed by FI amount field is displayed.
   bool showNewRevisedBankLimitProposedByFiAmount = false;
@@ -2147,10 +2150,22 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     //  If NEW → force Present Outstanding = 0
     if (accNo == ServerConstants.labelNew) {
       getFacility.presentOutstandingAmount = 0;
-
+      getFacility.presentOutstandingAED = 0;
       // Clear UI controllers
       presentOutstandingController.text = "0";
       newPresentOutStandingController.text = "0";
+
+      // A prior selection may have left the currency on a non-AED value
+      // (e.g. USD) from a previously matched account - revert to AED,
+      // reusing the actual Reference instance from currencyCodes so the
+      // dropdown highlights it correctly (Reference has no value equality).
+      final Reference aed = currencyCodes.firstWhere(
+        (r) =>
+            (r.name ?? "").trim().toUpperCase() == ServerConstants.aedCurrency,
+        orElse: () => Reference(name: ServerConstants.aedCurrency),
+      );
+      getFacility.presentOutstandingCurrency = aed;
+      showNewPresentOutStandingLimit = false;
 
       // Make field Editable if required by business
 
@@ -2161,7 +2176,43 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     }
 
     // await Future.delayed(const Duration(milliseconds: 200));
-    setControllingLimitByAccount(accNo);
+    final bool outstandingUpdated = setControllingLimitByAccount(accNo);
+
+    // getLimitsandFacilities has no AED-equivalent field, so for a
+    // non-AED currency we fetch the rate ourselves — otherwise the AED
+    // controller keeps a stale value from a previous selection. Kept out
+    // of setControllingLimitByAccount, which also runs during facility
+    // load where presentOutstandingAED is already set correctly.
+    if (outstandingUpdated) {
+      final Reference? raw = getFacility.presentOutstandingCurrency;
+      final String code = (raw?.name ?? "").trim().toUpperCase();
+      final Reference resolved =
+          Reference(name: code.isEmpty ? ServerConstants.aedCurrency : code);
+      getFacility.presentOutstandingCurrency = resolved;
+
+      if (code == ServerConstants.aedCurrency || code.isEmpty) {
+        final NumberFormat formatter = NumberFormat("#,###");
+        final String formatted =
+            formatter.format(getFacility.presentOutstandingAmount ?? 0);
+        newPresentOutStandingController.value = TextEditingValue(
+          text: formatted,
+          selection: TextSelection.collapsed(offset: formatted.length),
+        );
+        getFacility.presentOutstandingAED =
+            getFacility.presentOutstandingAmount;
+      } else {
+        // Fire-and-forget: nothing here should block this method's own
+        // emit()/rebuild.
+        commitmentAccountRateStatus = LoadingStatus.loading;
+        unawaited(
+          getCurrencyRatesDebounced(resolved, CurrencyField.presentOutstanding)
+              .whenComplete(() {
+            commitmentAccountRateStatus = LoadingStatus.loaded;
+            emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
+          }),
+        );
+      }
+    }
 
     emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
   }
@@ -2174,11 +2225,11 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
   /// - Outstanding amount
   /// - Limit amount
   /// - Currency information
-  void setControllingLimitByAccount(String? accNoRaw) {
+  bool setControllingLimitByAccount(String? accNoRaw) {
     final NumberFormat formatter = NumberFormat("#,###");
     final String? accNo = accNoRaw?.trim();
     if (accNo == null || accNo.isEmpty) {
-      return;
+      return false;
     }
 
     final LimitsResponse match = limits.firstWhere(
@@ -2217,6 +2268,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
 
     final num? outstandingAmount = match.outstandingAmount;
 
+    bool outstandingUpdated = false;
     if ((currency?.isNotEmpty ?? false) || outstandingAmount != null) {
       final Reference ref =
           getFacility.presentOutstandingCCValue ?? Reference();
@@ -2226,9 +2278,10 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       getFacility.presentOutstandingCCValue = ref;
       getFacility.presentOutstandingCurrency = ref;
 
-      getFacility.presentOutstandingAmount = outstandingAmount?.round() ?? 0;
+      getFacility.presentOutstandingAmount = outstandingAmount ?? 0;
       presentOutstandingController.text =
           formatter.format(getFacility.presentOutstandingAmount);
+      outstandingUpdated = true;
     }
 
     final num? limitAmount = match.limitAmount;
@@ -2240,6 +2293,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     }
 
     emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
+    return outstandingUpdated;
   }
 
   /// Updates sub-limit values for the selected commitment account.
@@ -2959,7 +3013,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     processCurrencyCovertedFieldField(
       apiAmount: getFacility.presentOutstandingAmount?.toDouble(),
       apiCurrency: getFacility.presentOutstandingCurrency,
-      assignAmount: (v) => getFacility.presentOutstandingAmount = v.toInt(),
+      assignAmount: (v) => getFacility.presentOutstandingAmount = v,
       assignCurrency: (c) => getFacility.presentOutstandingCurrency = c,
       mainCtrl: presentOutstandingController,
       convertedCtrl: newPresentOutStandingController,
@@ -3169,9 +3223,8 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
   /// need it before the user has touched anything.
   Future<void> warmCurrencyRate(Reference? selectedCurrency) async {
     try {
-      final CurrencyRates rates =
-          await repository.getCurrencyRates(selectedCurrency);
-      exchangeRate = rates.rates[selectedCurrency?.name] ?? 0;
+      final Map<String, num> rates = await CurrencyRatesService().getRates();
+      exchangeRate = rates[selectedCurrency?.name] ?? 0;
     } on Object catch (error) {
       AlertManager().showFailureToast(error.toString());
     }
@@ -3247,18 +3300,20 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
         text: zero,
         selection: TextSelection.collapsed(offset: zero.length),
       );
+      if (currencyField == CurrencyField.presentOutstanding) {
+        getFacility.presentOutstandingAED = 0;
+      }
       return;
     }
 
     try {
-      final CurrencyRates rates =
-          await repository.getCurrencyRates(selectedCurrency);
+      final Map<String, num> rates = await CurrencyRatesService().getRates();
 
       if (!isCurrent()) {
         return;
       }
 
-      final num rate = rates.rates[selectedCurrency?.name] ?? 0;
+      final num rate = rates[selectedCurrency?.name] ?? 0;
 
       exchangeRate = rate;
 
@@ -3275,6 +3330,9 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
             offset: formatter.format(aedValue).length,
           ),
         );
+        if (currencyField == CurrencyField.presentOutstanding) {
+          getFacility.presentOutstandingAED = rawAmount;
+        }
         return;
       }
 
@@ -3290,6 +3348,9 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
         selection:
             TextSelection.collapsed(offset: formatter.format(converted).length),
       );
+      if (currencyField == CurrencyField.presentOutstanding) {
+        getFacility.presentOutstandingAED = rawAmount * rate;
+      }
     } on Object catch (error) {
       AlertManager().showFailureToast(error.toString());
     }
@@ -3363,9 +3424,8 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
     Reference selectedCurrency,
   ) async {
     try {
-      final CurrencyRates rates =
-          await repository.getCurrencyRates(selectedCurrency);
-      _subtypeExchangeRates[rowIndex] = rates.rates[selectedCurrency.name] ?? 0;
+      final Map<String, num> rates = await CurrencyRatesService().getRates();
+      _subtypeExchangeRates[rowIndex] = rates[selectedCurrency.name] ?? 0;
       emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
     } on Object catch (e) {
       AlertManager().showFailureToast(e.toString());
@@ -4048,7 +4108,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
           : num.tryParse(getFacility.facilityDescription?.id?.toString() ?? ""),
       0,
     );
-    final int presentOutstanding = int.tryParse(
+    final num presentOutstanding = int.tryParse(
           getFacility.presentOutstandingCCValue?.description ?? "",
         ) ??
         (facilityDetail.isNotEmpty
@@ -4094,7 +4154,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       limitNo: showCreateFacilityForm ? null : (facilityDetail.first.limitNo),
       limitCategory: " ", // need to pass space string for limit caps
       presentOutstanding: presentOutstanding,
-      presentOutstandingAED: presentOutstanding,
+      presentOutstandingAED: getFacility.presentOutstandingAED ?? 0,
       currency: currency,
       isSharedLimit: _yesNoToBool(getFacility.sharedLimit, false),
       presentLimit: _numOr(
@@ -4645,9 +4705,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       advanceType: getFacility.advanceTypeValue?.id,
       seniority: getFacility.seniorityValue?.id,
       sectorDescription: getFacility.sector?.id,
-      presentOutstandingAED: getFacility
-          .presentOutstandingAmount, // since it's readonly we can pass directly
-      //  safeParseAED(newPresentOutStandingController.text, "") ?? 0,
+      presentOutstandingAED: getFacility.presentOutstandingAED ?? 0,
       proposedLimit:
           _numOr(getFacility.proposedLimit, parentProposedLimit ?? 0),
       proposedLimitAED: proposedLimitAED,
@@ -4676,7 +4734,6 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       pastDues:
           _numOr(int.tryParse(getFacility.pastDues?.description ?? ""), 0),
       presentOutstanding: getFacility.presentOutstandingAmount,
-
       presentOutstandingCurrency: getFacility.presentOutstandingCurrency?.name,
       isProjectFinActivity: _yesNoToBool(
         getFacility.selectedProjectFinanceRelatedActivityValue,
@@ -5846,8 +5903,8 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       final detail = facilityDetail.first;
 
       //Amount in selected currency (API)
-      final int presentOutstandingAmnt = (detail.presentOutstanding ?? 0) == 0
-          ? (detail.presentOutstandingAED?.toInt() ?? 0)
+      final num presentOutstandingAmnt = (detail.presentOutstanding ?? 0) == 0
+          ? (detail.presentOutstandingAED ?? 0)
           : (detail.presentOutstanding ?? 0);
 
       getFacility.presentOutstandingAmount = presentOutstandingAmnt;
@@ -5871,8 +5928,7 @@ class CreateFacilityViewModel extends SafeCubit<CreateFacilityState>
       getFacility.presentOutstandingCurrency = resolvedPoCurrency;
 
       // AED equivalent (API)
-      final int poAed = (detail.presentOutstandingAED ?? 0).toInt();
-      getFacility.presentOutstandingAED = poAed;
+      getFacility.presentOutstandingAED = detail.presentOutstandingAED ?? 0;
 
       // Show/hide AED converted field and set its value
       final bool isNonAed = poCode != ServerConstants.aedCurrency;

@@ -25,7 +25,7 @@ class ReasonForDeferral extends StatelessWidget {
     // final bool isValueEmpty = initialValue.trim().isEmpty;
 
     return LabelWidget(
-      isRequired: true,
+      isRequired: !viewModel.isFI,
       label: "requestInformation.securityPerfection.reasonForDeferral".tr(),
       child: CustomTextArea(
         initialValue: initialValue,

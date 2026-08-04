@@ -44,7 +44,7 @@ class Security {
     this.remarks,
     this.remarksFi,
     this.cmoRemarksFi,
-    this.isDeletable = true,
+    this.isDeletable,
     this.allFacilities,
     this.selectedCashCollateralValue,
     this.selectedIsSecurityProviderCbdCustomerValue,
@@ -181,11 +181,7 @@ class Security {
       isCashCollateral: parseBool(json["isCashCollateral"]), // == 1,
       isTangibleSecurity: parseBool(json["isTangibleSecurity"]), // == 1,
       isLimitCtrlSecurity: parseBool(json["isLimitControlling"]), //?? 0) == 1,
-      //Reference(id: (json['isLimitControlling'] == 1) ?
-      //ServerConstants.optionYESid : ServerConstants.optionNOid),
-      isDeletable:
-          !(json["securityMasterId"] != null && json["securityMasterId"] > 0),
-
+      isDeletable: (json["securityMasterId"] ?? 0) <= 0,
       wcasSecurityNo: json["wcasSecurityNo"],
       // countryIncorporation: json['countryIncorporation'],
       srcMigratedId: json["srcMigratedId"],

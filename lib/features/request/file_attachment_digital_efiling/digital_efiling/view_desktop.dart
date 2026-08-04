@@ -180,22 +180,23 @@ class ViewDesktop extends StatelessWidget {
             ),
           ],
         ),
-        if (viewModel.isSearched && viewModel.fileUploadDatas.isNotEmpty)
-          const Gap(size: GapSize.large),
-        if (viewModel.isSearched && viewModel.fileUploadDatas.isNotEmpty)
-          Row(
-            children: [
+        const Gap(size: GapSize.large),
+        Row(
+          children: [
+            if (viewModel.isSearched && viewModel.fileUploadDatas.isNotEmpty)
               CustomSectionHeader(
                 title: "eDigitalFilingFileAttachments."
                         "digitalEfiling.archivedFiles"
                     .tr(),
               ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (viewModel.isSearched &&
+                        viewModel.fileUploadDatas.isNotEmpty)
                       if (viewModel.isSearched &&
                           viewModel.fileUploadDatas.isNotEmpty &&
                           viewModel.grpId != "" &&
@@ -223,28 +224,29 @@ class ViewDesktop extends StatelessWidget {
                             ),
                           ),
                         ),
-                      const Gap(
-                        direction: Axis.horizontal,
+                    const Gap(
+                      direction: Axis.horizontal,
+                    ),
+                    if (viewModel.isSearched &&
+                        viewModel.buttonVisibilityStatus[
+                                DigitaleFileFields.uploadDocument]!
+                            .call())
+                      CustomButton(
+                        label:
+                            "eDigitalFilingFileAttachments.fileAttachments.upload"
+                                .tr(),
+                        backgroundColor: AppColors.secondary,
+                        onPressed: () async {
+                          await viewModel.openUploadDialog(context);
+                        },
                       ),
-                      if (viewModel.buttonVisibilityStatus[
-                                  DigitaleFileFields.uploadDocument]
-                              ?.call() ??
-                          false)
-                        CustomButton(
-                          label:
-                              "eDigitalFilingFileAttachments.fileAttachments.upload"
-                                  .tr(),
-                          backgroundColor: AppColors.secondary,
-                          onPressed: () async {
-                            await viewModel.openUploadDialog(context);
-                          },
-                        ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
+        ),
+
         if (viewModel.isSearched && viewModel.fileUploadDatas.isNotEmpty)
           const Gap(),
         if (viewModel.isSearched && viewModel.fileUploadDatas.isNotEmpty)

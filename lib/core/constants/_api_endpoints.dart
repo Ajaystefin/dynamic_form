@@ -24,6 +24,9 @@ class APIEndpoints {
   /// Endpoint used to retrieve currency codes.
   static String getCurrencyCode = "rating/getCurrencyList";
 
+  /// Endpoint used to retrieve exchange rates for all currencies.
+  static String getCurrencyRateList = "rating/getCurrencyList";
+
   /// Base mock API path.
   static String mockAPI = "mock/";
 
@@ -446,9 +449,6 @@ class APIEndpoints {
 
   /// Endpoint used to save facility details.
   static String saveFacilityDetailsNew = "facility/saveFacilityDetails";
-
-  /// Endpoint used to retrieve exchange rate information.
-  static String getExchangeRate = "rating/getExchangeRate";
 
   /// Endpoint used to retrieve facility details.
   static String getFacilityDetails = "facility/getFacilityDetails";

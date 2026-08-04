@@ -34,6 +34,7 @@ class FiRevisedBankByCC extends StatelessWidget {
             viewModel.getFacility.limitGroup ||
         ServerConstants.treasuryGroup == viewModel.getFacility.limitGroup);
     return CurrencyAmountField(
+      readOnly:!Utils.checkRoles([UserRole.creditAnalyst]),
       isLabelRequired: groupRequires,
       isLabelEnabled: Utils.checkRoles([UserRole.creditAnalyst]),
       label: "facilities.createFacility.revisedBankLimit".tr(),

@@ -9,6 +9,7 @@ import "package:wcas_frontend/core/constants/_reference_data_keys.dart";
 import "package:wcas_frontend/core/constants/_server_constants.dart";
 import "package:wcas_frontend/core/constants/constants.dart";
 import "package:wcas_frontend/core/globals.dart";
+import "package:wcas_frontend/core/services/currency_rates_service.dart";
 import "package:wcas_frontend/core/services/draft/draft_handler_base.dart";
 import "package:wcas_frontend/core/services/draft/draft_mixin.dart";
 import "package:wcas_frontend/core/services/reference_data_service.dart";
@@ -25,14 +26,12 @@ import "package:wcas_frontend/features/request/projects/link_contract/draft_hand
 import "package:wcas_frontend/features/request/projects/link_contract/state.dart";
 import "package:wcas_frontend/models/admin/reference.dart";
 import "package:wcas_frontend/models/request/customer.dart";
-import "package:wcas_frontend/models/request/facility_security/exchange_rate.dart";
 // import 'package:wcas_frontend/models/request/facility_security/facility.dart';
 import "package:wcas_frontend/models/request/project/contract.dart";
 import "package:wcas_frontend/models/request/project/contract_comment.dart";
 import "package:wcas_frontend/models/request/project/project.dart";
 import "package:wcas_frontend/repositories/auth_repository.dart";
 import "package:wcas_frontend/repositories/customer_respository.dart";
-import "package:wcas_frontend/repositories/facility_security_repository.dart";
 import "package:wcas_frontend/repositories/project_repository.dart";
 
 /// ViewModel for managing the state and logic of the Link Contract screen.
@@ -298,15 +297,13 @@ class LinkContractViewModel extends SafeCubit<LinkContractState>
   /// Fetches currency rates and updates the converted AED amount.
   Future<void> getCurrencyRates(Reference? selectedCurrency) async {
     try {
-      final CurrencyRates currencyRates = await FacilitySecurityRepository
-          .instance
-          .getCurrencyRates(selectedCurrency);
+      final Map<String, num> rates = await CurrencyRatesService().getRates();
 
       // Resolve the selected currency code/name safely
       final String selectedCode = selectedCurrency?.name ?? "";
 
       // Get exchange rate for the selected currency
-      exchangeRate = currencyRates.rates[selectedCode] ?? 0;
+      exchangeRate = rates[selectedCode] ?? 0;
 
       // Pick the correct amount based on the flag
       final double amount =

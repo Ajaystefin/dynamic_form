@@ -7,6 +7,7 @@ import "package:wcas_frontend/core/constants/_reference_data_keys.dart";
 import "package:wcas_frontend/core/constants/_server_constants.dart";
 import "package:wcas_frontend/core/constants/constants.dart";
 import "package:wcas_frontend/core/globals.dart";
+import "package:wcas_frontend/core/services/currency_rates_service.dart";
 import "package:wcas_frontend/core/services/draft/draft_handler_base.dart";
 import "package:wcas_frontend/core/services/draft/draft_mixin.dart";
 import "package:wcas_frontend/core/services/reference_data_service.dart";
@@ -20,13 +21,11 @@ import "package:wcas_frontend/features/request/projects/edit_contract/state.dart
 import "package:wcas_frontend/features/request/projects/edit_contract/utils/project_contract_numeric_helper.dart";
 import "package:wcas_frontend/models/admin/reference.dart";
 import "package:wcas_frontend/models/request/comment.dart";
-import "package:wcas_frontend/models/request/facility_security/exchange_rate.dart";
 import "package:wcas_frontend/models/request/project/contract.dart";
 import "package:wcas_frontend/models/request/project/link_commitment_number.dart";
 import "package:wcas_frontend/models/request/project/ppc.dart";
 import "package:wcas_frontend/models/request/project/project.dart";
 import "package:wcas_frontend/repositories/auth_repository.dart";
-import "package:wcas_frontend/repositories/facility_security_repository.dart";
 import "package:wcas_frontend/repositories/project_repository.dart";
 
 /// View model for managing edit contract screen data and actions.
@@ -562,15 +561,13 @@ class EditContractViewModel extends SafeCubit<EditContractState>
     bool? isFirst = false,
   }) async {
     try {
-      final CurrencyRates currencyRates = await FacilitySecurityRepository
-          .instance
-          .getCurrencyRates(selectedCurrency);
+      final Map<String, num> rates = await CurrencyRatesService().getRates();
 
       // Resolve the selected currency code/name safely
       final String selectedCode = selectedCurrency?.name ?? "";
 
       // Get exchange rate for the selected currency
-      exchangeRate = currencyRates.rates[selectedCode] ?? 0;
+      exchangeRate = rates[selectedCode] ?? 0;
 
       // Pick the correct amount based on the flag
       final double amount =

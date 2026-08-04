@@ -7,8 +7,10 @@ import "package:wcas_frontend/core/components/label.dart";
 import "package:wcas_frontend/core/components/textfield.dart";
 import "package:wcas_frontend/core/constants/constants.dart";
 import "package:wcas_frontend/core/utils/logger.dart";
+import "package:wcas_frontend/core/utils/scale.dart";
 import "package:wcas_frontend/features/request/information/security_perfection/model.dart";
 import "package:wcas_frontend/features/request/information/security_perfection/state.dart";
+import "package:wcas_frontend/models/request/security_covenant_condition.dart";
 
 /// Displays the security deferral covenants table.
 class CovenantTable extends StatelessWidget {
@@ -27,12 +29,20 @@ class CovenantTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasSelectedCovenant =
-        (viewModel.securityDeferral.covenant ?? []).any((c) => c.isChecked);
+    final List<SecurityCovenantCondition> covenants =
+        viewModel.securityDeferral.covenant ?? [];
+    final bool hasSelectedCovenant = covenants.any((c) => c.isChecked);
+    final double rowHeight = covenants.isEmpty
+        ? 40
+        : covenants
+            .map((e) => viewModel.getRowHeight(e.description?.toString() ?? ""))
+            .reduce((a, b) => a > b ? a : b);
 
     return LabelWidget(
       label: "requestInformation.securityPerfection.forCovenant".tr(),
       child: CustomRawTable(
+        rowHeight: rowHeight,
+        rowTextMaxLineLimit: false,
         key: ValueKey(state.refreshKey),
         columns: [
           const TableColumn(label: Text("")),
@@ -42,6 +52,7 @@ class CovenantTable extends StatelessWidget {
             ),
           ),
           TableColumn(
+            forcedWidth: 300.w,
             label: Text(
               "requestInformation.securityPerfection.covenantDescription".tr(),
             ),
@@ -80,7 +91,10 @@ class CovenantTable extends StatelessWidget {
               },
             ),
             Text(info.number.toString()),
-            Text(info.description.toString()),
+            Text(
+              info.description.toString(),
+              textAlign: TextAlign.start,
+            ),
             if (info.isChecked)
               CustomDatePicker(
                 key: UniqueKey(),
@@ -89,13 +103,15 @@ class CovenantTable extends StatelessWidget {
                 onSubmit2: (date) {
                   info.deferralDate = date;
                 },
-                validator: (value) {
-                  if (info.isChecked =
-                      true && (value == null || value.isEmpty)) {
-                    return "common.validation.emptyDate".tr();
-                  }
-                  return null;
-                },
+                validator: (!viewModel.isFI)
+                    ? (value) {
+                        if (info.isChecked =
+                            true && (value == null || value.isEmpty)) {
+                          return "common.validation.emptyDate".tr();
+                        }
+                        return null;
+                      }
+                    : null,
               )
             else
               const CustomTextField(

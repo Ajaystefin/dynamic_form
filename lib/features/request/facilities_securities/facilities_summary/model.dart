@@ -7,6 +7,7 @@ import "package:wcas_frontend/core/constants/_reference_data_keys.dart";
 import "package:wcas_frontend/core/constants/_server_constants.dart";
 import "package:wcas_frontend/core/constants/constants.dart";
 import "package:wcas_frontend/core/globals.dart";
+import "package:wcas_frontend/core/services/currency_rates_service.dart";
 import "package:wcas_frontend/core/services/draft/draft_handler_base.dart";
 import "package:wcas_frontend/core/services/draft/draft_mixin.dart";
 import "package:wcas_frontend/core/services/reference_data_service.dart";
@@ -23,7 +24,6 @@ import "package:wcas_frontend/features/request/facilities_securities/facilities_
 import "package:wcas_frontend/models/admin/reference.dart";
 import "package:wcas_frontend/models/admin/reference_type.dart";
 import "package:wcas_frontend/models/request/application_details.dart";
-import "package:wcas_frontend/models/request/facility_security/exchange_rate.dart";
 import "package:wcas_frontend/models/request/facility_security/facility.dart";
 import "package:wcas_frontend/models/request/facility_security/facility_detail.dart";
 import "package:wcas_frontend/models/request/facility_security/facility_summary_list.dart";
@@ -33,6 +33,28 @@ import "package:wcas_frontend/repositories/auth_repository.dart";
 import "package:wcas_frontend/repositories/facility_security_repository.dart";
 import "package:wcas_frontend/repositories/home_repository.dart";
 import "package:wcas_frontend/repositories/request_repository.dart";
+
+/// Columns that the Facility Summary tables can be filtered on.
+///
+/// Each value maps to the text the user actually sees in that column, so
+/// lookup columns are matched against their resolved name rather than the
+/// raw reference id.
+enum FacilityFilterField {
+  /// Filters rows by limit number.
+  limitNo,
+
+  /// Filters rows by controlling limit number.
+  controllingLimitNo,
+
+  /// Filters rows by the resolved limit description name.
+  limitDescription,
+
+  /// Filters rows by project name (project groups only).
+  projectName,
+
+  /// Filters rows by the resolved limit cap type name (Limit Caps only).
+  limitCapType,
+}
 
 /// Facilities Summary ViewModel (Facilities/Limits module).
 ///
@@ -444,6 +466,8 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
       customerFacilities =
           await facilitySecurityRepository.getFacilitySummaryList();
 
+      // Rows have been replaced; a stale filter would look like missing data.
+      clearFacilityFilters();
       preloadHeaderProposedLimitsFromApi();
       emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
     } on Object catch (error) {
@@ -972,12 +996,10 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
     }
 
     try {
-      // Fetch rate from API
-      final Reference ref = Reference(name: code);
+      // Fetch rate from cache
+      final Map<String, num> rates = await CurrencyRatesService().getRates();
 
-      final CurrencyRates rates = await repository.getCurrencyRates(ref);
-
-      final num rate = rates.rates[code] ?? 0;
+      final num rate = rates[code] ?? 0;
 
       // Safe conversion
       final int converted = rate > 0 ? (amount * rate).toInt() : amount;
@@ -1061,7 +1083,7 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
   Future<void> getCurrencyRates(Reference? selectedCurrency) async {
     try {
       emit(state.copyWith(loaderStatus: LoadingStatus.loading));
-      await facilitySecurityRepository.getCurrencyRates(selectedCurrency);
+      await CurrencyRatesService().getRates();
       emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
     } on Object catch (error) {
       AlertManager().showFailureToast(error.toString());
@@ -1611,7 +1633,7 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
           : num.tryParse(facility.facilityDescription?.id?.toString() ?? ""),
       25,
     ); // “limitDescription”
-    final int presentOutstanding =
+    final num presentOutstanding =
         int.tryParse(facility.presentOutstandingCCValue?.description ?? "") ??
             (facilityDetail.isNotEmpty
                 ? (facilityDetail.first.presentOutstanding ?? 0)
@@ -1912,6 +1934,128 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
     return filtered;
   }
 
+  // ---------------------------------------------------------------------------
+  // Table column filters
+  //
+  // Each table on the screen filters independently, so filter values are held
+  // per "scope key": group tables use [groupFilterKey], Limit Caps uses
+  // [limitCapsFilterKey] because it spans every group of a RIM.
+  // ---------------------------------------------------------------------------
+
+  /// Active column filters, keyed by table scope then by column.
+  final Map<String, Map<FacilityFilterField, String>> _facilityFilters = {};
+
+  /// Scope key for the table of one limit group on one RIM.
+  String groupFilterKey(int? groupId, int? rimNo) =>
+      "group-${groupId ?? ''}-${rimNo ?? ''}";
+
+  /// Scope key for the Limit Caps table, which spans all groups of a RIM.
+  String limitCapsFilterKey(int? rimNo) => "limitCaps-${rimNo ?? ''}";
+
+  /// Current filter text for [field] in the table identified by [scopeKey].
+  String facilityFilterValue(String scopeKey, FacilityFilterField field) {
+    return _facilityFilters[scopeKey]?[field] ?? "";
+  }
+
+  /// Applies (or clears, when [value] is blank) a column filter and refreshes.
+  void onFacilityFilterChanged(
+    String scopeKey,
+    FacilityFilterField field,
+    String value,
+  ) {
+    final String trimmed = value.trim();
+    final Map<FacilityFilterField, String> filters =
+        _facilityFilters.putIfAbsent(scopeKey, () => {});
+
+    if (trimmed.isEmpty) {
+      filters.remove(field);
+    } else {
+      filters[field] = trimmed;
+    }
+
+    if (filters.isEmpty) {
+      _facilityFilters.remove(scopeKey);
+    }
+
+    emit(state.copyWith());
+  }
+
+  /// Stable representation of the active filters for [scopeKey].
+  ///
+  /// Tables that keep a stable widget key fold this into that key so the
+  /// underlying table rebuilds when — and only when — the filters change.
+  String facilityFilterSignature(String scopeKey) {
+    final Map<FacilityFilterField, String> filters =
+        _facilityFilters[scopeKey] ?? const {};
+    if (filters.isEmpty) {
+      return "";
+    }
+
+    final List<String> parts = FacilityFilterField.values
+        .where(filters.containsKey)
+        .map((field) => "${field.name}=${filters[field]}")
+        .toList();
+
+    return parts.join("&");
+  }
+
+  /// Clears the filters of one table, or of every table when [scopeKey] is
+  /// omitted. Called on reload so stale filters cannot hide refreshed rows.
+  void clearFacilityFilters([String? scopeKey]) {
+    if (scopeKey == null) {
+      _facilityFilters.clear();
+    } else {
+      _facilityFilters.remove(scopeKey);
+    }
+  }
+
+  /// Narrows [rows] to those matching every active filter of [scopeKey].
+  ///
+  /// Matching is case-insensitive "contains" against the text shown in the
+  /// column. Returns [rows] unchanged when no filter is active.
+  List<FacilityDis> applyFacilityFilters(
+    String scopeKey,
+    List<FacilityDis> rows,
+  ) {
+    final Map<FacilityFilterField, String> filters =
+        _facilityFilters[scopeKey] ?? const {};
+    if (filters.isEmpty) {
+      return rows;
+    }
+
+    return rows.where((dis) {
+      final FacilitySummaryNew? facility = dis.facility;
+      if (facility == null) {
+        return false;
+      }
+
+      return filters.entries.every((entry) {
+        final String cellValue =
+            _facilityFieldValue(facility, entry.key).toLowerCase();
+        return cellValue.contains(entry.value.toLowerCase());
+      });
+    }).toList();
+  }
+
+  /// Resolves the text displayed for [field] on [facility].
+  String _facilityFieldValue(
+    FacilitySummaryNew facility,
+    FacilityFilterField field,
+  ) {
+    switch (field) {
+      case FacilityFilterField.limitNo:
+        return facility.limitNo ?? "";
+      case FacilityFilterField.controllingLimitNo:
+        return facility.controllingLimitNo ?? "";
+      case FacilityFilterField.limitDescription:
+        return facilityTypeNameById(facility.limitDescription).name ?? "";
+      case FacilityFilterField.projectName:
+        return facility.projectName ?? "";
+      case FacilityFilterField.limitCapType:
+        return limitCapsTypeNameById(facility.limitCapType);
+    }
+  }
+
   /// Footer totals using the SAME rule used in your current tables:
   /// add totals only for rows where facility.isMainLimit ?? false.
   GroupAmounts computeGroupTotals(List<FacilityDis> disList) {
@@ -2067,6 +2211,7 @@ class FacilitiesSummaryViewModel extends SafeCubit<FacilitiesSummaryState>
           ),
           showCreateFacilityForm: true,
         ),
+        "pageMode": amendPagemode,
       },
     );
   }

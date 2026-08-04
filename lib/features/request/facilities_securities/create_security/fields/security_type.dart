@@ -30,7 +30,7 @@ class TypeOfSecurity extends StatelessWidget {
               inputFormatters: [
                 LengthLimitingTextInputFormatter(50),
                 FilteringTextInputFormatter.deny(
-                  RegExp("[^a-zA-Z0-9]"),
+                  RegExp("[^a-zA-Z0-9 ]"),
                 ),
               ],
               initialValue: viewModel.security.securityType?.name ?? "",

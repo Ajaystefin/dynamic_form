@@ -6,6 +6,7 @@ import "package:wcas_frontend/core/env_config.dart";
 import "package:wcas_frontend/core/globals.dart";
 import "package:wcas_frontend/core/services/api_service/api_manager.dart";
 import "package:wcas_frontend/core/services/api_service/base_request.dart";
+import "package:wcas_frontend/core/services/currency_rates_service.dart";
 import "package:wcas_frontend/core/services/draft/browser_unload_service.dart";
 import "package:wcas_frontend/core/services/local_storage_service.dart";
 import "package:wcas_frontend/core/services/route_service.dart";
@@ -339,6 +340,7 @@ class AuthRepository {
     await _localStorageService.clearBox(LocalStorageBoxes.referenceData);
     UsersByRolesService().clearCache();
     UsersByFilteredRolesService().clearCache();
+    CurrencyRatesService().clearCache();
     SessionCubit.instance.stopSession();
   }
 
